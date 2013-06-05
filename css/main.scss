@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Main Custom Styles for Soholaunch.com
+   You were here: figuring out heading scale. Annoyed by thinking in pixels.
+============================================================================= */
+
+/* VARIABLES and includes
+---------------------------------------------------------------*/
+/* Type */
+$base-size: 1.7rem;
+$baseline: 1.2rem;
+
+/* Colors */
+$color-accent: rgba(10, 106, 166, 1);
+$color-darkbg: #222222;
+$color-altbg: #f4f4f4;
+$color-learnmore: #ebebeb;
+$color-buy: #fcb034;
+
+/* Layout defaults */
+$padding-gutters: 20px;
+$outer-gutter-width: 80px;
+$outer-gutter-contrast: 2%;
+
+/* Responsive breakpoints */
+$break-standard: 1970px;
+$break-tablet: 750px;
+$break-mobile: 400px;
+
+@import "normalize";
+@import "_helper";
+@import "_mixins";
+@import "_icons";
+
+
+/* BASE
+--------------------------------------------------------------*/
+
+/* Selected text */
+::selection {
+  background: $color-buy; /* Safari */
+}
+::-moz-selection {
+  background: $color-buy; /* Safari */
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+html {
+  margin-top: 0;
+  font-size: 62.5%; /* Sets up the Base 10 stuff */
+}
+
+body {
+  font-family: "pt-sans", Sans-Serif;
+  margin-top: 0;
+  -webkit-margin-before: 0;
+  font-size: $base-size;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  /*font-family: "nimbus-sans", serif;*/
+  font-family: "museo-sans";
+}
+
+p {
+  font-family: "pt-sans";
+  line-height: $baseline * 2;
+  margin-top: 0;
+  margin-bottom: $baseline;
+}
+
+ul {
+  margin: 0px 0px $baseline;
+}
+
+a {
+  text-decoration: underline;
+  color: $color-accent;
+  &:hover {
+    color: $color-buy;
+  }
+}
+
+/* LAYOUT
+-----------------------------------------------------------------*/
+@import "grid";
+.container {
+  border: $outer-gutter-width solid darken(#fff, $outer-gutter-contrast);
+  border-style: none solid;
+  &.body {
+    //border-top: 1px solid darken(#fff, 10%);
+  }
+  @media screen and (max-width: $break-standard) {
+    border-style: none;
+  }
+}
+.container.stage {
+  background-color: $color-accent;
+  background: -moz-linear-gradient(left, $color-darkbg 5%, $color-accent 5%, $color-accent 95%, $color-darkbg 95%);
+  border: $outer-gutter-width solid lighten($color-accent, $outer-gutter-contrast);
+  border-style: none solid;
+  border-top: 1px solid darken($color-accent, 10%);
+  @media screen and (max-width: $break-standard) {
+    border-style: none;
+  }
+}
+.container.dark {
+  border: $outer-gutter-width solid darken($color-darkbg, $outer-gutter-contrast);
+  border-style: none solid;
+  @media screen and (max-width: $break-standard) {
+    border-style: none;
+  }
+}
+.container.alt {
+  border: $outer-gutter-width solid darken($color-altbg, $outer-gutter-contrast);
+  border-style: none solid;
+  @media screen and (max-width: $break-standard) {
+    border-style: none;
+  }
+}
+
+#soholaunch-logo {
+  margin-top: ($baseline / 2);
+  max-height: 8 * $baseline;
+}
+
+nav {
+  height: 5 * $baseline;
+  //border: 1px solid red;
+  padding: 0;
+  width: 100%;
+  @include clearfix;
+
+  ul {
+    width: 100%;
+    padding-left: 0px;
+    margin: ($baseline * 3) auto;
+    @include clearfix;
+  }
+
+  li {
+    display: block;
+    float: right;
+    padding: none;
+    margin: 0px;
+    margin-right: $padding-gutters;
+    //border: 1px solid #ccc;
+    text-align: center;
+    font-size: $base-size * 1.27;
+
+    &:first-child {
+      margin-right: 0px;
+    }
+
+    a {
+      text-decoration: none;
+      color: $color-darkbg;
+      &:hover {
+        text-decoration: underline;
+        color: $color-accent;
+      }
+      &:active {
+        text-decoration: underline;
+        color: $color-buy;
+      }
+    }
+
+    &.buy {
+      font-weight: bold;
+    }
+
+    @media screen and (max-width: $break-standard) {
+      font-size: $base-size;
+    }
+  }
+}
+
+.stage {
+  //background-color: $color-accent;
+  color: #fff;
+
+  .stage-ss {
+    //margin-left: $baseline;
+    margin-bottom: -#{$baseline};
+    height: 23 * $baseline;
+    @media screen and (max-width: $break-mobile) {
+      margin: $baseline 0px;
+    }
+  }
+
+  h2 {
+    font-size: 4.5rem;
+    line-height: ($baseline * 4);
+    font-weight: 300;
+    color: white;
+    @include stroke-text(1, white);
+  }
+  h3 {
+    margin-top: $baseline;
+    font-size: 2.2rem;
+    font-weight: 100;
+    line-height: $baseline * 2;
+    strong {
+      font-weight: 100;
+      @include stroke-text(.5, white);
+      letter-spacing: 1px;
+    }
+  }
+}
+
+.body {
+  h2 {
+    font-size: 2.8rem;
+    line-height: ($baseline * 4);
+    font-weight: 700;
+    color: $color-darkbg;
+  }
+  h3 {
+    font-size: 2.8rem;
+    line-height: ($baseline * 4);
+    /*padding-top: .5rem;*/
+    font-weight: normal;
+    color: $color-accent;
+  }
+  h4 {
+    font-size: 2.13rem;
+    line-height: $baseline * 4 - .2rem;
+    padding-top: .2rem;
+    color: $color-darkbg;
+    font-weight: 400;
+  }
+  h5 { @include rem-fallback(font-size, 1.8); }
+}
+
+.alt {
+  background-color: $color-altbg;
+}
+
+/* FOOTER */
+footer {
+  background-color: $color-darkbg;
+  color: white;
+  h2 {
+    font-size: 2.4rem;
+    line-height: $baseline * 4;
+    font-weight: 400;
+  }
+  h3 {
+    font-size: 2.13rem;
+    line-height: $baseline * 3;
+    font-weight: 300;
+  }
+  a {
+    display: block;
+    text-decoration: none;
+    color: #fff;
+    h3 {
+      line-height: $baseline * 2;
+      margin-bottom: 0;
+      text-decoration: underline;
+    }
+    p {
+      text-decoration: none;
+      color: $color-altbg;
+    }
+    &:hover {
+      background-color: lighten($color-darkbg, 5%);
+    }
+  }
+}
+
+
+/* MODULES
+------------------------------------------------------------------*/
+button {
+  display: inline-block;
+  padding: $baseline ($baseline * 2);
+  font-weight: bold;
+  border: 1px solid;
+
+  &.learn-more {
+    background-color: $color-learnmore;
+    border-color: darken($color-learnmore, 25%);
+    border-right-color: darken($color-learnmore, 50%);
+    &:hover {
+      background-color: lighten($color-learnmore, 10%);
+    }
+  }
+  &.buy {
+    background-color: $color-buy;
+    border-color: darken($color-buy, 25%);
+    &:hover {
+      background-color: lighten($color-buy, 10%);
+    }
+  }
+  +button {
+    margin-left: $baseline;
+    @media screen and (max-width: $break-mobile) {
+      margin: $baseline 0px;
+    }
+  }
+  @media screen and (max-width: $break-mobile) {
+    width: 100%;
+    margin: $baseline px;
+  }
+}
+
+
+/* THEME / PAGE
+------------------------------------------------------------------*/
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+#feature-wheel {
+  //-webkit-animation-name:             rotate;
+  //-webkit-animation-duration:         3000s;
+  //-webkit-animation-iteration-count:  infinite;
+  //-webkit-animation-timing-function: linear;
+}
+
+/* Page-specific */
+.home .stage {
+	/*height: $baseline * 24;*/
+	/*border: 1px solid #ccc;*/
+}

@@ -1,0 +1,62 @@
+@function strip-unit($num) {
+  @return $num / ($num * 0 + 1);
+}
+
+@mixin rem-fallback($property, $values...) {
+  $max: length($values);
+  $pxValues: '';
+  $remValues: '';
+
+  @for $i from 1 through $max {
+	$value: strip-unit(nth($values, $i));
+	$pxValues: #{$pxValues + $value*16}px;
+
+	@if $i < $max {
+	  $pxValues: #{$pxValues + " "};
+	}
+  }
+
+  @for $i from 1 through $max {
+	$value: strip-unit(nth($values, $i));
+	$remValues: #{$remValues + $value}rem;
+
+	@if $i < $max {
+	  $remValues: #{$remValues + " "};
+	}
+  }
+
+  #{$property}: $pxValues;
+  #{$property}: $remValues;
+}
+
+/* Baseline grid overly */
+// Set your grid dimensions here
+@mixin baseline-grid {
+  $body-width: 1040px;
+  $grid-baseline: 12px;
+  $columns: 12;
+  $column-color: rgba(200, 0, 0, .2);
+  $baseline-color: rgba(56, 255, 255, .8);
+
+// These are all automatically calculated
+  $gutter-width: 20px;
+// Change if you like
+  $column-width: ($body-width - (($columns + 1) * $gutter-width)) / $columns;
+
+  background-image: -webkit-linear-gradient(0deg, $column-color $column-width, transparent $gutter-width), -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 95%, $baseline-color 100%);
+  background-image: -moz-linear-gradient(0deg, $column-color $column-width, transparent $gutter-width), -moz-linear-gradient(top, rgba(0, 0, 0, 0) 95%, $baseline-color 100%);
+  background-image: -o-linear-gradient(0deg, $column-color $column-width, transparent $gutter-width), -o-linear-gradient(top, rgba(0, 0, 0, 0) 95%, $baseline-color 100%);
+  background-size: ($column-width + $gutter-width) 100%, 100% $grid-baseline;
+  background-position: $gutter-width 0px;
+// Use to offsset and center your grid
+}
+
+@mixin stroke-text($size, $color) {
+  -webkit-text-stroke: #{$size}px $color;
+}
+
+@mixin clearfix {
+    content: "";
+    display: table;
+    clear: both;
+}

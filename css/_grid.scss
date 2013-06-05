@@ -1,0 +1,76 @@
+/* ==========================================================================
+   Main Custom Styles for Soholaunch.com
+   You were here: figuring out heading scale. Annoyed by thinking in pixels.
+============================================================================ */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.grid-row {
+  &:after {
+    @include clearfix;
+  }
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: ($baseline * 1) $padding-gutters;
+  width: 100%;
+  margin: 0 auto;
+  //border: $outer-gutter-width solid darken(#fff, $outer-gutter-contrast);
+  //border-style: none solid;
+  .grid-row {
+    padding: $baseline 0px;
+  }
+}
+
+$column-width: 8.3333333%;
+.columns {
+  float: left;
+  margin: 0 0 0;
+  text-align: left;
+
+  &.one    	{ width: $column-width; }
+  &.two 	{ width: ($column-width * 2); }
+  &.three   { width: ($column-width * 3); }
+  &.four 	{ width: ($column-width * 4); }
+  &.five    { width: ($column-width * 5); }
+  &.six 	{ width: ($column-width * 6); }
+  &.seven 	{ width: ($column-width * 7); }
+  &.eight 	{ width: ($column-width * 8); }
+  &.nine   	{ width: ($column-width * 9); }
+  &.ten    	{ width: ($column-width * 10); }
+  &.eleven    { width: ($column-width * 11); }
+  &.twelve    { width: ($column-width * 12); }
+
+  &.center { text-align: center; }
+
+  +.columns {
+    padding-left: ($padding-gutters);
+    @media screen and (max-width: $break-standard) {
+      padding-left: 0px;
+    }
+  }
+}
+
+.bump-1 { margin-top: (1 * $baseline); }
+.bump-2 { margin-top: (2 * $baseline); }
+.bump-3 { margin-top: (3 * $baseline); }
+
+/* media queries */
+@media screen and (max-width: $break-mobile) {
+  .columns { padding: $baseline 0px; }
+
+  header, .content-body, .stage, footer { border: none; }
+  .columns.one,
+  .columns.two,
+  .columns.three,
+  .columns.four,
+  .columns.five,
+  .columns.six,
+  .columns.seven,
+  .columns.eight,
+  .columns.nine,
+  .columns.ten,
+  .columns.eleven,
+  .columns.twelve   { width: 100%; }
+}
