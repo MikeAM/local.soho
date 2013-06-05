@@ -45,9 +45,8 @@ $column-width: 8.3333333%;
   &.center { text-align: center; }
 
   +.columns {
-    //padding-left: ($padding-gutters);
-    padding-left: 0;
-    @media screen and (max-width: $break-standard) {
+    padding-left: $padding-gutters;
+    @media screen and (max-width: $break-mobile) {
       padding-left: 0px;
     }
   }

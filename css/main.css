@@ -763,6 +763,7 @@ textarea {
 
 * {
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased; }
 
@@ -851,8 +852,8 @@ img {
   .columns.center {
     text-align: center; }
   .columns + .columns {
-    padding-left: 0; }
-    @media screen and (max-width: 1170px) {
+    padding-left: 20px; }
+    @media screen and (max-width: 750px) {
       .columns + .columns {
         padding-left: 0px; } }
 
@@ -866,7 +867,7 @@ img {
   margin-top: 3.6rem; }
 
 /* media queries */
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 750px) {
   .columns {
     padding: 1.2rem 0px; }
 
@@ -887,6 +888,7 @@ img {
   .columns.twelve {
     width: 100%; } }
 .container {
+  padding: 0 20px;
   background: white;
   background: -webkit-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
   background: -moz-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
@@ -895,9 +897,9 @@ img {
   border-top: 1px solid #074b76; }
   @media screen and (max-width: 1170px) {
     .container {
-      background: white;
-      padding: 0 20px; } }
+      background: white; } }
   .container.stage {
+    position: relative;
     background: #0a6aa6;
     background: -webkit-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
     background: -moz-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
@@ -928,10 +930,14 @@ img {
       .container.alt {
         background: #f4f4f4; } }
 
-#soholaunch-logo {
+h1 #soholaunch-logo {
   margin-top: 0.6rem;
   max-height: 9.6rem; }
+@media screen and (max-width: 750px) {
+  h1 {
+    text-align: center; } }
 
+/* NAVIGATION */
 nav {
   height: 6rem;
   padding: 0;
@@ -946,6 +952,9 @@ nav {
     content: "";
     display: table;
     clear: both; }
+    @media screen and (max-width: 750px) {
+      nav ul {
+        width: auto; } }
   nav li {
     display: block;
     float: right;
@@ -967,13 +976,17 @@ nav {
         color: #fcb034; }
     nav li.buy {
       font-weight: bold; }
+    @media screen and (max-width: 1170px) {
+      nav li {
+        font-size: 1.7rem; } }
 
+/* HERO AREA */
 .stage {
   color: #fff; }
   .stage .stage-ss {
     margin-bottom: -1.2rem;
     height: 27.6rem; }
-    @media screen and (max-width: 400px) {
+    @media screen and (max-width: 750px) {
       .stage .stage-ss {
         margin: 1.2rem 0px; } }
   .stage h2 {
@@ -1062,10 +1075,10 @@ button {
       background-color: #fdc466; }
   button + button {
     margin-left: 1.2rem; }
-    @media screen and (max-width: 400px) {
+    @media screen and (max-width: 750px) {
       button + button {
         margin: 1.2rem 0px; } }
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: 750px) {
     button {
       width: 100%;
       margin: 1.2rem px; } }

@@ -23,8 +23,9 @@ $outer-gutter-contrast: 2%;
 
 /* Responsive breakpoints */
 $break-standard: 1170px;
-$break-tablet: 750px;
-$break-mobile: 400px;
+$break-smstandard: 1065px;
+//$break-tablet: 750px;
+$break-mobile: 750px;
 
 @import "normalize";
 @import "_helper";
@@ -45,6 +46,7 @@ $break-mobile: 400px;
 
 * {
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
 }
@@ -90,15 +92,16 @@ a {
 -----------------------------------------------------------------*/
 @import "grid";
 .container {
+  padding: 0 $padding-gutters;
   background: $color-body;
   @include linear-gradient(left, darken($color-body, $outer-gutter-contrast) 5%, $color-body 5%, $color-body 95%, darken($color-body, $outer-gutter-contrast) 95%);
   border-top: 1px solid darken($color-accent, 10%);
   @media screen and (max-width: $break-standard) {
     background: $color-body;
-    padding: 0 $padding-gutters;
   }
 
   &.stage {
+    position: relative;
     background: $color-accent;
     @include linear-gradient(left, darken($color-accent, $outer-gutter-contrast) 5%, $color-accent 5%, $color-accent 95%, darken($color-accent, $outer-gutter-contrast) 95%);
     border-top: 1px solid darken($color-accent, 10%);
@@ -125,11 +128,17 @@ a {
   }
 }
 
-#soholaunch-logo {
-  margin-top: ($baseline / 2);
-  max-height: 8 * $baseline;
+h1 {
+  #soholaunch-logo {
+    margin-top: ($baseline / 2);
+    max-height: 8 * $baseline;
+  }
+  @media screen and (max-width: $break-mobile) {
+    text-align: center;
+  }
 }
 
+/* NAVIGATION */
 nav {
   height: 5 * $baseline;
   //border: 1px solid red;
@@ -142,6 +151,10 @@ nav {
     padding-left: 0px;
     margin: ($baseline * 3) auto;
     @include clearfix;
+
+    @media screen and (max-width: $break-mobile) {
+      width: auto;
+    }
   }
 
   li {
@@ -176,11 +189,13 @@ nav {
     }
 
     @media screen and (max-width: $break-standard) {
-      //font-size: $base-size * 1.15;
+      font-size: $base-size;
     }
   }
 }
 
+
+/* HERO AREA */
 .stage {
   //background-color: $color-accent;
   color: #fff;
@@ -192,6 +207,13 @@ nav {
     @media screen and (max-width: $break-mobile) {
       margin: $baseline 0px;
     }
+    //&:after {
+    //  position: relative;
+    //  content: "&nbsp;";
+    //  display: inline-block;
+    //  max-height: 23 * $baseline;
+    //  width: 100%;
+    //}
   }
 
   h2 {

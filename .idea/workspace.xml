@@ -5,14 +5,14 @@
     <ignored path="local.soho.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/base.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369407172385" ignored="false" />
-    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370449633284" ignored="false" />
+    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370456842175" ignored="false" />
     <file path="/_layout.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369411584319" ignored="false" />
     <file path="/type.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369422257534" ignored="false" />
     <file path="/_mixins.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370271419776" ignored="false" />
     <file path="/hml.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369423682946" ignored="false" />
-    <file path="/home.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370446155359" ignored="false" />
+    <file path="/home.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370457077443" ignored="false" />
     <file path="/grid.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370271719770" ignored="false" />
-    <file path="/_grid.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370312303301" ignored="false" />
+    <file path="/_grid.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370456860175" ignored="false" />
     <file path="/fluid-grid.css" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370274826434" ignored="false" />
     <file path="/fluid-grid.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370274548516" ignored="false" />
     <file path="/normalize.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370309211347" ignored="false" />
@@ -40,7 +40,7 @@
     <favorites_list name="local.soho" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6963714">
+    <splitter split-orientation="horizontal" split-proportion="0.54202193">
       <split-first>
         <leaf>
           <file leaf-file-name="_mixins.scss" pinned="false" current="false" current-in-tab="false">
@@ -55,7 +55,16 @@
           <file leaf-file-name="_grid.scss" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/css/_grid.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="24" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0">
+                <state line="47" column="35" selection-start="1339" selection-end="1339" vertical-scroll-proportion="0.0">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="main.scss" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/css/main.scss">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="192" column="5" selection-start="4479" selection-end="4479" vertical-scroll-proportion="0.71315193">
                   <folding />
                 </state>
               </provider>
@@ -73,26 +82,17 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="main.scss" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/css/main.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="119" column="0" selection-start="2951" selection-end="2951" vertical-scroll-proportion="0.7505669">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
         </leaf>
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="home.html" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="home.html" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/home.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="53" column="0" selection-start="2083" selection-end="2083" vertical-scroll-proportion="0.4567757">
+                <state line="42" column="27" selection-start="1678" selection-end="1690" vertical-scroll-proportion="0.35747662">
                   <folding>
-                    <marker date="1370446155693" expanded="true" signature="1015:1267" placeholder="..." />
-                    <marker date="1370446155693" expanded="true" signature="1108:1136" placeholder="..." />
+                    <marker date="1370455236881" expanded="true" signature="1015:1267" placeholder="..." />
+                    <marker date="1370455236881" expanded="true" signature="1108:1136" placeholder="..." />
                   </folding>
                 </state>
               </provider>
@@ -139,11 +139,11 @@
         <option value="$PROJECT_DIR$/css/soholaunch.scss" />
         <option value="$PROJECT_DIR$/font.html" />
         <option value="$PROJECT_DIR$/fonttest.html" />
-        <option value="$PROJECT_DIR$/home.html" />
         <option value="$PROJECT_DIR$/css/_icons.scss" />
-        <option value="$PROJECT_DIR$/css/_grid.scss" />
         <option value="$PROJECT_DIR$/css/_mixins.scss" />
+        <option value="$PROJECT_DIR$/css/_grid.scss" />
         <option value="$PROJECT_DIR$/css/main.scss" />
+        <option value="$PROJECT_DIR$/home.html" />
       </list>
     </option>
   </component>
@@ -497,26 +497,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="0" selection-start="2083" selection-end="2083" vertical-scroll-proportion="0.4567757">
-          <folding>
-            <marker date="1370446155693" expanded="true" signature="1015:1267" placeholder="..." />
-            <marker date="1370446155693" expanded="true" signature="1108:1136" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/css/_mixins.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state line="45" column="21" selection-start="1132" selection-end="1132" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_grid.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -531,10 +514,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/css/_grid.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="47" column="35" selection-start="1339" selection-end="1339" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/css/main.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="119" column="0" selection-start="2951" selection-end="2951" vertical-scroll-proportion="0.7505669">
+        <state line="192" column="5" selection-start="4479" selection-end="4479" vertical-scroll-proportion="0.71315193">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/home.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="42" column="27" selection-start="1678" selection-end="1690" vertical-scroll-proportion="0.35747662">
+          <folding>
+            <marker date="1370455236881" expanded="true" signature="1015:1267" placeholder="..." />
+            <marker date="1370455236881" expanded="true" signature="1108:1136" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
