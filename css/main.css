@@ -888,28 +888,41 @@ img {
     width: 100%; } }
 .container {
   background: white;
+  background: -webkit-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
   background: -moz-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
+  background: -o-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
+  background: linear-gradient(to right, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
   border-top: 1px solid #074b76; }
   @media screen and (max-width: 1170px) {
     .container {
-      background: white; } }
+      background: white;
+      padding: 0 20px; } }
   .container.stage {
     background: #0a6aa6;
+    background: -webkit-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
     background: -moz-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
+    background: -o-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
+    background: linear-gradient(to right, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
     border-top: 1px solid #074b76; }
     @media screen and (max-width: 1170px) {
       .container.stage {
         background: #0a6aa6; } }
   .container.dark {
     background: #222222;
+    background: -webkit-linear-gradient(left, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
     background: -moz-linear-gradient(left, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
+    background: -o-linear-gradient(left, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
+    background: linear-gradient(to right, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
     border-top: 1px solid #090909; }
     @media screen and (max-width: 1170px) {
       .container.dark {
         background: #222222; } }
   .container.alt {
     background: #f4f4f4;
+    background: -webkit-linear-gradient(left, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
     background: -moz-linear-gradient(left, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
+    background: -o-linear-gradient(left, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
+    background: linear-gradient(to right, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
     border-top: 1px solid #dbdbdb; }
     @media screen and (max-width: 1170px) {
       .container.alt {

@@ -5,7 +5,7 @@
     <ignored path="local.soho.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/base.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369407172385" ignored="false" />
-    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370448979765" ignored="false" />
+    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370449633284" ignored="false" />
     <file path="/_layout.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369411584319" ignored="false" />
     <file path="/type.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369422257534" ignored="false" />
     <file path="/_mixins.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370271419776" ignored="false" />
@@ -43,10 +43,19 @@
     <splitter split-orientation="horizontal" split-proportion="0.6963714">
       <split-first>
         <leaf>
+          <file leaf-file-name="_mixins.scss" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/css/_mixins.scss">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="45" column="21" selection-start="1132" selection-end="1132" vertical-scroll-proportion="0.0">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file leaf-file-name="_grid.scss" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/css/_grid.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="43" column="0" selection-start="1253" selection-end="1253" vertical-scroll-proportion="0.0">
+                <state line="24" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0">
                   <folding />
                 </state>
               </provider>
@@ -67,7 +76,7 @@
           <file leaf-file-name="main.scss" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/css/main.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="114" column="5" selection-start="2897" selection-end="2897" vertical-scroll-proportion="0.53125">
+                <state line="119" column="0" selection-start="2951" selection-end="2951" vertical-scroll-proportion="0.7505669">
                   <folding />
                 </state>
               </provider>
@@ -80,7 +89,7 @@
           <file leaf-file-name="home.html" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/home.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="48" column="25" selection-start="2011" selection-end="2011" vertical-scroll-proportion="0.35747662">
+                <state line="53" column="0" selection-start="2083" selection-end="2083" vertical-scroll-proportion="0.4567757">
                   <folding>
                     <marker date="1370446155693" expanded="true" signature="1015:1267" placeholder="..." />
                     <marker date="1370446155693" expanded="true" signature="1108:1136" placeholder="..." />
@@ -119,7 +128,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/css/grid.scss" />
         <option value="$PROJECT_DIR$/../local.test/fluid-grid.html" />
         <option value="$PROJECT_DIR$/../local.test/fluid-grid.css" />
         <option value="$PROJECT_DIR$/css/formatme.html" />
@@ -134,6 +142,7 @@
         <option value="$PROJECT_DIR$/home.html" />
         <option value="$PROJECT_DIR$/css/_icons.scss" />
         <option value="$PROJECT_DIR$/css/_grid.scss" />
+        <option value="$PROJECT_DIR$/css/_mixins.scss" />
         <option value="$PROJECT_DIR$/css/main.scss" />
       </list>
     </option>
@@ -341,7 +350,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32973504" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.12379936" sideWeight="0.9056047" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12379936" sideWeight="0.9056047" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2487709" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -417,13 +426,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/css/_mixins.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="21" selection-start="318" selection-end="318" vertical-scroll-proportion="0.019274376">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Google Drive/soholaunch/soholaunch.com/font/soholaunch49977/_icons.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state line="24" column="62" selection-start="23940" selection-end="23940" vertical-scroll-proportion="-8.16" />
@@ -495,6 +497,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/home.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="53" column="0" selection-start="2083" selection-end="2083" vertical-scroll-proportion="0.4567757">
+          <folding>
+            <marker date="1370446155693" expanded="true" signature="1015:1267" placeholder="..." />
+            <marker date="1370446155693" expanded="true" signature="1108:1136" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/_mixins.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="21" selection-start="1132" selection-end="1132" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/_grid.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="0" selection-start="642" selection-end="642" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/css/_icons.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state line="46" column="23" selection-start="24722" selection-end="24722" vertical-scroll-proportion="0.0">
@@ -505,26 +531,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="25" selection-start="2011" selection-end="2011" vertical-scroll-proportion="0.35747662">
-          <folding>
-            <marker date="1370446155693" expanded="true" signature="1015:1267" placeholder="..." />
-            <marker date="1370446155693" expanded="true" signature="1108:1136" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_grid.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="0" selection-start="1253" selection-end="1253" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/css/main.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="114" column="5" selection-start="2897" selection-end="2897" vertical-scroll-proportion="0.53125">
+        <state line="119" column="0" selection-start="2951" selection-end="2951" vertical-scroll-proportion="0.7505669">
           <folding />
         </state>
       </provider>

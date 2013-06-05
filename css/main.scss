@@ -91,15 +91,16 @@ a {
 @import "grid";
 .container {
   background: $color-body;
-  background: -moz-linear-gradient(left, darken($color-body, $outer-gutter-contrast) 5%, $color-body 5%, $color-body 95%, darken($color-body, $outer-gutter-contrast) 95%);
+  @include linear-gradient(left, darken($color-body, $outer-gutter-contrast) 5%, $color-body 5%, $color-body 95%, darken($color-body, $outer-gutter-contrast) 95%);
   border-top: 1px solid darken($color-accent, 10%);
   @media screen and (max-width: $break-standard) {
     background: $color-body;
+    padding: 0 $padding-gutters;
   }
 
   &.stage {
     background: $color-accent;
-    background: -moz-linear-gradient(left, darken($color-accent, $outer-gutter-contrast) 5%, $color-accent 5%, $color-accent 95%, darken($color-accent, $outer-gutter-contrast) 95%);
+    @include linear-gradient(left, darken($color-accent, $outer-gutter-contrast) 5%, $color-accent 5%, $color-accent 95%, darken($color-accent, $outer-gutter-contrast) 95%);
     border-top: 1px solid darken($color-accent, 10%);
     @media screen and (max-width: $break-standard) {
       background: $color-accent;
@@ -108,7 +109,7 @@ a {
 
   &.dark {
     background: $color-darkbg;
-    background: -moz-linear-gradient(left, darken($color-darkbg, $outer-gutter-contrast) 5%, $color-darkbg 5%, $color-darkbg 95%, darken($color-darkbg, $outer-gutter-contrast) 95%);
+    @include linear-gradient(left, darken($color-darkbg, $outer-gutter-contrast) 5%, $color-darkbg 5%, $color-darkbg 95%, darken($color-darkbg, $outer-gutter-contrast) 95%);
     border-top: 1px solid darken($color-darkbg, 10%);
     @media screen and (max-width: $break-standard) {
       background: $color-darkbg;
@@ -116,7 +117,7 @@ a {
   }
   &.alt {
     background: $color-altbg;
-    background: -moz-linear-gradient(left, darken($color-altbg, $outer-gutter-contrast) 5%, $color-altbg 5%, $color-altbg 95%, darken($color-altbg, $outer-gutter-contrast) 95%);
+    @include linear-gradient(left, darken($color-altbg, $outer-gutter-contrast) 5%, $color-altbg 5%, $color-altbg 95%, darken($color-altbg, $outer-gutter-contrast) 95%);
     border-top: 1px solid darken($color-altbg, 10%);
     @media screen and (max-width: $break-standard) {
       background: $color-altbg;
