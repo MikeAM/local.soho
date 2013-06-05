@@ -21,6 +21,10 @@ img {
   .grid-row {
     padding: $baseline 0px;
   }
+
+  @media screen and (max-width: $break-mobile) {
+    padding: $baseline 0px;
+  }
 }
 
 $column-width: 8.3333333%;

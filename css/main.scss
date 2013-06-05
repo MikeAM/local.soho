@@ -24,8 +24,8 @@ $outer-gutter-contrast: 2%;
 /* Responsive breakpoints */
 $break-standard: 1170px;
 $break-smstandard: 1065px;
-//$break-tablet: 750px;
-$break-mobile: 750px;
+$break-tablet: 750px;
+$break-mobile: 400px;
 
 @import "normalize";
 @import "_helper";
@@ -91,6 +91,8 @@ a {
 /* LAYOUT
 -----------------------------------------------------------------*/
 @import "grid";
+
+/* GUTTERS - These container rules mainly handle the addition of outer gutters */
 .container {
   padding: 0 $padding-gutters;
   background: $color-body;
@@ -110,14 +112,10 @@ a {
     }
   }
 
-  &.dark {
-    background: $color-darkbg;
-    @include linear-gradient(left, darken($color-darkbg, $outer-gutter-contrast) 5%, $color-darkbg 5%, $color-darkbg 95%, darken($color-darkbg, $outer-gutter-contrast) 95%);
-    border-top: 1px solid darken($color-darkbg, 10%);
-    @media screen and (max-width: $break-standard) {
-      background: $color-darkbg;
-    }
+  &.body {
+    border-top: none;
   }
+
   &.alt {
     background: $color-altbg;
     @include linear-gradient(left, darken($color-altbg, $outer-gutter-contrast) 5%, $color-altbg 5%, $color-altbg 95%, darken($color-altbg, $outer-gutter-contrast) 95%);
@@ -126,6 +124,16 @@ a {
       background: $color-altbg;
     }
   }
+
+  &.dark {
+    background: $color-darkbg;
+    @include linear-gradient(left, darken($color-darkbg, $outer-gutter-contrast) 5%, $color-darkbg 5%, $color-darkbg 95%, darken($color-darkbg, $outer-gutter-contrast) 95%);
+    border-top: 1px solid darken($color-darkbg, 10%);
+    @media screen and (max-width: $break-standard) {
+      background: $color-darkbg;
+    }
+  }
+
 }
 
 h1 {
@@ -140,48 +148,41 @@ h1 {
 
 /* NAVIGATION */
 nav {
+  margin-top: $baseline * 2;
   height: 5 * $baseline;
-  //border: 1px solid red;
   padding: 0;
   width: 100%;
   @include clearfix;
 
-  ul {
-    width: 100%;
-    padding-left: 0px;
-    margin: ($baseline * 3) auto;
-    @include clearfix;
-
-    @media screen and (max-width: $break-mobile) {
-      width: auto;
-    }
-  }
-
-  li {
-    display: block;
-    float: right;
-    padding: none;
+  a {
+    display: inline-block;
+    width: 16.6666%;
+    height: 100%;
     margin: 0px;
-    margin-right: $padding-gutters;
-    //border: 1px solid #ccc;
+    padding: none;
+    padding-top: $baseline;
+    border-left: 1px solid $color-altbg;
     text-align: center;
-    font-size: $base-size * 1.27;
+    font-size: $base-size;
+    text-decoration: none;
+    color: $color-darkbg;
+    //color: $color-buy;
+    //text-shadow: 1px 1px 1px $color-altbg;
+    transition: background-color 0.1s linear;
 
-    &:first-child {
-      margin-right: 0px;
+    &:last-child {
+      border-right: 1px solid $color-altbg;
     }
 
-    a {
-      text-decoration: none;
-      color: $color-darkbg;
-      &:hover {
-        text-decoration: underline;
-        color: $color-accent;
-      }
-      &:active {
-        text-decoration: underline;
-        color: $color-buy;
-      }
+    &:hover {
+      text-decoration: underline;
+      color: $color-accent;
+      background-color: $color-altbg;
+    }
+
+    &:active {
+      text-decoration: underline;
+      color: $color-buy;
     }
 
     &.buy {
@@ -191,13 +192,32 @@ nav {
     @media screen and (max-width: $break-standard) {
       font-size: $base-size;
     }
+
+    @media screen and (max-width: $break-tablet) {
+      &:nth-child(-n+3) {
+        border-bottom: 1px solid $color-altbg;
+      }
+      &:nth-child(3) {
+        border-right: 1px solid $color-altbg;
+      }
+      width: 33.3333%;
+      height: 50%;
+    //text-align: left;
+    }
+  }
+
+  @media screen and (max-width: $break-standard) {
+    font-size: $base-size;
+  }
+
+  @media screen and (max-width: $break-tablet) {
+    height: 10 * $baseline;
   }
 }
 
 
 /* HERO AREA */
 .stage {
-  //background-color: $color-accent;
   color: #fff;
 
   .stage-ss {
@@ -207,13 +227,6 @@ nav {
     @media screen and (max-width: $break-mobile) {
       margin: $baseline 0px;
     }
-    //&:after {
-    //  position: relative;
-    //  content: "&nbsp;";
-    //  display: inline-block;
-    //  max-height: 23 * $baseline;
-    //  width: 100%;
-    //}
   }
 
   h2 {
@@ -353,6 +366,6 @@ button {
 
 /* Page-specific */
 .home .stage {
-	/*height: $baseline * 24;*/
-	/*border: 1px solid #ccc;*/
+  /*height: $baseline * 24;*/
+  /*border: 1px solid #ccc;*/
 }
