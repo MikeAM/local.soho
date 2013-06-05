@@ -851,8 +851,8 @@ img {
   .columns.center {
     text-align: center; }
   .columns + .columns {
-    padding-left: 20px; }
-    @media screen and (max-width: 1970px) {
+    padding-left: 0; }
+    @media screen and (max-width: 1170px) {
       .columns + .columns {
         padding-left: 0px; } }
 
@@ -887,35 +887,33 @@ img {
   .columns.twelve {
     width: 100%; } }
 .container {
-  border: 80px solid #fafafa;
-  border-style: none solid; }
-  @media screen and (max-width: 1970px) {
-    .container {
-      border-style: none; } }
-
-.container.stage {
-  background-color: #0a6aa6;
-  background: -moz-linear-gradient(left, #222222 5%, #0a6aa6 5%, #0a6aa6 95%, #222222 95%);
-  border: 80px solid #0b70b0;
-  border-style: none solid;
+  background: white;
+  background: -moz-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
   border-top: 1px solid #074b76; }
-  @media screen and (max-width: 1970px) {
-    .container.stage {
-      border-style: none; } }
-
-.container.dark {
-  border: 80px solid #1d1d1d;
-  border-style: none solid; }
-  @media screen and (max-width: 1970px) {
-    .container.dark {
-      border-style: none; } }
-
-.container.alt {
-  border: 80px solid #efefef;
-  border-style: none solid; }
-  @media screen and (max-width: 1970px) {
-    .container.alt {
-      border-style: none; } }
+  @media screen and (max-width: 1170px) {
+    .container {
+      background: white; } }
+  .container.stage {
+    background: #0a6aa6;
+    background: -moz-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
+    border-top: 1px solid #074b76; }
+    @media screen and (max-width: 1170px) {
+      .container.stage {
+        background: #0a6aa6; } }
+  .container.dark {
+    background: #222222;
+    background: -moz-linear-gradient(left, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
+    border-top: 1px solid #090909; }
+    @media screen and (max-width: 1170px) {
+      .container.dark {
+        background: #222222; } }
+  .container.alt {
+    background: #f4f4f4;
+    background: -moz-linear-gradient(left, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
+    border-top: 1px solid #dbdbdb; }
+    @media screen and (max-width: 1170px) {
+      .container.alt {
+        background: #f4f4f4; } }
 
 #soholaunch-logo {
   margin-top: 0.6rem;
@@ -956,9 +954,6 @@ nav {
         color: #fcb034; }
     nav li.buy {
       font-weight: bold; }
-    @media screen and (max-width: 1970px) {
-      nav li {
-        font-size: 1.7rem; } }
 
 .stage {
   color: #fff; }

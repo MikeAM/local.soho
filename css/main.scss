@@ -15,14 +15,14 @@ $color-darkbg: #222222;
 $color-altbg: #f4f4f4;
 $color-learnmore: #ebebeb;
 $color-buy: #fcb034;
+$color-body: #ffffff;
 
 /* Layout defaults */
 $padding-gutters: 20px;
-$outer-gutter-width: 80px;
 $outer-gutter-contrast: 2%;
 
 /* Responsive breakpoints */
-$break-standard: 1970px;
+$break-standard: 1170px;
 $break-tablet: 750px;
 $break-mobile: 400px;
 
@@ -90,37 +90,37 @@ a {
 -----------------------------------------------------------------*/
 @import "grid";
 .container {
-  border: $outer-gutter-width solid darken(#fff, $outer-gutter-contrast);
-  border-style: none solid;
-  &.body {
-    //border-top: 1px solid darken(#fff, 10%);
-  }
-  @media screen and (max-width: $break-standard) {
-    border-style: none;
-  }
-}
-.container.stage {
-  background-color: $color-accent;
-  background: -moz-linear-gradient(left, $color-darkbg 5%, $color-accent 5%, $color-accent 95%, $color-darkbg 95%);
-  border: $outer-gutter-width solid lighten($color-accent, $outer-gutter-contrast);
-  border-style: none solid;
+  background: $color-body;
+  background: -moz-linear-gradient(left, darken($color-body, $outer-gutter-contrast) 5%, $color-body 5%, $color-body 95%, darken($color-body, $outer-gutter-contrast) 95%);
   border-top: 1px solid darken($color-accent, 10%);
   @media screen and (max-width: $break-standard) {
-    border-style: none;
+    background: $color-body;
   }
-}
-.container.dark {
-  border: $outer-gutter-width solid darken($color-darkbg, $outer-gutter-contrast);
-  border-style: none solid;
-  @media screen and (max-width: $break-standard) {
-    border-style: none;
+
+  &.stage {
+    background: $color-accent;
+    background: -moz-linear-gradient(left, darken($color-accent, $outer-gutter-contrast) 5%, $color-accent 5%, $color-accent 95%, darken($color-accent, $outer-gutter-contrast) 95%);
+    border-top: 1px solid darken($color-accent, 10%);
+    @media screen and (max-width: $break-standard) {
+      background: $color-accent;
+    }
   }
-}
-.container.alt {
-  border: $outer-gutter-width solid darken($color-altbg, $outer-gutter-contrast);
-  border-style: none solid;
-  @media screen and (max-width: $break-standard) {
-    border-style: none;
+
+  &.dark {
+    background: $color-darkbg;
+    background: -moz-linear-gradient(left, darken($color-darkbg, $outer-gutter-contrast) 5%, $color-darkbg 5%, $color-darkbg 95%, darken($color-darkbg, $outer-gutter-contrast) 95%);
+    border-top: 1px solid darken($color-darkbg, 10%);
+    @media screen and (max-width: $break-standard) {
+      background: $color-darkbg;
+    }
+  }
+  &.alt {
+    background: $color-altbg;
+    background: -moz-linear-gradient(left, darken($color-altbg, $outer-gutter-contrast) 5%, $color-altbg 5%, $color-altbg 95%, darken($color-altbg, $outer-gutter-contrast) 95%);
+    border-top: 1px solid darken($color-altbg, 10%);
+    @media screen and (max-width: $break-standard) {
+      background: $color-altbg;
+    }
   }
 }
 
@@ -175,7 +175,7 @@ nav {
     }
 
     @media screen and (max-width: $break-standard) {
-      font-size: $base-size;
+      //font-size: $base-size * 1.15;
     }
   }
 }

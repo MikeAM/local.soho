@@ -5,7 +5,7 @@
     <ignored path="local.soho.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/base.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369407172385" ignored="false" />
-    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370448115165" ignored="false" />
+    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370448979765" ignored="false" />
     <file path="/_layout.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369411584319" ignored="false" />
     <file path="/type.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369422257534" ignored="false" />
     <file path="/_mixins.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370271419776" ignored="false" />
@@ -46,7 +46,7 @@
           <file leaf-file-name="_grid.scss" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/css/_grid.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="49" column="24" selection-start="1419" selection-end="1419" vertical-scroll-proportion="0.0">
+                <state line="43" column="0" selection-start="1253" selection-end="1253" vertical-scroll-proportion="0.0">
                   <folding />
                 </state>
               </provider>
@@ -64,21 +64,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="style.css" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/fonts/orig/style.css">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="23950" vertical-scroll-proportion="0.0">
-                  <folding>
-                    <element signature="e#124#15331#1" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
           <file leaf-file-name="main.scss" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/css/main.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="103" column="112" selection-start="2232" selection-end="2232" vertical-scroll-proportion="0.29310346">
+                <state line="114" column="5" selection-start="2897" selection-end="2897" vertical-scroll-proportion="0.53125">
                   <folding />
                 </state>
               </provider>
@@ -516,13 +505,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/_grid.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="24" selection-start="1419" selection-end="1419" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/home.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="48" column="25" selection-start="2011" selection-end="2011" vertical-scroll-proportion="0.35747662">
@@ -533,9 +515,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/css/_grid.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="0" selection-start="1253" selection-end="1253" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/css/main.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="112" selection-start="2232" selection-end="2232" vertical-scroll-proportion="0.29310346">
+        <state line="114" column="5" selection-start="2897" selection-end="2897" vertical-scroll-proportion="0.53125">
           <folding />
         </state>
       </provider>
