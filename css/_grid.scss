@@ -22,7 +22,7 @@ img {
     padding: $baseline 0px;
   }
 
-  @media screen and (max-width: $break-mobile) {
+  @include bp-until($bp-rare) {
     padding: $baseline 0px;
   }
 }
@@ -50,7 +50,7 @@ $column-width: 8.3333333%;
 
   +.columns {
     padding-left: $padding-gutters;
-    @media screen and (max-width: $break-mobile) {
+    @include bp-until($bp-raw) {
       padding-left: 0px;
     }
   }
@@ -61,7 +61,7 @@ $column-width: 8.3333333%;
 .bump-3 { margin-top: (3 * $baseline); }
 
 /* media queries */
-@media screen and (max-width: $break-mobile) {
+@include bp-until($bp-raw) {
   .columns { padding: $baseline 0px; }
 
   header, .content-body, .stage, footer { border: none; }

@@ -1,174 +1,104 @@
 /* ==========================================================================
    Main Custom Styles for Soholaunch.com
-   You were here: figuring out heading scale. Annoyed by thinking in pixels.
 ============================================================================= */
 
-/* VARIABLES and includes
----------------------------------------------------------------*/
-/* Type */
-$base-size: 1.7rem;
-$baseline: 1.2rem;
-
-/* Colors */
-$color-accent: rgba(10, 106, 166, 1);
-$color-darkbg: #222222;
-$color-altbg: #f4f4f4;
-$color-learnmore: #ebebeb;
-$color-buy: #fcb034;
-$color-body: #ffffff;
-
-/* Layout defaults */
-$padding-gutters: 20px;
-$outer-gutter-contrast: 2%;
-
-/* Responsive breakpoints */
-$break-standard: 1170px;
-$break-smstandard: 1065px;
-$break-tablet: 750px;
-$break-mobile: 400px;
-
+/* Vendor */
 @import "normalize";
 @import "_helper";
+
+/* Soholaunch Dependencies */
 @import "_mixins";
+
+/* Patterns */
+@import "_base-and-vars";
+@import "grid";
 @import "_icons";
+@import "_buttons";
 
-
-/* BASE
---------------------------------------------------------------*/
-
-/* Selected text */
-::selection {
-  background: $color-buy; /* Safari */
-}
-::-moz-selection {
-  background: $color-buy; /* Safari */
-}
-
-* {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-}
-
-html {
-  margin-top: 0;
-  font-size: 62.5%; /* Sets up the Base 10 stuff */
-}
-
-body {
-  font-family: "pt-sans", Sans-Serif;
-  margin-top: 0;
-  -webkit-margin-before: 0;
-  font-size: $base-size;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  /*font-family: "nimbus-sans", serif;*/
-  font-family: "museo-sans";
-}
-
-p {
-  font-family: "pt-sans";
-  line-height: $baseline * 2;
-  margin-top: 0;
-  margin-bottom: $baseline;
-}
-
-ul {
-  margin: 0px 0px $baseline;
-}
-
-a {
-  text-decoration: underline;
-  color: $color-accent;
-  &:hover {
-    color: $color-buy;
-  }
-}
 
 /* LAYOUT
 -----------------------------------------------------------------*/
-@import "grid";
 
 /* GUTTERS - These container rules mainly handle the addition of outer gutters */
 .container {
   padding: 0 $padding-gutters;
   background: $color-body;
   @include linear-gradient(left, darken($color-body, $outer-gutter-contrast) 5%, $color-body 5%, $color-body 95%, darken($color-body, $outer-gutter-contrast) 95%);
-  border-top: 1px solid darken($color-accent, 10%);
-  @media screen and (max-width: $break-standard) {
+  @include bp-until($bp-well-done) {
     background: $color-body;
   }
 
   &.stage {
     position: relative;
     background: $color-accent;
-    @include linear-gradient(left, darken($color-accent, $outer-gutter-contrast) 5%, $color-accent 5%, $color-accent 95%, darken($color-accent, $outer-gutter-contrast) 95%);
     border-top: 1px solid darken($color-accent, 10%);
-    @media screen and (max-width: $break-standard) {
+    @include linear-gradient(left, darken($color-accent, $outer-gutter-contrast) 5%, $color-accent 5%, $color-accent 95%, darken($color-accent, $outer-gutter-contrast) 95%);
+    @include bp-until($bp-well-done) {
       background: $color-accent;
     }
   }
 
   &.body {
-    border-top: none;
+    background: $color-body;
+    border-top: 1px solid darken($color-body, 10%);
+    @include linear-gradient(left, darken($color-body, $outer-gutter-contrast) 5%, $color-body 5%, $color-body 95%, darken($color-body, $outer-gutter-contrast) 95%);
+    @include bp-until($bp-well-done) {
+      background: $color-body;
+    }
   }
 
   &.alt {
     background: $color-altbg;
-    @include linear-gradient(left, darken($color-altbg, $outer-gutter-contrast) 5%, $color-altbg 5%, $color-altbg 95%, darken($color-altbg, $outer-gutter-contrast) 95%);
     border-top: 1px solid darken($color-altbg, 10%);
-    @media screen and (max-width: $break-standard) {
+    @include linear-gradient(left, darken($color-altbg, $outer-gutter-contrast) 5%, $color-altbg 5%, $color-altbg 95%, darken($color-altbg, $outer-gutter-contrast) 95%);
+    @include bp-until($bp-well-done) {
       background: $color-altbg;
     }
   }
 
   &.dark {
     background: $color-darkbg;
-    @include linear-gradient(left, darken($color-darkbg, $outer-gutter-contrast) 5%, $color-darkbg 5%, $color-darkbg 95%, darken($color-darkbg, $outer-gutter-contrast) 95%);
     border-top: 1px solid darken($color-darkbg, 10%);
-    @media screen and (max-width: $break-standard) {
+    @include linear-gradient(left, darken($color-darkbg, $outer-gutter-contrast) 5%, $color-darkbg 5%, $color-darkbg 95%, darken($color-darkbg, $outer-gutter-contrast) 95%);
+    @include bp-until($bp-well-done) {
       background: $color-darkbg;
     }
   }
 
 }
 
+
 h1 {
+  //padding-right: $padding-gutters;
   #soholaunch-logo {
-    margin-top: ($baseline / 2);
-    max-height: 8 * $baseline;
+    max-height: 7 * $baseline;
   }
-  @media screen and (max-width: $break-mobile) {
+  @include bp-until($bp-raw) {
     text-align: center;
   }
 }
 
-/* NAVIGATION */
+
 nav {
-  margin-top: $baseline * 2;
-  height: 5 * $baseline;
-  padding: 0;
   width: 100%;
-  @include clearfix;
+  height: 5 * $baseline;
+  margin-top: $baseline * 2;
+  padding: 0;
+  text-align: right;
 
   a {
     display: inline-block;
-    width: 16.6666%;
     height: 100%;
-    margin: 0px;
-    padding: none;
-    padding-top: $baseline;
+    margin: 0px -4px 0;
+    padding: $baseline $padding-gutters $baseline ($padding-gutters - 4);
     border-left: 1px solid $color-altbg;
-    text-align: center;
-    font-size: $base-size;
+    text-align: right;
+    font-size: $base-size * 1.2;
     text-decoration: none;
     color: $color-darkbg;
     //color: $color-buy;
     //text-shadow: 1px 1px 1px $color-altbg;
-    transition: background-color 0.1s linear;
+    //transition: background-color 0.1s linear;
 
     &:last-child {
       border-right: 1px solid $color-altbg;
@@ -177,7 +107,7 @@ nav {
     &:hover {
       text-decoration: underline;
       color: $color-accent;
-      background-color: $color-altbg;
+      //background-color: $color-altbg;
     }
 
     &:active {
@@ -189,29 +119,31 @@ nav {
       font-weight: bold;
     }
 
-    @media screen and (max-width: $break-standard) {
+    @include bp-until($bp-medium) {
+      font-size: $base-size * .95;
+    }
+
+    @include bp-until($bp-medium-rare) {
+      font-size: $base-size * .90;
+    }
+
+    /* Compacted menu uses horizontal space conservatively */
+    @include bp-until($bp-rare) {
+      margin: 0;
+      width: auto;
+      text-align: left;
       font-size: $base-size;
-    }
-
-    @media screen and (max-width: $break-tablet) {
-      &:nth-child(-n+3) {
-        border-bottom: 1px solid $color-altbg;
+      border: none;
+      padding: $baseline $padding-gutters / 4;
+      border-right: 1px solid $color-altbg;
+      &:last-child {
+        border-right: none;
       }
-      &:nth-child(3) {
-        border-right: 1px solid $color-altbg;
-      }
-      width: 33.3333%;
-      height: 50%;
-    //text-align: left;
     }
   }
 
-  @media screen and (max-width: $break-standard) {
-    font-size: $base-size;
-  }
-
-  @media screen and (max-width: $break-tablet) {
-    height: 10 * $baseline;
+  @include bp-until($bp-rare) {
+    text-align: right;
   }
 }
 
@@ -224,7 +156,7 @@ nav {
     //margin-left: $baseline;
     margin-bottom: -#{$baseline};
     height: 23 * $baseline;
-    @media screen and (max-width: $break-mobile) {
+    @include bp-until($bp-raw) {
       margin: $baseline 0px;
     }
   }
@@ -237,7 +169,7 @@ nav {
     @include stroke-text(1, white);
   }
   h3 {
-    margin-top: $baseline;
+    margin: $baseline 0;
     font-size: 2.2rem;
     font-weight: 100;
     line-height: $baseline * 2;
@@ -307,42 +239,6 @@ footer {
     &:hover {
       background-color: lighten($color-darkbg, 5%);
     }
-  }
-}
-
-
-/* MODULES
-------------------------------------------------------------------*/
-button {
-  display: inline-block;
-  padding: $baseline ($baseline * 2);
-  font-weight: bold;
-  border: 1px solid;
-
-  &.learn-more {
-    background-color: $color-learnmore;
-    border-color: darken($color-learnmore, 25%);
-    border-right-color: darken($color-learnmore, 50%);
-    &:hover {
-      background-color: lighten($color-learnmore, 10%);
-    }
-  }
-  &.buy {
-    background-color: $color-buy;
-    border-color: darken($color-buy, 25%);
-    &:hover {
-      background-color: lighten($color-buy, 10%);
-    }
-  }
-  +button {
-    margin-left: $baseline;
-    @media screen and (max-width: $break-mobile) {
-      margin: $baseline 0px;
-    }
-  }
-  @media screen and (max-width: $break-mobile) {
-    width: 100%;
-    margin: $baseline px;
   }
 }
 

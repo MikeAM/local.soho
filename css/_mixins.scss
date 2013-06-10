@@ -1,7 +1,10 @@
+
+/* Required by rem-fallback */
 @function strip-unit($num) {
   @return $num / ($num * 0 + 1);
 }
 
+/* Use rem in older browsers */
 @mixin rem-fallback($property, $values...) {
   $max: length($values);
   $pxValues: '';
@@ -28,6 +31,7 @@
   #{$property}: $pxValues;
   #{$property}: $remValues;
 }
+
 
 @mixin linear-gradient($angle, $color-stops...) {
   $_angle-with-vendor-prefix: "";
@@ -66,6 +70,11 @@
   background: linear-gradient($_angle, $color-stops);
 }
 
+/* Fakes smooth text */
+@mixin stroke-text($size, $color) {
+  -webkit-text-stroke: #{$size}px $color;
+}
+
 /* Baseline grid overly */
 // Set your grid dimensions here
 @mixin baseline-grid {
@@ -88,12 +97,20 @@
 // Use to offsset and center your grid
 }
 
-@mixin stroke-text($size, $color) {
-  -webkit-text-stroke: #{$size}px $color;
-}
-
 @mixin clearfix {
     content: "";
     display: table;
     clear: both;
+}
+
+/* Breakpoints */
+@mixin bp-at-least($device-width) {
+  @media screen and (min-width: $device-width) {
+    @content
+  }
+}
+@mixin bp-until($device-width) {
+  @media screen and (max-width: $device-width - 1) {
+    @content
+  }
 }

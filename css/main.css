@@ -1,14 +1,8 @@
 @charset "IBM437";
 /* ==========================================================================
    Main Custom Styles for Soholaunch.com
-   You were here: figuring out heading scale. Annoyed by thinking in pixels.
 ============================================================================= */
-/* VARIABLES and includes
----------------------------------------------------------------*/
-/* Type */
-/* Colors */
-/* Layout defaults */
-/* Responsive breakpoints */
+/* Vendor */
 /* normalize.css v1.1.1 | MIT License | git.io/normalize */
 /* ==========================================================================
    HTML5 display definitions
@@ -695,7 +689,159 @@ textarea {
   h2,
   h3 {
     page-break-after: avoid; } }
+/* Soholaunch Dependencies */
+/* Required by rem-fallback */
+/* Use rem in older browsers */
+/* Fakes smooth text */
 /* Baseline grid overly */
+/* Breakpoints */
+/* Patterns */
+/* VARIABLES
+---------------------------------------------------------------*/
+/* Type */
+/* Colors - orig */
+/* Colors - flat UI */
+/* Layout defaults */
+/* Breakpoints */
+/* http://css-tricks.com/naming-media-queries/ */
+/* BASE
+--------------------------------------------------------------*/
+/* Selected text */
+::selection {
+  background: #fcb034;
+  /* Safari */ }
+
+::-moz-selection {
+  background: #fcb034;
+  /* Safari */ }
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased; }
+
+html {
+  margin-top: 0;
+  font-size: 62.5%;
+  /* Sets up the Base 10 stuff */ }
+
+body {
+  font-family: "pt-sans", Sans-Serif;
+  margin-top: 0;
+  -webkit-margin-before: 0;
+  font-size: 1.7rem; }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  /*font-family: "nimbus-sans", serif;*/
+  font-family: "museo-sans"; }
+
+p {
+  font-family: "pt-sans";
+  line-height: 2.4rem;
+  margin-top: 0;
+  margin-bottom: 1.2rem; }
+
+ul {
+  margin: 0px 0px 1.2rem; }
+
+a {
+  text-decoration: underline;
+  color: #0a6aa6; }
+  a:hover {
+    color: #fcb034; }
+
+/* ==========================================================================
+   Main Custom Styles for Soholaunch.com
+   You were here: figuring out heading scale. Annoyed by thinking in pixels.
+============================================================================ */
+img {
+  max-width: 100%;
+  height: auto; }
+
+.grid-row {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 1.2rem 20px;
+  width: 100%;
+  margin: 0 auto; }
+  .grid-row:after {
+    content: "";
+    display: table;
+    clear: both; }
+  .grid-row .grid-row {
+    padding: 1.2rem 0px; }
+  @media screen and (max-width: 874px) {
+    .grid-row {
+      padding: 1.2rem 0px; } }
+
+.columns {
+  float: left;
+  margin: 0 0 0;
+  text-align: left; }
+  .columns.one {
+    width: 8.33333%; }
+  .columns.two {
+    width: 16.66667%; }
+  .columns.three {
+    width: 25.0%; }
+  .columns.four {
+    width: 33.33333%; }
+  .columns.five {
+    width: 41.66667%; }
+  .columns.six {
+    width: 50.0%; }
+  .columns.seven {
+    width: 58.33333%; }
+  .columns.eight {
+    width: 66.66667%; }
+  .columns.nine {
+    width: 75.0%; }
+  .columns.ten {
+    width: 83.33333%; }
+  .columns.eleven {
+    width: 91.66667%; }
+  .columns.twelve {
+    width: 100.0%; }
+  .columns.center {
+    text-align: center; }
+  .columns + .columns {
+    padding-left: 20px; }
+    @media screen and (max-width: 399px) {
+      .columns + .columns {
+        padding-left: 0px; } }
+
+.bump-1 {
+  margin-top: 1.2rem; }
+
+.bump-2 {
+  margin-top: 2.4rem; }
+
+.bump-3 {
+  margin-top: 3.6rem; }
+
+/* media queries */
+@media screen and (max-width: 399px) {
+  .columns {
+    padding: 1.2rem 0px; }
+
+  header, .content-body, .stage, footer {
+    border: none; }
+
+  .columns.one,
+  .columns.two,
+  .columns.three,
+  .columns.four,
+  .columns.five,
+  .columns.six,
+  .columns.seven,
+  .columns.eight,
+  .columns.nine,
+  .columns.ten,
+  .columns.eleven,
+  .columns.twelve {
+    width: 100%; } }
 @font-face {
   font-family: 'soholaunch';
   src: url("fonts/soholaunch.eot"); }
@@ -750,146 +896,44 @@ textarea {
     top: 15%;
     left: 18%; }
 
-/* BASE
---------------------------------------------------------------*/
-/* Selected text */
-::selection {
-  background: #fcb034;
-  /* Safari */ }
-
-::-moz-selection {
-  background: #fcb034;
-  /* Safari */ }
-
-* {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased; }
-
-html {
-  margin-top: 0;
-  font-size: 62.5%;
-  /* Sets up the Base 10 stuff */ }
-
-body {
-  font-family: "pt-sans", Sans-Serif;
-  margin-top: 0;
-  -webkit-margin-before: 0;
-  font-size: 1.7rem; }
-
-h1, h2, h3, h4, h5, h6 {
-  margin: 0;
-  /*font-family: "nimbus-sans", serif;*/
-  font-family: "museo-sans"; }
-
-p {
-  font-family: "pt-sans";
-  line-height: 2.4rem;
-  margin-top: 0;
-  margin-bottom: 1.2rem; }
-
-ul {
-  margin: 0px 0px 1.2rem; }
-
-a {
-  text-decoration: underline;
-  color: #0a6aa6; }
-  a:hover {
-    color: #fcb034; }
+/* Button styles for Soholaunch.com */
+button {
+  display: inline-block;
+  padding: 1.2rem 2.4rem;
+  font-weight: bold;
+  border: 1px solid; }
+  button.learn-more {
+    text-shadow: 0px 1px 0px white;
+    background-color: #ebebeb;
+    background-image: -webkit-linear-gradient(top, #f8f8f8 50%, #dedede 100%);
+    border-color: #ebebeb;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 0px #9f9f9f, 0 3px 0 0px #074b76; }
+    button.learn-more:hover {
+      background-color: white;
+      background-image: -webkit-linear-gradient(top, white 50%, #dedede 100%); }
+  button.buy {
+    text-shadow: 0px 1px 0px #fdc466;
+    background-color: #fcb034;
+    background-image: -webkit-linear-gradient(top, #fcba4d 50%, #fca61b 100%);
+    border-color: #fcb034;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 0px #955d02, 0 3px 0 0px #074b76; }
+    button.buy:hover {
+      background-color: #fdc466;
+      background-image: -webkit-linear-gradient(top, #fdc466 50%, #fca61b 100%); }
+  button + button {
+    margin-left: 1.2rem; }
+    @media screen and (max-width: 399px) {
+      button + button {
+        margin: 1.2rem 0px; } }
+  @media screen and (max-width: 399px) {
+    button {
+      width: 100%;
+      margin: 1.2rem px; } }
 
 /* LAYOUT
 -----------------------------------------------------------------*/
-/* ==========================================================================
-   Main Custom Styles for Soholaunch.com
-   You were here: figuring out heading scale. Annoyed by thinking in pixels.
-============================================================================ */
-img {
-  max-width: 100%;
-  height: auto; }
-
-.grid-row {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 1.2rem 20px;
-  width: 100%;
-  margin: 0 auto; }
-  .grid-row:after {
-    content: "";
-    display: table;
-    clear: both; }
-  .grid-row .grid-row {
-    padding: 1.2rem 0px; }
-  @media screen and (max-width: 400px) {
-    .grid-row {
-      padding: 1.2rem 0px; } }
-
-.columns {
-  float: left;
-  margin: 0 0 0;
-  text-align: left; }
-  .columns.one {
-    width: 8.33333%; }
-  .columns.two {
-    width: 16.66667%; }
-  .columns.three {
-    width: 25.0%; }
-  .columns.four {
-    width: 33.33333%; }
-  .columns.five {
-    width: 41.66667%; }
-  .columns.six {
-    width: 50.0%; }
-  .columns.seven {
-    width: 58.33333%; }
-  .columns.eight {
-    width: 66.66667%; }
-  .columns.nine {
-    width: 75.0%; }
-  .columns.ten {
-    width: 83.33333%; }
-  .columns.eleven {
-    width: 91.66667%; }
-  .columns.twelve {
-    width: 100.0%; }
-  .columns.center {
-    text-align: center; }
-  .columns + .columns {
-    padding-left: 20px; }
-    @media screen and (max-width: 400px) {
-      .columns + .columns {
-        padding-left: 0px; } }
-
-.bump-1 {
-  margin-top: 1.2rem; }
-
-.bump-2 {
-  margin-top: 2.4rem; }
-
-.bump-3 {
-  margin-top: 3.6rem; }
-
-/* media queries */
-@media screen and (max-width: 400px) {
-  .columns {
-    padding: 1.2rem 0px; }
-
-  header, .content-body, .stage, footer {
-    border: none; }
-
-  .columns.one,
-  .columns.two,
-  .columns.three,
-  .columns.four,
-  .columns.five,
-  .columns.six,
-  .columns.seven,
-  .columns.eight,
-  .columns.nine,
-  .columns.ten,
-  .columns.eleven,
-  .columns.twelve {
-    width: 100%; } }
 /* GUTTERS - These container rules mainly handle the addition of outer gutters */
 .container {
   padding: 0 20px;
@@ -897,102 +941,105 @@ img {
   background: -webkit-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
   background: -moz-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
   background: -o-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
-  background: linear-gradient(to right, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
-  border-top: 1px solid #074b76; }
-  @media screen and (max-width: 1170px) {
+  background: linear-gradient(to right, #fafafa 5%, white 5%, white 95%, #fafafa 95%); }
+  @media screen and (max-width: 1169px) {
     .container {
       background: white; } }
   .container.stage {
     position: relative;
     background: #0a6aa6;
+    border-top: 1px solid #074b76;
     background: -webkit-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
     background: -moz-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
     background: -o-linear-gradient(left, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
-    background: linear-gradient(to right, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%);
-    border-top: 1px solid #074b76; }
-    @media screen and (max-width: 1170px) {
+    background: linear-gradient(to right, #09649c 5%, #0a6aa6 5%, #0a6aa6 95%, #09649c 95%); }
+    @media screen and (max-width: 1169px) {
       .container.stage {
         background: #0a6aa6; } }
   .container.body {
-    border-top: none; }
+    background: white;
+    border-top: 1px solid #e6e6e6;
+    background: -webkit-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
+    background: -moz-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
+    background: -o-linear-gradient(left, #fafafa 5%, white 5%, white 95%, #fafafa 95%);
+    background: linear-gradient(to right, #fafafa 5%, white 5%, white 95%, #fafafa 95%); }
+    @media screen and (max-width: 1169px) {
+      .container.body {
+        background: white; } }
   .container.alt {
     background: #f4f4f4;
+    border-top: 1px solid #dbdbdb;
     background: -webkit-linear-gradient(left, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
     background: -moz-linear-gradient(left, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
     background: -o-linear-gradient(left, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
-    background: linear-gradient(to right, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%);
-    border-top: 1px solid #dbdbdb; }
-    @media screen and (max-width: 1170px) {
+    background: linear-gradient(to right, #efefef 5%, #f4f4f4 5%, #f4f4f4 95%, #efefef 95%); }
+    @media screen and (max-width: 1169px) {
       .container.alt {
         background: #f4f4f4; } }
   .container.dark {
     background: #222222;
+    border-top: 1px solid #090909;
     background: -webkit-linear-gradient(left, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
     background: -moz-linear-gradient(left, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
     background: -o-linear-gradient(left, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
-    background: linear-gradient(to right, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%);
-    border-top: 1px solid #090909; }
-    @media screen and (max-width: 1170px) {
+    background: linear-gradient(to right, #1d1d1d 5%, #222222 5%, #222222 95%, #1d1d1d 95%); }
+    @media screen and (max-width: 1169px) {
       .container.dark {
         background: #222222; } }
 
 h1 #soholaunch-logo {
-  margin-top: 0.6rem;
-  max-height: 9.6rem; }
-@media screen and (max-width: 400px) {
+  max-height: 8.4rem; }
+@media screen and (max-width: 399px) {
   h1 {
     text-align: center; } }
 
-/* NAVIGATION */
 nav {
-  margin-top: 2.4rem;
-  height: 6rem;
-  padding: 0;
   width: 100%;
-  content: "";
-  display: table;
-  clear: both; }
+  height: 6rem;
+  margin-top: 2.4rem;
+  padding: 0;
+  text-align: right; }
   nav a {
     display: inline-block;
-    width: 16.6666%;
     height: 100%;
-    margin: 0px;
-    padding: none;
-    padding-top: 1.2rem;
+    margin: 0px -4px 0;
+    padding: 1.2rem 20px 1.2rem 16px;
     border-left: 1px solid #f4f4f4;
-    text-align: center;
-    font-size: 1.7rem;
+    text-align: right;
+    font-size: 2.04rem;
     text-decoration: none;
     color: #222222;
-    transition: background-color 0.1s linear; }
+    /* Compacted menu uses horizontal space conservatively */ }
     nav a:last-child {
       border-right: 1px solid #f4f4f4; }
     nav a:hover {
       text-decoration: underline;
-      color: #0a6aa6;
-      background-color: #f4f4f4; }
+      color: #0a6aa6; }
     nav a:active {
       text-decoration: underline;
       color: #fcb034; }
     nav a.buy {
       font-weight: bold; }
-    @media screen and (max-width: 1170px) {
+    @media screen and (max-width: 1064px) {
       nav a {
-        font-size: 1.7rem; } }
-    @media screen and (max-width: 750px) {
+        font-size: 1.615rem; } }
+    @media screen and (max-width: 999px) {
       nav a {
-        width: 33.3333%;
-        height: 50%; }
-        nav a:nth-child(-n+3) {
-          border-bottom: 1px solid #f4f4f4; }
-        nav a:nth-child(3) {
-          border-right: 1px solid #f4f4f4; } }
-  @media screen and (max-width: 1170px) {
+        font-size: 1.53rem; } }
+    @media screen and (max-width: 874px) {
+      nav a {
+        margin: 0;
+        width: auto;
+        text-align: left;
+        font-size: 1.7rem;
+        border: none;
+        padding: 1.2rem 5px;
+        border-right: 1px solid #f4f4f4; }
+        nav a:last-child {
+          border-right: none; } }
+  @media screen and (max-width: 874px) {
     nav {
-      font-size: 1.7rem; } }
-  @media screen and (max-width: 750px) {
-    nav {
-      height: 12rem; } }
+      text-align: right; } }
 
 /* HERO AREA */
 .stage {
@@ -1000,7 +1047,7 @@ nav {
   .stage .stage-ss {
     margin-bottom: -1.2rem;
     height: 27.6rem; }
-    @media screen and (max-width: 400px) {
+    @media screen and (max-width: 399px) {
       .stage .stage-ss {
         margin: 1.2rem 0px; } }
   .stage h2 {
@@ -1010,7 +1057,7 @@ nav {
     color: white;
     -webkit-text-stroke: 1px white; }
   .stage h3 {
-    margin-top: 1.2rem;
+    margin: 1.2rem 0;
     font-size: 2.2rem;
     font-weight: 100;
     line-height: 2.4rem; }
@@ -1068,34 +1115,6 @@ footer {
       color: #f4f4f4; }
     footer a:hover {
       background-color: #2f2f2f; }
-
-/* MODULES
-------------------------------------------------------------------*/
-button {
-  display: inline-block;
-  padding: 1.2rem 2.4rem;
-  font-weight: bold;
-  border: 1px solid; }
-  button.learn-more {
-    background-color: #ebebeb;
-    border-color: #ababab;
-    border-right-color: #6c6c6c; }
-    button.learn-more:hover {
-      background-color: white; }
-  button.buy {
-    background-color: #fcb034;
-    border-color: #ae6d03; }
-    button.buy:hover {
-      background-color: #fdc466; }
-  button + button {
-    margin-left: 1.2rem; }
-    @media screen and (max-width: 400px) {
-      button + button {
-        margin: 1.2rem 0px; } }
-  @media screen and (max-width: 400px) {
-    button {
-      width: 100%;
-      margin: 1.2rem px; } }
 
 /* THEME / PAGE
 ------------------------------------------------------------------*/
