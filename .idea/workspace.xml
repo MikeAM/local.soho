@@ -23,7 +23,7 @@
     <file path="/_icons.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370965547629" ignored="false" />
     <file path="/soholaunch.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370381355751" ignored="false" />
     <file path="/_buttons.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371141877945" ignored="false" />
-    <file path="/_template.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371134935489" ignored="false" />
+    <file path="/_template.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371144451245" ignored="false" />
     <file path="/.htaccess" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370877795833" ignored="false" />
     <file path="/index.php" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370886866370" ignored="false" />
     <file path="/features.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371141540353" ignored="false" />
@@ -62,10 +62,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="_page-buy.scss" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="_page-buy.scss" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="24" column="15" selection-start="560" selection-end="560" vertical-scroll-proportion="0.45535713">
+                <state line="19" column="51" selection-start="485" selection-end="485" vertical-scroll-proportion="0.36049107">
                   <folding />
                 </state>
               </provider>
@@ -102,13 +102,13 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="_template.html" pinned="false" current="false" current-in-tab="false">
+          <file leaf-file-name="_template.html" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/_template.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="42" column="52" selection-start="1728" selection-end="1728" vertical-scroll-proportion="-18.307692">
+                <state line="26" column="58" selection-start="994" selection-end="994" vertical-scroll-proportion="0.31738624">
                   <folding>
-                    <marker date="1371134935305" expanded="true" signature="1015:1267" placeholder="..." />
-                    <marker date="1371134935305" expanded="true" signature="1108:1136" placeholder="..." />
+                    <marker date="1371144453426" expanded="true" signature="958:1210" placeholder="..." />
+                    <marker date="1371144453426" expanded="true" signature="1051:1079" placeholder="..." />
                   </folding>
                 </state>
               </provider>
@@ -135,16 +135,16 @@
           <file leaf-file-name="developers.html" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/developers.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="12" column="34" selection-start="585" selection-end="585" vertical-scroll-proportion="-4.0">
+                <state line="6" column="14" selection-start="303" selection-end="303" vertical-scroll-proportion="-2.0">
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/buy.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="62" column="18" selection-start="2881" selection-end="2881" vertical-scroll-proportion="0.5372781">
+                <state line="37" column="65" selection-start="1661" selection-end="1661" vertical-scroll-proportion="-0.5686275">
                   <folding />
                 </state>
               </provider>
@@ -168,7 +168,6 @@
         <option value="$PROJECT_DIR$/index.php" />
         <option value="$PROJECT_DIR$/css/fonts/orig/style.css" />
         <option value="$PROJECT_DIR$/css/_icons.scss" />
-        <option value="$PROJECT_DIR$/_template.html" />
         <option value="$PROJECT_DIR$/css/_base-and-vars.scss" />
         <option value="$PROJECT_DIR$/css/main.scss" />
         <option value="$PROJECT_DIR$/developers.html" />
@@ -178,6 +177,7 @@
         <option value="$PROJECT_DIR$/css/_grid.scss" />
         <option value="$PROJECT_DIR$/buy.html" />
         <option value="$PROJECT_DIR$/css/_page-buy.scss" />
+        <option value="$PROJECT_DIR$/_template.html" />
       </list>
     </option>
   </component>
@@ -456,16 +456,6 @@
         <state line="6" column="0" selection-start="118" selection-end="25665" vertical-scroll-proportion="0.11564626" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/_template.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="52" selection-start="1728" selection-end="1728" vertical-scroll-proportion="-18.307692">
-          <folding>
-            <marker date="1371134935305" expanded="true" signature="1015:1267" placeholder="..." />
-            <marker date="1371134935305" expanded="true" signature="1108:1136" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="1" column="25" selection-start="31" selection-end="31" vertical-scroll-proportion="0.020023556">
@@ -497,13 +487,6 @@
     <entry file="file://$PROJECT_DIR$/css/_helper.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state line="182" column="8" selection-start="3076" selection-end="3081" vertical-scroll-proportion="-11.32">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/developers.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="34" selection-start="585" selection-end="585" vertical-scroll-proportion="-4.0">
           <folding />
         </state>
       </provider>
@@ -543,17 +526,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/buy.html">
+    <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="18" selection-start="2881" selection-end="2881" vertical-scroll-proportion="0.5372781">
+        <state line="19" column="51" selection-start="485" selection-end="485" vertical-scroll-proportion="0.36049107">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
+    <entry file="file://$PROJECT_DIR$/buy.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="15" selection-start="560" selection-end="560" vertical-scroll-proportion="0.45535713">
+        <state line="37" column="65" selection-start="1661" selection-end="1661" vertical-scroll-proportion="-0.5686275">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/developers.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="14" selection-start="303" selection-end="303" vertical-scroll-proportion="-2.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/_template.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="58" selection-start="994" selection-end="994" vertical-scroll-proportion="0.31738624">
+          <folding>
+            <marker date="1371144453426" expanded="true" signature="958:1210" placeholder="..." />
+            <marker date="1371144453426" expanded="true" signature="1051:1079" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
