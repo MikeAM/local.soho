@@ -6,7 +6,7 @@ button {
   font-weight: bold;
   border: 1px solid;
 
-  &.learn-more {
+  &.btn-learn-more {
     text-shadow: 0px 1px 0px lighten($color-learnmore, 10%);
     background-color: $color-learnmore;
     background-image: -webkit-linear-gradient(top, lighten($color-learnmore, 5%) 50%, darken($color-learnmore, 5%) 100%);
@@ -21,14 +21,20 @@ button {
     }
   }
 
-  &.buy {
+  &.btn-buy {
     text-shadow: 0px 1px 0px lighten($color-buy, 10%);
     background-color: $color-buy;
     background-image: -webkit-linear-gradient(top, lighten($color-buy, 5%) 50%, darken($color-buy, 5%) 100%);
     border-color: $color-buy;
     border-radius: 2px;
     box-shadow: 0 2px 0 0px darken($color-buy, 30%),
+    0 3px 0 0px darken($color-altbg, 10%);
+
+    /* Drop shadow should match background */
+    .stage &, .stage-deemphasized & {
+      box-shadow: 0 2px 0 0px darken($color-buy, 30%),
       0 3px 0 0px darken($color-accent, 10%);
+    }
 
     &:hover {
       background-color: lighten($color-buy, 10%);

@@ -1,0 +1,34 @@
+.pricing-package {
+  height: $baseline * 35;
+  border: 1px solid $color-learnmore;
+  text-align: center;
+  background-color: $color-altbg;
+
+  h3 {
+    margin: 0 -1px;
+    padding: ($baseline / 2) ($padding-gutters / 2);
+    background-color: $color-accent;
+    color: #fff;
+    font-size: $base-size * 1.2;
+    line-height: $baseline * 2;
+  }
+  .price-monthly {
+    //margin: ($baseline * 2);
+    font-size: $base-size * 2;
+  }
+  p {
+    margin: ($baseline * 2) ($padding-gutters / 2);
+  }
+  ul {
+    padding-left: 0;
+    list-style-type: none;
+    li:before {
+      font-family: serif;
+      content: '✓ ';
+    }
+  }
+  .contact-us {
+    font-size: 1.6 * $base-size;
+    line-height: 2 * $baseline;
+  }
+}

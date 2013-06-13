@@ -21,7 +21,9 @@ window.onload = function() {
 			'soho-icon-font_camera' : '&#x25d9;',
 			'soho-icon-font_calendar' : '&#x2328;',
 			'soho-icon-font_arrowcircle' : '&#x21ba;',
-			'soho-icon-font_analytics' : '&#x25d4;'
+			'soho-icon-font_analytics' : '&#x25d4;',
+			'soho-icon-font_floatie' : '&#x2665;',
+			'soho-icon-font_timer' : '&#x2611;'
 		},
 		els = document.getElementsByTagName('*'),
 		i, attr, html, c, el;

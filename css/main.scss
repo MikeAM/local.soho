@@ -181,6 +181,15 @@ nav {
   }
 }
 
+/* Used primarily for checkout pages, where content needs more focus */
+.stage-deemphasized {
+  color: #fff;
+  background: $color-darkbg;
+  h3 {
+    font-weight: 100;
+  }
+}
+
 .body {
   h2 {
     font-size: 2.8rem;
@@ -189,11 +198,11 @@ nav {
     color: $color-darkbg;
   }
   h3 {
-    font-size: 2.8rem;
-    line-height: ($baseline * 4);
+    font-size: 2.13rem;
+    line-height: ($baseline * 3);
     /*padding-top: .5rem;*/
     font-weight: normal;
-    color: $color-accent;
+    color: $color-darkbg;
   }
   h4 {
     font-size: 2.13rem;
@@ -261,7 +270,4 @@ footer {
 }
 
 /* Page-specific */
-.home .stage {
-  /*height: $baseline * 24;*/
-  /*border: 1px solid #ccc;*/
-}
+@import "_page-buy";
