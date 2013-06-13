@@ -31,7 +31,6 @@
     <file path="/buy.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371142463576" ignored="false" />
     <file path="/_base-and-vars.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371136592366" ignored="false" />
     <file path="/_page-buy.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371142517338" ignored="false" />
-    <file path="$PROJECT_DIR$/css/main.css" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371142526845" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,109 +49,103 @@
     <favorites_list name="local.soho" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.41473812">
-      <split-first>
-        <leaf>
-          <file leaf-file-name="_base-and-vars.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/_base-and-vars.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="13" column="21" selection-start="305" selection-end="305" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="_page-buy.scss" pinned="false" current="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="19" column="51" selection-start="485" selection-end="485" vertical-scroll-proportion="0.36049107">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="main.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/main.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="185" column="14" selection-start="4581" selection-end="4581" vertical-scroll-proportion="-20.04">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="_icons.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/_icons.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="7" column="51" selection-start="17003" selection-end="17003" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="_buttons.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/_buttons.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="9" column="44" selection-start="220" selection-end="220" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="_template.html" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/_template.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="26" column="58" selection-start="994" selection-end="994" vertical-scroll-proportion="0.31738624">
-                  <folding>
-                    <marker date="1371144453426" expanded="true" signature="958:1210" placeholder="..." />
-                    <marker date="1371144453426" expanded="true" signature="1051:1079" placeholder="..." />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="home.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/home.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="14" column="48" selection-start="685" selection-end="685" vertical-scroll-proportion="-4.6666665">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="features.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/features.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="14" column="0" selection-start="564" selection-end="564" vertical-scroll-proportion="-9.153846">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="developers.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/developers.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="6" column="14" selection-start="303" selection-end="303" vertical-scroll-proportion="-2.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/buy.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="37" column="65" selection-start="1661" selection-end="1661" vertical-scroll-proportion="-0.5686275">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file leaf-file-name="_base-and-vars.scss" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/_base-and-vars.scss">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="21" selection-start="305" selection-end="305" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_page-buy.scss" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="25" selection-start="586" selection-end="586" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_icons.scss" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/css/_icons.scss">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="63" column="38" selection-start="27423" selection-end="27423" vertical-scroll-proportion="0.52112675">
+              <folding>
+                <element signature="e#16954#26232#1" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="style.css" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/fonts/orig/style.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="92" column="14" selection-start="28346" selection-end="28351" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_template.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/_template.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="26" column="58" selection-start="994" selection-end="994" vertical-scroll-proportion="-0.65384614">
+              <folding>
+                <marker date="1371156040096" expanded="true" signature="958:1210" placeholder="..." />
+                <marker date="1371156040096" expanded="true" signature="1051:1079" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="home.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/home.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="48" selection-start="685" selection-end="685" vertical-scroll-proportion="-0.65384614">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="features.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/features.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="0" selection-start="564" selection-end="564" vertical-scroll-proportion="-0.65384614">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="developers.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/developers.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="14" selection-start="303" selection-end="303" vertical-scroll-proportion="-0.65384614">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/buy.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="37" column="65" selection-start="1661" selection-end="1661" vertical-scroll-proportion="-0.65384614">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_buttons.scss" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/css/_buttons.scss">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="44" selection-start="220" selection-end="220" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -167,7 +160,6 @@
         <option value="$PROJECT_DIR$/.htaccess" />
         <option value="$PROJECT_DIR$/index.php" />
         <option value="$PROJECT_DIR$/css/fonts/orig/style.css" />
-        <option value="$PROJECT_DIR$/css/_icons.scss" />
         <option value="$PROJECT_DIR$/css/_base-and-vars.scss" />
         <option value="$PROJECT_DIR$/css/main.scss" />
         <option value="$PROJECT_DIR$/developers.html" />
@@ -178,6 +170,7 @@
         <option value="$PROJECT_DIR$/buy.html" />
         <option value="$PROJECT_DIR$/css/_page-buy.scss" />
         <option value="$PROJECT_DIR$/_template.html" />
+        <option value="$PROJECT_DIR$/css/_icons.scss" />
       </list>
     </option>
   </component>
@@ -185,8 +178,8 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1176" />
+    <option name="width" value="1296" />
+    <option name="height" value="1000" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -236,6 +229,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -282,9 +276,48 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="local.soho" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="local.soho" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fonts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="local.soho" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="local.soho" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fonts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="orig" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -293,8 +326,8 @@
     <property name="options.lastSelected" value="settings" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/css" />
     <property name="FullScreen" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -363,18 +396,18 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
+    <frame x="-8" y="-8" width="1296" height="1000" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32973504" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12379936" sideWeight="0.906588" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18962723" sideWeight="0.7514863" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2487709" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.093412" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24851367" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.09271523" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -411,7 +444,7 @@
     <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
     <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
     <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
-    <option name="SHORT_DIFF_HORIZONTALLY" value="true" />
+    <option name="SHORT_DIFF_HORISONTALLY" value="true" />
     <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
     <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
     <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
@@ -458,37 +491,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="25" selection-start="31" selection-end="31" vertical-scroll-proportion="0.020023556">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/fonts/orig/style.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="40" selection-start="26601" selection-end="26601" vertical-scroll-proportion="0.31554523">
-          <folding />
-        </state>
+        <state line="1" column="25" selection-start="31" selection-end="31" vertical-scroll-proportion="0.020023556" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/main.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="185" column="14" selection-start="4581" selection-end="4581" vertical-scroll-proportion="-20.04">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_icons.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="51" selection-start="17003" selection-end="17003" vertical-scroll-proportion="0.0">
+        <state line="185" column="14" selection-start="4581" selection-end="4581" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/_helper.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="182" column="8" selection-start="3076" selection-end="3081" vertical-scroll-proportion="-11.32">
-          <folding />
-        </state>
+        <state line="182" column="8" selection-start="3076" selection-end="3081" vertical-scroll-proportion="-11.32" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/_buttons.scss">
@@ -500,9 +515,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/css/_grid.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="13" selection-start="1368" selection-end="1368" vertical-scroll-proportion="0.32">
-          <folding />
-        </state>
+        <state line="50" column="13" selection-start="1368" selection-end="1368" vertical-scroll-proportion="0.32" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/css/_base-and-vars.scss">
@@ -514,45 +527,61 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/home.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="48" selection-start="685" selection-end="685" vertical-scroll-proportion="-4.6666665">
+        <state line="14" column="48" selection-start="685" selection-end="685" vertical-scroll-proportion="-0.65384614">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/features.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="0" selection-start="564" selection-end="564" vertical-scroll-proportion="-9.153846">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="51" selection-start="485" selection-end="485" vertical-scroll-proportion="0.36049107">
+        <state line="14" column="0" selection-start="564" selection-end="564" vertical-scroll-proportion="-0.65384614">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/buy.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="65" selection-start="1661" selection-end="1661" vertical-scroll-proportion="-0.5686275">
+        <state line="37" column="65" selection-start="1661" selection-end="1661" vertical-scroll-proportion="-0.65384614">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/developers.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="14" selection-start="303" selection-end="303" vertical-scroll-proportion="-2.0">
+        <state line="6" column="14" selection-start="303" selection-end="303" vertical-scroll-proportion="-0.65384614">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/_template.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="58" selection-start="994" selection-end="994" vertical-scroll-proportion="0.31738624">
+        <state line="26" column="58" selection-start="994" selection-end="994" vertical-scroll-proportion="-0.65384614">
           <folding>
-            <marker date="1371144453426" expanded="true" signature="958:1210" placeholder="..." />
-            <marker date="1371144453426" expanded="true" signature="1051:1079" placeholder="..." />
+            <marker date="1371156040096" expanded="true" signature="958:1210" placeholder="..." />
+            <marker date="1371156040096" expanded="true" signature="1051:1079" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="25" selection-start="586" selection-end="586" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/fonts/orig/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="92" column="14" selection-start="28346" selection-end="28351" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/_icons.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="38" selection-start="27423" selection-end="27423" vertical-scroll-proportion="0.52112675">
+          <folding>
+            <element signature="e#16954#26232#1" expanded="true" />
           </folding>
         </state>
       </provider>
