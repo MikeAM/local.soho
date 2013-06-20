@@ -853,14 +853,6 @@ img {
   font-weight: normal;
   font-style: normal; }
 
-[data-icon]:before {
-  font-family: 'soholaunch';
-  font-weight: normal;
-  content: attr(data-icon);
-  speak: none;
-  /* Not to be trusted, but hey. */
-  color: #0a6aa6; }
-
 .screen-reader-text {
   /* Reusable, toolbox kind of class */
   position: absolute;
@@ -875,19 +867,26 @@ img {
   display: inline-block;
   margin-right: 10px; }
 
+[data-icon]:before {
+  font-family: 'soholaunch';
+  font-weight: normal;
+  content: attr(data-icon);
+  speak: none;
+  /* Not to be trusted, but hey. */
+  color: #0a6aa6; }
+
 .icon-alone {
   /* Declared to prevent scope errors in nested rules */
-  display: inline-block;
   float: left;
+  display: inline-block;
+  position: relative;
   margin-right: 20px;
+  width: 1.2rem;
+  height: 1.2rem;
   /* Really wish there was a universal way to center text */ }
   .icon-alone.fullsize {
-    position: relative;
     width: 10.8rem;
-    height: 10.8rem;
-    background-color: #fff;
-    border: 2px solid #0a6aa6;
-    border-radius: 10.8rem; }
+    height: 10.8rem; }
   .icon-alone [data-icon]:before {
     position: absolute;
     font-size: 5.4rem;
@@ -898,6 +897,16 @@ img {
   .icon-alone span[data-icon="$"]:before {
     top: 15%;
     left: 18%; }
+  .icon-alone span[data-icon="☑"]:before {
+    top: 13%;
+    left: 28%; }
+  .icon-alone span[data-icon="\2665"]:before {
+    top: 13%;
+    left: 25%; }
+  .icon-alone.ring {
+    background-color: #fff;
+    border: 2px solid #0a6aa6;
+    border-radius: 10.8rem; }
 
 /* Button styles for Soholaunch.com */
 button {

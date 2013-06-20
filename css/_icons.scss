@@ -10,14 +10,6 @@
   font-style: normal;
 }
 
-[data-icon]:before {
-  font-family: 'soholaunch';
-  font-weight: normal;
-  content: attr(data-icon);
-  speak: none; /* Not to be trusted, but hey. */
-  color: $color-accent;
-}
-
 .screen-reader-text { /* Reusable, toolbox kind of class */
     position: absolute;
     top: -9999px;
@@ -34,20 +26,27 @@
   margin-right: $padding-gutters / 2;
 }
 
+[data-icon]:before {
+  font-family: 'soholaunch';
+  font-weight: normal;
+  content: attr(data-icon);
+  speak: none; /* Not to be trusted, but hey. */
+  color: $color-accent;
+}
+
 .icon-alone {
   $icon-size: $baseline; /* Declared to prevent scope errors in nested rules */
-  display: inline-block;
   float: left;
+  display: inline-block;
+  position: relative;
   margin-right: $padding-gutters;
+  width: $icon-size;
+  height: $icon-size;
 
   &.fullsize {
-    position: relative;
     $icon-size: $baseline * 9;
     width: $icon-size;
     height: $icon-size;
-    background-color: #fff;
-    border: 2px solid $color-accent;
-    border-radius: ($icon-size);
   }
 
   [data-icon]:before {
@@ -65,15 +64,19 @@
     top: 15%;
     left: 18%;
   }
-  span[data-icon="☑"]:before { // Cart
-    top: 15%;
-    left: 18%;
+  span[data-icon="☑"]:before { // Timer
+    top: 13%;
+    left: 28%;
+  }
+  span[data-icon="\2665"]:before { // Support life preserver
+    top: 13%;
+    left: 25%;
   }
 
   &.ring {
-    //background-color: #fff;
-    //border: 2px solid $color-accent;
-    //border-radius: ($icon-size / 2);
+    background-color: #fff;
+    border: 2px solid $color-accent;
+    border-radius: $icon-size;
   }
 }
 
