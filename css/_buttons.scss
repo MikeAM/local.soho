@@ -1,9 +1,11 @@
 /* Button styles for Soholaunch.com */
 
-button {
+.button {
   display: inline-block;
   padding: $baseline ($baseline * 2);
   font-weight: bold;
+  text-decoration: none;
+  color: $color-darkbg;
   border: 1px solid;
 
   &.btn-learn-more {
@@ -18,6 +20,7 @@ button {
     &:hover {
       background-color: lighten($color-learnmore, 10%);
       background-image: -webkit-linear-gradient(top, lighten($color-learnmore, 10%) 50%, darken($color-learnmore, 5%) 100%);
+      color: $color-darkbg;
     }
   }
 
@@ -39,6 +42,7 @@ button {
     &:hover {
       background-color: lighten($color-buy, 10%);
       background-image: -webkit-linear-gradient(top, lighten($color-buy, 10%) 50%, darken($color-buy, 5%) 100%);
+      color: $color-darkbg;
     }
   }
 
