@@ -37,4 +37,93 @@
   label, .list-steps {
     float: left;
   }
+  label {
+    font-weight: normal;
+    color: lighten($color-darkbg, 20%);
+  }
+  .list-steps {
+    margin: 0;
+    padding: 0;
+    list-style-position: inside;
+  }
+  .list-steps li {
+    float: left;
+    padding-left: $padding-gutters;
+  }
+  .current {
+    font-weight: bold;
+  }
+  @extend .clearfix;
+}
+
+.domain-input * {
+  font-size: 200%;
+}
+
+.payment-term {
+  display: block;
+  margin-bottom: $baseline;
+  padding: $baseline;
+  border: 1px solid $color-altbg;
+  border-radius: $border-radius;
+  background-color: $color-altbg;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $color-learnmore;
+  }
+  [type="radio"], .summary {
+    float: left;
+  }
+  [type="radio"] {
+    margin: 15% $padding-gutters 0 $padding-gutters;
+  }
+  h6 {
+    margin: 0;
+  }
+
+  @extend .clearfix;
+}
+
+//----------------------------------------
+// Form styles
+//----------------------------------------
+.label-handwritten {
+  font-family: 'Marck Script', cursive;
+}
+.label-prefix {
+  color: $color-lighttext;
+}
+
+.radiogroup {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0;
+
+  li {
+    margin-bottom: $baseline;
+    @extend .clearfix;
+  }
+  [type="radio"], label {
+    float: left;
+  }
+  [type="radio"] {
+    margin-top: .3em;
+    margin-right: $padding-gutters;
+  }
+}
+
+.instructions {
+  background-color: $color-accent;
+  color: $color-body;
+}
+
+//----------------------------------------
+// Other abstract styles
+//----------------------------------------
+.list-naked {
+  list-style-type: none;
+  margin-left: 0px;
+  padding-left: 0;
 }

@@ -31,7 +31,8 @@
     border-color: $color-buy;
     border-radius: 2px;
     box-shadow: 0 2px 0 0px darken($color-buy, 30%),
-    0 3px 0 0px darken($color-altbg, 10%);
+    0 0px 3px 0px darken($color-altbg, 10%),
+    0 3px 3px 0px darken($color-altbg, 10%);
 
     /* Drop shadow should match background */
     .stage &, .stage-deemphasized & {
@@ -44,6 +45,11 @@
       background-image: -webkit-linear-gradient(top, lighten($color-buy, 10%) 50%, darken($color-buy, 5%) 100%);
       color: $color-darkbg;
     }
+  }
+
+  &.btn-continue {
+    @extend .btn-buy;
+    font-weight: normal;
   }
 
   +button {

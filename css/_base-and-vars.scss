@@ -12,6 +12,7 @@ $color-altbg: #f4f4f4;
 $color-learnmore: #ebebeb;
 $color-buy: #fcb034;
 $color-body: #ffffff;
+$color-lighttext: lighten($color-darkbg, 40%);
 
 /* Colors - flat UI */
 //$color-accent: #2980b9;
@@ -24,6 +25,7 @@ $color-body: #ffffff;
 /* Layout defaults */
 $padding-gutters: 20px;
 $outer-gutter-contrast: 2%;
+$border-radius: 2px;
 
 /* Breakpoints */
 /* http://css-tricks.com/naming-media-queries/ */
@@ -82,7 +84,7 @@ p {
 
 ul {
   margin: 0px 0px $baseline;
-  list-style-type: circle;
+  list-style-type: disc;
 }
 
 a {
@@ -91,4 +93,10 @@ a {
   &:hover {
     color: $color-buy;
   }
+}
+
+fieldset {
+  margin: 0 0 $baseline 0;
+  padding: 0;
+  border: 0;
 }

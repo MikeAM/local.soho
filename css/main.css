@@ -464,6 +464,16 @@ table {
 /* Use rem in older browsers */
 /* Fakes smooth text */
 /* Baseline grid overly */
+.clearfix, .checkout-steps, .payment-term, .radiogroup li {
+  zoom: 1; }
+  .clearfix:before, .checkout-steps:before, .payment-term:before, .radiogroup li:before, .clearfix:after, .checkout-steps:after, .payment-term:after, .radiogroup li:after {
+    content: "\0020";
+    display: block;
+    height: 0;
+    overflow: hidden; }
+  .clearfix:after, .checkout-steps:after, .payment-term:after, .radiogroup li:after {
+    clear: both; }
+
 /* Breakpoints */
 /* Patterns */
 /* VARIABLES
@@ -518,13 +528,18 @@ p {
 
 ul {
   margin: 0px 0px 1.2rem;
-  list-style-type: circle; }
+  list-style-type: disc; }
 
 a {
   text-decoration: underline;
   color: #0a6aa6; }
   a:hover {
     color: #fcb034; }
+
+fieldset {
+  margin: 0 0 1.2rem 0;
+  padding: 0;
+  border: 0; }
 
 /* ==========================================================================
    Main Custom Styles for Soholaunch.com
@@ -803,20 +818,22 @@ span[data-icon="\25ae"]:before {
       background-color: white;
       background-image: -webkit-linear-gradient(top, white 50%, #dedede 100%);
       color: #222222; }
-  .button.btn-buy {
+  .button.btn-buy, .button.btn-continue {
     text-shadow: 0px 1px 0px #fdc466;
     background-color: #fcb034;
     background-image: -webkit-linear-gradient(top, #fcba4d 50%, #fca61b 100%);
     border-color: #fcb034;
     border-radius: 2px;
-    box-shadow: 0 2px 0 0px #955d02, 0 3px 0 0px #dbdbdb;
+    box-shadow: 0 2px 0 0px #955d02, 0 0px 3px 0px #dbdbdb, 0 3px 3px 0px #dbdbdb;
     /* Drop shadow should match background */ }
-    .stage .button.btn-buy, .stage-deemphasized .button.btn-buy {
+    .stage .button.btn-buy, .stage .button.btn-continue, .stage-deemphasized .button.btn-buy, .stage-deemphasized .button.btn-continue {
       box-shadow: 0 2px 0 0px #955d02, 0 3px 0 0px #074b76; }
-    .button.btn-buy:hover {
+    .button.btn-buy:hover, .button.btn-continue:hover {
       background-color: #fdc466;
       background-image: -webkit-linear-gradient(top, #fdc466 50%, #fca61b 100%);
       color: #222222; }
+  .button.btn-continue {
+    font-weight: normal; }
   .button + button {
     margin-left: 1.2rem; }
     @media screen and (max-width: 399px) {
@@ -931,26 +948,30 @@ nav {
   .stage-deemphasized h3 {
     font-weight: 100; }
 
+.body h2, .body h3, .body h4, .body h5, .body h6 {
+  margin-bottom: 1.2rem; }
+.body h3, .body h4, .body h5, .body h6 {
+  margin-top: 2.4rem; }
 .body h2 {
+  font-size: 3.6rem;
+  line-height: 4.8rem;
+  font-weight: 100; }
+.body h3 {
+  font-size: 3.2rem;
+  line-height: 4.8rem;
+  font-weight: 100; }
+.body h4 {
   font-size: 2.8rem;
   line-height: 4.8rem;
-  font-weight: 700;
-  color: #222222; }
-.body h3 {
-  font-size: 2.13rem;
-  line-height: 3.6rem;
-  /*padding-top: .5rem;*/
-  font-weight: normal;
-  color: #222222; }
-.body h4 {
-  font-size: 2.13rem;
-  line-height: 4.6rem;
-  padding-top: .2rem;
-  color: #222222;
-  font-weight: 400; }
+  font-weight: 100; }
 .body h5 {
-  font-size: 28.8px;
-  font-size: 1.8rem; }
+  font-size: 2.4rem;
+  line-height: 3.6rem;
+  font-weight: 100; }
+.body h6 {
+  font-size: 2.0rem;
+  line-height: 3.6rem;
+  font-weight: 400; }
 
 .alt {
   background-color: #f4f4f4; }
@@ -980,6 +1001,14 @@ footer {
       color: #f4f4f4; }
     footer a:hover {
       background-color: #2f2f2f; }
+
+/* MODULES
+------------------------------------------------------------------*/
+.money {
+  color: #0aa648; }
+
+.note {
+  color: #888888; }
 
 /* THEME / PAGE
 ------------------------------------------------------------------*/
@@ -1019,3 +1048,63 @@ footer {
 
 .checkout-steps label, .checkout-steps .list-steps {
   float: left; }
+.checkout-steps label {
+  font-weight: normal;
+  color: #555555; }
+.checkout-steps .list-steps {
+  margin: 0;
+  padding: 0;
+  list-style-position: inside; }
+.checkout-steps .list-steps li {
+  float: left;
+  padding-left: 20px; }
+.checkout-steps .current {
+  font-weight: bold; }
+
+.domain-input * {
+  font-size: 200%; }
+
+.payment-term {
+  display: block;
+  margin-bottom: 1.2rem;
+  padding: 1.2rem;
+  border: 1px solid #f4f4f4;
+  border-radius: 2px;
+  background-color: #f4f4f4;
+  transition: background-color 0.2s ease;
+  cursor: pointer; }
+  .payment-term:hover {
+    background-color: #ebebeb; }
+  .payment-term [type="radio"], .payment-term .summary {
+    float: left; }
+  .payment-term [type="radio"] {
+    margin: 15% 20px 0 20px; }
+  .payment-term h6 {
+    margin: 0; }
+
+.label-handwritten {
+  font-family: 'Marck Script', cursive; }
+
+.label-prefix {
+  color: #888888; }
+
+.radiogroup {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0; }
+  .radiogroup li {
+    margin-bottom: 1.2rem; }
+  .radiogroup [type="radio"], .radiogroup label {
+    float: left; }
+  .radiogroup [type="radio"] {
+    margin-top: .3em;
+    margin-right: 20px; }
+
+.instructions {
+  background-color: #0a6aa6;
+  color: white; }
+
+.list-naked {
+  list-style-type: none;
+  margin-left: 0px;
+  padding-left: 0; }
