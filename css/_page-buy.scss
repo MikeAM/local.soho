@@ -32,3 +32,9 @@
     line-height: 2 * $baseline;
   }
 }
+
+.checkout-steps {
+  label, .list-steps {
+    float: left;
+  }
+}
