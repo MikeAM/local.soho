@@ -498,8 +498,7 @@ table {
 * {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased; }
+  -webkit-font-smoothing: antialiased; }
 
 html {
   margin-top: 0;
