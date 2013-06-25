@@ -697,6 +697,7 @@ ul.icon-bullets li {
   float: left;
   margin-right: 10px;
   background-color: #0a6aa6;
+  background-image: -webkit-radial-gradient(top center, circle cover, #0d89d6, #0a6aa6);
   border: 1px solid #fff;
   border-radius: 2.4rem;
   line-height: 1.2rem; }
@@ -954,7 +955,7 @@ nav {
 .stage {
   color: #fff;
   background-color: #0a6aa6;
-  background-image: -webkit-radial-gradient(top left, circle cover, #0d89d6, #0a6aa6); }
+  background-image: -webkit-radial-gradient(top left, circle cover, #0b79be, #0a6aa6); }
   .stage .stage-ss {
     margin-bottom: -1.2rem;
     height: 27.6rem; }

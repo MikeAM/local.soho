@@ -5,7 +5,7 @@
     <ignored path="local.soho.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/base.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369407172385" ignored="false" />
-    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372182262308" ignored="false" />
+    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372182487966" ignored="false" />
     <file path="/_layout.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369411584319" ignored="false" />
     <file path="/type.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369422257534" ignored="false" />
     <file path="/_mixins.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372087628981" ignored="false" />
@@ -20,7 +20,7 @@
     <file path="/fonttest.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370373597049" ignored="false" />
     <file path="/icons.css" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370365325065" ignored="false" />
     <file path="/icons.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370366602598" ignored="false" />
-    <file path="/_icons.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372177313820" ignored="false" />
+    <file path="/_icons.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372182618263" ignored="false" />
     <file path="/soholaunch.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370381355751" ignored="false" />
     <file path="/_buttons.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372090558499" ignored="false" />
     <file path="/_template.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371144451245" ignored="false" />
@@ -57,6 +57,15 @@
     <splitter split-orientation="horizontal" split-proportion="0.511206">
       <split-first>
         <leaf>
+          <file leaf-file-name="_icons.scss" pinned="false" current="true" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/css/_icons.scss">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="92" column="95" selection-start="29604" selection-end="29604" vertical-scroll-proportion="0.8225989">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file leaf-file-name="_base-and-vars.scss" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/css/_base-and-vars.scss">
               <provider selected="true" editor-type-id="text-editor">
@@ -66,10 +75,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="main.scss" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="main.scss" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/css/main.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="157" column="52" selection-start="4135" selection-end="4135" vertical-scroll-proportion="0.3639535">
+                <state line="157" column="2" selection-start="4085" selection-end="4194" vertical-scroll-proportion="-23.4">
                   <folding />
                 </state>
               </provider>
@@ -183,7 +192,6 @@
         <option value="$PROJECT_DIR$/_template.html" />
         <option value="$APPLICATION_HOME_DIR$/plugins/sass/lib/stubs/sass_functions.scss" />
         <option value="$PROJECT_DIR$/css/_helper-testandkill.scss" />
-        <option value="$PROJECT_DIR$/css/_icons.scss" />
         <option value="$PROJECT_DIR$/css/_shame.scss" />
         <option value="$PROJECT_DIR$/sandbox.html" />
         <option value="$PROJECT_DIR$/css/_forms.scss" />
@@ -191,6 +199,7 @@
         <option value="$PROJECT_DIR$/buy-all-inclusive.html" />
         <option value="$PROJECT_DIR$/css/_page-buy.scss" />
         <option value="$PROJECT_DIR$/css/main.scss" />
+        <option value="$PROJECT_DIR$/css/_icons.scss" />
       </list>
     </option>
   </component>
@@ -373,7 +382,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32973504" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11632871" sideWeight="0.90855455" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.11632871" sideWeight="0.90855455" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.09144543" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -498,13 +507,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/_icons.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="172" column="10" selection-start="30959" selection-end="30959" vertical-scroll-proportion="0.6123147">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/_template.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="34" column="30" selection-start="1425" selection-end="1425" vertical-scroll-proportion="-22.23077">
@@ -559,7 +561,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/css/main.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="157" column="52" selection-start="4135" selection-end="4135" vertical-scroll-proportion="0.3639535">
+        <state line="157" column="2" selection-start="4085" selection-end="4194" vertical-scroll-proportion="-23.4">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/css/_icons.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="92" column="95" selection-start="29604" selection-end="29604" vertical-scroll-proportion="0.8225989">
           <folding />
         </state>
       </provider>

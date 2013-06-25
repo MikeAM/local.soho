@@ -155,7 +155,7 @@ nav {
 .stage {
   color: #fff;
   background-color: $color-accent;
-  background-image: -webkit-radial-gradient(top left, circle cover, lighten($color-accent, 10%), $color-accent);
+  background-image: -webkit-radial-gradient(top left, circle cover, lighten($color-accent, 5%), $color-accent);
 
   .stage-ss {
     //margin-left: $baseline;
