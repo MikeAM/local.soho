@@ -884,7 +884,6 @@ fieldset:not(#is4ie8) > .isolated-radio {
   background: white; }
   .container.stage {
     position: relative;
-    background: #0a6aa6;
     border-top: 1px solid #074b76; }
   .container.body {
     background: white;
@@ -953,7 +952,9 @@ nav {
 
 /* HERO AREA */
 .stage {
-  color: #fff; }
+  color: #fff;
+  background-color: #0a6aa6;
+  background-image: -webkit-radial-gradient(top left, circle cover, #0d89d6, #0a6aa6); }
   .stage .stage-ss {
     margin-bottom: -1.2rem;
     height: 27.6rem; }

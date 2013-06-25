@@ -5,7 +5,7 @@
     <ignored path="local.soho.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/base.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369407172385" ignored="false" />
-    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372181207243" ignored="false" />
+    <file path="/main.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372182262308" ignored="false" />
     <file path="/_layout.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369411584319" ignored="false" />
     <file path="/type.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1369422257534" ignored="false" />
     <file path="/_mixins.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372087628981" ignored="false" />
@@ -54,7 +54,7 @@
     <favorites_list name="local.soho" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.3719317">
+    <splitter split-orientation="horizontal" split-proportion="0.511206">
       <split-first>
         <leaf>
           <file leaf-file-name="_base-and-vars.scss" pinned="false" current="false" current-in-tab="false">
@@ -69,7 +69,7 @@
           <file leaf-file-name="main.scss" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/css/main.scss">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="92" column="18" selection-start="2706" selection-end="2706" vertical-scroll-proportion="0.2431466">
+                <state line="157" column="52" selection-start="4135" selection-end="4135" vertical-scroll-proportion="0.3639535">
                   <folding />
                 </state>
               </provider>
@@ -559,7 +559,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/css/main.scss">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="18" selection-start="2706" selection-end="2706" vertical-scroll-proportion="0.2431466">
+        <state line="157" column="52" selection-start="4135" selection-end="4135" vertical-scroll-proportion="0.3639535">
           <folding />
         </state>
       </provider>

@@ -32,7 +32,7 @@
 
   &.stage {
     position: relative;
-    background: $color-accent;
+    //background: $color-accent;
     border-top: 1px solid darken($color-accent, 10%);
     //@include linear-gradient(left, darken($color-accent, $outer-gutter-contrast) 5%, $color-accent 5%, $color-accent 95%, darken($color-accent, $outer-gutter-contrast) 95%);
     //@include bp-until($bp-well-done) {
@@ -154,6 +154,8 @@ nav {
 /* HERO AREA */
 .stage {
   color: #fff;
+  background-color: $color-accent;
+  background-image: -webkit-radial-gradient(top left, circle cover, lighten($color-accent, 10%), $color-accent);
 
   .stage-ss {
     //margin-left: $baseline;
