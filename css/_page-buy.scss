@@ -34,12 +34,12 @@
 }
 
 .checkout-steps {
+  color: $color-lighttext;
   label, .list-steps {
     float: left;
   }
   label {
     font-weight: normal;
-    color: lighten($color-darkbg, 20%);
   }
   .list-steps {
     margin: 0;
@@ -73,50 +73,17 @@
   &:hover {
     background-color: $color-learnmore;
   }
-  [type="radio"], .summary {
+  .radio-single, .summary {
     float: left;
   }
-  [type="radio"] {
-    margin: 15% $padding-gutters 0 $padding-gutters;
+  .radio-single {
+    margin: 10% ($padding-gutters / 2) 0 ($padding-gutters / 2);
   }
   h6 {
     margin: 0;
   }
 
   @extend .clearfix;
-}
-
-//----------------------------------------
-// Form styles
-//----------------------------------------
-.label-handwritten {
-  font-family: 'Marck Script', cursive;
-}
-.label-prefix {
-  color: $color-lighttext;
-}
-
-.radiogroup {
-  list-style-type: none;
-  margin-left: 0;
-  padding-left: 0;
-
-  li {
-    margin-bottom: $baseline;
-    @extend .clearfix;
-  }
-  [type="radio"], label {
-    float: left;
-  }
-  [type="radio"] {
-    margin-top: .3em;
-    margin-right: $padding-gutters;
-  }
-}
-
-.instructions {
-  background-color: $color-accent;
-  color: $color-body;
 }
 
 //----------------------------------------

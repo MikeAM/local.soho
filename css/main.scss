@@ -14,6 +14,8 @@
 @import "grid";
 @import "_icons";
 @import "_buttons";
+@import "_forms";
+@import "_shame";
 
 
 /* LAYOUT
@@ -88,16 +90,17 @@ nav {
   a {
     display: inline-block;
     height: 100%;
-    margin: 0px -4px 0;
+    margin: 0px -5px 0 0;
     padding: $baseline $padding-gutters $baseline ($padding-gutters - 4);
     border-left: 1px solid $color-altbg;
     text-align: right;
     font-size: $base-size * 1.2;
+    font-weight: bold;
     text-decoration: none;
     color: $color-darkbg;
     //color: $color-buy;
     //text-shadow: 1px 1px 1px $color-altbg;
-    //transition: background-color 0.1s linear;
+    transition: background-color 0.1s linear;
 
     &:last-child {
       border-right: 1px solid $color-altbg;
@@ -105,13 +108,14 @@ nav {
 
     &:hover {
       text-decoration: underline;
-      color: $color-accent;
-      //background-color: $color-altbg;
+      //color: $color-accent;
+      color: $color-darkbg;
+      background-color: $color-buy;
     }
 
     &:active {
       text-decoration: underline;
-      color: $color-buy;
+      color: #fff;
     }
 
     &.buy {

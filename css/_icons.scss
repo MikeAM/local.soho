@@ -16,19 +16,21 @@
     left: -9999px;
 }
 
-.icon-bullets {
+ul.icon-bullets {
   list-style-type: none;
   padding-left: 0;
 }
-.icon-bullets li {
+ul.icon-bullets li {
   @include clearfix;
 }
 
+// Raw icon next to a headline or something
 .icon-inline:before {
   display: inline-block;
   margin-right: $padding-gutters / 2;
 }
 
+// Applies to all icons
 [data-icon]:before {
   font-family: 'soholaunch';
   font-weight: normal;
@@ -38,6 +40,7 @@
   //text-shadow: 0px 0px 2px lighten($color-accent, 70%);
 }
 
+// Icon "badges" alone with circle around them
 .icon-fullsize {
   $icon-size: $baseline * 9;
   float: left;
@@ -54,22 +57,22 @@
   }
 
   /* Really wish there was a universal way to center text */
-  span[data-icon="☜"]:before { // Mouse
-    top: 13%;
-    left: 37%;
-  }
-  span[data-icon="$"]:before { // Cart
-    top: 15%;
-    left: 18%;
-  }
-  span[data-icon="☑"]:before { // Timer
-    top: 13%;
-    left: 28%;
-  }
-  span[data-icon="\2665"]:before { // Support life preserver
-    top: 13%;
-    left: 25%;
-  }
+  //span[data-icon="☜"]:before { // Mouse
+  //  top: 23%;
+  //  left: 37%;
+  //}
+  //span[data-icon="$"]:before { // Cart
+  //  top: 15%;
+  //  left: 18%;
+  //}
+  //span[data-icon="☑"]:before { // Timer
+  //  top: 13%;
+  //  left: 28%;
+  //}
+  //span[data-icon="\2665"]:before { // Support life preserver
+  //  top: 13%;
+  //  left: 25%;
+  //}
 
   &.ring {
     background-color: #fff;
@@ -89,6 +92,7 @@
   background-color: $color-accent;
   border: 1px solid #fff;
   border-radius: $icon-size;
+  line-height: $baseline;
 
   [data-icon]:before {
     position: absolute;
@@ -105,83 +109,79 @@
 
 /* Really wish there was a universal way to center text */
 span[data-icon="☜"]:before { // Mouse
-  top: 13%;
+  top: 23%;
   left: 37%;
 }
 span[data-icon="$"]:before { // Cart
-  top: 15%;
+  top: 25%;
   left: 18%;
 }
 span[data-icon="☑"]:before { // Timer
-  top: 13%;
+  top: 23%;
   left: 28%;
 }
 span[data-icon="\2665"]:before { // Support life preserver
-  top: 13%;
+  top: 23%;
   left: 25%;
 }
 span[data-icon="\264a"]:before { // Video
-  top: 13%;
+  top: 23%;
   left: 25%;
 }
-span[data-icon="☜"]:before { // Mouse
-  top: 13%;
-  left: 37%;
-}
 span[data-icon="\270d"]:before { // Blogging pen
-  top: 15%;
+  top: 25%;
   left: 20%;
 }
 span[data-icon="\25af"]:before { // Page
-  top: 13%;
+  top: 23%;
   left: 28%;
 }
 span[data-icon="\2709"]:before { // Newsletter
-  top: 13%;
+  top: 23%;
   left: 10%;
 }
 span[data-icon="\263b"]:before { // Members
-  top: 13%;
+  top: 23%;
   left: 15%;
 }
 span[data-icon="\27b2"]:before { // Map
-  top: 13%;
+  top: 23%;
   left: 25%;
 }
 span[data-icon="\260e"]:before { // Mobile
-  top: 13%;
+  top: 23%;
   left: 25%;
 }
 span[data-icon="\25d9"]:before { // Photos
-  top: 13%;
+  top: 23%;
   left: 10%;
 }
 span[data-icon="\2328"]:before { // Calendar
-  top: 13%;
+  top: 23%;
   left: 25%;
 }
 span[data-icon="\21ba"]:before { // Complete
-  top: 13%;
+  top: 23%;
   left: 25%;
 }
 span[data-icon="\25d4"]:before { // Analytics
-  top: 13%;
+  top: 23%;
   left: 22%;
 }
 span[data-icon="\2611"]:before { // Timer
-  top: 13%;
-  left: 25%;
+  top: 23%;
+  left: 29%;
 }
 span[data-icon="\261d"]:before { // Social
   top: 13%;
   left: 25%;
 }
 span[data-icon="\270e"]:before { // Form builder
-  top: 13%;
+  top: 23%;
   left: 25%;
 }
 span[data-icon="\25ae"]:before { // 250k
   font-size: 170% !important;
-  top: 29%;
-  left: 13%;
+  top: 35%;
+  left: 15%;
 }

@@ -464,14 +464,14 @@ table {
 /* Use rem in older browsers */
 /* Fakes smooth text */
 /* Baseline grid overly */
-.clearfix, .checkout-steps, .payment-term, .radiogroup li {
+.clearfix, .radiogroup li, .checkout-steps, .payment-term {
   zoom: 1; }
-  .clearfix:before, .checkout-steps:before, .payment-term:before, .radiogroup li:before, .clearfix:after, .checkout-steps:after, .payment-term:after, .radiogroup li:after {
+  .clearfix:before, .radiogroup li:before, .checkout-steps:before, .payment-term:before, .clearfix:after, .radiogroup li:after, .checkout-steps:after, .payment-term:after {
     content: "\0020";
     display: block;
     height: 0;
     overflow: hidden; }
-  .clearfix:after, .checkout-steps:after, .payment-term:after, .radiogroup li:after {
+  .clearfix:after, .radiogroup li:after, .checkout-steps:after, .payment-term:after {
     clear: both; }
 
 /* Breakpoints */
@@ -537,9 +537,13 @@ a {
     color: #fcb034; }
 
 fieldset {
-  margin: 0 0 1.2rem 0;
+  display: inline;
+  margin: 0;
   padding: 0;
   border: 0; }
+  fieldset .block {
+    display: block;
+    margin: 0 0 1.2rem 0; }
 
 /* ==========================================================================
    Main Custom Styles for Soholaunch.com
@@ -647,11 +651,11 @@ img {
   top: -9999px;
   left: -9999px; }
 
-.icon-bullets {
+ul.icon-bullets {
   list-style-type: none;
   padding-left: 0; }
 
-.icon-bullets li {
+ul.icon-bullets li {
   content: "";
   display: table;
   clear: both; }
@@ -680,18 +684,6 @@ img {
     position: absolute;
     font-size: 5.4rem;
     color: #222222; }
-  .icon-fullsize span[data-icon="☜"]:before {
-    top: 13%;
-    left: 37%; }
-  .icon-fullsize span[data-icon="$"]:before {
-    top: 15%;
-    left: 18%; }
-  .icon-fullsize span[data-icon="☑"]:before {
-    top: 13%;
-    left: 28%; }
-  .icon-fullsize span[data-icon="\2665"]:before {
-    top: 13%;
-    left: 25%; }
   .icon-fullsize.ring {
     background-color: #fff;
     border: 2px solid #0a6aa6;
@@ -706,7 +698,8 @@ img {
   margin-right: 10px;
   background-color: #0a6aa6;
   border: 1px solid #fff;
-  border-radius: 2.4rem; }
+  border-radius: 2.4rem;
+  line-height: 1.2rem; }
   .icon-bullet [data-icon]:before {
     position: absolute;
     font-size: 1.2rem;
@@ -719,85 +712,81 @@ img {
 
 /* Really wish there was a universal way to center text */
 span[data-icon="☜"]:before {
-  top: 13%;
+  top: 23%;
   left: 37%; }
 
 span[data-icon="$"]:before {
-  top: 15%;
+  top: 25%;
   left: 18%; }
 
 span[data-icon="☑"]:before {
-  top: 13%;
+  top: 23%;
   left: 28%; }
 
 span[data-icon="\2665"]:before {
-  top: 13%;
+  top: 23%;
   left: 25%; }
 
 span[data-icon="\264a"]:before {
-  top: 13%;
+  top: 23%;
   left: 25%; }
 
-span[data-icon="☜"]:before {
-  top: 13%;
-  left: 37%; }
-
 span[data-icon="\270d"]:before {
-  top: 15%;
+  top: 25%;
   left: 20%; }
 
 span[data-icon="\25af"]:before {
-  top: 13%;
+  top: 23%;
   left: 28%; }
 
 span[data-icon="\2709"]:before {
-  top: 13%;
+  top: 23%;
   left: 10%; }
 
 span[data-icon="\263b"]:before {
-  top: 13%;
+  top: 23%;
   left: 15%; }
 
 span[data-icon="\27b2"]:before {
-  top: 13%;
+  top: 23%;
   left: 25%; }
 
 span[data-icon="\260e"]:before {
-  top: 13%;
+  top: 23%;
   left: 25%; }
 
 span[data-icon="\25d9"]:before {
-  top: 13%;
+  top: 23%;
   left: 10%; }
 
 span[data-icon="\2328"]:before {
-  top: 13%;
+  top: 23%;
   left: 25%; }
 
 span[data-icon="\21ba"]:before {
-  top: 13%;
+  top: 23%;
   left: 25%; }
 
 span[data-icon="\25d4"]:before {
-  top: 13%;
+  top: 23%;
   left: 22%; }
 
 span[data-icon="\2611"]:before {
-  top: 13%;
-  left: 25%; }
+  top: 23%;
+  left: 29%; }
 
 span[data-icon="\261d"]:before {
   top: 13%;
   left: 25%; }
 
 span[data-icon="\270e"]:before {
-  top: 13%;
+  top: 23%;
   left: 25%; }
 
 span[data-icon="\25ae"]:before {
   font-size: 170% !important;
-  top: 29%;
-  left: 13%; }
+  top: 35%;
+  left: 15%; }
 
 /* Button styles for Soholaunch.com */
 .button {
@@ -844,6 +833,49 @@ span[data-icon="\25ae"]:before {
       width: 100%;
       margin: 1.2rem px; } }
 
+.label-handwritten {
+  font-family: 'Marck Script', cursive; }
+
+.label-prefix {
+  color: #888888; }
+
+.radiogroup {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0; }
+  .radiogroup li {
+    margin-bottom: 1.2rem; }
+  .radiogroup [type="radio"], .radiogroup label {
+    float: left; }
+  .radiogroup [type="radio"] {
+    margin-top: .3em; }
+
+fieldset:not(#is4ie8) > .radiogroup input[type='radio'] {
+  opacity: 0;
+  float: left; }
+  fieldset:not(#is4ie8) > .radiogroup input[type='radio'] + label {
+    clear: none;
+    margin: 0;
+    padding: 1.2rem 0 1.2rem 40px;
+    background: url("../img/radio.png") left center no-repeat;
+    cursor: pointer; }
+  fieldset:not(#is4ie8) > .radiogroup input[type='radio']:checked + label {
+    background-image: url("../img/radio-checked.png"); }
+fieldset:not(#is4ie8) > .isolated-radio {
+  opacity: 0; }
+  fieldset:not(#is4ie8) > .isolated-radio + label {
+    float: left;
+    width: 2.4rem;
+    height: 2.4rem;
+    background: url("../img/radio.png") 0 0 no-repeat;
+    cursor: pointer; }
+  fieldset:not(#is4ie8) > .isolated-radio:checked + label {
+    background: url("../img/radio-checked.png") 0 0 no-repeat; }
+
+.instructions {
+  background-color: #0a6aa6;
+  color: white; }
+
 /* LAYOUT
 -----------------------------------------------------------------*/
 /* GUTTERS - These container rules mainly handle the addition of outer gutters */
@@ -879,22 +911,25 @@ nav {
   nav a {
     display: inline-block;
     height: 100%;
-    margin: 0px -4px 0;
+    margin: 0px -5px 0 0;
     padding: 1.2rem 20px 1.2rem 16px;
     border-left: 1px solid #f4f4f4;
     text-align: right;
     font-size: 2.04rem;
+    font-weight: bold;
     text-decoration: none;
     color: #222222;
+    transition: background-color 0.1s linear;
     /* Compacted menu uses horizontal space conservatively */ }
     nav a:last-child {
       border-right: 1px solid #f4f4f4; }
     nav a:hover {
       text-decoration: underline;
-      color: #0a6aa6; }
+      color: #222222;
+      background-color: #fcb034; }
     nav a:active {
       text-decoration: underline;
-      color: #fcb034; }
+      color: #fff; }
     @media screen and (max-width: 1064px) {
       nav a {
         font-size: 1.615rem; } }
@@ -1046,20 +1081,21 @@ footer {
     font-size: 2.72rem;
     line-height: 2.4rem; }
 
-.checkout-steps label, .checkout-steps .list-steps {
-  float: left; }
-.checkout-steps label {
-  font-weight: normal;
-  color: #555555; }
-.checkout-steps .list-steps {
-  margin: 0;
-  padding: 0;
-  list-style-position: inside; }
-.checkout-steps .list-steps li {
-  float: left;
-  padding-left: 20px; }
-.checkout-steps .current {
-  font-weight: bold; }
+.checkout-steps {
+  color: #888888; }
+  .checkout-steps label, .checkout-steps .list-steps {
+    float: left; }
+  .checkout-steps label {
+    font-weight: normal; }
+  .checkout-steps .list-steps {
+    margin: 0;
+    padding: 0;
+    list-style-position: inside; }
+  .checkout-steps .list-steps li {
+    float: left;
+    padding-left: 20px; }
+  .checkout-steps .current {
+    font-weight: bold; }
 
 .domain-input * {
   font-size: 200%; }
@@ -1075,34 +1111,12 @@ footer {
   cursor: pointer; }
   .payment-term:hover {
     background-color: #ebebeb; }
-  .payment-term [type="radio"], .payment-term .summary {
+  .payment-term .radio-single, .payment-term .summary {
     float: left; }
-  .payment-term [type="radio"] {
-    margin: 15% 20px 0 20px; }
+  .payment-term .radio-single {
+    margin: 10% 10px 0 10px; }
   .payment-term h6 {
     margin: 0; }
-
-.label-handwritten {
-  font-family: 'Marck Script', cursive; }
-
-.label-prefix {
-  color: #888888; }
-
-.radiogroup {
-  list-style-type: none;
-  margin-left: 0;
-  padding-left: 0; }
-  .radiogroup li {
-    margin-bottom: 1.2rem; }
-  .radiogroup [type="radio"], .radiogroup label {
-    float: left; }
-  .radiogroup [type="radio"] {
-    margin-top: .3em;
-    margin-right: 20px; }
-
-.instructions {
-  background-color: #0a6aa6;
-  color: white; }
 
 .list-naked {
   list-style-type: none;

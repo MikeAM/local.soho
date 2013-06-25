@@ -1,0 +1,68 @@
+//----------------------------------------
+// Form styles
+//----------------------------------------
+.label-handwritten {
+  font-family: 'Marck Script', cursive;
+}
+.label-prefix {
+  color: $color-lighttext;
+}
+
+// Radios
+.radiogroup {
+  list-style-type: none;
+  margin-left: 0;
+  padding-left: 0;
+
+  li {
+    margin-bottom: $baseline;
+    @extend .clearfix;
+  }
+  [type="radio"], label {
+    float: left;
+  }
+  [type="radio"] {
+    margin-top: .3em;
+  }
+}
+// Note: not() attribute helps this code degrade gracefully
+// For image replacement of radios
+fieldset:not(#is4ie8) {
+  > .radiogroup {
+    input[type='radio'] {
+      opacity: 0; // Hidden but still clickable
+      float: left;
+      + label {
+        clear: none;
+        margin: 0;
+        padding: $baseline 0 $baseline ($padding-gutters * 2);
+        background: url('../img/radio.png') left center no-repeat;
+        cursor: pointer;
+      }
+      &:checked + label {
+        background-image: url('../img/radio-checked.png');
+      }
+    }
+  }
+
+  // Radio by itself, not in a list
+  > .isolated-radio {
+    opacity: 0;
+    + label {
+      float: left;
+      width: $baseline * 2;
+      height: $baseline * 2;
+      background: url('../img/radio.png') 0 0 no-repeat;
+      cursor: pointer;
+    }
+
+    &:checked + label {
+      background: url('../img/radio-checked.png') 0 0 no-repeat;
+    }
+  }
+}
+
+.instructions {
+  background-color: $color-accent;
+  color: $color-body;
+}

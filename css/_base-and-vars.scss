@@ -96,7 +96,12 @@ a {
 }
 
 fieldset {
-  margin: 0 0 $baseline 0;
+  display: inline;
+  margin: 0;
   padding: 0;
   border: 0;
+  .block {
+    display: block;
+    margin: 0 0 $baseline 0;
+  }
 }

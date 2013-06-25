@@ -30,20 +30,15 @@
             <div class="grid-row">
                 <div class="twelve columns">
                     <h2>1. Choose a domain name&hellip;</h2>
-                </div>
-            </div>
-            <div class="grid-row">
-                <div class="twelve columns">
-                    <ul class="radiogroup">
-                        <li><input type="radio" name="choose-domain" id="dom-register-new"><label for="dom-register-new">I want to <strong>register a new</strong> domain.</label></li>
-                        <li><input type="radio" name="choose-domain" id="dom-already-own"><label for="dom-already-own"><strong>I already own</strong> a domain I want to use.</label></li>
-                        <li><input type="radio" name="choose-domain" id="dom-temporary-name"><label for="dom-temporary-name"><strong>I don't know yet.</strong> I'll pick a temporary name for now.</label></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="grid-row">
-                <div class="twelve columns">
-                    <fieldset class="domain-input">
+                    <fieldset>
+                        <ul class="radiogroup">
+                            <li><input type="radio" name="choose-domain" id="dom-register-new" checked><label for="dom-register-new">I want to <strong>register a new</strong> domain.</label></li>
+                            <li><input type="radio" name="choose-domain" id="dom-already-own"><label for="dom-already-own"><strong>I already own</strong> a domain I want to use.</label></li>
+                            <li><input type="radio" name="choose-domain" id="dom-temporary-name"><label for="dom-temporary-name"><strong>I don't know yet.</strong> I'll pick a temporary name for now.</label></li>
+                        </ul>
+                    </fieldset>
+
+                    <fieldset class="domain-input block">
                         <span class="label-handwritten label-prefix">http://</span>
                         <input type="text" id="domain-name" placeholder="the-domain-you-want"/>
                         <span class="huge-period">.</span>
@@ -60,7 +55,10 @@
             <div class="grid-row">
                 <div class="five columns">
                     <label class="payment-term" for="term-monthly">
-                        <input type="radio" name="payment-term" id="term-monthly"/>
+                        <fieldset class="radio-single">
+                            <input type="radio" name="payment-term" id="term-monthly" class="isolated-radio"/>
+                            <label for="term-monthly" aria-hidden="true"></label>
+                        </fieldset>
                         <div class="summary">
                             <h6>Pay Monthly</h6>
                             <ul class="list-naked">
@@ -75,7 +73,10 @@
                 </div>
                 <div class="five columns">
                     <label class="payment-term" for="term-yearly">
-                        <input type="radio" name="payment-term" id="term-yearly"/>
+                        <fieldset class="radio-single">
+                            <input type="radio" name="payment-term" id="term-yearly" class="isolated-radio"/>
+                            <label for="term-yearly" aria-hidden="true"></label>
+                        </fieldset>
                         <div class="summary">
                             <h6>Pay Yearly</h6>
                             <ul class="list-naked">
