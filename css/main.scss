@@ -171,6 +171,7 @@ nav {
     line-height: ($baseline * 4);
     font-weight: 300;
     color: white;
+    text-shadow: 0px 2px 2px #084971;
     @include stroke-text(1, white);
   }
   h3 {

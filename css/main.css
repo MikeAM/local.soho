@@ -980,6 +980,7 @@ nav {
     line-height: 4.8rem;
     font-weight: 300;
     color: white;
+    text-shadow: 0px 2px 2px #084971;
     -webkit-text-stroke: 1px white; }
   .stage h3 {
     margin: 1.2rem 0;
@@ -1138,7 +1139,7 @@ footer {
   .payment-term .radio-single, .payment-term .summary {
     float: left; }
   .payment-term .radio-single {
-    margin: 10px 0 10px; }
+    margin: 0 10px 0 10px; }
   .payment-term h6 {
     margin: 0; }
 
