@@ -15,12 +15,18 @@
     border-color: $color-learnmore;
     border-radius: 2px;
     box-shadow: 0 2px 0 0px darken($color-learnmore, 30%),
-    0 3px 0 0px darken($color-accent, 10%);
+    0 3px 0 0px darken($color-altbg, 10%);
 
     &:hover {
       background-color: lighten($color-learnmore, 10%);
       background-image: -webkit-linear-gradient(top, lighten($color-learnmore, 10%) 50%, darken($color-learnmore, 5%) 100%);
       color: $color-darkbg;
+    }
+
+    /* Drop shadow should match background */
+    .stage &, .stage-deemphasized & {
+      box-shadow: 0 2px 0 0px darken($color-buy, 30%),
+      0 3px 0 0px darken($color-accent, 10%);
     }
   }
 

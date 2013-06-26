@@ -539,7 +539,8 @@ fieldset {
   display: inline;
   margin: 0;
   padding: 0;
-  border: 0; }
+  border: 0;
+  vertical-align: top; }
   fieldset .block {
     display: block;
     margin: 0 0 1.2rem 0; }
@@ -802,11 +803,14 @@ span[data-icon="\25ae"]:before {
     background-image: -webkit-linear-gradient(top, #f8f8f8 50%, #dedede 100%);
     border-color: #ebebeb;
     border-radius: 2px;
-    box-shadow: 0 2px 0 0px #9f9f9f, 0 3px 0 0px #074b76; }
+    box-shadow: 0 2px 0 0px #9f9f9f, 0 3px 0 0px #dbdbdb;
+    /* Drop shadow should match background */ }
     .button.btn-learn-more:hover {
       background-color: white;
       background-image: -webkit-linear-gradient(top, white 50%, #dedede 100%);
       color: #222222; }
+    .stage .button.btn-learn-more, .stage-deemphasized .button.btn-learn-more {
+      box-shadow: 0 2px 0 0px #955d02, 0 3px 0 0px #074b76; }
   .button.btn-buy, .button.btn-continue {
     text-shadow: 0px 1px 0px #fdc466;
     background-color: #fcb034;
@@ -856,7 +860,7 @@ fieldset:not(#is4ie8) > .radiogroup input[type='radio'] {
   fieldset:not(#is4ie8) > .radiogroup input[type='radio'] + label {
     clear: none;
     margin: 0;
-    padding: 1.2rem 0 1.2rem 40px;
+    padding: 1.2rem 0 1.2rem 50px;
     background: url("../img/radio.png") left center no-repeat;
     cursor: pointer; }
   fieldset:not(#is4ie8) > .radiogroup input[type='radio']:checked + label {
@@ -865,8 +869,8 @@ fieldset:not(#is4ie8) > .isolated-radio {
   opacity: 0; }
   fieldset:not(#is4ie8) > .isolated-radio + label {
     float: left;
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 3.6rem;
+    height: 3.6rem;
     background: url("../img/radio.png") 0 0 no-repeat;
     cursor: pointer; }
   fieldset:not(#is4ie8) > .isolated-radio:checked + label {
@@ -875,6 +879,16 @@ fieldset:not(#is4ie8) > .isolated-radio {
 .instructions {
   background-color: #0a6aa6;
   color: white; }
+
+.domain-input-container {
+  position: relative; }
+  .domain-input-container button {
+    position: relative;
+    top: -3px; }
+  .domain-input-container .huge-period {
+    position: relative;
+    bottom: -10px;
+    font-size: 300%; }
 
 /* LAYOUT
 -----------------------------------------------------------------*/
@@ -1098,8 +1112,17 @@ footer {
   .checkout-steps .current {
     font-weight: bold; }
 
-.domain-input * {
-  font-size: 200%; }
+.domain-input-container #domain-name-input, .domain-input-container select, .domain-input-container span {
+  display: inline-block;
+  height: 4.8rem;
+  margin-top: 0;
+  font-size: 2.4rem; }
+.domain-input-container #domain-name-input, .domain-input-container select {
+  border: 1px solid #222222;
+  background-image: -webkit-linear-gradient(bottom, #fcb034 2px, white 2px, white 50%, #ebebeb); }
+.domain-input-container #domain-name-input {
+  width: 50%;
+  padding: 0 10px; }
 
 .payment-term {
   display: block;
@@ -1115,7 +1138,7 @@ footer {
   .payment-term .radio-single, .payment-term .summary {
     float: left; }
   .payment-term .radio-single {
-    margin: 10% 10px 0 10px; }
+    margin: 10px 0 10px; }
   .payment-term h6 {
     margin: 0; }
 

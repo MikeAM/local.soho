@@ -38,14 +38,15 @@
                         </ul>
                     </fieldset>
 
-                    <fieldset class="domain-input block">
+                    <fieldset class="domain-input-container block">
                         <span class="label-handwritten label-prefix">http://</span>
-                        <input type="text" id="domain-name" placeholder="the-domain-you-want"/>
+                        <input type="text" id="domain-name-input" placeholder="Enter a domain to check"/>
                         <span class="huge-period">.</span>
-                        <select>
+                        <select id="domain-tld-input">
                             <option value="com">com</option>
                             <option value="com">net</option>
                         </select>
+                        <button class="button btn-learn-more">Search</button>
                     </fieldset>
                     <!--<p class="instructions" data-attachto="domain-name">Type-in the domain name you'd like to use for your website, and we'll check to see if it's available for you.</p>-->
                 </div>

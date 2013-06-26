@@ -35,7 +35,7 @@ fieldset:not(#is4ie8) {
       + label {
         clear: none;
         margin: 0;
-        padding: $baseline 0 $baseline ($padding-gutters * 2);
+        padding: $baseline 0 $baseline ($padding-gutters * 2.5);
         background: url('../img/radio.png') left center no-repeat;
         cursor: pointer;
       }
@@ -50,8 +50,8 @@ fieldset:not(#is4ie8) {
     opacity: 0;
     + label {
       float: left;
-      width: $baseline * 2;
-      height: $baseline * 2;
+      width: $baseline * 3;
+      height: $baseline * 3;
       background: url('../img/radio.png') 0 0 no-repeat;
       cursor: pointer;
     }
