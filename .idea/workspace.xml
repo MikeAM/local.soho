@@ -66,7 +66,7 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="_icons.scss" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name="_icons.scss" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/css/_icons.scss">
               <provider selected="true" editor-type-id="text-editor">
                 <state line="55" column="24" selection-start="28760" selection-end="28760" vertical-scroll-proportion="0.3449831">
@@ -106,6 +106,15 @@
       </split-first>
       <split-second>
         <leaf>
+          <file leaf-file-name="home.html" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/home.html">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="4" column="54" selection-start="185" selection-end="185" vertical-scroll-proportion="-2.6153846">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file leaf-file-name="type.html" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/type.html">
               <provider selected="true" editor-type-id="text-editor">
@@ -115,10 +124,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="buy-all-inclusive.html" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="buy-all-inclusive.html" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/buy-all-inclusive.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="52" column="32" selection-start="2478" selection-end="2478" vertical-scroll-proportion="0.43437862">
+                <state line="45" column="52" selection-start="2123" selection-end="2123" vertical-scroll-proportion="0.29616725">
                   <folding />
                 </state>
               </provider>
@@ -145,7 +154,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/css/_mixins.scss" />
         <option value="$PROJECT_DIR$/scale.html" />
         <option value="$PROJECT_DIR$/_template.html" />
         <option value="$APPLICATION_HOME_DIR$/plugins/sass/lib/stubs/sass_functions.scss" />
@@ -161,6 +169,7 @@
         <option value="$PROJECT_DIR$/css/_buttons.scss" />
         <option value="$PROJECT_DIR$/css/_grid.scss" />
         <option value="$PROJECT_DIR$/css/_icons.scss" />
+        <option value="$PROJECT_DIR$/home.html" />
       </list>
     </option>
   </component>
@@ -451,13 +460,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="38" selection-start="636" selection-end="636" vertical-scroll-proportion="0.25667828">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/_template.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="34" column="30" selection-start="1425" selection-end="1425" vertical-scroll-proportion="-0.017819706">
@@ -517,13 +519,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/buy-all-inclusive.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="32" selection-start="2478" selection-end="2478" vertical-scroll-proportion="0.43437862">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state line="72" column="3" selection-start="1492" selection-end="1492" vertical-scroll-proportion="0.0">
@@ -548,6 +543,20 @@
     <entry file="file://$PROJECT_DIR$/css/_icons.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state line="55" column="24" selection-start="28760" selection-end="28760" vertical-scroll-proportion="0.3449831">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/home.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="54" selection-start="185" selection-end="185" vertical-scroll-proportion="-2.6153846">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/buy-all-inclusive.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="52" selection-start="2123" selection-end="2123" vertical-scroll-proportion="0.29616725">
           <folding />
         </state>
       </provider>
