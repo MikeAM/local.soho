@@ -558,13 +558,20 @@ img {
   margin: 0 auto;
   padding: 1.2rem 20px;
   width: 100%;
-  margin: 0 auto; }
+  margin: 0 auto;
+  border: 0px solid red; }
+  .grid-row [data-height="4"] {
+    height: 4.8rem; }
+  .grid-row [data-height="5"] {
+    height: 6rem; }
+  .grid-row .grid-row {
+    padding-top: 0; }
+  .grid-row form .grid-row {
+    padding-bottom: 1.2rem; }
   .grid-row:after {
     content: "";
     display: table;
     clear: both; }
-  .grid-row .grid-row {
-    padding: 1.2rem 0px; }
   @media screen and (max-width: 874px) {
     .grid-row {
       padding: 1.2rem 0px; } }
@@ -572,7 +579,8 @@ img {
 .columns {
   float: left;
   margin: 0 0 0;
-  text-align: left; }
+  text-align: left;
+  border: 0px solid blue; }
   .columns.one {
     width: 8.33333%; }
   .columns.two {
@@ -597,13 +605,24 @@ img {
     width: 91.66667%; }
   .columns.twelve {
     width: 100.0%; }
-  .columns.center {
-    text-align: center; }
+  .columns.rpad-1 {
+    padding-right: 8.33333%; }
+  .columns.rpad-2 {
+    padding-right: 16.66667%; }
+  .columns.rpad-4 {
+    padding-right: 33.33333%; }
+  @media screen and (max-width: 874px) {
+    .columns.rpad-1, .columns.rpad-2, .columns.rpad-4 {
+      padding-right: 0; } }
   .columns + .columns {
     padding-left: 20px; }
     @media screen and (max-width: 874px) {
       .columns + .columns {
         padding-left: 0px; } }
+  .columns.center {
+    text-align: center; }
+  .columns.right {
+    text-align: right; }
 
 .bump-1 {
   margin-top: 1.2rem; }
@@ -837,11 +856,29 @@ span[data-icon="\25ae"]:before {
       width: 100%;
       margin: 1.2rem px; } }
 
+form label {
+  display: inline-block;
+  width: 100%;
+  font-weight: bold;
+  border-bottom: 1px dotted #ebebeb; }
+
 .label-handwritten {
   font-family: 'Marck Script', cursive; }
 
 .label-prefix {
   color: #888888; }
+
+[type=text] {
+  width: 95%;
+  height: 100%;
+  transition: width .2s ease;
+  font-size: 150%;
+  border: 1px solid #888888;
+  border-radius: 2px;
+  background-image: -webkit-linear-gradient(top, #f4f4f4 10%, white 40%);
+  box-shadow: 0 2px 2px 0 #f4f4f4; }
+  [type=text]:focus {
+    width: 100%; }
 
 .radiogroup {
   list-style-type: none;
@@ -879,16 +916,6 @@ fieldset:not(#is4ie8) > .isolated-radio {
 .instructions {
   background-color: #0a6aa6;
   color: white; }
-
-.domain-input-container {
-  position: relative; }
-  .domain-input-container button {
-    position: relative;
-    top: -3px; }
-  .domain-input-container .huge-period {
-    position: relative;
-    bottom: -10px;
-    font-size: 300%; }
 
 /* LAYOUT
 -----------------------------------------------------------------*/
@@ -1122,7 +1149,7 @@ footer {
   border: 1px solid #222222;
   background-image: -webkit-linear-gradient(bottom, #fcb034 2px, white 2px, white 50%, #ebebeb); }
 .domain-input-container #domain-name-input {
-  width: 50%;
+  width: 70%;
   padding: 0 10px; }
 
 .payment-term {

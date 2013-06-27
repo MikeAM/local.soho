@@ -1,11 +1,35 @@
 //----------------------------------------
 // Form styles
 //----------------------------------------
+
+// Labels
+form label {
+  display: inline-block;
+  width: 100%;
+  font-weight: bold;
+  border-bottom: 1px dotted $color-learnmore;
+}
+
 .label-handwritten {
   font-family: 'Marck Script', cursive;
 }
 .label-prefix {
   color: $color-lighttext;
+}
+
+// Text fields
+[type=text] {
+  width: 95%;
+  height: 100%;
+  transition: width .2s ease;
+  font-size: 150%;
+  border: 1px solid $color-lighttext;
+  border-radius: $border-radius;
+  background-image: -webkit-linear-gradient(top, $color-altbg 10%, white 40%);
+  box-shadow: 0 2px 2px 0 $color-altbg;
+  &:focus {
+    width: 100%;
+  }
 }
 
 // Radios

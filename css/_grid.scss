@@ -2,24 +2,38 @@
    Main Custom Styles for Soholaunch.com
    You were here: figuring out heading scale. Annoyed by thinking in pixels.
 ============================================================================ */
+$grid-border-size: 0px; // For testing
+
 img {
   max-width: 100%;
   height: auto;
 }
 
 .grid-row {
-  &:after {
-    @include clearfix;
-  }
   max-width: 1040px;
   margin: 0 auto;
-  padding: ($baseline * 1) $padding-gutters;
+  padding: $baseline $padding-gutters;
   width: 100%;
   margin: 0 auto;
-  //border: $outer-gutter-width solid darken(#fff, $outer-gutter-contrast);
-  //border-style: none solid;
+  border: $grid-border-size solid red;
+
+  // For fixed height rows, in multiples of baseline
+  // Couldn't figure out how to variable-ize this
+  [data-height="4"] { height: 4 * $baseline;  }
+  [data-height="5"] { height: 5 * $baseline;  }
+
+  // Nested
   .grid-row {
-    padding: $baseline 0px;
+    //padding: 0 0;
+    padding-top: 0;
+  }
+  // Treat the whole row like a block when it only contains inline
+  form .grid-row {
+    padding-bottom: $baseline;
+  }
+
+  &:after {
+    @include clearfix;
   }
 
   @include bp-until($bp-rare) {
@@ -27,11 +41,12 @@ img {
   }
 }
 
-$column-width: 8.3333333%;
+$column-width: 8.3333333%; // 100% / 12
 .columns {
   float: left;
   margin: 0 0 0;
   text-align: left;
+  border: $grid-border-size solid blue;
 
   &.one    	{ width: $column-width; }
   &.two 	{ width: ($column-width * 2); }
@@ -46,7 +61,14 @@ $column-width: 8.3333333%;
   &.eleven    { width: ($column-width * 11); }
   &.twelve    { width: ($column-width * 12); }
 
-  &.center { text-align: center; }
+  &.rpad-1 { padding-right: $column-width; }
+  &.rpad-2 { padding-right: $column-width * 2; }
+  &.rpad-4 { padding-right: $column-width * 4; }
+  &.rpad-1, &.rpad-2, &.rpad-4 {
+    @include bp-until($bp-rare) {
+      padding-right: 0;
+    }
+  }
 
   +.columns {
     padding-left: $padding-gutters;
@@ -54,6 +76,9 @@ $column-width: 8.3333333%;
       padding-left: 0px;
     }
   }
+
+  &.center { text-align: center; }
+  &.right { text-align: right; }
 }
 
 .bump-1 { margin-top: (1 * $baseline); }

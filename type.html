@@ -46,40 +46,55 @@
             <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
 
             <h2>Sample Form</h2>
-            <fieldset>
-                <ul>
-                    <li>
+            <form>
+                <div class="grid-row">
+                    <div class="two columns">
                         <label>First Name:</label>
+                    </div>
+                    <div class="ten columns rpad-4">
                         <input type="text"/>
-                    </li>
-                    <li>
-                        <label>Has button:</label>
-                        <input type="text"/>
-                        <button class="button btn-learn-more">Test</button>
-                    </li>
-                    <li>
+                    </div>
+                </div>
+                <div class="grid-row">
+                    <div class="two columns">
                         <label>Last Name:</label>
+                    </div>
+                    <div class="ten columns rpad-4">
                         <input type="text"/>
-                    </li>
-                    <li>
-                        <label>Radios:</label>
-                        <ul class="radiogroup">
-                            <li>
-                                <input type="radio">
-                                <label>Option 1</label>
-                            </li>
-                            <li>
-                                <input type="radio">
-                                <label>Option 2</label>
-                            </li>
-                            <li>
-                                <input type="radio">
-                                <label>Option 3</label>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </fieldset>
+                    </div>
+                </div>
+                <div class="grid-row">
+                    <div class="two columns">
+                        <label>Search or Something:</label>
+                    </div>
+                    <div class="eight columns">
+                        <input type="text"/>
+                    </div>
+                    <div class="two columns">
+                        <button class="button btn-learn-more">Test</button>
+                    </div>
+                </div>
+            </form>
+
+            <ul>
+                <li>
+                    <label>Radios:</label>
+                    <ul class="radiogroup">
+                        <li>
+                            <input type="radio">
+                            <label>Option 1</label>
+                        </li>
+                        <li>
+                            <input type="radio">
+                            <label>Option 2</label>
+                        </li>
+                        <li>
+                            <input type="radio">
+                            <label>Option 3</label>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
 </section>

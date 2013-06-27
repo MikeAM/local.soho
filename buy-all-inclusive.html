@@ -26,7 +26,7 @@
     <div class="grid-row">
 
         <!--Content-->
-        <div class="nine columns">
+        <div class="ten columns">
             <div class="grid-row">
                 <div class="twelve columns">
                     <h2>1. Choose a domain name&hellip;</h2>
@@ -37,18 +37,21 @@
                             <li><input type="radio" name="choose-domain" id="dom-temporary-name"><label for="dom-temporary-name"><strong>I don't know yet.</strong> I'll pick a temporary name for now.</label></li>
                         </ul>
                     </fieldset>
-
-                    <fieldset class="domain-input-container block">
-                        <span class="label-handwritten label-prefix">http://</span>
-                        <input type="text" id="domain-name-input" placeholder="Enter a domain to check"/>
-                        <span class="huge-period">.</span>
-                        <select id="domain-tld-input">
-                            <option value="com">com</option>
-                            <option value="com">net</option>
-                        </select>
-                        <button class="button btn-learn-more">Search</button>
-                    </fieldset>
                     <!--<p class="instructions" data-attachto="domain-name">Type-in the domain name you'd like to use for your website, and we'll check to see if it's available for you.</p>-->
+                </div>
+            </div>
+            <div class="grid-row domain-input-container">
+                <div class="eight columns">
+                    <span class="label-handwritten label-prefix">http://</span>
+                    <input type="text" id="domain-name-input" placeholder="Enter a domain to check"/>
+                    <span class="huge-period">.</span>
+                    <select id="domain-tld-input">
+                        <option value="com">com</option>
+                        <option value="com">net</option>
+                    </select>
+                </div>
+                <div class="four columns">
+                    <button class="button btn-learn-more">Search</button>
                 </div>
             </div>
 
@@ -99,7 +102,7 @@
         </div>
 
         <!--Sidebar-->
-        <div class="columns three sidebar">
+        <div class="two columns sidebar">
             <article class="sidebar-info">
                 <h5>What you're getting</h5>
                 <ul>
