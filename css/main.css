@@ -565,7 +565,7 @@ img {
   .grid-row [data-height="5"] {
     height: 6rem; }
   .grid-row .grid-row {
-    padding-top: 0; }
+    padding: 0 0 1.2rem 0; }
   .grid-row form .grid-row {
     padding-bottom: 1.2rem; }
   .grid-row:after {
@@ -697,16 +697,17 @@ ul.icon-bullets li {
   position: relative;
   width: 10.8rem;
   height: 10.8rem;
-  margin-right: 20px;
-  /* Really wish there was a universal way to center text */ }
+  margin-right: 20px; }
   .icon-fullsize [data-icon]:before {
     position: absolute;
     font-size: 5.4rem;
-    color: #222222; }
+    font-weight: normal;
+    color: #fff; }
   .icon-fullsize.ring {
-    background-color: #fff;
-    border: 2px solid #0a6aa6;
-    border-radius: 10.8rem; }
+    background-color: #0a6aa6;
+    border: 2px solid #222222;
+    border-radius: 10.8rem;
+    background-image: -webkit-radial-gradient(top center, circle cover, #0d89d6, #0a6aa6); }
 
 .icon-bullet {
   position: relative;
@@ -829,7 +830,7 @@ span[data-icon="\25ae"]:before {
       background-image: -webkit-linear-gradient(top, white 50%, #dedede 100%);
       color: #222222; }
     .stage .button.btn-learn-more, .stage-deemphasized .button.btn-learn-more {
-      box-shadow: 0 2px 0 0px #955d02, 0 3px 0 0px #074b76; }
+      box-shadow: 0 2px 0 0px #9f9f9f, 0 3px 0 0px #074b76; }
   .button.btn-buy, .button.btn-continue {
     text-shadow: 0px 1px 0px #fdc466;
     background-color: #fcb034;

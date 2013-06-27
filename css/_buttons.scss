@@ -25,7 +25,7 @@
 
     /* Drop shadow should match background */
     .stage &, .stage-deemphasized & {
-      box-shadow: 0 2px 0 0px darken($color-buy, 30%),
+      box-shadow: 0 2px 0 0px darken($color-learnmore, 30%),
       0 3px 0 0px darken($color-accent, 10%);
     }
   }

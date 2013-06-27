@@ -53,31 +53,15 @@ ul.icon-bullets li {
   [data-icon]:before {
     position: absolute;
     font-size: $icon-size / 2;
-    color: $color-darkbg;
+    font-weight: normal;
+    color: #fff;
   }
 
-  /* Really wish there was a universal way to center text */
-  //span[data-icon="☜"]:before { // Mouse
-  //  top: 23%;
-  //  left: 37%;
-  //}
-  //span[data-icon="$"]:before { // Cart
-  //  top: 15%;
-  //  left: 18%;
-  //}
-  //span[data-icon="☑"]:before { // Timer
-  //  top: 13%;
-  //  left: 28%;
-  //}
-  //span[data-icon="\2665"]:before { // Support life preserver
-  //  top: 13%;
-  //  left: 25%;
-  //}
-
   &.ring {
-    background-color: #fff;
-    border: 2px solid $color-accent;
+    background-color: $color-accent;
+    border: 2px solid $color-darkbg;
     border-radius: $icon-size;
+    background-image: -webkit-radial-gradient(top center, circle cover, lighten($color-accent, 10%), $color-accent);
   }
 }
 

@@ -24,8 +24,7 @@ img {
 
   // Nested
   .grid-row {
-    //padding: 0 0;
-    padding-top: 0;
+    padding: 0 0 $baseline 0;
   }
   // Treat the whole row like a block when it only contains inline
   form .grid-row {
