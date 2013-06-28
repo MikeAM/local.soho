@@ -71,6 +71,9 @@
     width: 70%;
     padding: 0 ($padding-gutters / 2);
   }
+  //select {
+  //  background-image: -webkit-linear-gradient(bottom, $color-buy 2px, $color-learnmore 2px, $color-learnmore 50%, white);
+  //}
 }
 
 .payment-term {
@@ -98,6 +101,21 @@
 
   @extend .clearfix;
 }
+
+
+// Step 2
+//----------------------------------------
+.step-screenshots {
+
+  figure {
+    width: 100%;
+    height: $baseline * 12;
+    border: 1px solid $color-accent;
+    border-radius: $border-radius;
+    box-shadow: 0px 2px 2px $color-altbg;
+  }
+}
+
 
 //----------------------------------------
 // Other abstract styles

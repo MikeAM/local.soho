@@ -63,6 +63,9 @@ fieldset:not(#is4ie8) {
         background: url('../img/radio.png') left center no-repeat;
         cursor: pointer;
       }
+      &:hover + label {
+        background-image: url('../img/radio-hover.png');
+      }
       &:checked + label {
         background-image: url('../img/radio-checked.png');
       }
@@ -87,6 +90,23 @@ fieldset:not(#is4ie8) {
 }
 
 .instructions {
+  //position: absolute;
+  position: relative;
+  padding: $baseline $padding-gutters;
   background-color: $color-accent;
   color: $color-body;
+  //box-shadow: 0 2px 2px 2px $color-altbg;
+
+  &:before {
+    $triangle-size: $baseline;
+    content: "";
+    position: absolute;
+    top: -#{$triangle-size};
+    left: $triangle-size;
+    width: 0;
+    height: 0;
+    border-left: $triangle-size solid transparent;
+    border-right: $triangle-size solid transparent;
+    border-bottom: $triangle-size solid $color-accent;
+  }
 }

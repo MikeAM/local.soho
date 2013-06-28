@@ -2,7 +2,7 @@
 <section class="container stage">
     <div class="grid-row">
         <div class="twelve columns">
-            <h2>Purchase the all-inclusive package</h2>
+            <h2>Purchase a host-it-yourself license</h2>
         </div>
     </div>
 </section>
@@ -13,9 +13,9 @@
         <div class="twelve columns checkout-steps">
             <label>Checkout Steps:</label>
             <ol class="list-steps">
-                <li class="current">Choose Domain</li>
-                <li>Sign-Up for Hosting</li>
-                <li>Build Website</li>
+                <li class="current">Pay for a license</li>
+                <li>Download Ultra installer</li>
+                <li>Start building your website</li>
             </ol>
         </div>
     </div>
@@ -30,32 +30,20 @@
             <div class="grid-row">
                 <div class="twelve columns">
                     <h2>1. Choose a domain name&hellip;</h2>
-                    <fieldset>
-                        <ul class="radiogroup">
-                            <li><input type="radio" name="choose-domain" id="dom-register-new" checked><label for="dom-register-new">I want to <strong>register a new</strong> domain.</label></li>
-                            <li><input type="radio" name="choose-domain" id="dom-already-own"><label for="dom-already-own"><strong>I already own</strong> a domain I want to use.</label></li>
-                            <li><input type="radio" name="choose-domain" id="dom-temporary-name"><label for="dom-temporary-name"><strong>I don't know yet.</strong> I'll pick a temporary name for now.</label></li>
-                        </ul>
-                    </fieldset>
                 </div>
             </div>
             <div class="grid-row domain-input-container">
-                <div class="nine columns">
+                <div class="twelve columns">
                     <span class="label-handwritten label-prefix">http://</span>
-                    <input type="text" id="domain-name-input" placeholder="Enter a domain to check"/>
-                    <select id="domain-tld-input">
-                        <option value="com">.com</option>
-                        <option value="net">.net</option>
-                    </select>
-                </div>
-                <div class="three columns">
-                    <button class="button btn-learn-more">Check It</button>
+                    <input type="text" id="domain-name-input" placeholder="yourdomain.com"/>
                 </div>
             </div>
 
             <div class="grid-row">
                 <div class="twelve columns lpad-1 rpad-2">
-                    <p class="instructions" id="instructions-domain-name" data-attachto="domain-name">Type-in the domain name you'd like to use for your website, and we'll check to see if it's available for you.</p>
+                    <p class="instructions" id="instructions-domain-name" data-attachto="domain-name">
+                        Type-in the domain name you'd like to use for your website, and we'll issue an Ultra license for it.
+                        You can change this later.</p>
                 </div>
             </div>
 
@@ -71,9 +59,8 @@
                             <h6>Pay Monthly</h6>
                             <ul class="list-naked">
                                 <li><strong>$17.95 / month</strong></li>
-                                <li>+95&#162; first month special</li>
-                                <li>+$5.00 for your domain</li>
-                                <li><strong>Due Now: <span class="money">$5.95</strong></li>
+                                <li>(first month 1&#162;)</li>
+                                <li><strong>Due Now: <span class="money">$0.01</strong></li>
                                 <!--<li class="note">(<strong>$17.95</strong>/mo. starts next month)</li>-->
                             </ul>
                         </div>
@@ -90,17 +77,73 @@
                             <ul class="list-naked">
                                 <li><strong>$119.40 / year</strong></li>
                                 <li>(same as $9.95 / month)</li>
-                                <li>+Free domain</li>
                                 <li><strong>Due Now: <span class="money">$119.40</span></strong></li>
                             </ul>
                         </div>
                     </label>
                 </div>
             </div>
+            <!--End payment term choice row-->
 
+
+            <!--Account Info-->
             <div class="grid-row">
                 <div class="twelve columns">
-                    <a href="/buy-all-inclusive-step2" class="button btn-continue"><strong>Continue to Step 2:</strong> Create Hosting Account</a>
+                    <h2>2. Fill-in your account info&hellip;</h2>
+                </div>
+            </div>
+            <form>
+                <div class="grid-row">
+                    <div class="two columns"><label>Your Name:</label></div>
+                    <div class="ten columns rpad-4"><input type="text" placeholder="Your Name"/></div>
+                </div>
+                <div class="grid-row">
+                    <div class="two columns"><label>Email Address:</label></div>
+                    <div class="ten columns rpad-4"><input type="text" placeholder="you@example.com"/></div>
+                </div>
+            </form>
+            <!--End account info-->
+
+
+            <!--Payment Info-->
+            <div class="grid-row">
+                <div class="twelve columns">
+                    <h2>2. Fill-in your payment info&hellip;</h2>
+                </div>
+            </div>
+            <form>
+                <div class="grid-row">
+                    <div class="two columns"><label>Card Type:</label></div>
+                    <div class="ten columns rpad-4">
+                        <select name="card-type">
+                            <option>Visa</option>
+                            <option>MasterCard</option>
+                            <option>AMEX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-row">
+                    <div class="two columns"><label>Name on card:</label></div>
+                    <div class="ten columns rpad-4"><input type="text"/></div>
+                </div>
+                <div class="grid-row">
+                    <div class="two columns"><label>Card Number:</label></div>
+                    <div class="ten columns rpad-4"><input type="text"/></div>
+                </div>
+                <div class="grid-row">
+                    <div class="two columns"><label>Security Code:</label></div>
+                    <div class="ten columns rpad-4"><input type="text"/></div>
+                </div>
+                <div class="grid-row">
+                    <div class="two columns"><label>Expiration Date:</label></div>
+                    <div class="ten columns rpad-4"><input type="text"/></div>
+                </div>
+            </form>
+            <!--Payment info-->
+
+            <div class="grid-row">
+                <div class="twelve columns center">
+                    <a href="/buy-all-inclusive-step2" class="button btn-continue">Complete Purchase</a>
                 </div>
             </div>
         </div>
@@ -110,10 +153,8 @@
             <article class="sidebar-info">
                 <h5>What you're getting</h5>
                 <ul>
-                    <li>Soholaunch Ultra</li>
-                    <li>400 GB Web Hosting</li>
-                    <li>10 Email Accounts</li>
-                    <li>View detailed specs</li>
+                    <li>Soholaunch Ultra license</li>
+                    <li>Unlimited priority support</li>
                 </ul>
             </article>
 
@@ -128,7 +169,7 @@
     </div>
     <div class="grid-row">
         <div class="columns twelve center">
-            <h3>Not sure of which plan to choose? <a class="button-contact" href="#">Contact Us</a></h3>
+            <h3>Questions about your purchase? <a class="button-contact" href="#">Contact Us</a></h3>
         </div>
     </div>
 </section>

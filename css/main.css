@@ -559,7 +559,7 @@ img {
   padding: 1.2rem 20px;
   width: 100%;
   margin: 0 auto;
-  border: 0px solid red; }
+  border: 0 solid red; }
   .grid-row [data-height="4"] {
     height: 4.8rem; }
   .grid-row [data-height="5"] {
@@ -580,7 +580,7 @@ img {
   float: left;
   margin: 0 0 0;
   text-align: left;
-  border: 0px solid blue; }
+  border: 0 solid blue; }
   .columns.one {
     width: 8.33333%; }
   .columns.two {
@@ -605,6 +605,8 @@ img {
     width: 91.66667%; }
   .columns.twelve {
     width: 100.0%; }
+  .columns.lpad-1 {
+    padding-left: 8.33333%; }
   .columns.rpad-1 {
     padding-right: 8.33333%; }
   .columns.rpad-2 {
@@ -829,6 +831,8 @@ span[data-icon="\25ae"]:before {
       background-color: white;
       background-image: -webkit-linear-gradient(top, white 50%, #dedede 100%);
       color: #222222; }
+    .button.btn-learn-more:active {
+      background-image: -webkit-linear-gradient(bottom, white 50%, #dedede 100%); }
     .stage .button.btn-learn-more, .stage-deemphasized .button.btn-learn-more {
       box-shadow: 0 2px 0 0px #9f9f9f, 0 3px 0 0px #074b76; }
   .button.btn-buy, .button.btn-continue {
@@ -845,6 +849,8 @@ span[data-icon="\25ae"]:before {
       background-color: #fdc466;
       background-image: -webkit-linear-gradient(top, #fdc466 50%, #fca61b 100%);
       color: #222222; }
+    .button.btn-buy:active, .button.btn-continue:active {
+      background-image: -webkit-linear-gradient(bottom, #fdc466 50%, #fca61b 100%); }
   .button.btn-continue {
     font-weight: normal; }
   .button + button {
@@ -901,6 +907,8 @@ fieldset:not(#is4ie8) > .radiogroup input[type='radio'] {
     padding: 1.2rem 0 1.2rem 50px;
     background: url("../img/radio.png") left center no-repeat;
     cursor: pointer; }
+  fieldset:not(#is4ie8) > .radiogroup input[type='radio']:hover + label {
+    background-image: url("../img/radio-hover.png"); }
   fieldset:not(#is4ie8) > .radiogroup input[type='radio']:checked + label {
     background-image: url("../img/radio-checked.png"); }
 fieldset:not(#is4ie8) > .isolated-radio {
@@ -915,8 +923,20 @@ fieldset:not(#is4ie8) > .isolated-radio {
     background: url("../img/radio-checked.png") 0 0 no-repeat; }
 
 .instructions {
+  position: relative;
+  padding: 1.2rem 20px;
   background-color: #0a6aa6;
   color: white; }
+  .instructions:before {
+    content: "";
+    position: absolute;
+    top: -1.2rem;
+    left: 1.2rem;
+    width: 0;
+    height: 0;
+    border-left: 1.2rem solid transparent;
+    border-right: 1.2rem solid transparent;
+    border-bottom: 1.2rem solid #0a6aa6; }
 
 /* LAYOUT
 -----------------------------------------------------------------*/
@@ -950,6 +970,7 @@ nav {
   padding: 0;
   text-align: right; }
   nav a {
+    font-weight: 300;
     display: inline-block;
     height: 100%;
     margin: 0px -5px 0 0;
@@ -957,9 +978,9 @@ nav {
     border-left: 1px solid #f4f4f4;
     text-align: right;
     font-size: 2.04rem;
-    font-weight: bold;
     text-decoration: none;
     color: #222222;
+    text-shadow: 1px 1px 1px #ebebeb;
     transition: background-color 0.1s linear;
     /* Compacted menu uses horizontal space conservatively */ }
     nav a:last-child {
@@ -1051,9 +1072,6 @@ nav {
   font-size: 2.0rem;
   line-height: 3.6rem;
   font-weight: 400; }
-
-.alt {
-  background-color: #f4f4f4; }
 
 /* FOOTER */
 footer {
@@ -1170,6 +1188,13 @@ footer {
     margin: 0 10px 0 10px; }
   .payment-term h6 {
     margin: 0; }
+
+.step-screenshots figure {
+  width: 100%;
+  height: 14.4rem;
+  border: 1px solid #0a6aa6;
+  border-radius: 2px;
+  box-shadow: 0px 2px 2px #f4f4f4; }
 
 .list-naked {
   list-style-type: none;

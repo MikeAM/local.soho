@@ -52,6 +52,7 @@
   &.alt {
     background: $color-altbg;
     border-top: 1px solid darken($color-altbg, 10%);
+    //background-image: -webkit-radial-gradient(top left, circle cover, lighten($color-altbg, 5%), $color-altbg);
     //@include linear-gradient(left, darken($color-altbg, $outer-gutter-contrast) 5%, $color-altbg 5%, $color-altbg 95%, darken($color-altbg, $outer-gutter-contrast) 95%);
     //@include bp-until($bp-well-done) {
     //  background: $color-altbg;
@@ -88,6 +89,8 @@ nav {
   text-align: right;
 
   a {
+    //@include stroke-text(1, #000);
+    font-weight: 300;
     display: inline-block;
     height: 100%;
     margin: 0px -5px 0 0;
@@ -95,11 +98,9 @@ nav {
     border-left: 1px solid $color-altbg;
     text-align: right;
     font-size: $base-size * 1.2;
-    font-weight: bold;
     text-decoration: none;
     color: $color-darkbg;
-    //color: $color-buy;
-    //text-shadow: 1px 1px 1px $color-altbg;
+    text-shadow: 1px 1px 1px $color-learnmore;
     transition: background-color 0.1s linear;
 
     &:last-child {
@@ -230,10 +231,6 @@ nav {
     line-height: $baseline * 3;
     font-weight: 400;
   }
-}
-
-.alt {
-  background-color: $color-altbg;
 }
 
 /* FOOTER */

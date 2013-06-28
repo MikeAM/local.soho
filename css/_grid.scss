@@ -2,7 +2,10 @@
    Main Custom Styles for Soholaunch.com
    You were here: figuring out heading scale. Annoyed by thinking in pixels.
 ============================================================================ */
-$grid-border-size: 0px; // For testing
+
+// For testing
+$grid-border-size: 0;
+//$grid-border-size: 1px;
 
 img {
   max-width: 100%;
@@ -60,6 +63,7 @@ $column-width: 8.3333333%; // 100% / 12
   &.eleven    { width: ($column-width * 11); }
   &.twelve    { width: ($column-width * 12); }
 
+  &.lpad-1 { padding-left: $column-width; }
   &.rpad-1 { padding-right: $column-width; }
   &.rpad-2 { padding-right: $column-width * 2; }
   &.rpad-4 { padding-right: $column-width * 4; }
