@@ -1,0 +1,88 @@
+body {
+   margin: 0px;
+	overflow: scroll;
+}
+
+a.dir  { font-family: tahoma; font-size: 12px; font-weight: bold; color: #000000 }
+a.file  { font-family: tahoma; font-size: 12px; color: #222222 }
+a.back  { font-family: tahoma; font-size: 12px; color: #FFFFFF }
+a.close  { font-family: tahoma; font-size: 12px; color: #FFFFFF }
+
+.div_curr_dir  {
+   font-family: tahoma;
+   font-size: 12px;
+   color: #FFFFFF;
+   background-color: #000000
+}
+.div_back  {
+   background-color: #444444
+}
+.div_close  {
+   float: right;
+   margin-right: 20px;
+   padding: 3px 10px 3px 10px;
+   background-color: #444444
+}
+
+.div_file_name {
+   color: #FFFFFF;
+   padding-left: 20px;
+}
+
+#choose_it {
+   display: none;
+   color: #FCC654;
+}
+
+#choose_it a {
+   color: #FCC654;
+}
+
+.div_main  {
+   background-color: #AAAAAA;
+   height: 280px;
+   overflow: auto;
+   padding: 10px;
+}
+
+.div_main_preview {
+   border: 1px dashed #333333;
+   margin: 10px;
+   padding: 3px;
+   background-color: #FFFFFF;
+   height: 180px;
+   overflow: auto;
+   text-align: center;
+}
+
+.div_main_preview span {
+   color: #666666;
+   font-size: 14px;
+}
+
+.div_main_preview img {
+   margin: 10px;
+}
+
+.footer {
+   height: 70px;
+}
+.create_dir_div {
+   display: none;
+}
+
+.all_dir {
+   border: 0px dashed green;
+   height: 135px;
+}
+
+.dir_disp {
+   float: left;
+}
+
+.image_disp {
+   height: 20px;
+   width: 200px;
+   float: left;
+   overflow: hidden;
+}

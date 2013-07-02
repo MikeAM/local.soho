@@ -1,0 +1,388 @@
+/* CSS Rules specifically for edit_form.php */
+/* Also: Global rules also used by ajax-outputed stuff like ajax-properties.php and ajax-edit_compile_form.php */
+
+* {
+   font-family: Trebuchet MS, arial, helvetica, sans-serif;
+}
+
+/* Hack to fix border on floated elements in IE */
+.ie_cleardiv {
+   display: block;
+   clear: both;
+   float: none;
+   margin: 0;
+   /*border: 1px dotted red;*/
+}
+
+/* When displaying hidden fields as text fields for testing */
+.hidden {
+   font-size: 9px !important;
+   font-family: Courier New, courier, mono;
+   width: 90px;
+}
+
+.row {
+   display: block;
+}
+
+div#body_area_container {
+   margin: 0;
+   border: 1px solid #fff;
+   /*height: 393px;*/
+   /*height: 620px;*/
+}
+
+table#split_parent_table {
+   margin-top: 0 !important;
+   margin-left: 0px;
+   margin-right: 0px;
+   /*height: 100%;*/
+   /*border: 1px solid red;*/
+}
+
+/* Properties dialog */
+table#split_parent_table th {
+   width: 225px;
+   /*border: 1px solid red;*/
+   vertical-align: top;
+   text-align: left;
+   font-weight: normal;
+   /*height: 390px;*/
+}
+
+/* My Form preview area */
+table#split_parent_table td {
+   width: 100%;
+   background-color: #fff;
+   /*border: 1px solid #ccc;*/
+   border-top: none;
+   border-bottom: none;
+   vertical-align: top;
+   /*height: 390px;*/
+}
+
+#field_properties, #form_properties, #container-my_form {
+   margin: 0;
+   /*height: 365px;*/
+   /*height: 345px;*/
+   overflow: auto;
+   /*border: 1px solid red;*/
+}
+
+#field_properties, #form_properties {
+   /*position: fixed;top: 10%;*/
+   float: left;
+   width: 240px;
+   /*height: 320px;*/
+   padding: 10px;
+   text-align: top;
+   border: 1px solid #ccc;
+   /*background-color: #fff66f;*/
+   background-color: #fffaad;
+}
+
+#field_properties {
+	font-size: 14px;
+}
+
+/* Form properties hidden by default */
+#form_properties {
+   display: none;
+}
+
+/* Edit area where preview of form/changes is shown */
+div#container-my_form {
+   /*width: 500px;*/
+   /*width: 100%;*/
+/*   height: 365px;
+   overflow: auto;*/
+   padding: 10px;
+   background-color: #fff;
+   /*border: 1px solid red;*/
+}
+
+#field_properties label {
+   font-size: 11px;
+}
+
+#container-my_form label {
+   font-size: 12px;
+}
+
+
+/*---------------------------------------------------------------------------------------------------------*
+ _____       _
+|_   _|__ _ | |__  ___
+  | | / _` || '_ \(_-<
+  |_| \__,_||_.__//__/
+
+# Tabs in properties pane
+/*---------------------------------------------------------------------------------------------------------*/
+#tab_bar {
+   clear: both;
+   margin-top: 10px;
+   /*border: 1px dashed #fffab2;*/
+}
+.tab-off, .tab-on {
+   display: block;
+   float: left;
+   margin-right: 10px;
+   /*width: 80px;*/
+   /*height: 25px;*/
+   padding: 2px 15px;
+   /*border: 1px solid #ccc;*/
+   border-top: 5px solid #ccc;
+   background-color: #efefef;
+   text-align: center;
+   color: #595959;
+   cursor: pointer;
+}
+.tab-on {
+   border-top-color: #EDA811;
+   color: #000;
+   font-weight: bold;
+}
+
+/* Tabs should be same distance from left edge as their associated content boxes */
+#tab_bar, #form_properties, #field_properties {
+   margin-left: 4px;
+   margin-right: 4px;
+}
+
+
+/*---------------------------------------------------------------------------------------------------------*
+ ___   _            _               ___       _    _    _
+|   \ (_) ___ _ __ | | __ _  _  _  / __| ___ | |_ | |_ (_) _ _   __ _  ___
+| |) || |(_-<| '_ \| |/ _` || || | \__ \/ -_)|  _||  _|| || ' \ / _` |(_-<
+|___/ |_|/__/| .__/|_|\__,_| \_, | |___/\___| \__| \__||_||_||_|\__, |/__/
+             |_|             |__/                               |___/
+
+Form Properties tab - aka form_properties
+/*---------------------------------------------------------------------------------------------------------*/
+#form_properties label {
+   display: inline-block;
+   clear: left;
+   margin-top: 4px;
+   /*float: left;
+   clear: left;*/
+}
+
+#form_properties select {
+   display: inline-block;
+   /*float: left;*/
+}
+
+/* Headline, help icon, hidden help text at top of properties boxes */
+div.tab_content-heading h3 {
+   font-size: 13px;
+   margin: 0;
+}
+div.tab_content-heading span.help_link {
+   display: inline-block;
+   margin-left: 5px;
+   font-size: 12px;
+   font-weight: normal;
+}
+div.tab_content-heading p {
+   display: none;
+   margin: 0;
+   font-size: 11px;
+}
+
+/* Special Needs */
+select#label_position {
+   width: 120px;
+}
+
+/* Hidden layers of help text within properties pane and toggled by [?] */
+.help_text_layer {
+   display: none;
+   margin-top: 0;
+}
+
+
+
+
+/*---------------------------------------------------------------------------------------------------------*
+ ___           _
+| __|___  ___ | |_  ___  _ _
+| _|/ _ \/ _ \|  _|/ -_)| '_|
+|_| \___/\___/ \__|\___||_|
+
+# At bottom with add, save, etc buttons on it
+/*---------------------------------------------------------------------------------------------------------*/
+div#footer {
+   width: 100%;
+   height: 35px;
+   margin: 0;
+   padding: 0px;
+   background-repeat: repeat-x;
+   vertical-align: top;
+   text-align: center;
+   border: 1px solid #fff;
+}
+div#footer input,
+div#footer button {
+   display: block;
+   float: left;
+   margin: 7px 10px;
+}
+
+#save_buttons {
+/*   position: absolute;
+   bottom: 2px;
+   right: 0px;*/
+   text-align: right;
+   /*border: 1px solid red;*/
+}
+#save_buttons input {
+   float: right;
+   margin-bottom: 3px !important;
+}
+
+/* Special Needs */
+/*--------------------------------------------*/
+#add_field {
+   width: 150px;
+   margin-top: 7px !important;
+   margin-right: 65px !important;
+   font-weight: bold;
+}
+#save_as {
+   margin-top: 7px !important;
+   margin-right: 0;
+}
+input#save_changes {
+   margin-top: 7px !important;
+   margin-left: 0px !important;
+}
+
+
+/*---------------------------------------------------------------------------------------------------------*
+   _       _     _   __  _       _     _   ___  _
+  /_\   __| | __| | / _|(_) ___ | | __| | | _ )| |_  _ _   ___
+ / _ \ / _` |/ _` ||  _|| |/ -_)| |/ _` | | _ \|  _|| ' \ (_-<
+/_/ \_\\__,_|\__,_||_|  |_|\___||_|\__,_| |___/ \__||_||_|/__/
+/*---------------------------------------------------------------------------------------------------------*/
+#addfield_buttons-container, #popconfig-display_settings {
+   display: none;
+   /*display: block;*/
+   position: absolute;
+   top: 10%;
+   left: 10%;
+   margin: 0px 0px 0;
+   width: 650px;
+   /*height: 350px;*/
+   padding: 10px;
+   text-align: left;
+   border: 1px solid #f75d00;
+   background-color: #f8f9fd;
+   opacity: .98;
+}
+#addfield_buttons-container h1 {
+   margin-top: 0;
+   margin-bottom: 0;
+}
+#addfield_buttons-container p {
+   margin-top: 0;
+   font-size: 12px;
+}
+/* New table-less approach */
+#addbtns-container {
+   display: block;
+   /*border: 1px dashed #ccc;*/
+}
+div.addbtn {
+   display: block;
+   float: left;
+   width: 115px;
+   height: 70px;
+   margin-right: 10px;
+   margin-bottom: 5px;
+   padding-top: 15px;
+   vertical-align: bottom;
+   text-align: center;
+   font-size: 12px;
+   border: 1px solid #ccc;
+   cursor: pointer;
+}
+div.addbtn:hover {
+   background-color: #6699cc;
+}
+div.addbtn span {
+   display: block;
+   /*margin-top: 45px;*/
+}
+/* Individual add buttons */
+#addbtn-text {
+   /*border: 1px solid red;*/
+}
+
+
+td#cancelcell {
+   text-align: right;
+}
+#click_to_add {
+   margin-left: 15px;
+   background-color: #FFFAB2;
+}
+
+
+/*---------------------------------------------------------------------------------------------------------*
+ __  __          _        _        ___   _            _
+|  \/  | ___  __| | _  _ | | ___  |   \ (_) ___ _ __ | | __ _  _  _
+| |\/| |/ _ \/ _` || || || |/ -_) | |) || |(_-<| '_ \| |/ _` || || |
+|_|  |_|\___/\__,_| \_,_||_|\___| |___/ |_|/__/| .__/|_|\__,_| \_, |
+                                               |_|             |__/
+/*---------------------------------------------------------------------------------------------------------*/
+#field_properties h1, #container-my_form h1, #field_properties h2, #container-my_form h2, #field_properties h3, #container-my_form h3, #field_properties h4, #container-my_form h4, #field_properties h5, #container-my_form h5, #field_properties h6, #container-my_form h6 {
+   margin-top: 0;
+   margin-bottom: 0;
+}
+
+#field_properties h1, #container-my_form h1 {
+   font-size: 17px;
+}
+
+#field_properties h2, #container-my_form h2 {
+   font-size: 15px;
+}
+
+#field_properties h3, #container-my_form h3 {
+   font-size: 14px;
+}
+
+#field_properties h4, #container-my_form h4 {
+   font-size: 13px;
+}
+
+#field_properties h5, #container-my_form h5 {
+   font-size: 12px;
+}
+
+#field_properties h6, #container-my_form h6 {
+   font-size: 11px;
+}
+
+/* My Form */
+
+/* Copied from properties.css after moving move buttons, etc...not sure if these apply any more even if id/classnames still the same */
+/*div.move_field_options-container {
+   margin: -10px -10px 5px -10px;
+   text-align: right;
+   border: 1px dashed #ccc;
+}
+#moveup, #movedown {
+   margin-left: 10px;
+   color: #336699;
+   cursor: pointer;
+}
+#delete_field-container {
+   margin: 15px -5px -5px;
+   font-size: 10px;
+   text-align: right;
+}
+#delete_field_btn {
+   color: #d70000;
+   cursor: pointer;
+}*/

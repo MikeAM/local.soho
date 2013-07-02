@@ -1,0 +1,62 @@
+/* CSS Rules for ajax-properties.php */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+.props-titletxt {
+   display: block;
+   float: left;
+   clear: left;
+   font-weight: normal;
+}
+
+.props-inline_title {
+   display: inline;
+   clear: none;
+   font-weight: normal;
+}
+
+.props-notetxt { color: #666; font-size: 90%; }
+
+.props-textfield {
+   /*display: block;*/
+   float: left;
+   clear: left;
+   font-size: 10px;
+}
+
+.props-checkbox {
+   /*display: inline;*/
+   float: left;
+}
+
+#required_yesno {
+   /*di*/
+}
+
+fieldset {
+   margin-top: 4px;
+   /*border: 0;*/
+}
+
+
+/* Shove title down to align with checkbox */
+fieldset.props-checkoption span.props-titletxt {
+   margin-top: 3px;
+   cursor: pointer;
+}
+
+
+/* Group of radio button options */
+span.radio_option {
+   display: block;
+   float: left;
+   margin-right: 4px;
+   padding: 2px;
+   border: 1px dashed #ccc;
+   cursor: pointer;
+}
+fieldset.radio_group span.props-titletxt {
+   padding-top: 3px;
+}
+span.radio_option input {
+   cursor: pointer;
+}

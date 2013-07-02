@@ -1,0 +1,80 @@
+/* Button styles for Soholaunch.com */
+
+.button {
+  display: inline-block;
+  padding: $baseline ($baseline * 2);
+  font-weight: bold;
+  text-decoration: none;
+  color: $color-darkbg;
+  border: 1px solid;
+
+  &.btn-learn-more {
+    text-shadow: 0px 1px 0px lighten($color-learnmore, 10%);
+    background-color: $color-learnmore;
+    background-image: -webkit-linear-gradient(top, lighten($color-learnmore, 5%) 50%, darken($color-learnmore, 5%) 100%);
+    border-color: $color-learnmore;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 0px darken($color-learnmore, 30%),
+                0 3px 0 0px darken($color-altbg, 10%);
+
+    &:hover {
+      background-color: lighten($color-learnmore, 10%);
+      background-image: -webkit-linear-gradient(top, lighten($color-learnmore, 10%) 50%, darken($color-learnmore, 5%) 100%);
+      color: $color-darkbg;
+    }
+
+    &:active {
+      background-image: -webkit-linear-gradient(bottom, lighten($color-learnmore, 10%) 50%, darken($color-learnmore, 5%) 100%);
+    }
+
+    /* Drop shadow should match background */
+    .stage &, .stage-deemphasized & {
+      box-shadow: 0 2px 0 0px darken($color-learnmore, 30%),
+                  0 3px 0 0px darken($color-accent, 10%);
+    }
+  }
+
+  &.btn-buy {
+    text-shadow: 0px 1px 0px lighten($color-buy, 10%);
+    background-color: $color-buy;
+    background-image: -webkit-linear-gradient(top, lighten($color-buy, 5%) 50%, darken($color-buy, 5%) 100%);
+    border-color: $color-buy;
+    border-radius: 2px;
+    box-shadow: 0 2px 0 0px darken($color-buy, 30%),
+    0 0px 3px 0px darken($color-altbg, 10%),
+    0 3px 3px 0px darken($color-altbg, 10%);
+
+    /* Drop shadow should match background */
+    .stage &, .stage-deemphasized & {
+      box-shadow: 0 2px 0 0px darken($color-buy, 30%),
+      0 3px 0 0px darken($color-accent, 10%);
+    }
+
+    &:hover {
+      background-color: lighten($color-buy, 10%);
+      background-image: -webkit-linear-gradient(top, lighten($color-buy, 10%) 50%, darken($color-buy, 5%) 100%);
+      color: $color-darkbg;
+    }
+
+    &:active {
+      background-image: -webkit-linear-gradient(bottom, lighten($color-buy, 10%) 50%, darken($color-buy, 5%) 100%);
+    }
+  }
+
+  &.btn-continue {
+    @extend .btn-buy;
+    font-weight: normal;
+  }
+
+  +button {
+    margin-left: $baseline;
+    @include bp-until($bp-raw) {
+      margin: $baseline 0px;
+    }
+  }
+
+  @include bp-until($bp-raw) {
+    width: 100%;
+    margin: $baseline px;
+  }
+}

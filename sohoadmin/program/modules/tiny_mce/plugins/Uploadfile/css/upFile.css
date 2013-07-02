@@ -1,0 +1,12 @@
+/* CSS file for advimage plugin popup */
+
+#r{
+   color: #0D6F12;
+   text-align: center;
+   font-size: 13px;
+   padding: 5px;
+}
+
+input {
+   /*border: 0;*/
+}

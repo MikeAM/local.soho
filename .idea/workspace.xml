@@ -25,7 +25,7 @@
     <file path="/_buttons.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372365897527" ignored="false" />
     <file path="/_template.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372793222966" ignored="false" />
     <file path="/.htaccess" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1370877795833" ignored="false" />
-    <file path="/index.php" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371825674975" ignored="false" />
+    <file path="/index.php" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372798398519" ignored="false" />
     <file path="/features.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371760137174" ignored="false" />
     <file path="/developers.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371141530554" ignored="false" />
     <file path="/buy.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372791996329" ignored="false" />
@@ -57,109 +57,38 @@
     <favorites_list name="local.soho" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.40234792">
-      <split-first>
-        <leaf>
-          <file leaf-file-name="_base-and-vars.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/_base-and-vars.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="16" column="22" selection-start="400" selection-end="400" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="main.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/main.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="141" column="43" selection-start="4003" selection-end="4003" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="_page-buy.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="83" column="25" selection-start="1782" selection-end="1782" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="_forms.scss" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/css/_forms.scss">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="122" column="40" selection-start="2679" selection-end="2679" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="buy-pages.js" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/js/buy-pages.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="27" column="54" selection-start="830" selection-end="830" vertical-scroll-proportion="0.5111359">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="home.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/home.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="23" selection-start="23" selection-end="23" vertical-scroll-proportion="-0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="_template.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/_template.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="127" column="0" selection-start="4759" selection-end="4759" vertical-scroll-proportion="-21.423077">
-                  <folding>
-                    <marker date="1372793226622" expanded="true" signature="1061:1313" placeholder="..." />
-                    <marker date="1372793226622" expanded="true" signature="1154:1182" placeholder="..." />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="type.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/type.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="49" column="0" selection-start="4007" selection-end="4317" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/buy.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="80" column="28" selection-start="3645" selection-end="3645" vertical-scroll-proportion="-34.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="buy-all-inclusive.html" pinned="false" current="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/buy-all-inclusive.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="58" column="22" selection-start="2717" selection-end="2717" vertical-scroll-proportion="0.5343422">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file leaf-file-name=".htaccess" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/.htaccess">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="548" column="27" selection-start="24457" selection-end="24457" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.php" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/static/index.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="29" column="0" selection-start="820" selection-end="820" vertical-scroll-proportion="0.565367">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_template.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/_template.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="45" column="29" selection-start="1932" selection-end="1932" vertical-scroll-proportion="-21.576923">
+              <folding>
+                <marker date="1372798286623" expanded="true" signature="1061:1313" placeholder="..." />
+                <marker date="1372798286623" expanded="true" signature="1154:1182" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -169,8 +98,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/css/_icons.scss" />
-        <option value="$PROJECT_DIR$/home.html" />
         <option value="$PROJECT_DIR$/css/_shame.scss" />
         <option value="$PROJECT_DIR$/css/_buttons.scss" />
         <option value="$PROJECT_DIR$/css/_grid.scss" />
@@ -185,6 +112,8 @@
         <option value="$PROJECT_DIR$/css/_forms.scss" />
         <option value="$PROJECT_DIR$/css/_base-and-vars.scss" />
         <option value="$PROJECT_DIR$/js/buy-pages.js" />
+        <option value="$PROJECT_DIR$/static/_template.html" />
+        <option value="$PROJECT_DIR$/static/index.php" />
       </list>
     </option>
   </component>
@@ -271,40 +200,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
+              <option name="myItemId" value="static" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main.scss" />
-              <option name="myItemType" value="com.intellij.plugins.watcher.projectView.NestingTreeNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -402,7 +299,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32973504" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.11579509" sideWeight="0.90855455" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.11579509" sideWeight="0.90855455" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.09126595" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -478,115 +375,26 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.htaccess">
+    <entry file="file://$PROJECT_DIR$/static/_template.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="548" column="21" selection-start="24451" selection-end="24451" vertical-scroll-proportion="0.8658399" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/type.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="0" selection-start="4007" selection-end="4317" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_icons.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="20" selection-start="28600" selection-end="28600" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_buttons.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="45" selection-start="1813" selection-end="1813" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/buy-ultra-host-it-yourself.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="44" selection-start="530" selection-end="530" vertical-scroll-proportion="-10.461538">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/buy-all-inclusive-step2.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="26" selection-start="729" selection-end="729" vertical-scroll-proportion="-15.038462">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/buy.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="80" column="28" selection-start="3645" selection-end="3645" vertical-scroll-proportion="-34.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/home.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="23" selection-start="23" selection-end="23" vertical-scroll-proportion="-0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_grid.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="0" selection-start="1700" selection-end="1700" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/_template.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="127" column="0" selection-start="4759" selection-end="4759" vertical-scroll-proportion="-21.423077">
+        <state line="45" column="29" selection-start="1932" selection-end="1932" vertical-scroll-proportion="-21.576923">
           <folding>
-            <marker date="1372793226622" expanded="true" signature="1061:1313" placeholder="..." />
-            <marker date="1372793226622" expanded="true" signature="1154:1182" placeholder="..." />
+            <marker date="1372798286623" expanded="true" signature="1061:1313" placeholder="..." />
+            <marker date="1372798286623" expanded="true" signature="1154:1182" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/css/_page-buy.scss">
+    <entry file="file://$PROJECT_DIR$/static/.htaccess">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="83" column="25" selection-start="1782" selection-end="1782" vertical-scroll-proportion="0.0">
+        <state line="548" column="27" selection-start="24457" selection-end="24457" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/buy-all-inclusive.html">
+    <entry file="file://$PROJECT_DIR$/static/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="22" selection-start="2717" selection-end="2717" vertical-scroll-proportion="0.5343422">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_forms.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="122" column="40" selection-start="2679" selection-end="2679" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/main.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="141" column="43" selection-start="4003" selection-end="4003" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/css/_base-and-vars.scss">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="22" selection-start="400" selection-end="400" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/buy-pages.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="54" selection-start="830" selection-end="830" vertical-scroll-proportion="0.5111359">
+        <state line="29" column="0" selection-start="820" selection-end="820" vertical-scroll-proportion="0.565367">
           <folding />
         </state>
       </provider>

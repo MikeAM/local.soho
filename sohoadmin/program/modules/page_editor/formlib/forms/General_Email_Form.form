@@ -1,0 +1,32 @@
+<form method=post action="pgm-form_submit.php">
+
+  <table border="0" ALIGN="CENTER" cellpadding="5" cellspacing="0" align="center" style="font-family: Tahoma; font-size: 9pt;">
+  <tr>
+    <td align="left">Your Name:</td>
+    <td align="left" valign="middle"><input type="text" name="Contact Name" size="35" style='width: 300px;'> 
+    </td>
+    </tr>
+    <tr> 
+      <td  align="left">Your 
+        Email Address:</font></td>
+      <td  align="left" valign="middle"> <input type="text" name="emailaddr" size="35" style='width: 300px;'> 
+      </td>
+    </tr>
+    <tr> 
+      <td  align="left">Subject:</font></td>
+      <td  align="left" valign="middle"> <input type="text" name="subjectline" size="35" style='width: 300px;'> 
+      </td>
+    </tr>
+    <tr> 
+      <td  align="left" valign="top">Your 
+        Message:</font></td>
+      <td  align="left" valign="top"><textarea name="Message" cols="30" rows="8" wrap="VIRTUAL" style='width: 300px;'></textarea> 
+      </td>
+    </tr>
+    <tr> 
+      <td colspan=2 align=center valign=middle><input class="FormLt1" type="submit" value="Submit Contact Form"> 
+      </td>
+    </tr>
+  </table>
+</form>
+

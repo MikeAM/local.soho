@@ -1,0 +1,76 @@
+/* Rules for id=myform container where ajax-generated form displays */
+
+.field_container {
+   clear: both;
+   width: 95%;
+   padding-top: 5px;
+   vertical-align: top;
+   cursor: pointer;
+   /* Clear border...quirky in IE w/o a border for some reason */
+   border: 1px solid #fff;
+   /*border: 1px solid #ff0000;*/
+}
+
+
+.asterisk {
+   color: red;
+}
+
+.instructions {
+   display: block;
+   margin: 0;
+   font-weight: normal;
+   font-size: 11px;
+}
+
+
+/* Contains actual form field element */
+.myform-formfield_container {
+   /*border: 1px solid red;*/
+   display: block;
+   float: left;
+}
+
+
+/* [v] or [^] or [x] */
+.field_options_container {
+   display: none;
+   clear: both;
+   text-align: right;
+   margin: 0;
+   width: 100%;
+   /*border: 1px dotted #f75d00;*/
+}
+
+/* Cancel field selection link that appears when a field is selected in preview pane */
+#cancel_select {
+   float: right;
+   text-align: right;
+   background-color: #efefef;
+   font-size: 11px;
+   font-style: italic;
+   color: #980000;
+   cursor: pointer;
+}
+
+
+/* Each span contains a field option button like [v] or [^] or [x] */
+.option-delete, .option-cancel, .option-moveup, .option-movedown, .option-moveup-disabled, .option-movedown-disabled {
+   display: block;
+   float: right;
+   margin-right: 10px;
+   padding: 3px;
+   border: 1px dotted #ccc;
+   font-weight: bold;
+   cursor: pointer;
+}
+.option-moveup-disabled, .option-movedown-disabled {
+   font-weight: normal !important;
+   color: #ccc;
+}
+.option-delete {
+   display: block;
+   margin-right: 50px;
+   border: 1px dotted #f75d00;
+   color: red;
+}

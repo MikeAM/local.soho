@@ -1,0 +1,179 @@
+/*#############################################################################################################
+           ___      _____  __          __
+    _   __|__ \    / ___/ / /_ __  __ / /___
+   | | / /__/ /    \__ \ / __// / / // // _ \
+   | |/ // __/    ___/ // /_ / /_/ // //  __/
+   |___//____/   /____/ \__/ \__, //_/ \___/
+                            /____/
+>> A more streamlined approach
+/*###########################################################################################################*/
+
+/*####################################################################################
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(( v2 )) Generic inherited styles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+####################################################################################*/
+* {
+   font-family: arial, helvetica, sans-serif;
+   font-size: 11px;
+}
+
+
+/*####################################################################################
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(( v2 )) Feature Module display styles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+####################################################################################*/
+/* Primary feature group parent table: white bg, dark blue border */
+table#feature_module {
+   border: 2px solid #336699;
+	background: #ffffff;
+}
+
+table#feature_module tr:first-child td[title]:first-child {
+   padding: 3px 0px 3px 5px;
+   font-family: tahoma, arial, helvetica, sans-serif;
+   font-size: 13px;
+   letter-spacing: 2px;
+   color: #ffffff;
+   background-image: url(graphics/mod_feature-bg.jpg);
+}
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+  Top title cell, usually flush with module feature title...
+  for feature groups that DO something (i.e. create new backup),
+  as opposed to just routine management (i.e. display settings).
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+table#feature_module tr:first-child + tr td[title] {
+   padding: 3px 0px 3px 5px;
+   border-bottom: 1px solid #336699;
+   font-size: 12px;
+   font-variant: small-caps;
+   letter-spacing: normal;
+   color: #306FAE;
+   background: #E2E6E9;
+}
+
+table#feature_module tr:first-child + tr td[title]:before {
+   color: #30ae6f;
+   font-size: 14px;
+   font-weight: bold;
+   content: "..:: ";
+}
+span[title=module] { font-weight: bold; }
+span[title=feature]:before { content: ": "; }
+
+
+td.head1 {
+   color: #2E2E2E;
+   font-size: 12px;
+   font-weight: bold;
+   border-bottom: 1px solid #336699;
+}
+
+td.head2 {
+   color: #58595A;
+   font-size: 12px;
+   font-weight: bold;
+   border-bottom: 1px solid #6699cc;
+}
+
+/* Used in Site Backup module */
+table#custom_options { display: block; width: 100%; }
+table#custom_options td[colspan]:first-child { text-align:left; padding-top:15px; }
+table#custom_options td { padding: 4px; }
+table#custom_options td.bul { text-align: right; padding-left: 15px; }
+
+
+/*####################################################################################
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(( v2 )) Specialty style classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+####################################################################################*/
+.hideme { display: none; }
+.nopad { padding: 0px; }
+
+a.nounderline:link { text-decoration: none; }
+a.nounderline:hover { text-decoration: none; }
+a.nounderline:active { text-decoration: none; }
+a.nounderline:visited { text-decoration: none; }
+
+
+/* Main nav buttons at top of screen ('header')
+-------------------------------------------------------------------------------*/
+div.upper_navbar {
+   padding: 4px 0px 0px 0px;
+   position: absolute;
+   left: 0px;
+   top: 0px;
+   height: 100%;
+   width: 100%;
+   z-index: 90;
+   border-bottom: 1px solid #000000;
+   visibility: hidden;
+   overflow: hidden;
+   vertical-align: top;
+}
+
+#MAIN_MENU_LAYER { visibility: visible; }
+
+table.upper_navbar td {
+   padding: 0px 5px 0px 5px;
+}
+
+.nav_main, .nav_save, .nav_warn, .nav_logout {
+	color: #FFFFFF;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	cursor: pointer;
+   border: 1px solid #B9BEC1;
+   border-style: solid solid solid solid;
+   padding: 1px 0px 0px 0px;
+   height: 18px;
+}
+
+.nav_main {
+   background-image: url(graphics/btn-nav_main-off.jpg);
+   background-color: #336699;
+}
+
+.nav_save {
+   background-image: url(graphics/btn-nav_save-off.jpg);
+   background-color: #339959;
+}
+
+.nav_warn {
+   background-image: url(graphics/btn-nav_warn-off.jpg);
+   background-color: #D0971C;
+}
+
+.nav_logout {
+   background-image: url(graphics/btn-nav_logout-off.jpg);
+   background-color: #980000;
+}
+
+
+
+/*=================================================================================*/
+/* Footer icon/button for version info and update notifications
+/*---------------------------------------------------------------------------------*/
+#update_orb {
+   z-index: 10;
+   width: 200px;
+   height: 19px;
+   text-align: right;
+   vertical-align: top;
+   padding-top: 3px;
+   padding-right: 25px;
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+   background-position: right top;
+}
+
+/* One of these will always be employed with #update_orb */
+.orb_off { background-image: url(graphics/ftr-update_orb-off.gif); }
+.orb_green { background-image: url(graphics/ftr-update_orb-red.gif); }
+.orb_red { background-image: url(graphics/ftr-update_orb-red.gif); }
+.orb_orange { background-image: url(graphics/ftr-update_orb-orange.gif); }
+

@@ -1,0 +1,1102 @@
+/*##########################################################################################################
+============================================================================================================
+User Interface Styles
+------------------------------------------------------------------------------------------------------------
+>> These classes are utilized throughout the product interface, but have no bearing on client-side display
+>> elements. Though classes may be added as necessary, none should be removed unless they are also
+>> replaced throughout the entire product.
+
+NOTE: The CSS structure of the product interface could use a serious revamp ---
+      will probably do this when skin support is completed
+============================================================================================================
+##########################################################################################################*/
+
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> General
+--------------------------------------------------------------------------------------
+####################################################################################*/
+
+/* New stuff */
+
+/* Popup help layers that work with help_popup() function in shared_functions.php */
+div.help_popup {
+   width: 500px;
+   vertical-align: top;
+   position: absolute;
+   top: 37%;
+   left: 27%;
+   text-align: left;
+   border: 1px solid #888c8e;
+   background-color: #efefef;
+   z-index: 5;
+   font-family: Trebuchet MS, arial, helvetica, sans-serif;
+   font-size: 11px;
+}
+div.help_popup h1 {
+   font-size: 17px;
+   font-weight: bold;
+   color: #000;
+   margin: 4px 0 2px 0;
+}
+div.help_popup h2 {
+   font-size: 14px;
+   font-weight: bold;
+   color: #2e2e2e;
+   margin-bottom: 0;
+}
+div.help_popup ul {
+   margin-top: 0;
+}
+
+/* End new stuff */
+
+
+BODY {
+    font-family: verdana,arial,helvetica;
+    font-size: 10px;
+    color: #000000;
+    scrollbar-3dlight-color:#99CCFF;
+    scrollbar-arrow-color:darkblue;
+    scrollbar-base-color:#E6E6E6;
+    scrollbar-darkshadow-color:#99CCFF;
+    scrollbar-face-color:#99CCFF;
+    scrollbar-highlight-color: ;
+    scrollbar-shadow-color: black;
+}
+
+.text {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+}
+
+table {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+}
+
+h1 {
+   font-family: Trebuchet MS, Arial;
+   font-size: 18px;
+   font-weight: bold;
+}
+
+/* General-use text color styles */
+.orange { color: #D75B00; }
+.red { color: #D70000; }
+.green { color: #339959; }
+.blue { color: #336699; }
+.gray { color: #727272; }
+.dgray { color: #2E2E2E; }
+
+.mono { font-family: Courier New, courier, mono; }
+
+.bg_white { background: #FFFFFF; }
+.bg_blue { background: #F8F9FD; }
+.bg_gray { background: #EFEFEF; }
+
+.bg_dgreen { background: #A5E6B3; }
+.bg_dblue { background: #A5C6E6; }
+.bg_dred { background: #E6A5A5;; }
+.bg_dgray { background: #B9BEC1; }
+
+
+.bold { font-weight: bold; }
+.nobold { font-weight: normal; }
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> Primary feature modules styles
+--------------------------------------------------------------------------------------
+####################################################################################*/
+/* For feature modules with tabbed sections */
+table.tab_bar {
+   font-family: verdana, arial, helvetica, sans-serif;
+   font-size: 11px;
+   font-weight: bold;
+   border: 1px solid #000;
+   border-style: solid none solid solid;
+}
+
+table.tab_bar td {
+   padding: 2px 0px 1px 0px;
+   border-right: 1px solid #000;
+}
+
+.tab_off, .tab_on {
+   color: #2E2E2E;
+   cursor: pointer;
+   height: 20px; padding: 2px 20px 2px 20px;
+}
+
+.tab_off {
+   background-image: url(includes/display_elements/graphics/popdiv_title-bg.gif);
+   cursor: hand;
+}
+
+.tab_on {
+   color: #FFF;
+   background-image: url(includes/display_elements/graphics/btn-nav_main-on.jpg);
+}
+
+
+
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> Tables and table cells
+--------------------------------------------------------------------------------------
+####################################################################################*/
+
+/* Primary module parent table: white bg, dark blue title flush at top */
+table.feature_module {
+   border: 0px;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background-color: #fff;
+}
+
+/* Dark blue title (flush at top) with white text for module parent */
+.fmod_title {
+   padding: 3px 0px 3px 5px;
+   font-family: tahoma, arial, helvetica, sans-serif;
+   color: #ffffff;
+   font-size: 12px;
+   font-weight: bold;
+   letter-spacing: 2px;
+   background: #306FAE;
+}
+
+/* Primary feature group parent table: white bg, dark blue border */
+.feature_group {
+   /*border: 2px solid #3C3C3C;*/
+   border: 2px solid #3C3C3C;
+   
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	/*background-color: #f8f9fd;*/
+	background-color: #fff;
+}
+
+/* Dark blue header with white text for group (table) titles */
+.fgroup_title {
+   padding: 3px 0px 3px 5px;
+   font-family: verdana, arial, helvetica, sans-serif;
+   color: #ffffff;
+   font-size: 12px;
+   font-weight: bold;
+   letter-spacing: .06em;
+   background: #B1B1B1;
+   text-align: left;
+   /* background-image: url(includes/display_elements/graphics/fgroup_title2.jpg); */
+   background-image: url(includes/display_elements/graphics/fgroup_title.png);
+   
+}
+
+/* Text driectly under module title (smaller and not bold) */
+.fgroup_subtitle {
+   font-size: 12px;
+   font-weight: normal;
+   letter-spacing: normal;
+}
+
+/* Field groups within module menu (i.e. 'Logo Text, Slogan, Logo Image' in Template Manager') */
+.feature_sub {
+   font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	/* border: 1px solid #2E2E2E; */
+	border: 1px solid #3C3C3C;
+	
+	background: #f8f9fd;
+}
+
+.fsub_title {
+   font-family: verdana, arial, helvetica, sans-serif;
+   /* color: #2E2E2E; */
+   color:black;
+   font-size: 11px;
+   font-weight: bold;
+   padding: 5px;
+   /* border-bottom: 1px solid #B5B5B5; */
+   border-bottom: 1px solid #2E2E2E;    
+    background: #B2B2B2;
+   /*background-image: url(includes/display_elements/graphics/fsub_title.jpg); 
+   background-image: url(includes/display_elements/graphics/fgroup_title.png); */
+   background-image: url(includes/images/title-bg.png);
+   
+   
+   background-position: top left;
+   background-repeat: repeat-x;
+}
+
+/* Culumn header for feature_sub tables */
+.fsub_col {
+   font-family: verdana, arial, helvetica, sans-serif;
+   font-size: 10px;
+   font-weight: bold;
+   padding: 2px;
+   
+   /* border: 1px solid #B5B5B5; */
+   border: 1px solid #3C3C3C;
+   border-style: none none solid solid;
+   color: #000000;
+   background: #E7EFF5;
+}
+
+/* Alternate row bg color */
+td.fsub_alt {
+	background: #F1F3FA;
+}
+
+/* Bordered table cell */
+td.fsub_border {
+   /* border: 1px solid #B5B5B5; */
+   border: 1px solid #3C3C3C;
+   border-style: none none solid solid;
+}
+
+/* Bordered table cell - alternate row bg color */
+td.fsub_border_alt {
+   /* border: 1px solid #B5B5B5; */
+   border: 1px solid #3C3C3C;
+   border-style: none none solid solid;
+	background: #F1F3FA;
+}
+
+/* Primarily for the "Payment Method" table on 'View Invoice' pop-up.
+   Also used for [?] help pop-ups */
+table.feature_grn {
+   border: 1px solid #339959;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background: #DFF6EA;
+}
+
+/* Experimental yellow help popup style */
+table.feature_yellow {
+   border: 1px solid #2E2E2E;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background: #fdfcf8;
+}
+.fyellow_title {
+   font-family: verdana, arial, helvetica, sans-serif;
+   color: #000000;
+   font-size: 11px;
+   font-weight: bold;
+   padding: 5px;
+   border-bottom: 1px solid #2e2e2e;
+   background: #e7de52;
+}
+
+/* Experimental gray box style (ie for help popups) */
+table.feature_gray {
+   border: 1px solid #2E2E2E;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background: #f7f7f7;
+}
+.fgray_title {
+   font-family: verdana, arial, helvetica, sans-serif;
+   color: #000000;
+   font-size: 11px;
+   font-weight: bold;
+   padding: 5px;
+   border-bottom: 1px solid #2E2E2E;
+   background: #D1D5D8;
+}
+
+.fgrn_title {
+   font-family: verdana, arial, helvetica, sans-serif;
+   color: #000000;
+   font-size: 11px;
+   font-weight: bold;
+   padding: 5px;
+   border-bottom: 1px solid #339959;
+   background: #A5E6B3;
+}
+
+/* Used to house sensitive delete functions (i.e. table drops). */
+.feature_red {
+   border: 1px solid #993333;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	background: #F6DFDF;
+}
+
+.fred_title {
+   padding: 3px 0px 3px 10px;
+   font-family: tahoma, arial, helvetica, sans-serif;
+   font-size: 12px;
+   font-weight: bold;
+   color: #000000;
+   background: #E6A5A5;
+}
+
+/* Column titles - Typically used for field names when viewing db tables (ie 'PRIKEY') */
+.col_title {
+   /* background: #306FAE; */
+   background: #D8D8D8;
+   padding: 2px;
+   font-family: tahoma, arial, helvetica, sans-serif;
+   font-size: 11px;
+   font-weight: bold;
+   /* color: #666565; */
+   color: #000000;
+}
+
+/* Column subtitles - Typically used for other field data displayed as row underneath each field name when viewing db tables (i.e. 'VARCHAR') */
+.col_sub {
+   /*background: #D9E3EF; */
+   background: #E3E2E2;   
+   padding: 3px;
+   font-family: verdana, arial, helvetica, sans-serif;
+   font-size: 11px;
+   color: #000000;
+   text-align:left;
+}
+
+td.col_sub{
+text-align:left;
+}
+/* Default form style for Form Builder forms (esp. in preview area) */
+.form_default {
+   font-family: arial, helvetica, sans-serif;
+	font-size: 11px;
+}
+
+.form_title {
+   font-size: 12px;
+   font-weight: bold;
+   padding: 5px;
+
+}
+
+.fprev_note {
+   font-size: 10px;
+   color: #000000;
+   border-bottom: 1px solid #000000;
+   background: #EFEFEF;
+}
+
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> Special Formatting
+--------------------------------------------------------------------------------------
+####################################################################################*/
+/* Grayed-out style for info that is meant to be example, temporary, disabled, etc. */
+.fademe { color: #B5B5B5; }
+#fademe { color: #B5B5B5; background: transparent;}
+
+/* Used in conjuction with js to give effect of appearing */
+.hideme { display: none; }
+#hideme { display: none; }
+
+/* Error text - Highlights labels and/or text boxes of missing required fields, etc. */
+.nodice { color: #D70000; }
+#nodice { color: #D70000; }
+#nodice input { border: 1px solid #D70000; }
+#nodice textarea { border: 1px solid #D70000; }
+#nodice table { border: 1px solid #D70000; }
+#nodice td { border: 1px solid #D70000; }
+
+/* Success text - opposite of #nodice */
+.done { color: #339959; }
+#done { color: #339959; }
+#done input { border: 1px solid #339959; }
+#done textarea { border: 1px solid #339959; }
+#done table { border: 1px solid #339959; }
+#done td { border: 1px solid #339959; }
+
+
+/* Border-exemptions - i.e. last cell of right-bordered row, bottom row of bordered table, etc. */
+#bdr_notop { border-top: 0px; }
+#bdr_noright { border-right: 0px; }
+#bdr_noleft { border-left: 0px; }
+#bdr_nobtm { border-bottom: 0px; }
+.nobdr-left { border-left: 0px !important; }
+
+/* Used mainly to give title cell the same padding as normal cells */
+#pad_flex { padding: inherit; }
+#pad_none { padding: 0px; }
+#pad_nobtm { padding-bottom: 0px; }
+#pad_notop { padding-top: 0px; }
+
+/* New look for 4.8.2 */
+.newDark {
+   color: #000000;
+   font-weight: bold;
+   }
+
+.newtext {
+   color: #000000;
+   }
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> Unique Elements
+--------------------------------------------------------------------------------------
+####################################################################################*/
+
+/*=================================================================================*/
+/* PopUp Div Layers (help screens, progress anis, user notes, version info, etc.)
+/*---------------------------------------------------------------------------------*/
+.gray_gel {
+   background-image: url(includes/display_elements/graphics/gray_gel.gif);
+   height: 23px;
+   border-bottom: 1px solid #2E2E2E;
+}
+
+
+/*---------------------------------------------------------------------------------------------------------*
+ ___        _    _
+| _ ) _  _ | |_ | |_  ___  _ _   ___
+| _ \| || ||  _||  _|/ _ \| ' \ (_-<
+|___/ \_,_| \__| \__|\___/|_||_|/__/
+
+/* New-school IE & FF friendly graphical buttons */
+/*---------------------------------------------------------------------------------------------------------*
+/* BIG BUTTONS  (ie 'Upload template files..') */
+/* Outer span has set dimenions and graphic bg */
+span.button_image {
+   display: block;
+   cursor: pointer;
+   padding: 0px 0px 0px 0px;
+   width: 200px;
+   height: 32px;
+}
+/* Inner span holds padded button text */
+span.button_image_text {
+   display: block;
+   text-align: left;
+   vertical-align: top;
+   padding: 10px 10px 0px 45px;
+}
+
+
+/* Spcecific buttons */
+#check_updates_btn_off { background-image: url('includes/display_elements/graphics/check_updates_btn-off.gif'); }
+#check_updates_btn_on { background-image: url('includes/display_elements/graphics/check_updates_btn-on.gif'); }
+
+/* DIALOG BUTTONS  (ie 'Install Now | Cancel') */
+/* Outer span has set dimenions and graphic bg */
+span.dialog_button {
+   display: block;
+   cursor: pointer;
+   padding: 0px 0px 0px 0px;
+   width: 102px;
+   height: 27px;
+}
+/* Inner span holds padded button text */
+span.dialog_button_text {
+   display: block;
+   text-align: left;
+   vertical-align: top;
+   padding: 7px 10px 0px 25px;
+   border: 0px solid red;
+}
+
+/* Spcecific buttons */
+#install_btn_off { background-image: url('includes/display_elements/graphics/install_btn-off.gif'); }
+#install_btn_on { background-image: url('includes/display_elements/graphics/install_btn-on.gif'); }
+#restart_btn_off { background-image: url('includes/display_elements/graphics/restart_btn-off.gif'); }
+#restart_btn_on { background-image: url('includes/display_elements/graphics/restart_btn-on.gif'); }
+#cancel_btn_off { background-image: url('includes/display_elements/graphics/cancel_btn-off.gif'); }
+#cancel_btn_on { background-image: url('includes/display_elements/graphics/cancel_btn-on.gif'); }
+#buy_btn_off { background-image: url('includes/display_elements/graphics/buy_btn-off.gif'); }
+#buy_btn_on { background-image: url('includes/display_elements/graphics/buy_btn-on.gif'); }
+
+/*=================================================================================*/
+/* Icon and button in footer that shows version info and update notifications
+/*---------------------------------------------------------------------------------*/
+#update_orb {
+   border: 0px solid red;
+   z-index: 10;
+   width: 200px;
+   height: 19px;
+   text-align: right;
+   vertical-align: top;
+   padding-top: 3px;
+   padding-right: 25px;
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+   background-position: right top;
+}
+
+/* One of these will always be employed with #update_orb */
+.orb_off { background-image: url(includes/display_elements/graphics/ftr-update_orb-off.gif); }
+.orb_green { background-image: url(includes/display_elements/graphics/ftr-update_orb-grn.gif); }
+.orb_red { background-image: url(includes/display_elements/graphics/ftr-update_orb-red.gif); }
+.orb_orange { background-image: url(includes/display_elements/graphics/ftr-update_orb-orange.gif); }
+
+
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> Buttons
+--------------------------------------------------------------------------------------
+####################################################################################*/
+
+/*================================================================================
+>> Upper Bar Navigation Buttons
+================================================================================*/
+.nav_main, .nav_mainon, .nav_mainmenu, .nav_mainmenuon, .nav_save, .nav_saveon, .nav_soho, .nav_sohoon, .nav_logout, .nav_logouton {
+	color: #FFFFFF;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 10px;
+	cursor: pointer;
+}
+
+.nav_main, .nav_mainon, .nav_mainmenu, .nav_mainmenuon {
+   background-color: #144B81;
+	border: 1px solid #595959;
+}
+
+.nav_main { background-image: url(includes/display_elements/graphics/btn-nav_main-off.jpg); }
+.nav_mainon { background-image: url(includes/display_elements/graphics/btn-nav_main-on.jpg); }
+
+
+.nav_mainmenu {
+	font-weight: bold;
+}
+
+.nav_mainmenuon {
+	background-color: #3283D3;
+	font-weight: bold;
+}
+
+
+.nav_save, .nav_saveon {
+	background-color: #087D34;
+	border: 2px solid #66CC70;
+}
+
+.nav_saveon {
+	background-color: #149845;
+}
+
+.nav_soho, .nav_sohoon {
+	background-color: #815714;
+	border: 2px solid #CC9B66;
+}
+
+.nav_sohoon {
+	background-color: #FF6600;
+}
+
+.nav_logout, .nav_logouton {
+	background-color: #9B0000;
+	border: 2px solid #CC6666;
+}
+
+.nav_logouton {
+	background-color: #D70000;
+}
+
+
+/*================================================================================
+>> Regular buttons
+================================================================================*/
+
+
+.btn_edit, .btn_editon, .btn_save, .btn_saveon, .btn_delete, .btn_deleteon, .btn_build, .btn_buildon, .btn_risk, .btn_riskon {
+	background-color: #C3DEFF;
+	font-family: tahoma, verdana, arial, helvetica, sans-serif;
+	color: #000000;
+	font-size: 8pt;
+	cursor: pointer;
+	border: 2px solid #6699CC;
+	border-right: 2px solid #336699;
+	border-bottom: 2px solid #336699;
+   border-left: 2px solid #6699CC;
+}
+
+
+.btn_editon {
+	background-color: #C3EDFF;
+}
+
+.btn_save, .btn_saveon {
+	background-color: #14B21C;
+	color: #ffffff;
+	border-top: 2px solid #158B1A;
+	border-right: 2px solid #166D1A;
+	border-bottom: 2px solid #166D1A;
+   border-left: 2px solid #158B1A;
+}
+
+.btn_saveon {
+	background-color: #10D91A;
+}
+
+.btn_delete, .btn_deleteon {
+	background-color: #E31A1A;
+	color: #FFFFFF;
+	border-top: 2px solid #B81B1B;
+	border-right: 2px solid #680808;
+	border-bottom: 2px solid #680808;
+   border-left: 2px solid #B81B1B;
+}
+
+.btn_deleteon {
+	background-color: #FF0000;
+}
+
+/* For actions that may lead to undesireable but not necessarily irrecoverable consequences */
+.btn_risk, .btn_riskon {
+	background-color: #F75D00;
+	color: #FFFFFF;
+	border-top: 2px solid #B81B1B;
+	border-right: 2px solid #680808;
+	border-bottom: 2px solid #680808;
+   border-left: 2px solid #B81B1B;
+}
+
+.btn_riskon {
+	background-color: #FE7613;
+}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+|| These btn_build buttons are mostly used for features that
+|| add something to the site (i.e. upload files, build form)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+.btn_build, .btn_buildon {
+	background-color: #BDEED1;
+	color: #000000;
+	border-top: 2px solid #66CCA2;
+	border-right: 2px solid #33996D;
+	border-bottom: 2px solid #33996D;
+   border-left: 2px solid #66CCA2;
+}
+
+.btn_buildon {
+	background-color: #B1FAD0;
+}
+
+
+/*================================================================================
+>> Minor action buttons within features (ie. "Move Item Up")
+================================================================================*/
+.btn_blue, .btn_green, .btn_red, .btn_orange {
+	background-color: #C3DEFF;
+	font-family: tahoma, verdana, arial, helvetica, sans-serif;
+	color: #FFF;
+	font-size: 8pt;
+	cursor: hand;
+}
+
+.btn_blue {
+	background-color: #336699;
+	color: #FFFFFF;
+	font-size: 8pt;
+	cursor: hand;
+	border: 2px outset #6699CC;
+}
+
+.btn_green {
+	background-color: #087D34;
+	color: #FFFFFF;
+	font-size: 8pt;
+	cursor: hand;
+	border: 2px outset #66CC91;
+}
+
+.btn_red {
+	background-color: #6E0000;
+	color: #FFFFFF;
+	font-size: 8pt;
+	cursor: hand;
+	border: 2px outset #9B0000;
+}
+
+.btn_orange {
+	background-color: #D75B00;
+	color: #FFFFFF;
+	font-size: 8pt;
+	cursor: hand;
+	border: 2px outset #9B5800;
+}
+
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> Form fields
+--------------------------------------------------------------------------------------
+####################################################################################*/
+
+SELECT {
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 9px;
+}
+
+.tfield_hex {
+   font-family: verdana, arial, helvetica, sans-serif;
+   font-size: 10px;
+   color: #727272;
+   width: 57px;
+}
+
+.tfield {
+   font-family: verdana, arial, helvetica, sans-serif;
+   font-size: 10px;
+}
+
+
+/*####################################################################################
+--------------------------------------------------------------------------------------
+>> Text Links
+--------------------------------------------------------------------------------------
+####################################################################################*/
+
+.hand { cursor: pointer; }
+/*
+a:link { color: #336699; text-decoration: underline; }
+a:visited { color: #336699; text-decoration: underline; }
+a:hover { color: #6699cc; text-decoration: underline; }
+a:active { color: #a5c6e6; text-decoration: underline; }
+*/
+a:link { color: #3C3C3C; text-decoration: underline; }
+a:visited { color: #3C3C3C; text-decoration: underline; }
+a:hover { color: #EAA510; text-decoration: none; }
+a:active { color: #3C3C3C; text-decoration: underline; }
+
+
+/* Help Links: Typically spawn a div help popup onclick */
+.help_popup_link:after { content: url("../icons/help_link_icon.gif"); }
+
+/* Main Menu: Enabled module links */
+a.on:link { color: #000000; font-size: 10px; cursor: pointer; font-weight: normal; text-decoration: none; }
+a.on:visited { color: #000000; font-size: 10px; cursor: pointer; font-weight: normal; text-decoration: none; }
+a.on:hover { color: #336699; font-size: 10px; cursor: pointer; font-weight: normal; text-decoration: none; }
+
+/* Main Menu: Disabled module links */
+a.off:link { color: #CCCCCC; font-size: 10px; cursor: pointer; font-weight: normal; text-decoration: none; }
+a.off:visited { color: #CCCCCC; font-size: 10px; cursor: pointer; font-weight: normal; text-decoration: none; }
+a.off:hover { color: #000000; font-size: 10px; cursor: pointer; font-weight: normal; text-decoration: none; }
+
+TABLE.clsNavLinks A:hover{text-decoration: none;}
+TABLE.clsNavLinks { clear: both; }
+
+.menusys a:link { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9pt; text-decoration: none; }
+.menusys a:visited { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9pt; text-decoration: none; }
+.menusys a:hover { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9pt; text-decoration: underline;}
+.menusys a:active { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9pt; text-decoration: underline; }
+
+a.act:link { color: #F75D00; text-decoration: underline; }
+a.act:visited { color: #F75D00; text-decoration: underline; }
+a.act:hover { color: #FD8D3B; text-decoration: underline; }
+a.act:active { color: #FFC417; text-decoration: underline; }
+
+a.sav:link { color: #339959; text-decoration: underline; }
+a.sav:visited { color: #339959; text-decoration: underline; }
+a.sav:hover { color: #66CC91; text-decoration: underline; }
+a.sav:active { color: #A5E6B3; text-decoration: underline; }
+
+a.del:link { color: #9B0000; text-decoration: underline; }
+a.del:visited { color: #9B0000; text-decoration: underline; }
+a.del:hover { color: #D70000; text-decoration: underline; }
+a.del:active { color: #FF0000; text-decoration: underline; }
+
+/*
+a.darkbg:link { color: #666565; text-decoration: underline; }
+a.darkbg:visited { color: #666565; text-decoration: underline; }
+a.darkbg:hover { color: #D70000; text-decoration: underline; }
+a.darkbg:active { color: #666565; text-decoration: underline; }
+*/
+
+a.darkbg:link { color: #3C3C3C; text-decoration: underline; }
+a.darkbg:visited { color: #3C3C3C; text-decoration: underline; }
+a.darkbg:hover { color: #EAA510; text-decoration: none; }
+a.darkbg:active { color: #3C3C3C; text-decoration: underline; }
+
+
+
+/*################################################################################################
+  _____                                 _   _    _
+ / ____|                               | | | |  | |
+| |  __   ___  _ __    ___  _ __  __ _ | | | |  | | ___   ___
+| | |_ | / _ \| '_ \  / _ \| '__|/ _` || | | |  | |/ __| / _ \
+| |__| ||  __/| | | ||  __/| |  | (_| || | | |__| |\__ \|  __/
+ \_____| \___||_| |_| \___||_|   \__,_||_|  \____/ |___/ \___|
+
+# Originally copied from info.soholaunch.com
+# Complete css revamp coming in v5
+/*################################################################################################
+
+/* LINKS */
+/*----------------------------*/
+
+/* Default link style */
+/*
+a:link {color: #306fae; text-decoration: underline; border-bottom:0px solid #004C9A;}
+a:visited {color: #306fae; text-decoration: underline; border-bottom:0px solid #004C9A;}
+a:hover {color: #6699cc; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
+a:active {color: #A5C6E6; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
+*/
+a:link { color: #3C3C3C; text-decoration: underline; }
+a:visited { color: #3C3C3C; text-decoration: underline; }
+a:hover { color: #EAA510; text-decoration: none; }
+a:active { color: #3C3C3C; text-decoration: underline; }
+/* Mark all external links */
+a.external:link:after { content: url("external_link_icon-10px.gif"); }
+a.external:visited:after { content: url("external_link_icon-10px.gif"); }
+a.external:link { text-decoration: none; border-bottom: 1px dotted #7a7a7a; }
+a.external:visited { text-decoration: none; border-bottom: 1px dotted #7a7a7a; }
+a.external:hover { text-decoration: none; border-bottom: 1px dotted #7a7a7a; }
+a.external:active { text-decoration: none; border-bottom: 1px dotted #7a7a7a; }
+
+a.link_green:link  { color: #30ae6f !important; }
+a.link_green:visited { color: #30ae6f !important; }
+a.link_green:hover { color: #66cc91 !important; }
+a.link_green:active { color: #A5E6B3 !important; }
+
+a.link_orange:link  { color: #F75D00 !important; }
+a.link_orange:visited { color: #F75D00 !important; }
+a.link_orange:hover { color: #ff8d41 !important; }
+a.link_orange:active { color: #FFC417 !important; }
+
+a.link_whitebox:link  { color: #fff;text-decoration: none;border: 1px dotted #ccc;   }
+a.link_whitebox:visited { color: #fff;text-decoration: none;border: 1px dotted #ccc; }
+a.link_whitebox:hover { color: #fff;text-decoration: none;border: 1px dotted #fff; }
+a.link_whitebox:active { color: #fff;text-decoration: none;border: 1px dotted #fff; }
+
+
+/* BORDERS */
+/*----------------------------*/
+.bdr_nobtm { border-bottom: none !important; }
+.bdr_blue { border: 1px solid #6699CC !important; }
+.bdr_bluetop { border-top: 1px solid #6699CC !important; }
+.bdr_blueleft { border-left: 1px solid #6699CC !important; }
+.bdr_blueright { border-right: 1px solid #6699CC !important; }
+
+/* Newschool border colors */
+.bdr_blue_a5 { border-color: #a5c6e6; !important; }
+
+/* Newschool border styles */
+.bdr_solid_u { border-style: none solid solid solid; !important; }
+
+/* Newschool border widths */
+.bdr_1px { border-width: 1px; !important; }
+
+.bdr_right_dotted { border-right: 1px dotted #D1D5D8 !important; }
+.bdr_btm_dotted td { border-bottom: 1px dotted #D1D5D8; }
+
+
+/* BACKGROUND COLOR - newschool */
+.bg_gray_f8 { background-color: #F8F8F8 !important; }
+.bg_gray_ef { background-color: #efefef !important; }
+.bg_gray_a5 { background-color: #E8E8E8 !important; }
+.bg_gray_df { background-color: #D1D5D8 !important; }
+
+.bg_blue_f8 { background-color: #F8F9FD !important; }
+.bg_blue_a5 { background-color: #A5C6E6 !important; }
+.bg_blue_df { background-color: #DFECF6 !important; }
+.bg_blue_66 { background-color: #6699CC !important; }
+.bg_blue_30 { background-color: #306FAE !important; }
+.bg_blue_33 { background-color: #336699 !important; }
+.bg_blue_31 { background-color: #315173 !important; }
+
+.bg_green_f8 { background-color: #F8FDFB !important; }
+.bg_green_df { background-color: #DFF6EA !important; }
+.bg_green_a5 { background-color: #A5E6B3 !important; }
+.bg_green_66 { background-color: #66CC91 !important; }
+.bg_green_30 { background-color: #30AE6F !important; }
+.bg_green_33 { background-color: #339959 !important; }
+.bg_green_31 { background-color: #317344 !important; }
+
+.bg_red_98 { background-color: #980000 !important; }
+.bg_red_d7 { background-color: #d70000 !important; }
+.bg_red_66 { background-color: #cc6666 !important; }
+.bg_red_a5 { background-color: #e6a5a5 !important; }
+.bg_red_df { background-color: #f6dfdf !important; }
+.bg_red_f8 { background-color: #fdf8f8 !important; }
+
+
+/* BACKGROUND COLOR - oldstyle */
+.bg_white { background-color: #FFFFFF !important; }
+.bg_lgray { background-color: #F7F7F7 !important; }
+.bg_lgreen { background-color: #F8FDFB !important; }
+.bg_green { background-color: #DFF6EA !important; }
+.bg_lblue { background-color: #F8F9FD !important; }
+.bg_lblue2 { background-color: #F7F9FF !important; }
+.bg_yellow { background-color: #FFFF99 !important; }
+
+
+/* SHORTAND FONT FAMILY */
+.mono { font-family: courier !important; }
+
+
+/* FONT COLOR */
+.white { color: #FFFFFF !important; }
+
+.lblack { color: #2E2E2E !important; }
+.black { color: #000000 !important; }
+
+.gray_f8 { color: #F8F8F8 !important; }
+.gray_df { color: #D1D5D8 !important; }
+.gray_33 { color: #7A7A7A !important; }
+.gray_31 { color: #595959 !important; }
+.gray { color: #888c8e !important; }
+.dgray { color: #595959 !important; }
+
+.lblue { color: #6699cc !important; }
+.blue { color: #336699 !important; }
+.dblue { color: #315173 !important; }
+.blue_f8 { color: #F8F9FD !important; }
+.blue_df { color: #DFECF6 !important; }
+.blue_a5 { color: #A5C6E6 !important; }
+.blue_66 { color: #6699CC !important; }
+.blue_30 { color: #306FAE !important; }
+.blue_33 { color: #336699 !important; }
+.blue_31 { color: #315173 !important; }
+
+.red { color: #D70000 !important; }
+.dred { color: #980000 !important; }
+.orange { color: #FE7613 !important; }
+.green { color: #00831C !important; }
+.green_f8 { color: #F8FDFB !important; }
+.green_df { color: #DFF6EA !important; }
+.green_a5 { color: #A5E6B3 !important; }
+.green_66 { color: #66CC91 !important; }
+.green_30 { color: #30AE6F !important; }
+.green_33 { color: #339959 !important; }
+.green_31 { color: #317344 !important; }
+
+/* FONT STYLE */
+.bold { font-weight: bold !important; }
+.unbold { font-weight: normal !important; }
+.uline { text-decoration: underline !important; }
+.noline { text-decoration: none !important; }
+
+
+/* PADDING and MARGIN */
+.nopad { padding: 0px !important; }
+.nopad_top { padding-top: 0px !important; }
+.nopad_right { padding-right: 0px !important; }
+.nopad_btm { padding-bottom: 0px !important; }
+.nopad_left { padding-left: 0px !important; }
+
+.nomargin_btm { margin-bottom: 0px !important; }
+.nomar_btm { margin-bottom: 0px !important; }
+.nomar_top { margin-top: 0px !important; }
+.nomar { margin: 0px !important; }
+
+/* ALIGNMENT */
+.center { text-align: center !important; }
+.right { text-align: right !important; }
+.top { vertical-align: top !important; }
+.middle { vertical-align: middle !important; }
+
+/* OTHER MISC */
+
+/* Cross-browser hand pointer for buttons that use span onclicks and such */
+.hand { cursor: pointer !important; }
+
+/* Particularly handy for adding less-stressed text/links to fgroup_title headings */
+.normal { letter-spacing: normal !important; }
+.font90 { font-size: 90% !important; }
+
+/* Bottom borders for breaking up table rows */
+tr.row_spliter td { border-bottom: 1px dashed #ccc; }
+
+/* Full & Partial opacity styles - used to dim out user options layer when showing a popup div */
+.faded {
+   filter:progid:DXImageTransform.Microsoft.Alpha(opacity=40);
+   -moz-opacity: 0.4;
+}
+.notfaded {
+   filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+   -moz-opacity: 1;
+}
+
+
+
+
+
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Probably Outdated Sytles (duplicates removed) - menu.css
+------------------------------------------------------------------------------
+>> These are only going to remain in this file until there obsolecense
+>> can be investigated and (hopefully) proven.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+.mouse {cursor: default}
+.click {cursor: hand}
+.ob1 {cursor: hand;background: ghostwhite}
+.ob2 {cursor: hand;background: gainsboro}
+.saverec {font:8pt Arial,sans-serif;color: menutext; background: captiontext}
+
+.tbox {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt; background-color: #CCCCCC; border: #000000; border-style: solid; border-top-width: thin; border-right-width: thin; border-bottom-width: thin; border-left-width: thin}
+
+
+.module_link {
+   font-family: verdana, arial, helvetica, sans-serif;
+   font-size: 11px;
+   font-weight: bold;
+   color: #000000;
+}
+
+.FormLt2 {
+	font-family : Arial;
+	font-size : 8pt;
+	cursor: hand;
+}
+
+.FormLt1 {
+	background-color: #336699;
+	color: #FFFFFF;
+	font-size: 8pt;
+	cursor: hand;
+	border: 2px solid #6699CC;
+}
+
+.chkout {
+	font-family : Arial;
+	font-size : 9pt;
+	cursor: hand;
+	width: 195px
+}
+
+.chkbox {
+	font-size : 8pt;
+	background-color : menu;
+	border : none;
+}
+
+.allBorder {
+	font-family: Arial;
+	font-size: 8pt;
+	border: 1px #000000 inset;
+	background: #EFEFEF;
+}
+
+.border {
+	font-family: Arial;
+	font-size: 8pt;
+	border: 1px #000000 inset;
+}
+
+
+
+.curoff {
+	cursor: normal;
+}
+
+.curhand {
+	cursor: hand;
+}
+
+.tblBorder {vertical-align: middle; border: 1 outset; margin: 0; font-family: Arial; font-size: 8pt; color: #000000;border: solid black 1px;border-left: 1px solid black;}
+.tblCell { border-left: 1px solid black; }
+.calcontrols {vertical-align: top; margin: 0; font-family: Arial; font-size: 8pt; background-color: #FFFFFF; color: #000000;}
+.calopcontrols {vertical-align: top; margin: 0; font-family: Arial; font-size: 8pt; background-color: oldlace; color: #000000;}
+.icalcontrols {vertical-align: top; margin: 0; font-family: Arial; font-size: 8pt; background-color: #FFFFFF; color: #000000;}
+.icalopcontrols {vertical-align: top; margin: 0; font-family: Arial; font-size: 8pt; background-color: #E6E6E6; color: #000000;}
+.catselect {font-family: Arial; font-size: 8pt;}
+.hintbox {width: 15; height: 15; vertical-align: top;}
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

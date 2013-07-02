@@ -1,0 +1,47 @@
+<FORM METHOD=POST ACTION="pgm-form_submit.php">
+
+
+  <INPUT TYPE=HIDDEN NAME="required_fields" VALUE="First Name;Email Address;Year Born">
+  
+  
+  <TABLE WIDTH="550" BORDER="0" ALIGN="CENTER" CELLPADDING="7" CELLSPACING="0" BGCOLOR="white" STYLE='BORDER: 1px inset black;'>
+    <TR ALIGN="CENTER" VALIGN="MIDDLE" BGCOLOR="#708090"> 
+      <TD COLSPAN="2" CLASS="text"><FONT COLOR="#FFFFFF" SIZE="2" FACE="Verdana, Arial, Helvetica, sans-serif">You 
+        must be at least 13 years old to register.<BR>
+        Teens please get your parents permission before you proceed.</FONT></TD>
+    </TR>
+    <TR> 
+      <TD ALIGN="RIGHT" CLASS="text"><FONT SIZE="2" FACE="Verdana, Arial, Helvetica, sans-serif">First 
+        Name:</FONT></TD>
+      <TD CLASS="text"><INPUT NAME="First Name" TYPE="text" ID="First Name" STYLE='font-family: Arial; font-size: 8pt; color: darkblue; width: 250px;'></TD>
+    </TR>
+    <TR> 
+      <TD ALIGN="RIGHT" CLASS="text"><FONT SIZE="2" FACE="Verdana, Arial, Helvetica, sans-serif">Email Address:</FONT></TD>
+      <TD CLASS="text"><INPUT NAME="Email Address" TYPE="text" ID="Email Address" STYLE='font-family: Arial; font-size: 8pt; color: darkblue; width: 250px;'></TD>
+    </TR>
+    <TR> 
+      <TD ALIGN="RIGHT" CLASS="text"><FONT SIZE="2" FACE="Verdana, Arial, Helvetica, sans-serif">What 
+        year were you born?</FONT></TD>
+      <TD CLASS="text"><INPUT NAME="Year Born" TYPE="text" value="" MAXLENGTH=4 ID="Year Born" STYLE='font-family: Arial; font-size: 8pt; color: darkblue; width: 250px;'></TD>
+    </TR>
+    <TR ALIGN="CENTER" VALIGN="TOP"> 
+      <TD COLSPAN="2" CLASS="text"><BR>
+        <FONT SIZE="2" FACE="Verdana, Arial, Helvetica, sans-serif">Select the 
+        type of email information you would like <br>
+        to receive, HTML or Text based?</FONT><br>
+        <BR> <INPUT NAME="EMAIL_TYPE" TYPE="radio" VALUE="HTML" CHECKED>
+        <FONT SIZE="2" FACE="Verdana, Arial, Helvetica, sans-serif">HTML&nbsp;<FONT COLOR="#999999">(Standard)</FONT></FONT>&nbsp;&nbsp;&nbsp;&nbsp; 
+        <INPUT TYPE="radio" NAME="EMAIL_TYPE" VALUE="TEXT">
+        <FONT SIZE="2" FACE="Verdana, Arial, Helvetica, sans-serif">Text&nbsp; <FONT COLOR="#999999">(Older 
+        Email Clients)</FONT></FONT></TD>
+    </TR>
+    <TR> 
+      <TD COLSPAN="2" CLASS="text">&nbsp;</TD>
+    </TR>
+    <TR ALIGN="CENTER" VALIGN="MIDDLE"> 
+      <TD COLSPAN="2" CLASS="text"><INPUT TYPE="submit" VALUE="Sign-up Now" CLASS="FormLt1"></TD>
+    </TR>
+  </TABLE>
+  
+</FORM>
+

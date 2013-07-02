@@ -1,0 +1,90 @@
+/* Paddings */
+header, .stage, .content-body, footer {
+	//padding: $baseline $padding-gutters;
+}
+
+/* Stage headings */
+.container { 
+	width: 1000px;
+	margin: 0 auto;
+	@include baseline-grid;
+	/*background-position: 0 2px;	*/
+}
+
+header {
+	#soholaunch-logo { 
+		height: 8 * $baseline; 
+	}
+	height: $baseline * 10;
+}
+
+.stage {
+	background-color: $color-accent;
+	color: #fff;
+	h1 {
+      font-size: 3.6rem;
+      line-height: ($baseline * 4);
+      font-weight: 300;
+      color: white;
+      -webkit-text-stroke: 1px white;
+		
+/*	   text-shadow:
+	       1px 1px 0 #fff,
+	     -1px -1px 0 #fff,  
+	      1px -1px 0 #fff,
+	      -1px 1px 0 #fff,
+	       1px 1px 0 #fff;*/
+	}
+	h2 {
+		font-size: 2.2rem;
+		line-height: $baseline * 3;
+		font-weight: 100;
+	}
+}
+
+.content-body {
+	h1 { 
+		font-size: 2.8rem;
+		line-height: ($baseline * 4);
+		font-weight: 700;
+		color: $color-darkbg;
+	}
+	h2 { 
+		font-size: 2.4rem; 
+		line-height: ($baseline * 4);
+		/*padding-top: .5rem;*/
+		font-weight: normal;
+		color: $color-accent;
+	}
+	h3 { 
+		font-size: 2.13rem;
+		line-height: $baseline * 4 - .2rem;
+		padding-top: .2rem;		
+		color: $color-darkbg;
+		font-weight: 400;
+	}
+	h4 { @include rem-fallback(font-size, 1.8); }
+}
+
+p {
+	font-family: "pt-sans";
+	line-height: $baseline * 2;
+	margin-top: 0;
+	margin-bottom: $baseline;
+}
+
+/* FOOTER */
+footer {
+	background-color: $color-darkbg;
+	color: #fff;
+	h1 {
+		font-size: 2.4rem;
+		line-height: $baseline * 4;
+		font-weight: 400;
+	}
+	h2 {
+		font-size: 2.13rem;
+		line-height: $baseline * 3;
+		font-weight: 300;
+	}	
+}

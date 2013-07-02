@@ -1,0 +1,125 @@
+
+button.greenButton{margin:0 5px;}
+button.redButton{margin:0 5px;}
+button.grayButton{margin:0 5px;}
+button.blueButton{margin:0 5px;}
+
+
+/* a.blueButton,a.greenButton,a.redButton,a.grayButton,a.blueButton span,a.greenButton span,a.redButton span,a.grayButton span,button.blueButton span,button.greenButton span,button.redButton span,button.grayButton span,button.blueButton span span,button.greenButton span span,button.redButton span span,button.grayButton span span{background-image:url(images/buttonsimage.png);background-repeat:no-repeat;background-position:1000px 1000px;outline:none!important;line-height:12px;} */
+a.blueButton,a.greenButton,a.redButton,a.grayButton,a.blueButton span,a.greenButton span,a.redButton span,a.grayButton span,button.blueButton span,button.greenButton span,button.redButton span,button.grayButton span,button.blueButton span span,button.greenButton span span,button.redButton span span,button.grayButton span span{background-image:url(images/ultrabuttons.png);background-repeat:no-repeat;background-position:1000px 1000px;outline:none!important;line-height:12px;}
+
+
+* html a.blueButton,* html a.greenButton,* html a.redButton,* html a.grayButton,* html a.blueButton span,* html a.greenButton span,* html a.redButton span,* html a.grayButton span,* html button.blueButton span,* html button.greenButton span,* html button.redButton span,* html button.grayButton span,* html button.blueButton span span,* html button.greenButton span span,* html button.redButton span span,* html button.grayButton span span{background-image:url(images/ultrabuttons.png);}
+
+button::-moz-focus-inner{padding:0;border:0;}
+
+a.blueButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;text-decoration:none;display:inline-block;}
+
+a.blueButton:hover,a.greenButton:hover,a.redButton:hover,a.grayButton:hover{text-decoration:none!important;}
+
+a.greenButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;text-decoration:none;display:inline-block;}
+
+a.redButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;text-decoration:none;display:inline-block;}
+
+a.grayButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;text-decoration:none;display:inline-block;}
+
+a.element,button.element span{width:24px;}
+
+button.element span{height:22px;}
+
+a.blueButton span{display:inline-block;margin:0 11px 0 0;padding:5px 9px 5px 20px;cursor:pointer;white-space:nowrap;}
+
+a.greenButton span{display:inline-block;margin:0 11px 0 0;padding:5px 9px 5px 20px;cursor:pointer;white-space:nowrap;}
+
+a.redButton span{display:inline-block;margin:0 11px 0 0;padding:5px 9px 5px 20px;cursor:pointer;white-space:nowrap;}
+
+a.grayButton span{display:inline-block;margin:0 11px 0 0;padding:5px 9px 5px 20px;cursor:pointer;white-space:nowrap;}
+
+button.blueButton,button.greenButton,button.redButton,button.grayButton{display:-moz-inline-box;display:inline-block;margin:0;padding:0;border:none;overflow:visible;text-decoration:none;background:transparent;white-space:nowrap;cursor:pointer;}
+
+button.blueButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;}
+
+button.greenButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;}
+
+button.redButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;}
+
+button.grayButton{font:normal 12px/12px Arial,Helvetica,sans-serif;height:22px;}
+
+button.blueButton span,button.greenButton span,button.redButton span,button.grayButton span{display:inline-block;cursor:pointer;overflow:visible;white-space:nowrap;}
+
+button.blueButton span span,button.greenButton span span,button.redButton span span,button.grayButton span span{display:inline-block;cursor:pointer;overflow:visible;}
+
+button.blueButton span span{margin:0 11px 0 0;padding:5px 9px 5px 20px;height:12px;}
+
+button.greenButton span span{margin:0 11px 0 0;padding:5px 9px 5px 20px;height:12px;}
+
+button.redButton span span{margin:0 11px 0 0;padding:5px 9px 5px 20px;height:12px;}
+
+button.grayButton span span{margin:0px 11px 0 0;padding:5px 9px 5px 20px;height:12px;}
+
+
+
+
+
+
+a.blueButton,button.blueButton span{color:#FFFFFF;background-position:right -266px;text-shadow:0px -1px 1px #444;}
+a.blueButton span,button.blueButton span span{background-position:0 -266px;}
+
+a.blueButton:hover,button.blueButton:hover span{background-position:right -244px;}
+a.blueButton:active,button.blueButton:active span{background-position:right -244px;}
+
+a.blueButton:hover span,button.blueButton:hover span span{background-position:0 -244px;}
+a.blueButton:active span,button.blueButton:active span span{background-position:0 -244px;}
+
+/*
+a.greenButton,button.greenButton span{color:#FFFFFF;background-position:right -344px;}
+a.greenButton span,button.greenButton span span{background-position:0 -344px;}
+
+a.greenButton:hover,button.greenButton:hover span{background-position:right -366px;}
+a.greenButton:active,button.greenButton:active span{background-position:right -366px;}
+
+a.greenButton:hover span,button.greenButton:hover span span{background-position:0 -366px;}
+a.greenButton:active span,button.greenButton:active span span{background-position:0 -366px;}
+*/
+a.greenButton,button.greenButton span{color:#FFFFFF;background-position:right -366px;text-shadow:0px -1px 1px #666;}
+a.greenButton span,button.greenButton span span{background-position:0 -366px;}
+
+a.greenButton:hover,button.greenButton:hover span{background-position:right -344px;}
+a.greenButton:active,button.greenButton:active span{background-position:right -344px;}
+
+a.greenButton:hover span,button.greenButton:hover span span{background-position:0 -344px;}
+a.greenButton:active span,button.greenButton:active span span{background-position:0 -344px;}
+
+
+
+/*
+a.redButton,button.redButton span{color:#FFFFFF;background-position:right -200px;}
+a.redButton span,button.redButton span span{background-position:0 -200px;}
+
+a.redButton:hover,button.redButton:hover span{background-position:right -222px;}
+a.redButton:active,button.redButton:active span{background-position:right -222px;}
+
+a.redButton:hover span,button.redButton:hover span span{background-position:0 -222px;}
+a.redButton:active span,button.redButton:active span span{background-position:0 -222px;}
+*/
+
+a.redButton,button.redButton span{color:#FFFFFF;background-position:right -222px;text-shadow: 0px -1px 1px #000;}
+a.redButton span,button.redButton span span{background-position:0 -222px;}
+
+a.redButton:hover,button.redButton:hover span{background-position:right -200px;}
+a.redButton:active,button.redButton:active span{background-position:right -200px;}
+
+a.redButton:hover span,button.redButton:hover span span{background-position:0 -200px;}
+a.redButton:active span,button.redButton:active span span{background-position:0 -200px;}
+
+
+a.grayButton,button.grayButton span{color:#FFFFFF;background-position:right -647px;text-shadow:0px -1px 1px #000;}
+a.grayButton span,button.grayButton span span{background-position:0 -647px;}
+
+a.grayButton:hover,button.grayButton:hover span{background-position:right -669px;}
+a.grayButton:active,button.grayButton:active span{background-position:right -669px;}
+
+a.grayButton:hover span,button.grayButton:hover span span{background-position:0 -669px;}
+a.grayButton:active span,button.grayButton:active span span{background-position:0 -669px;}
+
+

@@ -1,0 +1,105 @@
+/* CSS Rules for edit form/field properties dialog */
+/* --------------------------------------------------------------- */
+
+#field_properties label {
+   display: block;
+   clear: both;
+   font-size: 11px;
+   margin-top: 10px;
+}
+
+#properties_form input, #form_properties input {
+   font-size: 10px;
+}
+
+fieldset {
+   margin-top: 10px;
+   border: 1px solid #ccc;
+}
+
+legend {
+   font-size: 11px;
+   font-weight: bold;
+}
+
+/* Choices */
+.row {
+   display: block;
+   clear: both;
+   /*border: 1px solid red;*/
+}
+
+.radio_option {
+   display: block;
+   float: left;
+   padding: 3px;
+   margin-right: 2px;
+   border: 1px dotted #ccc;
+   cursor: pointer;
+}
+.radio_option h1, .radio_option h2, .radio_option h3, .radio_option h4, .radio_option h5, .radio_option h6 {
+   margin: 0;
+}
+
+.radio_option .props-titletxt {
+   display: block;
+   float: left;
+   /*border: 1px solid red;*/
+}
+.radio_option input {
+   display: block;
+   float: left;
+   margin-top: 1px;
+}
+
+fieldset.choices input {
+   float: left;
+   width: 120px;
+   margin-bottom: 5px;
+   margin-left: 3px;
+}
+/*.buttonset-choice {
+   display: block;
+   float: left;
+   padding-top: 2px;
+   border: 1px solid red;
+}*/
+.choicebtn-minus, .choicebtn-plus, .choicebtn-check, .choicebtn-check-on {
+   display: block;
+   float: left;
+   width: 15px;
+   margin: 1px 0px 0 7px;
+   border: 1px solid #ccc;
+   text-align: center;
+   cursor: pointer;
+}
+
+/*.choicebtn-minus {
+   margin-left: 3px;
+}*/
+
+/* When option is marked as checked by default */
+.choicebtn-check-on {
+   color: #339959;
+   font-weight: bold;
+}
+
+
+
+/* Special needs */
+#field_title {
+   width: 170px;
+}
+#field_notes {
+   width: 200px;
+   height: 50px;
+   font-size: 10px;
+}
+#field_width, #field_height, .props-width {
+   width: 30px;
+   font-family: Courier New, courier, mono;
+   font-size: 9px;
+}
+#optionlayout {
+   width: 150px;
+}

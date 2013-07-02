@@ -1,0 +1,43 @@
+/* CSS Rules specifically for forms_manager.php -- Forms Manager main screen */
+
+#container-saved_forms, #container-create_form {
+   float: left;
+   width: 40%;
+   margin: 10px;
+   padding: 15px;
+   vertical-align: top;
+   border: 1px solid #336699;
+}
+
+#container-saved_forms h1, #container-create_form h1 {
+   margin-top: 0;
+   font-size: 13px;
+}
+
+#label-newform_name {
+   display: block;
+   font-size: 11px;
+}
+
+#newform_name {
+   width: 250px;
+   font-size: 18px;
+}
+
+#container-create_form_button {
+   display: block;
+   text-align: right;
+}
+
+#preview_window-container {
+   display: block;
+   clear: both;
+   padding-left: 20px;
+   text-align: center;
+}
+
+#form_preview_window {
+   width: 80%;
+   height: 200px;
+   border: 0px;
+}

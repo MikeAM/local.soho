@@ -1,0 +1,135 @@
+<!---Stage area--->
+<section class="container stage">
+    <div class="grid-row">
+        <div class="twelve columns">
+            <h2>Purchase the all-inclusive package</h2>
+        </div>
+    </div>
+</section>
+
+<!---Checkout steps--->
+<section class="container alt">
+    <div class="grid-row">
+        <div class="twelve columns checkout-steps">
+            <label>Checkout Steps:</label>
+            <ol class="list-steps">
+                <li class="current">Choose Domain</li>
+                <li>Sign-Up for Hosting</li>
+                <li>Build Website</li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+<!--BODY CONTENT starts here--->
+<section class="container body">
+    <div class="grid-row">
+
+        <!--Content-->
+        <div class="nine columns">
+            <div class="grid-row">
+                <div class="twelve columns">
+                    <h2>1. Choose a domain name&hellip;</h2>
+                    <fieldset>
+                        <ul class="radiogroup">
+                            <li><input type="radio" name="choose-domain" id="dom-register-new" checked><label for="dom-register-new">I want to <strong>register a new</strong> domain.</label></li>
+                            <li><input type="radio" name="choose-domain" id="dom-already-own"><label for="dom-already-own"><strong>I already own</strong> a domain I want to use.</label></li>
+                            <li><input type="radio" name="choose-domain" id="dom-temporary-name"><label for="dom-temporary-name"><strong>I don't know yet.</strong> I'll pick a temporary name for now.</label></li>
+                        </ul>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="grid-row domain-input-container">
+                <div class="nine columns">
+                    <span class="label-handwritten label-prefix">http://</span>
+                    <input type="text" id="domain-name-input" placeholder="Enter a domain to check"/>
+                    <select id="domain-tld-input">
+                        <option value="com">.com</option>
+                        <option value="net">.net</option>
+                    </select>
+                </div>
+                <div class="three columns">
+                    <button class="button btn-learn-more" id="btn-check-domain">Check It</button>
+                </div>
+            </div>
+
+            <div class="grid-row">
+                <div class="twelve columns lpad-1 rpad-2">
+                    <p class="instructions" id="instructions-domain-name" data-attachto="domain-name">Type-in the domain name you'd like to use for your website, and we'll check to see if it's available for you.</p>
+                </div>
+            </div>
+
+            <!--Payment terms-->
+            <div class="grid-row">
+                <div class="five columns">
+                    <label class="payment-term" for="term-monthly">
+                        <fieldset class="radio-single">
+                            <input type="radio" name="payment-term" id="term-monthly" class="isolated-radio"/>
+                            <label for="term-monthly" aria-hidden="true"></label>
+                        </fieldset>
+                        <div class="summary">
+                            <h6>Pay Monthly</h6>
+                            <ul class="list-naked">
+                                <li><strong>$17.95 / month</strong></li>
+                                <li>+95&#162; first month special</li>
+                                <li>+$5.00 for your domain</li>
+                                <li><strong>Due Now: <span class="money">$5.95</strong></li>
+                                <!--<li class="note">(<strong>$17.95</strong>/mo. starts next month)</li>-->
+                            </ul>
+                        </div>
+                    </label>
+                </div>
+                <div class="five columns">
+                    <label class="payment-term" for="term-yearly">
+                        <fieldset class="radio-single">
+                            <input type="radio" name="payment-term" id="term-yearly" class="isolated-radio" checked/>
+                            <label for="term-yearly" aria-hidden="true"></label>
+                        </fieldset>
+                        <div class="summary">
+                            <h6>Pay Yearly</h6>
+                            <ul class="list-naked">
+                                <li><strong>$119.40 / year</strong></li>
+                                <li>(same as $9.95 / month)</li>
+                                <li>+Free domain</li>
+                                <li><strong>Due Now: <span class="money">$119.40</span></strong></li>
+                            </ul>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="grid-row">
+                <div class="twelve columns">
+                    <a href="/buy-all-inclusive-step2" class="button btn-continue"><strong>Continue to Step 2:</strong> Create Hosting Account</a>
+                </div>
+            </div>
+        </div>
+
+        <!--Sidebar-->
+        <div class="three columns sidebar">
+            <article class="sidebar-info">
+                <h5>What you're getting</h5>
+                <ul>
+                    <li>Soholaunch Ultra</li>
+                    <li>400 GB Web Hosting</li>
+                    <li>10 Email Accounts</li>
+                    <li>View detailed specs</li>
+                </ul>
+            </article>
+
+            <article class="sidebar-info">
+                <h5>We're here to help!</h5>
+                <ul>
+                    <li>Your plan includes unlimited tech support</li>
+                    <li>Questions about buying? <a href="#">Contact us</a>.</li>
+                </ul>
+            </article>
+        </div>
+    </div>
+    <div class="grid-row">
+        <div class="columns twelve center">
+            <h3>Not sure of which plan to choose? <a class="button-contact" href="#">Contact Us</a></h3>
+        </div>
+    </div>
+</section>
+<!--END .content-body--->

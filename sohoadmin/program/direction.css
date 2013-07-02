@@ -1,0 +1,70 @@
+body {direction: rtl;}
+td.fgroup_title {
+	direction: ltr;
+	text-align: right !important;
+	padding-right: 3px;
+}
+
+th.fgroup_title {
+	direction: ltr;
+	padding-right: 3px;
+	text-align: right !important;
+}
+
+.fgroup_title div {
+	float: right !important;
+	direction: ltr;
+	padding-right: 3px;
+	text-align: right !important;
+}
+
+.feature_contain th {direction: rtl !important; text-align: right !important;}
+
+.main_help_titles1 {
+	border-style: solid solid none none !important;
+}
+
+.main_help_titles2 {
+	border-style: solid none none none !important;
+}
+
+.main_help_titles3 {
+	border-style: solid none none solid !important;
+}
+
+.main_help_content1 {
+	border-style: none solid solid none !important;
+}
+
+.main_help_content2 {
+	border-style: none none solid none !important;
+	padding-right: 2px !important;
+}
+
+.main_help_content3 {
+	border-style: none none solid none !important;
+}
+
+.main_help_content4 {
+	border-style: none none solid none !important;
+	padding-right: 2px !important;
+}
+
+.main_help_content5 {
+	border-style: none none solid none !important;
+}
+
+.main_help_content6 {
+	border-style: none none solid solid !important;
+}
+
+.text tbody tr td {text-align: left !important;}
+
+.gray_33 p {text-align: right;}
+
+#layout_tab1 {left: 15px !important;}
+#layout_tab3 {left: 265px !important;}
+#standard_features {direction: ltr !important;}
+#speeddialgo {direction: rtl !important;}
+#speeddialgo td {padding-left: 10px !important;}
+.wheredoistart {text-align: right !important; background-position: 685px 0px !important;}

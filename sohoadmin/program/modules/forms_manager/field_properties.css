@@ -1,0 +1,42 @@
+/* CSS Rules for ajax-field_properties.php */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+#container-field_properties {
+   width: 220px;
+   border: 1px solid #ccc;
+   background-color: #fff66f;
+}
+
+.props-labeltxt {
+   /*display: block;*/
+   float: left;
+   clear: left;
+   font-weight: normal;
+}
+
+.props-textfield {
+   /*display: block;*/
+   float: left;
+   clear: left;
+   font-size: 10px;
+}
+
+.props-checkbox {
+   /*display: inline;*/
+   float: left;
+}
+
+#required_yesno {
+   /*di*/
+}
+
+fieldset {
+   margin-top: 4px;
+   border: 0;
+}
+
+
+/* Shove label down to align with checkbox */
+fieldset.props-checkoption span.props-labeltxt {
+   margin-top: 3px;
+}
+

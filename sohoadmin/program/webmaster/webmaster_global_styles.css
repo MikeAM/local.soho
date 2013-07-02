@@ -1,0 +1,61 @@
+/* Rules for Webmaster Menu feature and all sub-modules */
+
+form {
+   margin: 0;
+}
+
+fieldset {
+   margin-top: 10px;
+}
+
+label, sublabel {
+   display: block;
+   margin: 0;
+}
+
+/*label { font-weight: bold; }*/
+
+sublabel {
+   color: #888c8e;
+}
+
+legend {
+   font-size: 125%;
+   font-weight: bold;
+}
+
+/* Global Settings */
+fieldset.all_inline_labels label, fieldset.all_inline_labels input {
+   float: left;
+}
+fieldset.all_inline_labels label {
+   padding-top: 3px;
+   margin-right: 5px;
+   /*border: 1px solid red;*/
+}
+
+fieldset.all_inline_labels input {
+   margin-right: 15px;
+}
+
+/* Special Needs */
+#ftp_username, #ftp_password {
+   font: 11px Courier New, courier, mono;
+}
+#ftp_username { width: 125px; }
+#ftp_password { width: 90px; }
+
+#newip_val {
+   font: 11px Courier New, courier, mono;
+}
+
+
+/* Business Info > Save button */
+#savebtn-container {
+   width: 200px;
+   margin: 10px;
+   padding: 15px;
+   /*border: 1px solid red;*/
+   text-align: center;
+   /*background: #efefef;*/
+}
