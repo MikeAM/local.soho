@@ -109,4 +109,18 @@ fieldset:not(#is4ie8) {
     border-right: $triangle-size solid transparent;
     border-bottom: $triangle-size solid $color-accent;
   }
+
+  &.success {
+    background-color: $color-success;
+    &:before {
+      border-bottom-color: $color-success;
+    }
+  }
+
+  &.error {
+    background-color: $color-error;
+    &:before {
+      border-bottom-color: $color-error;
+    }
+  }
 }

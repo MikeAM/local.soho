@@ -937,6 +937,14 @@ fieldset:not(#is4ie8) > .isolated-radio {
     border-left: 1.2rem solid transparent;
     border-right: 1.2rem solid transparent;
     border-bottom: 1.2rem solid #0a6aa6; }
+  .instructions.success {
+    background-color: #0aa64c; }
+    .instructions.success:before {
+      border-bottom-color: #0aa64c; }
+  .instructions.error {
+    background-color: #a6190a; }
+    .instructions.error:before {
+      border-bottom-color: #a6190a; }
 
 /* LAYOUT
 -----------------------------------------------------------------*/
