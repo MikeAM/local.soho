@@ -4,4 +4,6 @@ Disallow: /tCustom/
 Disallow: /template/
 Disallow: /pgm-email_friend.php
 Disallow: /pgm-form_submit.php
-Sitemap: http://ultra.soholaunch.com/sitemap.xml.php
+Disallow: /pgm-*
+Disallow: /phpinfo.php
+Sitemap: http://local.soho/sitemap.xml.php
