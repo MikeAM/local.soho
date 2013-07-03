@@ -21,17 +21,9 @@ padding : 0px;
 margin : 0px;
 width : 100%;
 height : 100%;
-background:url(images/vert-bg.png) repeat-y;
+/*background:url(images/vert-bg.png) repeat-y;*/
 } 
-.top
-{
-	 background:#DCDCDC url(images/top-bg.png); 
-	/*background:#4E4E4E url(images/top-bg-new2.png);
-	
-	background:url(images/top-bg-new6.png); */
-	height:49px;
-	min-width:800px; /* Chris's Change */
-}
+
 .name
 {
 	float:left;
@@ -105,6 +97,7 @@ background:url(images/vert-bg.png) repeat-y;
 .account
 {
 	float:right;
+	height:49px;
 	/*width:530px;*/
 	width:442px;
 	white-space:nowrap;
@@ -235,12 +228,7 @@ box-shadow: 0px 0px 10px #ffffff;
 border:1px solid #c8c7c7; 
 
 }
-.left-panel li
-{
-	padding:0px;
-	margin:0px;
-	border:0px solid red!important;
-}
+
 
 .left-panel ul.nav ul
 {
@@ -260,7 +248,12 @@ border:1px solid #c8c7c7;
 	
 
 }
-
+.left-panel li
+{
+	padding:0px;
+	margin:0px;
+	border:0px solid red;
+}
 li div.nav-heading a.nav-heading-link:hover {
 	/*color:#EAA510;*/
 	color:#FFFFFF;
@@ -270,7 +263,7 @@ li div.nav-heading a.nav-heading-link:hover {
 
 
 li div.collapsed {
-	border-bottom:0px!important;
+	border-bottom:0px;
 }
 
 
@@ -491,8 +484,8 @@ div.dashboard:hover {
 }
 
 .left-panel li li {
-	 border-left:1px solid #CCCCCC;
-	 border-right:1px solid #CCCCCC;
+	border-left:0px solid #CCCCCC;
+	 border-right:0px solid #CCCCCC;
 	 
 	  
 }
@@ -504,7 +497,8 @@ div.dashboard:hover {
 	 /* background:#F8F9FD; */
 	/* padding:6px 10px; */
 	padding:1px 4px 1px 10px;
-	font:12px Arial, Helvetica, sans-serif;
+	font:13px Arial, Helvetica, sans-serif;
+	
 	color:#666565;
 	
 	
@@ -550,7 +544,7 @@ div.dashboard:hover {
 	background:#818181;
 	border-top:solid 0px #a2a1a1;
 	border-bottom:solid 1px #a2a1a1;
-	font-weight:bold;
+	/*font-weight:bold;*/
 	
 }
 
@@ -560,7 +554,7 @@ div.dashboard:hover {
 	color:#FFFFFF;
 	background:#a2a1a1;
 	border:solid 1px #818181;
-	font-weight:bold;
+	/*font-weight:bold;*/
 }
 
 
@@ -582,7 +576,7 @@ border-left: 1px solid #c8c7c7;
 border-top: 1px solid #c8c7c7;
 border-bottom: 1px solid #FFFFFF;
 text-decoration: none;
-font:12px Arial, Helvetica, sans-serif;
+font:14px Arial, Helvetica, sans-serif;
 
 }
 
@@ -658,6 +652,45 @@ overflow:hidden;
 .right-panel h5 a:hover
 {
 	color:#f0a912;
+}
+
+div#report_messages
+{
+	padding: 8px;
+	-o-border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	min-width: 150px;
+	font-weight: bold;
+}
+div#report_messages ul li
+{
+	list-style: none;
+}
+div#report_messages.alert
+{
+	background-color: #FCF8E3;
+	border: 1px solid #FBEED5;
+	color: #C09853;
+}
+div#report_messages.error
+{
+	background-color: #F2DEDE;
+	border: 1px solid #EED3D7;
+	color: #B94A48;
+}
+div#report_messages.success
+{
+	background-color: #DFF0D8;
+	border: 1px solid #D6E9C6;
+	color: #468847;
+}
+div#report_messages.info
+{
+	background-color: #D9EDF7;
+	border: 1px solid #BCE8F1;
+	color: #3A87AD;
 }
 
 .name h5.breadcrumb {
@@ -742,6 +775,21 @@ div.nav-heading span.rollup-button a {
 	
 }
 
+.top h3.breadcrumb{
+	left:25px;
+}
+
+
+#tleft2{
+	width:225px;
+	height:45px;
+	position:absolute;
+	top:0;
+	left:-220px;
+	z-index:0;
+}
+
+
 div.nav-heading span {
 	border-left:2px solid #D6D6D6;
 }
@@ -768,19 +816,22 @@ div.nav-heading span.rollup-button a:hover {
 
 /*div.nav-heading .rollup-button*/
 
-div.nav-heading a.nav-heading-link { 
-	font-weight: bold !important; 
-	background-repeat: no-repeat !important;
-	background-position: 10px 5px !important;
-	padding-left: 40px !important;
-	/*background-color: blue !important;*/
-}
-div.nav-heading a.nav-heading-link:hover
+
+li div.nav-heading a.nav-heading-link:hover
 {
 	color: #FFFFFF;
 	display: block;
+	background-repeat: no-repeat;
+	background-position: 10px 5px ;
+	padding-left: 40px ;
 }
-
+li div.nav-heading a.nav-heading-link { 
+	font-weight: bold ; 
+	background-repeat: no-repeat;
+	background-position: 10px 5px ;
+	padding-left: 40px ;
+	/*background-color: blue !important;*/
+}
 div#pages-nav-heading a.nav-heading-link { background-image: url(images/pages.png) !important; }
 div#lookandfeel-nav-heading a.nav-heading-link { background-image: url(images/theme-icon.png) !important; }
 div#files-nav-heading a.nav-heading-link { background-image: url(images/files.png) !important; }
@@ -812,3 +863,32 @@ div.collapsed span.rollup-button a:hover { border:0; background-position: 2px 3p
 */
 
 ul.subnav { display: none; }
+
+div.nav-heading a:first-letter,.nav-section ul li a:first-letter { font-weight:bold;text-decoration:underline; }
+
+.top {
+	 background:#DCDCDC url(images/top-bg.png) 0px 0px repeat-x; 
+	/*background:#4E4E4E url(images/top-bg-new2.png);
+	
+	background:url(images/top-bg-new6.png); */
+	height:49px;
+	max-height:49px;
+	min-width:800px; /* Chris's Change */
+	margin:0px;
+	padding:0px;
+	border:0px;
+}
+ 
+ 
+#main-container{
+	overflow:auto!important;
+	display:block;
+	margin-top:0px;
+	min-width: 800px!important;
+	 
+	top:0px;
+	left:10px;
+	height:98%;
+	position:absolute;
+	width:99%;
+}

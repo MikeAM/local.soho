@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -36,7 +36,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 // script has dependancies and programming that can not be modified.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-error_reporting(0);
+
 track_vars;
 session_start();
 
@@ -74,9 +74,14 @@ if($_GET['logout'] == 'logout'){
 <html>
 <head>
 <title><? echo "Site: ".$_SESSION['this_ip']; ?></title>
-<link rel="stylesheet" href="http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/program/includes/product_buttons-ultra.css">
-<script language="JavaScript">
+<style>.pagedd { width: 130px; } </style>
+<link rel="stylesheet" href="<?php echo httpvar().$_SESSION['docroot_url']; ?>/sohoadmin/program/includes/product_buttons-ultra.css">
 
+<script type="text/javascript" src="<?php echo httpvar().$_SESSION['docroot_url']; ?>/sohoadmin/client_files/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo httpvar().$_SESSION['docroot_url']; ?>/sohoadmin/client_files/jquery-ui.min.js"></script>
+
+<script language="JavaScript">
+var loadedPage;
 function killErrors() {
 	return true;
 }
@@ -114,28 +119,70 @@ function SOHO_Alert(alertVar) {
 <SCRIPT LANGUAGE="javascript">
 
 function savePage(redirect) {
-
 	var confirm_save = 1;
 
 	if (redirect != "page_editor.php") {
-		var tiny = window.confirm('<? echo lang("Do you wish to save the changes you have made"); ?>?\n\n<? echo lang("Click \"OK\" to Save changes now OR"); ?>\n<? echo lang("Click \"Cancel\" to discard changes"); ?>.');
+		var tiny = top.confirm('<? echo lang("Do you wish to save the changes you have made"); ?>?\n\n<? echo lang("Click \"OK\" to Save changes now OR"); ?>\n<? echo lang("Click \"Cancel\" to discard changes"); ?>.');
 		if (tiny != false) { var confirm_save = 1; } else { var confirm_save = 0; }
 	}else{
 	   var confirm_save = 1;
 	}
+//alert(confirm_save+'hi');
 
+	var pgboxcount=parent.body.document.getElementById('boxcount').value;
+	//alert(parent.body.TouchMe('TDB1')+' hi '+pgboxcount);
    if(!document.all){
+   	
 //      is_save = redirect.search("editor");
 //      if(is_save>0){
 //         redirect='page_editor.php';
 //      }
-   	if (confirm_save == 1) {
+// 
+
+   	if (confirm_save == 1) {   		
          //show_hide_layer('ProgressBarSave?body','','show');			// Display Save Progress Bar in Edit Window
    		//parent.footer.CURPAGENAME.innerHTML = 'Saving Changes...';	// Update Status Bar
    		var saveText = "";
    		var tempValue = "";
    		//var saveText = parent.body.saveForm.innerHTML;			// Get information from Page Editor
    		var saveText = parent.body.GetSaveForm();			// Get information from Page Editor
+		saveText = saveText.replace('<img class="blockerimg" src="whitespace.gif">','');
+		//alert('hi '+pgboxcount);
+////// sidebar stuff
+		saveText = saveText+"<input type=hidden name='pgboxcount' value='"+pgboxcount+"'>\n";
+		if(pgboxcount > 0){						
+			for (var tbx=1;tbx<=pgboxcount;tbx++){
+				tempValue = parent.body.TouchMe('TDB'+tbx);				
+				//saveText = saveText+"<TEXTAREA NAME='SB"+tbx+"' STYLE=display: none>"+tempValue+"</TEXTAREA>";
+				
+				is_txtarea = tempValue.search('<TEXTAREA');
+				if(is_txtarea>0){
+					var textArr = tempValue.split('<TEXTAREA')
+					var textLen = textArr.length
+					for(var x=0; x<textLen; x++){
+						tempValue = tempValue.replace('<TEXTAREA','<sohotextarea');
+						tempValue = tempValue.replace('</TEXTAREA>','</sohotextarea>');
+					}
+				}
+				if(parent.body.document.getElementById('sidebaroption'+tbx).checked==true){
+					saveText = saveText+"<input type=hidden name='copybox"+tbx+"' value='"+parent.body.document.getElementById('copybox'+tbx).value+"'>\n";
+					saveText = saveText+"<input type=hidden name='defaultbox"+tbx+"' value='false'>\n";
+					saveText = saveText+"<TEXTAREA NAME='SB"+tbx+"' STYLE=display: none></TEXTAREA>";
+				} else {
+					saveText = saveText+"<input type=hidden name='copybox"+tbx+"' value=''>\n";
+					saveText = saveText+"<input type=hidden name='defaultbox"+tbx+"' value='"+parent.body.document.getElementById('defaultbox'+tbx).checked+"'>\n";
+					saveText = saveText+"<TEXTAREA NAME='SB"+tbx+"' STYLE=display: none>"+tempValue+"</TEXTAREA>";
+				}
+				
+			}
+	
+			//alert(saveText);
+		}
+		
+///// End sidebar stuff
+
+
+
 
    		<?php
 
@@ -148,7 +195,7 @@ function savePage(redirect) {
    				$thisVar = "R" . $x . "C" . $y;
    				//echo ("                 tempValue = parent.body.TD$thisVar.innerHTML;\n");
    				echo ("                   tempValue = parent.body.TouchMe('TD$thisVar');\n");
-
+				
 			      echo ("							is_txtarea = tempValue.search('<textarea');\n");
 			      echo ("							if(is_txtarea>0){\n");
 			      echo ("								var textArr = tempValue.split('<textarea')\n");
@@ -169,24 +216,43 @@ function savePage(redirect) {
 
    		echo "            saveText = saveText+\"<input type=hidden name=redirect value=\"+redirect+\"><input type=hidden name=serial_number value='$serial_number'><input type=hidden name=dot_com value='$dot_com'>\";\n";
    		?>
-
+		
+		saveText = saveText.replace('<img class="blockerimg" src="whitespace.gif">','');
+		 
    		//parent.body.saveForm.innerHTML = saveText;			// Finalize "Save Data"
    		parent.body.SendSaveText(saveText);			// Finalize "Save Data"
+   		
    		parent.body.GoToSave();							// Save current Page
 
    	} else {
          //parent.body.ShowNoSave();
    //      show_hide_layer('NOSAVE_LAYER','','show');			// Display NO SAVE Loading image in Edit Window
          if(redirect == "preview"){
+         		
             var daPage = parent.frames.body.sendPageName();
-            var prev_path = "modules/page_editor/page_editor.php?previewWindow=1&currentPage="+daPage+"&=SID";
-   		   parent.body.location.href=prev_path;
+            
+            newwindow=window.open('javascript:void window.focus()', '_newtab');
+            newwindow.close();
+            newwindow=window.open('../../'+daPage.replace(/[ ]/g,'_')+'.php','_newtab');
+            newwindow.focus();
+            
+            //if(window.focus) { previewwindow.focus(); }
+            //var prev_path = "modules/page_editor/page_editor.php?previewWindow=1&currentPage="+daPage+"&=SID";
+   		   //parent.body.location.href=prev_path;
    		}else{
-   		   parent.body.location.href="modules/page_editor/"+redirect;
+   			window.focus();
+   		   //parent.body.location.href="modules/page_editor/"+redirect;
+		
+   		  	if(redirect.search("ttp://") > 0 || redirect.search("ttps://") > 0){
+   		  		 parent.body.location.href=redirect;
+   			} else {
+   				<?php echo "   		   parent.body.location.href='".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/page_editor/'+redirect;\n"; ?>
+   			}
+   		   
    		}
    	}
    }else{
-
+ 
 	if (confirm_save == 1) {
         MM_showHideLayers('ProgressBarSave?body','','show');			// Display Save Progress Bar in Edit Window
 		parent.frames.footer.CURPAGENAME.innerHTML = 'Saving Changes...';	// Update Status Bar
@@ -194,7 +260,51 @@ function savePage(redirect) {
 		var tempValue = "";
 		var saveText = parent.frames.body.saveForm.innerHTML;			// Get information from Page Editor
 		var daPage = parent.frames.body.sendPageName();
-		<?
+
+		saveText = saveText.replace('<img class="blockerimg" src="whitespace.gif">','');
+
+////// sidebar stuff
+//alert(pgboxcount+' yoyo');
+		saveText = saveText+"<input type=hidden name='pgboxcount' value='"+pgboxcount+"'>\n";
+		if(pgboxcount > 0){
+			for (var tbx=1;tbx<=pgboxcount;tbx++){
+				tempValue = parent.body.TouchMe('TDB'+tbx);			
+				
+				//saveText = saveText+"<TEXTAREA NAME='SB"+tbx+"' STYLE=display: none>"+tempValue+"</TEXTAREA>";
+				
+				is_txtarea = tempValue.search('<TEXTAREA');
+				if(is_txtarea>0){
+					var textArr = tempValue.split('<TEXTAREA')
+					var textLen = textArr.length
+					for(var x=0; x<textLen; x++){
+						tempValue = tempValue.replace('<TEXTAREA','<sohotextarea');
+						tempValue = tempValue.replace('</TEXTAREA>','</sohotextarea>');
+					}
+				}
+				
+				
+				if(parent.body.document.getElementById('sidebaroption'+tbx).checked==true){
+					saveText = saveText+"<input type=hidden name='copybox"+tbx+"' value='"+parent.body.document.getElementById('copybox'+tbx).value+"'>\n";
+					saveText = saveText+"<input type=hidden name='defaultbox"+tbx+"' value='false'>\n";
+					saveText = saveText+"<TEXTAREA NAME='SB"+tbx+"' STYLE=display: none></TEXTAREA>";
+				} else {
+					saveText = saveText+"<input type=hidden name='copybox"+tbx+"' value=''>\n";
+					saveText = saveText+"<input type=hidden name='defaultbox"+tbx+"' value='"+parent.body.document.getElementById('defaultbox'+tbx).checked+"'>\n";
+					saveText = saveText+"<TEXTAREA NAME='SB"+tbx+"' STYLE=display: none>"+tempValue+"</TEXTAREA>";
+				}
+				
+				//saveText = saveText+"<TEXTAREA NAME='SB"+tbx+"' STYLE=display: none>"+tempValue+"</TEXTAREA>";
+			}
+	
+			//alert(saveText);
+		}
+		
+///// End sidebar stuff
+
+
+
+
+		<?php
 
 		###############################################
 		## BUILD JSCRIPT ROW/COLUMN ARRAY FOR SAVING ##
@@ -230,8 +340,33 @@ function savePage(redirect) {
 
 	} else {
 
-        MM_showHideLayers('NOSAVE_LAYER?body','','show');			// Display NO SAVE Loading image in Edit Window
-		parent.frames.body.location.href="main_menu.php?<?=SID?>";
+        //MM_showHideLayers('NOSAVE_LAYER?body','','show');			// Display NO SAVE Loading image in Edit Window
+		//parent.frames.body.location.href="main_menu.php";
+		//parent.body.location.href="modules/page_editor/"+redirect;
+         if(redirect == "preview"){
+
+            var daPage = parent.frames.body.sendPageName();
+            
+            newwindow=window.open('javascript:void window.focus()', '_newtab');
+            newwindow.close();            
+            
+            newwindow=window.open('../../'+daPage.replace(/[ ]/g,'_')+'.php','_newtab');
+            newwindow.focus();
+            
+            //if(window.focus) { previewwindow.focus(); }
+            //var prev_path = "modules/page_editor/page_editor.php?previewWindow=1&currentPage="+daPage+"&=SID";
+   		   //parent.body.location.href=prev_path;
+   		}else{
+   			window.focus();
+   		   //parent.body.location.href="modules/page_editor/"+redirect;
+		
+   		  	if(redirect.search("ttp://") > 0 || redirect.search("ttps://") > 0){
+   		  		 parent.body.location.href=redirect;
+   			} else {
+   				<?php echo "   		   parent.body.location.href='".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/page_editor/'+redirect;\n"; ?>
+   			}
+   		   
+   		}
 	}
 }
 
@@ -241,7 +376,7 @@ function savePage(redirect) {
 // <!-- ----------------------------------------------------------------------------- -->
 
 function StatusReset() {
-<?
+<?php
 echo ("parent.footer.CURPAGENAME.innerHTML = '';\n");
 echo ("parent.footer.SUBPAGEOF.innerHTML = \"\";\n");
 echo ("parent.footer.PAGESTAT.innerHTML = '';\n");
@@ -277,11 +412,13 @@ function logoutEditor() {
 }
 
 function open_new_window(theURL,winName,features) {
+	
 	window.open(theURL,winName,features);
 }
 
 function viewsite() {
-	open_new_window('http://<? echo $this_ip; ?>/index.php?nosessionkill=1','VIEWSITE','width=980,height=800, scrollbars=yes,resizable=yes,toolbar=yes');
+	
+	open_new_window('<?php echo httpvar().$this_ip; ?>/index.php?nosessionkill=1','_newtab','width=980,height=800, scrollbars=yes,resizable=yes,toolbar=yes');
 }
 
 function page_properties() {
@@ -380,7 +517,7 @@ function findit() {
 }
 
 
-<?
+<?php
 # Where should the [?] icon link to?
 if ( $_SESSION['hostco']['help_icon'] == "custom" && $_SESSION['hostco']['help_icon_url'] != "" ) { // Pull link from branding options array
    $helpicon_goto = $_SESSION['hostco']['help_icon_url'];
@@ -392,7 +529,7 @@ if ( $_SESSION['hostco']['help_icon'] == "custom" && $_SESSION['hostco']['help_i
    $helpicon_goto = "manual.soholaunch.com"; //  Go to Soholaunch Online Manual
 }
 
-$helpicon_goto = str_replace("http://", "", $helpicon_goto);
+$helpicon_goto = str_replace("https://", "", str_replace("http://", "", $helpicon_goto));
 
 # Pass 'from product' var so manual script knows to scroll
 if ( eregi("\?", $helpicon_goto) ) {
@@ -405,13 +542,22 @@ if ( eregi("\?", $helpicon_goto) ) {
 
 function view_docs() {
    parent.footer.orboff();
-	strLink = "http://<? echo $helpicon_goto; ?>";
+	strLink = "<?php echo httpvar().$helpicon_goto; ?>";
 	parent.body.location.href=strLink;
 }
 
 function showHelp(){
 	//alert('something');
-	window.open('modules/help_center/help_center.php','billy','width=800, height=600, scrollbars=auto');
+
+<?php
+	if($_SESSION['help_link']!=''){						
+		echo "window.open('".$_SESSION['help_link']."','billy','width=800, height=600, scrollbars=auto');\n";
+	} else {		
+		echo "window.open('modules/help_center/help_center.php','billy','width=800, height=600, scrollbars=auto');\n";
+	}
+?>
+
+	
 	//window.open('includes/help_files/HelpMe_V2.php','billy','width=800, height=600, scrollbars=auto');
 }
 
@@ -437,17 +583,21 @@ function openHelp(openLink){
 eval(hook("header.php:top_javascript", basename(__FILE__)));
 ?>
 
-
 </SCRIPT>
+<style>
+html,body {
+ background-color:#DEDEDE;
+}
+</style>
 </head>
 <!--- <link rel="stylesheet" href="product_gui.css" type="text/css"> --->
 <link rel="stylesheet" href="includes/display_elements/product_gui-v2.css" type="text/css">
 
-<body bgcolor="#EFEFEF" background="includes/images/top-bg.png" text="black" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 
 
-<?
-
+<body style="background-color:#DEDEDE;" background="includes/images/top-bg.png" text="black" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<?php
+//<body style="background-color:#DEDEDE;" bgcolor="#EFEFEF" background="includes/images/top-bg.png" text="black" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 /// Determine current 'User Mode'
 ###===============================================================
 $usrmde = "";
@@ -486,20 +636,180 @@ if ($CUR_USER_ACCESS == "WEBMASTER" || eregi(";MOD_WEBMASTER;", $CUR_USER_ACCESS
    $upnav['MAIN_MENU_LAYER'][] = mkbutton( "webmaster", "Webmaster", "nav_main", "cartdo('userprefs');" );
 }
 
+echo "<script type=\"text/javascript\">
+function getPageEditorContents(){
+	var curpageval='';
+	var nn = parent.frames['body'].document.location+\"\";
+	if(nn.search(\"sohoadmin/program/modules/page_editor/page_editor.php\") > 0){
+		for(var x=1; x<=10; x++){
+			for(var y=1; y<=3; y++){
+				curpageval = curpageval+''+parent.frames.body.document.getElementById('TDR'+x+'C'+y).innerHTML;
+			}
+		}
+		return curpageval;
+	}
+}\n";
+
+
+ 
+echo "	function edit_thispage(v) { 
+		parent.body.focus();
+		if(v.length > 0){			
+			var nocache = '".time()."';
+			var curpageval='';
+			var nn = parent.frames['body'].document.location+\"\";
+			if(nn.search(\"sohoadmin/program/modules/page_editor/page_editor.php\") > 0){
+				if(window.loadedPage){
+					if(window.loadedPage == getPageEditorContents() && getPageEditorContents()!=''){
+						if(top.body.document.getElementById('currentPage').value.replace(/[ ]/g,'+')!=v){						
+							parent.frames['body'].document.location = '".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/page_editor/page_editor.php?currentPage='+v+'&nocache='+nocache;
+						}					
+					} else {
+						savePage('page_editor.php?currentPage='+v.replace(/[ ]/g,'+')+'&nocache='+nocache);
+					}
+				} else {
+					//document.getElementById('jump_menupg').selectedIndex=0;
+					//top.ultramenu.document.getElementById('jump_menupg').selectedIndex=0;
+					//document.getElementById('jump_menupg').selectedIndex=0;
+					//savePage('page_editor.php?currentPage='+v.replace(/[ ]/g,'+')+'&nocache='+nocache);
+					//alert(top.body.document.getElementById('currentPage').value+'  '+v);
+					parent.frames['body'].document.location = '".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/page_editor/page_editor.php?currentPage='+v+'&nocache='+nocache;
+				//	alert('hi');
+					//savePage(v);
+				}
+
+			} else {
+				parent.frames['body'].document.location = '".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/page_editor/page_editor.php?currentPage='+v+'&nocache='+nocache;
+			}
+
+		}
+	}
+		
+		
+
+</script>\n";
+
+
+
+$dddswitch = "<div style=\"position:absolute;top:4px;left:4px;height:0px;width:100%;z-index:9999;\">";
+$dddswitch .= "<div id=\"jumpmenudiv\" style=\"width:130px;float:left;\">";
+//$dddswitch .= "		<select id=\"jump_menupg1\" class=\"pagedd\" name=\"jump_menupg\" onchange=\"edit_thispage(this.options[this.selectedIndex].value);\">\n";
+
+$page_editordd=1;
+ob_start();
+include('sitepages-dd.inc.php');
+$dddswitch .= ob_get_contents();
+ob_end_clean();
+//include('modules/sitepage_dropdown.inc.php');
+$dddswitch .= "</div>";
+
+
+//$dddswitch .= "<div style=\"width:190px;float:right;text-align:right;margin-right:6px;margin-top:0px;\">";
+//$dddswitch  .= "<span style=\"margin-right:8px;margin-left:5px;\"><a href=\"javascript:void(0);\" class=\"grayButton\" onclick=\"savePage('../../main_menu.php');\"><span>Main&nbsp;Menu</span></a></span>";
+
+//$dddswitch .= "</div>";
+
+
+$dddswitch .= "<div style=\"width:230px;float:right;text-align:right;margin-right:6px;margin-top:0px;\">";
+
+	if($_SESSION['help_link']!=''){						
+		//$dddswitch .= "	<span onclick=\"openHelp('".$_SESSION['help_link']."');\" style=\"cursor:pointer;position:relative;margin:0px 5px 0px 5px;height:22px;float:right;\"><div style=\"position:absolute;left:0;top:2px;margin:0;height:20px;width:19px;background-image:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/help4.png');background-repeat:no-repeat;\">&nbsp;</div><a href=\"javascript:void(0);\" class=\"grayButton\" onclick=\"openHelp('".$_SESSION['help_link']."');\"><span>&nbsp;&nbsp;<strong>Get Support</strong></span></a></span>\n";
+		$dddswitch .= "	<span style=\"cursor:pointer;position:relative;margin:0px 5px 0px 5px;height:22px;float:right;\"><div style=\"position:absolute;left:0;top:2px;margin:0;height:20px;width:19px;background-image:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/help4.png');background-repeat:no-repeat;\">&nbsp;</div><a href=\"".$_SESSION['help_link']."\" target=\"_BLANK\" class=\"grayButton\"><span>&nbsp;&nbsp;<strong>Get Support</strong></span></a></span>\n";
+	} else {		
+		//$dddswitch .= "	<span onclick=\"openHelp('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/help_center/help_center.php?man=Page_Editor.php');\" style=\"cursor:pointer;position:relative;margin:0px 5px 0px 5px;height:22px;float:right;\"><div style=\"position:absolute;left:0;top:2px;margin:0;height:20px;width:19px;background-image:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/help4.png');background-repeat:no-repeat;\">&nbsp;</div><a href=\"javascript:void(0);\" class=\"grayButton\" onclick=\"openHelp('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/help_center/help_center.php');\"><span>&nbsp;&nbsp;<strong>Get Support</strong></span></a></span>\n";
+		$dddswitch .= "	<span style=\"cursor:pointer;position:relative;margin:0px 5px 0px 5px;height:22px;float:right;\"><div style=\"position:absolute;left:0;top:2px;margin:0;height:20px;width:19px;background-image:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/help4.png');background-repeat:no-repeat;\">&nbsp;</div><a href=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/help_center/help_center.php\" target=\"_BLANK\"  class=\"grayButton\"><span>&nbsp;&nbsp;<strong>Get Support</strong></span></a></span>\n";
+	}
+
+//$dddswitch  .= "<span style=\"margin-right:8px;margin-left:5px;\"><a href=\"javascript:void(0);\" class=\"grayButton\" onclick=\"savePage('../../main_menu.php');\"><span>Main&nbsp;Menu</span></a></span>";
+
+
+
+$dddswitch .= "</div>";
+//
+//$dddswitch .= "<div style=\"width:190px;float:right;text-align:right;margin-right:6px;margin-top:0px;\">";
+
+////$dddswitch .= "	<span style=\"float:right;\"><a style=\"margin-top:19px;\" class=\"grayButton\" href=\"http://ultra.soholaunch.com\" target=\"_BLANK\" title=\"View Website\"><span><strong>View Website</strong></span></a></span>\n";
+//$dddswitch .= "</div>";
+
+echo $dddswitch .= "</div>";
+
+$dddswitch = '';
+
+
+
+ 
+	 
+
+
+$main_and_help_buts = "<div style=\"position:absolute;width:190px;left:99%;top:4px;text-align:right;\">";
+//$main_and_help_buts .= "<div style=\"padding-left:450px;position:relative;\">";
+//$main_and_help_buts .= "<div style=\"float:right;margin-right:8px;margin-top:4px;width:190px!important;\">\n";
+$main_and_help_buts .= "<span style=\"margin-right:8px;margin-left:5px;\"><a href=\"javascript:void(0);\" class=\"grayButton\" onclick=\"savePage('../../main_menu.php');\"><span>Main&nbsp;Menu</span></a></span>";
+
+
+	if($_SESSION['help_link']!=''){		
+		$main_and_help_buts .= "<a onclick=\"openHelp('".$_SESSION['help_link']."');\" href=\"javascript:void(0);\" class=\"help\" style=\"padding:3px 15px 6px 25px; text-decoration:none;line-height:13px;width:25px;height:13px;font-family:Verdana,Geneva,sans-serif;font-size:11px;color:#ECECEC;background:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/hlp.png') no-repeat; \">Help</a>";
+	} else {
+		$main_and_help_buts .= "<a onclick=\"openHelp('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/help_center/help_center.php?man=Page_Editor.php');\" href=\"javascript:void(0);\" class=\"help\" style=\"padding:3px 15px 6px 25px; text-decoration:none;line-height:13px;width:25px;height:13px;font-family:Verdana,Geneva,sans-serif;font-size:11px;color:#ECECEC;background:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/hlp.png') no-repeat; \">Help</a>";
+	}	
+
+//$main_and_help_buts .= "</div>\n";
+//$main_and_help_buts .= "</div>";
+$main_and_help_buts .= "</div>";
+
+
+
+//$main_and_help_buts = "<div style=\"position:absolute;width:190px;left:99%;top:4px;text-align:right;\">";
+//$main_and_help_buts .= "	<span onclick=\"openHelp('http://ultra.soholaunch.com/sohoadmin/program/modules/help_center/help_center.php');\" style=\"cursor:pointer;position:relative;margin:20px 5px 0px 5px;height:22px;float:right;\"><div style=\"position:absolute;left:0;top:2px;margin:0;height:20px;width:19px;background-image:url('http://ultra.soholaunch.com/sohoadmin/program/includes/images/help4.png');background-repeat:no-repeat;\">&nbsp;</div><a href=\"javascript:void(0);\" class=\"grayButton\" onclick=\"openHelp('http://ultra.soholaunch.com/sohoadmin/program/modules/help_center/help_center.php');\"><span>&nbsp;&nbsp;<strong>Get Support</strong></span></a></span>\n";
+//$main_and_help_buts .= "	<span style=\"float:right;\"><a style=\"margin-top:19px;\" class=\"grayButton\" href=\"http://ultra.soholaunch.com\" target=\"_BLANK\" title=\"View Website\"><span><strong>View Website</strong></span></a></span>\n";
+//$main_and_help_buts .= "</div>";
+
+//$upnav['PAGE_EDITOR_LAYER'][]=$dddswitch;
+
+
+
+//$upnav['PAGE_EDITOR_LAYER'][]= $main_and_help_buts;
+
+//$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "mainmenu", "<b>".lang("Main Menu")."</b>", "nav_gray", "savePage('../../main_menu.php');" );
+
+
 
 ## PAGE EDITOR
 ##===============================================
-$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "openpage", "Open Page", "nav_main", "savePage('../open_page.php');" );
+
+
+$upnav['PAGE_EDITOR_LAYER'][]= "<div style=\"width:90px;\">&nbsp;</div>";
+
+//$upnav['PAGE_EDITOR_LAYER'][] = "<a href=\"header.php\">ref</a>";
+
+
+//$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "openpage", "Open Page", "nav_main", "savePage('../open_page.php');" );
 $upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "savepage", "Save Page", "nav_save", "savePage('page_editor.php');" );
 //$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "viewsite", "View Site", "nav_main", "viewsite();" );
 if($_SESSION['product_mode']!='trial'){	
-	$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "saveas", "Save As Copy", "nav_save", "save_as_layer();" );
+	$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "saveas", "Copy Page", "nav_save", "save_as_layer();" );
 }
 
-$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "previewpage", "View Page", "nav_main", "savePage('preview');" );
-$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "prop", "Page Properties", "nav_main", "page_properties();" );
+$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "previewpage", "View Page", "nav_gray", "savePage('preview');" );
+
+
+
+//$upnav['PAGE_EDITOR_LAYER'][]= "<div style=\"width:30px;\">&nbsp;</div>";
+
+
+$upnav['PAGE_EDITOR_LAYER'][]= "<div style=\"width:6px;\">&nbsp;</div>";
+
+
+$upnav['PAGE_EDITOR_LAYER'][]= "<div id=\"sidebarbuttndiv\" onClick=\"parent.body.togglesidebar();\" style=\"position:relative;display:none;\"><a class=\"blueButton\" href=\"javascript:void(0);\"><span id=\"sidebartoggletext\">Edit Sidebar</span></a></div>\n";
+
+$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "prop", "Page Properties", "nav_main", "page_properties();");
+
+
+$upnav['PAGE_EDITOR_LAYER'][]= "<div style=\"width:90px;\">&nbsp;</div>";
+
+
 if ( $CUR_USER_ACCESS == "WEBMASTER" || eregi(";MOD_SITE_FILES;", $CUR_USER_ACCESS)) {
-   $upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "uploadfiles", "Upload Files", "nav_main", "savePage('../upload_files.php');" );
+   //$upnav['PAGE_EDITOR_LAYER'][] = mkbutton( "uploadfiles", "Upload Files", "nav_main", "savePage('../upload_files.php');" );
 }
 
 
@@ -623,30 +933,20 @@ foreach ( $upnav as $divid=>$buttons ) {
 
    echo "\n\n\n";
    echo "<!------------------------".$divid."------------------------>\n";
-   echo "<div id=\"".$divid."\" class=\"upper_navbar\" style=\"margin-top: 0px; vertical-align: top;\">\n";
+   echo "<div id=\"".$divid."\" class=\"upper_navbar\" style=\"margin-top: 0px; vertical-align: top;width:100%;overflow:hidden;;border-bottom:0px!important;\">\n";
    echo " <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n";
    echo "  <tr>\n";
-   echo "   <td align=\"left\" valign=\"top\" style=\"padding-top: 2px;\">\n";
-   echo "    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"upper_navbar\" align=\"center\" style=\"align:center;\">\n";
+   echo "   <td align=\"left\" valign=\"top\" style=\"padding-top: 0px;\">\n";
+   echo "    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"upper_navbar\" align=\"center\" style=\"align:center;border-bottom:0px!important;\">\n";
    echo "     <tr>\n";
 
-
-   // Loop through button array and output table cells
-   //===============================================================
-   foreach ( $buttons as $nav=>$bttn ) {
-      if(strlen($bttn)>1){
-         echo "      <td align=\"center\" valign=\"top\">\n";
-         echo "       ".$bttn."\n";
-         echo "      </td>\n";
-      }
-   }
 
    // Place Main Menu, Logout, and Help [?] as standards except in Page Editor
    //--------------------------------------------------------------------------------
    if ( $divid != "PAGE_EDITOR_LAYER" && $divid != "PAGE_EDITOR_LAYER_NO_SAVE" ) {
       # Main Menu
       echo "      <td align=\"center\" valign=\"top\">\n";
-      echo "       ".mkbutton( "mainmenu", "<b>".lang("Main Menu")."</b>", "nav_main", "navigateHome();" )."\n";
+      echo "       ".mkbutton( "mainmenu", "<b>".lang("Main Menu")."</b>", "nav_gray", "navigateHome();" )."\n";
       echo "      </td>\n";
 
       # Logout
@@ -665,17 +965,43 @@ foreach ( $upnav as $divid=>$buttons ) {
 //      echo "       Editing Page Content...\n";
       echo "      </td>\n";
 
-   } else {
+   } elseif ( $divid != "PAGE_EDITOR_LAYER" ) {
       # Main Menu
       echo "      <td align=\"center\" valign=\"top\">\n";
-      echo "       ".mkbutton( "mainmenu", "<b>".lang("Main Menu")."</b>", "nav_main", "savePage('../../main_menu.php');" )."\n";
+      echo "       ".mkbutton( "mainmenu", "<b>".lang("Main Menu")."</b>", "nav_gray", "savePage('../../main_menu.php');" )."\n";
       echo "      </td>\n";
       
-      echo "      <td align=\"center\" valign=\"baseline\" style=\"padding-top:3px;\">\n";
-	 echo "	  <a onclick=\"openHelp('http://".$_SESSION['docroot_url']."/sohoadmin/program/modules/help_center/help_center.php?man=Page_Editor.php');\" href=\"javascript:void(0);\" class=\"help\" style=\"vertical-align:baseline;padding:3px 15px 6px 25px; text-decoration:none;line-height:13px;width:25px;height:13px;font-family:Verdana,Geneva,sans-serif;font-size:11px;color:#ECECEC;background:url('http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/images/hlp.png') no-repeat; \">Help</a>";
-	 echo "      </td>\n";
+
       
    }
+
+
+   // Loop through button array and output table cells
+   //===============================================================
+   foreach ( $buttons as $nav=>$bttn ) {
+      if(strlen($bttn)>1){
+         echo "      <td align=\"center\" valign=\"middle\">\n";
+         echo "       ".$bttn."\n";
+         echo "      </td>\n";
+      }
+   }
+
+
+if ( $divid != "PAGE_EDITOR_LAYER_NO_SAVE" && $divid != "PAGE_EDITOR_LAYER") {
+      echo "      <td align=\"center\" valign=\"baseline\" style=\"padding-top:3px;\">\n";
+
+
+	if($_SESSION['help_link']!=''){				
+		echo "	  <a onclick=\"openHelp('".$_SESSION['help_link']."');\" href=\"javascript:void(0);\" class=\"help\" style=\"vertical-align:baseline;padding:3px 15px 6px 25px; text-decoration:none;line-height:13px;width:25px;height:13px;font-family:Verdana,Geneva,sans-serif;font-size:11px;color:#ECECEC;background:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/hlp.png') no-repeat; \">Help</a>";
+	} else {
+		echo "	  <a onclick=\"openHelp('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/help_center/help_center.php?man=Page_Editor.php');\" href=\"javascript:void(0);\" class=\"help\" style=\"vertical-align:baseline;padding:3px 15px 6px 25px; text-decoration:none;line-height:13px;width:25px;height:13px;font-family:Verdana,Geneva,sans-serif;font-size:11px;color:#ECECEC;background:url('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/images/hlp.png') no-repeat; \">Help</a>";
+	}	 
+	 
+	 echo "      </td>\n";
+	
+}
+
+
 
    echo "     </tr>\n";
    echo "    </table>\n";
@@ -722,11 +1048,7 @@ function flip_header_nav(divid) {
       }
    }
 }
+flip_header_nav('PAGE_EDITOR_LAYER');
 </script>
-
-
-
-
-
 </BODY>
 </HTML>

@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -31,12 +31,12 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## copyright laws.
 ###############################################################################
 
-error_reporting(0);
+error_reporting('341');
 session_start();
 require_once("../../../includes/product_gui.php");
-
+create_table('cart_products_usersignup');
 //echo "(".get_magic_quotes_gpc().")"; exit;
-
+// // 
 ######################################################
 ### SET PRODUCT DEFAULT VALUES IN CASE OF NEW PRODUCT
 ### ADDITION
@@ -86,9 +86,7 @@ $cartpref = new userdata("cart");
 /___/ \_,_/ |___/ \__/
 /*---------------------------------------------------------------------------------------------------------*/
 if ($ACTION == "SAVEIT") {
-   $num_variants = $_POST['num_variants'];
-
-
+	$num_variants = $_POST['num_variants'];
 	$prod_shipc = $_POST['ship_length'].';'.$_POST['ship_width'].';'.$_POST['ship_height'];
 	$_POST['prod_shipc'] = $prod_shipc;
 	unset($_POST['ship_length']);
@@ -261,11 +259,28 @@ if ($ACTION == "SAVEIT") {
       $myqry = new mysql_insert("cart_products", $data);
       $myqry->insert();
 
+	if($_POST['option_usersignup']!=''){
+		$datasecsign=array();
+		$datasecsign['product_id'] = mysql_insert_id();
+		$datasecsign['groups'] = $_POST['option_usersignup_group'];
+		$datasecsign['expiration'] = $_POST['expiration'];		
+      	$myqrysec = new mysql_insert("cart_products_usersignup", $datasecsign);
+      	$myqrysec->insert();
+	}
+
 //		# Do not go to fresh add new product form
 //		$edit_key = mysql_insert_id();
-
-
 	} else {
+		if($_POST['option_usersignup']!='' && $PriKey!=''){
+			mysql_query("delete from cart_products_usersignup where product_id='".$PriKey."'");
+			$datasecsign=array();
+			$datasecsign['product_id'] = $PriKey;
+			$datasecsign['groups'] = $_POST['option_usersignup_group'];
+			$datasecsign['expiration'] = $_POST['expiration'];		
+	      	$myqrysec = new mysql_insert("cart_products_usersignup", $datasecsign);
+	      	$myqrysec->insert();
+		}
+		
    	// -----------------------------------------------------------
    	// Else, If update of existing Sku, perform Update
    	// -----------------------------------------------------------
@@ -329,6 +344,8 @@ if ($ACTION == "SAVEIT") {
 	$update_completed = 1;
 
 } // End of Save/Update Action
+
+
 
 
 ######################################################
@@ -558,11 +575,12 @@ $c=1;
 #######################################################
 
 ob_start();
-echo "	<script type=\"text/javascript\" src=\"http://".$_SESSION['this_ip'].'/sohoadmin/program/modules/includes/ajaxfileupload.js">'."</script>\n";
+echo "	<script type=\"text/javascript\" src=\"".httpvar().$_SESSION['this_ip'].'/sohoadmin/program/modules/includes/ajaxfileupload.js">'."</script>\n";
 
 
 ?>
 <script type="text/javascript">
+	
 function ajaxFileUpload(){
 	$("#loading")
 	.ajaxStart(function(){
@@ -621,6 +639,7 @@ function ajaxFileUpload(){
 
 
 <script language="JavaScript">
+	
 function SV2_findObj(n, d) { //v3.0
   var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
@@ -684,7 +703,7 @@ function help_inventory() {
 
 function prev_image(imagename, txt) {
 
-	var img_link = "http://<? echo $this_ip; ?>/images/"+imagename;
+	var img_link = "<? echo httpvar().$this_ip; ?>/images/"+imagename;
 	var str = "<IMG SRC="+img_link+" BORDER=0 VSPACE=0 HSPACE=0><BR CLEAR=ALL><BR>[ "+txt+" ]";
 
 	if (imagename == " ") { var str = "Image Preview Window"; }
@@ -766,7 +785,7 @@ function df_img_swap(filename, idprefix, maxwidth) {
       if ( filename[0] == "" ) {
          document.getElementById(idprefix+'-preview').innerHTML = '[Image Preview Area]';
       } else {
-         document.getElementById(idprefix+'-preview').innerHTML = '<img src="http://<? echo $_SESSION['docroot_url']; ?>/images/'+filename[0]+'" width="'+maxwidth+'">';
+         document.getElementById(idprefix+'-preview').innerHTML = '<img src="<? echo httpvar().$_SESSION['docroot_url']; ?>/images/'+filename[0]+'" width="'+maxwidth+'">';
       }
    }
 }
@@ -813,7 +832,7 @@ function preview_image(filename, preview_box) {
       } else {
          var previewSize = 'width="175"';
       }
-      thebox.innerHTML = '<img src="http://<? echo $_SESSION['docroot_url']; ?>/images/'+filename[0]+'" "'+previewSize+'">';
+      thebox.innerHTML = '<img src="<? echo httpvar().$_SESSION['docroot_url']; ?>/images/'+filename[0]+'" "'+previewSize+'">';
    }
 }
 
@@ -840,7 +859,7 @@ function show_other_images() {
       if ( imgs[i].length > 5 ) {
          optionsidname = 'thumb_options-'+i;
          imgdisplay += '<div class="other_image_thumb" style="position: relative;" onmouseover="showid(\''+optionsidname+'\');" onmouseout="hideid(\''+optionsidname+'\');">';
-         imgdisplay += ' <img src="http://<? echo $_SESSION['docroot_url']; ?>/images/'+imgs[i]+'" width="99">';
+         imgdisplay += ' <img src="<? echo httpvar().$_SESSION['docroot_url']; ?>/images/'+imgs[i]+'" width="99">';
          imgdisplay += ' <div id="'+optionsidname+'" style="display: none;">';
          imgdisplay += '  <div class="other_image-killx" onclick="remove_other_image(\''+imgs[i]+'\');">[x]</div>';
          imgdisplay += '  <div class="other_image-mvleft" onclick="mv_other_image(\''+imgs[i]+'\', \'left\');">[&lt;]</div>';
@@ -1041,7 +1060,7 @@ span.info-label {
    height: 99px;
    overflow: hidden;
    border: 1px dashed #efefef;
-   background-image: url('http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/icons/web20_bg.gif');
+   background-image: url('<? echo httpvar().$_SESSION['docroot_url']; ?>/sohoadmin/icons/web20_bg.gif');
 }
 
 #popup-add_image label {
@@ -1255,8 +1274,8 @@ $THIS_DISPLAY .= "</div>\n\n";
 # build paths to imgs..
 $thumbnail_path = $_SESSION['docroot_path']."/images/".$SKU['PROD_THUMBNAIL'];
 $fullsize_path = $_SESSION['docroot_path']."/images/".$SKU['PROD_FULLIMAGENAME'];
-$thumbnail_url = "http://".$_SESSION['docroot_url']."/images/".$SKU['PROD_THUMBNAIL'];
-$fullsize_url = "http://".$_SESSION['docroot_url']."/images/".$SKU['PROD_FULLIMAGENAME'];
+$thumbnail_url = httpvar().$_SESSION['docroot_url']."/images/".$SKU['PROD_THUMBNAIL'];
+$fullsize_url = httpvar().$_SESSION['docroot_url']."/images/".$SKU['PROD_FULLIMAGENAME'];
 
 # Get image info
 $thumbImg = getimagesize($thumbnail_path);
@@ -1538,6 +1557,8 @@ if ($num_groups > 0) {
 // ----------------------------------------------------------------------
 
 $THIS_DISPLAY .= "         </select>\n";
+$THIS_DISPLAY .= "		<font style=\"font-size: 7pt;\" color=\"#999999\">(Select who can purchase this product)</font>\n";
+
 $THIS_DISPLAY .= "        </td>\n";
 $THIS_DISPLAY .= "       </tr>\n";
 $THIS_DISPLAY .= "       <tr>\n";
@@ -1571,11 +1592,11 @@ $THIS_DISPLAY .= "       </tr>\n";
 $THIS_DISPLAY .= "       <tr>\n";
 
 $THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\">\n";
-$THIS_DISPLAY .= "         ".lang("When customers add this product to their cart, require Form Data from:")."<br>\n";
+$THIS_DISPLAY .= "         ".lang("When customers purchase this product require Form Data from:")."<br/> \n";
 $THIS_DISPLAY .= "         <select name=\"option_formdata\" class=smtext style='width: 150px;'>\n";
 $THIS_DISPLAY .= "         ".$form_attach;
 $THIS_DISPLAY .= "         </select>\n";
-$THIS_DISPLAY .= "         <BR><font size=1><input TYPE=RADIO name=option_formdisplay value=\"PERQTY\"> ".lang("Per Qty")." <input TYPE=RADIO name=option_formdisplay value=\" \"> ".lang("Ignore Qty")."\n";
+$THIS_DISPLAY .= "          <font size=1><input TYPE=RADIO name=option_formdisplay value=\"PERQTY\"> ".lang("Per Qty")." <input TYPE=RADIO name=option_formdisplay value=\" \"> ".lang("Ignore Qty")."\n";
 $THIS_DISPLAY .= "        </td>\n";
 
 $THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\">\n";
@@ -1586,15 +1607,13 @@ $THIS_DISPLAY .= "         </select>\n";
 $THIS_DISPLAY .= "        </td>\n";
 
 $THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\">\n";
-$THIS_DISPLAY .= "         ".lang("Display this Product")."?<BR><br><br>\n";
+$THIS_DISPLAY .= "         ".lang("Display this Product")."?<br>\n";
 $THIS_DISPLAY .= "         <select name=\"option_display\" class=smtext style='width: 75px;'>\n";
 $THIS_DISPLAY .= "               <option value=\"Y\">".lang("Yes")." </option>\n";
 $THIS_DISPLAY .= "               <option value=\"N\">".lang("No")." </option>\n";
 $THIS_DISPLAY .= "         </select>\n";
 
-// Inventory Checking Addition
-$THIS_DISPLAY .= "         <BR><BR>".lang("Inventory Count:")." <input type=\"text\" SIZE=5 class=\"tfield\" name=\"option_inventory_num\" value=\"$SKU[OPTION_INVENTORY_NUM]\">\n";
-$THIS_DISPLAY .= "         <IMG SRC='help.gif' HSPACE=2 VSPACE=2 ALIGN=ABSMIDDLE border=\"0\" style='cursor: hand;' onClick=\"help_inventory();\">\n";
+
 $THIS_DISPLAY .= "        </td>\n";
 
 $THIS_DISPLAY .= "       </tr>\n";
@@ -1603,12 +1622,97 @@ $THIS_DISPLAY .= "       </tr>\n";
 $THIS_DISPLAY .= "       <tr>\n";
 //$THIS_DISPLAY .= "       <td>&nbsp;\n";
 //$THIS_DISPLAY .= "       </td>\n";
-$THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\">\n";
+//$THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\">\n";
+$THIS_DISPLAY .= "        <td rowspan=\"2\" style=\"line-height:13px;\" align=\"left\" valign=\"top\">\n";
 $THIS_DISPLAY .= "         ".lang("Additional Category Association:")."<br>\n";
 
 $THIS_DISPLAY .= "         <select name=\"prod_category3\" class=smtext style='width: 150px;'>\n";
 $THIS_DISPLAY .= "         ".$cat_selection;
-$THIS_DISPLAY .= "         </select>\n";
+$THIS_DISPLAY .= "         </select><br/><br/>\n";
+
+
+/////membership item
+
+$THIS_DISPLAY .= "<script>
+function checkUserSignupOpt(){
+	if (document.getElementById('option_usersignup').selectedIndex==1){
+		document.getElementById('securegroups_span').style.visibility='visible';
+	} else {
+		document.getElementById('securegroups_span').style.visibility='hidden';
+		document.getElementById('option_usersignup').selectedIndex=0;
+	}
+}	
+</script>\n";
+$option_usersignup_vis = 'hidden';
+$nosel=' selected="selected"';
+$yessel=' ';
+$secreadonly=' ';
+$currentgroupchoice='';
+$expdayz = 0;
+if($_REQUEST['edit_key']!=''){ $edit_key = $_REQUEST['edit_key']; }
+if($edit_key != ''){
+	$find_secstuffq = mysql_query("select * from cart_products_usersignup where product_id='".$edit_key."' limit 1");
+	if(mysql_num_rows($find_secstuffq) == 1){
+		$find_secstuff = mysql_fetch_assoc($find_secstuffq);
+		if($find_secstuff['groups']!=''){
+			$yessel=' selected="selected"';
+			$nosel=' ';
+			$option_usersignup_vis = 'visible';
+			$currentgroupchoice = $find_secstuff['groups'];
+			$expdayz = $find_secstuff['expiration'];
+		}
+	}
+	
+}
+$secq = mysql_query("SELECT * FROM sec_codes ORDER BY security_code");
+
+//Secure user purchase
+
+
+$THIS_DISPLAY .= "         ".lang("Create member login for buyer to access pages protected by security codes?")."<br/> \n";
+$secgroupwarning = '';
+
+if (mysql_num_rows($secq) < 1) {
+//	$THIS_DISPLAY .= "          <font size=1><input TYPE=RADIO name=\"option_usersignup\" value=\"\" checked readonly> ".lang("no (default)")."<input TYPE=RADIO name=\"option_usersignup\" value=\"yes\" disabled> ".lang("yes")."\n";
+	$secgroupwarning = "<br/><i>(".lang("There are currently no member login security codes (groups) created").". \n".lang("You must first create a member login security code to use this feature.").")</i>";
+	$secreadonly=' disabled="disabled"';
+	$nosel=' selected="selected"';
+	$yessel=' ';
+} 
+
+//$THIS_DISPLAY .= "          <font size=1><input TYPE=RADIO name=\"\" onClick=\"checkUserSignupOpt();\"  value=\"\" > ".lang("no (default)")."<input ".$yessel." onClick=\"checkUserSignupOpt();\" onBlur=\"checkUserSignupOpt();\" TYPE=RADIO name=\"option_usersignup\" value=\"yes\"> ".lang("yes")."\n";
+
+$THIS_DISPLAY .= "			<select name=\"option_usersignup\" id=\"option_usersignup\" onBlur=\"checkUserSignupOpt();\" onChange=\"checkUserSignupOpt();\" class=smtext style='width: 95px;'>\n";
+$THIS_DISPLAY .= "			<OPTION VALUE=\"\" ".$nosel.">".lang('No (default)')."</OPTION>\n";
+$THIS_DISPLAY .= "			<OPTION ".$secreadonly." VALUE=\"yes\" ".$yessel.">".lang('Yes')."</OPTION>\n";
+$THIS_DISPLAY .= "			</select>\n";
+
+$THIS_DISPLAY .= $secgroupwarning;
+
+$THIS_DISPLAY .= "         <div id=\"securegroups_span\" style=\"margin-top:3px;".$option_usersignup_vis.";\">\n";
+
+$THIS_DISPLAY .= lang('Security Code (Group)').": <select name=\"option_usersignup_group\" id=\"option_usersignup_group\" class=smtext style='width: 150px;'>\n";
+while($GROUP = mysql_fetch_assoc($secq)) {
+	$usethisguy = '';
+	if($currentgroupchoice==$GROUP['security_code'] && $GROUP['security_code']!=''){
+		$usethisguy = ' selected="selected"';	
+	}
+	$THIS_DISPLAY .= "           <OPTION ".$usethisguy." VALUE=\"".$GROUP['security_code']."\">".$GROUP['security_code']."</OPTION>\n";
+}
+$THIS_DISPLAY .= "         </select><br/>\n";
+
+$THIS_DISPLAY .= lang("Expires after")." <input id=\"expiration\" name=\"expiration\" type=\"text\" class=\"tfield\" style=\"width: 30px;\" VALUE=\"".$expdayz."\"> ".lang('days').".\n";
+$THIS_DISPLAY .= "<i>(".lang("Set to 0 for no expiration").")</i><br/>\n";
+
+
+
+$THIS_DISPLAY .= "</div>\n";
+
+//$THIS_DISPLAY .= "        </td>\n";
+/////end membership item
+
+
+
 
 $THIS_DISPLAY .= "        </td>\n";
 
@@ -1656,19 +1760,30 @@ $THIS_DISPLAY .= "         &nbsp;&nbsp;Height <input type=\"text\" class=\"tfiel
 
 $THIS_DISPLAY .= "        </td>\n";
 $THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\">\n";
+
+// Inventory Checking Addition
+$THIS_DISPLAY .= "         ".lang("Inventory Count:")." <input type=\"text\" SIZE=5 class=\"tfield\" name=\"option_inventory_num\" value=\"$SKU[OPTION_INVENTORY_NUM]\"><br/><BR><BR>\n";
+$THIS_DISPLAY .= "         <IMG SRC='help.gif' HSPACE=2 VSPACE=2 ALIGN=ABSMIDDLE border=\"0\" style='cursor: hand;' onClick=\"help_inventory();\">\n";
+
+
 $THIS_DISPLAY .= "         ".lang("Special Tax Rate:")." <input type=\"text\" class=\"tfield\" maxlength='5' style='width: 30px;' name=\"special_tax\" value=\"$SKU[SPECIAL_TAX]\" ALIGN=ABSMIDDLE>%\n";
 $THIS_DISPLAY .= "        </td>\n";
 
 $THIS_DISPLAY .= "       </tr>\n";
 
-$THIS_DISPLAY .= "       <tr>\n";
 
-$THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\" COLSPAN=3>\n";
+$THIS_DISPLAY .= "       <tr>\n";
+//$THIS_DISPLAY .= "        <td colspan=2 align=\"left\" valign=\"top\">\n";
+//$THIS_DISPLAY .= "        </td>\n";
+$THIS_DISPLAY .= "        <td align=\"left\" valign=\"top\" COLSPAN=2>\n";
 $THIS_DISPLAY .= "         ".lang("Searchable Keywords")."<br>\n";
-$THIS_DISPLAY .= "         <TEXTAREA class=\"tfield\" style='width: 625px; height: 55px;' name=\"option_keywords\">$SKU[OPTION_KEYWORDS]</TEXTAREA>\n";
+$THIS_DISPLAY .= "         <TEXTAREA class=\"tfield\" style='width: 425px; height: 55px;' name=\"option_keywords\">$SKU[OPTION_KEYWORDS]</TEXTAREA>\n";
 $THIS_DISPLAY .= "        </td>\n";
 
 $THIS_DISPLAY .= "       </tr>\n";
+
+
+
 
 $THIS_DISPLAY .= "      </table>\n\n";
 
@@ -1698,7 +1813,7 @@ echo $THIS_DISPLAY;
 ####################################################################
 
 echo "<script language=\"javascript\" type=\"text/javascript\">\n\n";
-
+echo "checkUserSignupOpt();\n";
 echo "showtab('PRODINFO');\n";
 
 echo "     // ----------------------------------------------------------\n";

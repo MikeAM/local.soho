@@ -1,6 +1,7 @@
 <?php
 
 error_reporting(E_PARSE);
+header("Content-Type: text/css;X-Content-Type-Options: nosniff;");
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 include_once('../../includes/product_gui.php');
@@ -131,8 +132,8 @@ $site = 'http://'.$_SESSION['this_ip'].'/'.pagename($pagename);
 	echo "background: #FFFFFF;\nmargin: 0 !important;\npadding: 0 !important;\n";
 	echo "}\n";
 
-	echo "body {\n";
-	echo "background-color: #FFFFFF;\nmargin: 0 !important;\npadding: 0 !important;\n";	
+	echo "body {\n";	
+	echo "color:#000; background-color: #FFFFFF;\nmargin: 0 !important;\npadding: 0 !important;\n";	
 	//echo $bodyInc;
 	echo "}\n";
 	

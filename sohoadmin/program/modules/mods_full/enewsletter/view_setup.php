@@ -51,7 +51,9 @@ if (eregi("\[CUSTOM\]", $t)) {
 	$TEMPLATE_NAME = "../../site_templates/pages/".$t."/index.html";
 }
 
-
+if($_REQUEST['t']=='blank_template'){
+	$TEMPLATE_NAME = $doc_root.'/sohoadmin/program/modules/mods_full/enewsletter/blank_news_template/index.html';
+}
 $PAGE_NAME = $p;
 $PROMO_MENU = "<table><tr><td class=menusys><a href=\"http://$this_ip\" class=menusys>".$lang["Visit our Website"]."</a></td></tr></table>";
 

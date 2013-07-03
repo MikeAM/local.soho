@@ -764,6 +764,8 @@ a:active { color: #3C3C3C; text-decoration: underline; }
 
 
 /* Help Links: Typically spawn a div help popup onclick */
+.help-link { color: #eaa510 !important; cursor: pointer; }
+.help-link:hover { color: #fdb417 !important; text-decoration: underline !important; }
 .help_popup_link:after { content: url("../icons/help_link_icon.gif"); }
 
 /* Main Menu: Enabled module links */
@@ -866,137 +868,137 @@ a.link_whitebox:active { color: #fff;text-decoration: none;border: 1px dotted #f
 /* BORDERS */
 /*----------------------------*/
 .bdr_nobtm { border-bottom: none !important; }
-.bdr_blue { border: 1px solid #6699CC !important; }
-.bdr_bluetop { border-top: 1px solid #6699CC !important; }
-.bdr_blueleft { border-left: 1px solid #6699CC !important; }
-.bdr_blueright { border-right: 1px solid #6699CC !important; }
+.bdr_blue { border: 1px solid #6699CC!important; }
+.bdr_bluetop { border-top: 1px solid #6699CC!important; }
+.bdr_blueleft { border-left: 1px solid #6699CC!important; }
+.bdr_blueright { border-right: 1px solid #6699CC!important; }
 
 /* Newschool border colors */
-.bdr_blue_a5 { border-color: #a5c6e6; !important; }
+.bdr_blue_a5 { border-color: #a5c6e6;!important; }
 
 /* Newschool border styles */
-.bdr_solid_u { border-style: none solid solid solid; !important; }
+.bdr_solid_u { border-style: none solid solid solid!important; }
 
 /* Newschool border widths */
-.bdr_1px { border-width: 1px; !important; }
+.bdr_1px { border-width: 1px!important; }
 
-.bdr_right_dotted { border-right: 1px dotted #D1D5D8 !important; }
+.bdr_right_dotted { border-right: 1px dotted #D1D5D8!important; }
 .bdr_btm_dotted td { border-bottom: 1px dotted #D1D5D8; }
 
 
 /* BACKGROUND COLOR - newschool */
-.bg_gray_f8 { background-color: #F8F8F8 !important; }
-.bg_gray_ef { background-color: #efefef !important; }
-.bg_gray_a5 { background-color: #E8E8E8 !important; }
-.bg_gray_df { background-color: #D1D5D8 !important; }
+.bg_gray_f8 { background-color: #F8F8F8!important; }
+.bg_gray_ef { background-color: #efefef!important; }
+.bg_gray_a5 { background-color: #E8E8E8!important; }
+.bg_gray_df { background-color: #D1D5D8!important; }
 
-.bg_blue_f8 { background-color: #F8F9FD !important; }
-.bg_blue_a5 { background-color: #A5C6E6 !important; }
-.bg_blue_df { background-color: #DFECF6 !important; }
-.bg_blue_66 { background-color: #6699CC !important; }
-.bg_blue_30 { background-color: #306FAE !important; }
-.bg_blue_33 { background-color: #336699 !important; }
-.bg_blue_31 { background-color: #315173 !important; }
+.bg_blue_f8 { background-color: #F8F9FD!important; }
+.bg_blue_a5 { background-color: #A5C6E6!important; }
+.bg_blue_df { background-color: #DFECF6!important; }
+.bg_blue_66 { background-color: #6699CC!important; }
+.bg_blue_30 { background-color: #306FAE!important; }
+.bg_blue_33 { background-color: #336699!important; }
+.bg_blue_31 { background-color: #315173!important; }
 
-.bg_green_f8 { background-color: #F8FDFB !important; }
-.bg_green_df { background-color: #DFF6EA !important; }
-.bg_green_a5 { background-color: #A5E6B3 !important; }
-.bg_green_66 { background-color: #66CC91 !important; }
-.bg_green_30 { background-color: #30AE6F !important; }
-.bg_green_33 { background-color: #339959 !important; }
-.bg_green_31 { background-color: #317344 !important; }
+.bg_green_f8 { background-color: #F8FDFB!important; }
+.bg_green_df { background-color: #DFF6EA!important; }
+.bg_green_a5 { background-color: #A5E6B3!important; }
+.bg_green_66 { background-color: #66CC91!important; }
+.bg_green_30 { background-color: #30AE6F!important; }
+.bg_green_33 { background-color: #339959!important; }
+.bg_green_31 { background-color: #317344!important; }
 
-.bg_red_98 { background-color: #980000 !important; }
-.bg_red_d7 { background-color: #d70000 !important; }
-.bg_red_66 { background-color: #cc6666 !important; }
-.bg_red_a5 { background-color: #e6a5a5 !important; }
-.bg_red_df { background-color: #f6dfdf !important; }
-.bg_red_f8 { background-color: #fdf8f8 !important; }
+.bg_red_98 { background-color: #980000!important; }
+.bg_red_d7 { background-color: #d70000!important; }
+.bg_red_66 { background-color: #cc6666!important; }
+.bg_red_a5 { background-color: #e6a5a5!important; }
+.bg_red_df { background-color: #f6dfdf!important; }
+.bg_red_f8 { background-color: #fdf8f8!important; }
 
 
 /* BACKGROUND COLOR - oldstyle */
-.bg_white { background-color: #FFFFFF !important; }
-.bg_lgray { background-color: #F7F7F7 !important; }
-.bg_lgreen { background-color: #F8FDFB !important; }
-.bg_green { background-color: #DFF6EA !important; }
-.bg_lblue { background-color: #F8F9FD !important; }
-.bg_lblue2 { background-color: #F7F9FF !important; }
-.bg_yellow { background-color: #FFFF99 !important; }
+.bg_white { background-color: #FFFFFF!important; }
+.bg_lgray { background-color: #F7F7F7!important; }
+.bg_lgreen { background-color: #F8FDFB!important; }
+.bg_green { background-color: #DFF6EA!important; }
+.bg_lblue { background-color: #F8F9FD!important; }
+.bg_lblue2 { background-color: #F7F9FF!important; }
+.bg_yellow { background-color: #FFFF99!important; }
 
 
 /* SHORTAND FONT FAMILY */
-.mono { font-family: courier !important; }
+.mono { font-family: courier!important; }
 
 
 /* FONT COLOR */
-.white { color: #FFFFFF !important; }
+.white { color: #FFFFFF!important; }
 
-.lblack { color: #2E2E2E !important; }
-.black { color: #000000 !important; }
+.lblack { color: #2E2E2E!important; }
+.black { color: #000000!important; }
 
-.gray_f8 { color: #F8F8F8 !important; }
-.gray_df { color: #D1D5D8 !important; }
-.gray_33 { color: #7A7A7A !important; }
-.gray_31 { color: #595959 !important; }
-.gray { color: #888c8e !important; }
-.dgray { color: #595959 !important; }
+.gray_f8 { color: #F8F8F8!important; }
+.gray_df { color: #D1D5D8!important; }
+.gray_33 { color: #7A7A7A!important; }
+.gray_31 { color: #595959!important; }
+.gray { color: #888c8e!important; }
+.dgray { color: #595959!important; }
 
-.lblue { color: #6699cc !important; }
-.blue { color: #336699 !important; }
-.dblue { color: #315173 !important; }
-.blue_f8 { color: #F8F9FD !important; }
-.blue_df { color: #DFECF6 !important; }
-.blue_a5 { color: #A5C6E6 !important; }
-.blue_66 { color: #6699CC !important; }
-.blue_30 { color: #306FAE !important; }
-.blue_33 { color: #336699 !important; }
-.blue_31 { color: #315173 !important; }
+.lblue { color: #6699cc!important; }
+.blue { color: #336699!important; }
+.dblue { color: #315173!important; }
+.blue_f8 { color: #F8F9FD!important; }
+.blue_df { color: #DFECF6!important; }
+.blue_a5 { color: #A5C6E6!important; }
+.blue_66 { color: #6699CC!important; }
+.blue_30 { color: #306FAE!important; }
+.blue_33 { color: #336699!important; }
+.blue_31 { color: #315173!important; }
 
-.red { color: #D70000 !important; }
-.dred { color: #980000 !important; }
-.orange { color: #FE7613 !important; }
-.green { color: #00831C !important; }
-.green_f8 { color: #F8FDFB !important; }
-.green_df { color: #DFF6EA !important; }
-.green_a5 { color: #A5E6B3 !important; }
-.green_66 { color: #66CC91 !important; }
-.green_30 { color: #30AE6F !important; }
-.green_33 { color: #339959 !important; }
-.green_31 { color: #317344 !important; }
+.red { color: #D70000!important; }
+.dred { color: #980000!important; }
+.orange { color: #FE7613!important; }
+.green { color: #00831C!important; }
+.green_f8 { color: #F8FDFB!important; }
+.green_df { color: #DFF6EA!important; }
+.green_a5 { color: #A5E6B3!important; }
+.green_66 { color: #66CC91!important; }
+.green_30 { color: #30AE6F!important; }
+.green_33 { color: #339959!important; }
+.green_31 { color: #317344!important; }
 
 /* FONT STYLE */
-.bold { font-weight: bold !important; }
-.unbold { font-weight: normal !important; }
-.uline { text-decoration: underline !important; }
-.noline { text-decoration: none !important; }
+.bold { font-weight: bold!important; }
+.unbold { font-weight: normal!important; }
+.uline { text-decoration: underline!important; }
+.noline { text-decoration: none!important; }
 
 
 /* PADDING and MARGIN */
-.nopad { padding: 0px !important; }
-.nopad_top { padding-top: 0px !important; }
-.nopad_right { padding-right: 0px !important; }
-.nopad_btm { padding-bottom: 0px !important; }
-.nopad_left { padding-left: 0px !important; }
+.nopad { padding: 0px!important; }
+.nopad_top { padding-top: 0px!important; }
+.nopad_right { padding-right: 0px!important; }
+.nopad_btm { padding-bottom: 0px!important; }
+.nopad_left { padding-left: 0px!important; }
 
-.nomargin_btm { margin-bottom: 0px !important; }
-.nomar_btm { margin-bottom: 0px !important; }
-.nomar_top { margin-top: 0px !important; }
-.nomar { margin: 0px !important; }
+.nomargin_btm { margin-bottom: 0px!important; }
+.nomar_btm { margin-bottom: 0px!important; }
+.nomar_top { margin-top: 0px!important; }
+.nomar { margin: 0px!important; }
 
 /* ALIGNMENT */
-.center { text-align: center !important; }
-.right { text-align: right !important; }
-.top { vertical-align: top !important; }
-.middle { vertical-align: middle !important; }
+.center { text-align: center!important; }
+.right { text-align: right!important; }
+.top { vertical-align: top!important; }
+.middle { vertical-align: middle!important; }
 
 /* OTHER MISC */
 
 /* Cross-browser hand pointer for buttons that use span onclicks and such */
-.hand { cursor: pointer !important; }
+.hand { cursor: pointer!important; }
 
 /* Particularly handy for adding less-stressed text/links to fgroup_title headings */
-.normal { letter-spacing: normal !important; }
-.font90 { font-size: 90% !important; }
+.normal { letter-spacing: normal!important; }
+.font90 { font-size: 90%!important; }
 
 /* Bottom borders for breaking up table rows */
 tr.row_spliter td { border-bottom: 1px dashed #ccc; }
@@ -1097,6 +1099,6 @@ Probably Outdated Sytles (duplicates removed) - menu.css
 .icalcontrols {vertical-align: top; margin: 0; font-family: Arial; font-size: 8pt; background-color: #FFFFFF; color: #000000;}
 .icalopcontrols {vertical-align: top; margin: 0; font-family: Arial; font-size: 8pt; background-color: #E6E6E6; color: #000000;}
 .catselect {font-family: Arial; font-size: 8pt;}
-.hintbox {width: 15; height: 15; vertical-align: top;}
+.hintbox {width: 15px; height: 15px; vertical-align: top;}
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

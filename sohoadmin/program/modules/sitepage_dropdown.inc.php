@@ -21,7 +21,7 @@ chdir($curdir);
 
 # Build page arrays (based on menu status) for jump menus
 # Loop all and split into diff arrays by menu status
-$pgrez = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages ORDER BY page_name");
+$pgrez = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages ORDER BY main_menu ASC,sub_page_of,page_name");
 
 $main_pages = array();
 $sub_pages = array();
@@ -48,24 +48,35 @@ while ( $getPage = mysql_fetch_array($pgrez) ) {
 	}
 }
 
+
+# Is the currently-logged-in admin user authorized to edit this page?
+
+$CUR_USER_ACCESS=$_SESSION['CUR_USER_ACCESS'];
+$dropdown_options .= "       <option class=\"\" value=\"\" style=\"background-color: #ccc;font-style:italic;\">".lang("Select Page")."</option>\n";
 # Build dropdown options
 #-----------------------------------------------
 # [ On-menu pages ]
-$dropdown_options .= "       <option value=\"\" style=\"background-color: #ccc;\">[".lang("On-Menu Pages")."]</option>\n";
+//$dropdown_options .= "       <option value=\"\" style=\"background-color: #ccc;\">[".lang("On-Menu Pages")."]</option>\n";
 foreach ( $main_pages as $key=>$mp ) {
-   $dropdown_options .= "       <option value=\"".$mp."\">".$mp."</option>\n";
+	$TMP_CHK = eregi_replace(" ", "_", $mp);
+	if ($CUR_USER_ACCESS == "WEBMASTER" || strpos($CUR_USER_ACCESS, ";".$TMP_CHK.";") !== false || eregi(";MOD_ALLPAGES;", $CUR_USER_ACCESS) ) { // Admin is authorized, build page row now
+   		$dropdown_options .= "       <option style=\"font-style:normal!important;\" value=\"". str_replace('&','%26',str_replace(' ','+',$mp))."\">".htmlspecialchars($mp)."</option>\n";
 
-   # Pull sub-pages for this page
-   foreach ( $sub_pages[$mp] as $sp ) {
-      $dropdown_options .= "       <option value=\"".$sp[name]."\">&gt;&gt; ".$sp[name]."</option>\n";
-   }
+		# Pull sub-pages for this page
+		foreach ( $sub_pages[$mp] as $sp ) {
+		   $dropdown_options .= "       <option style=\"font-style:normal!important;\" value=\"". str_replace('&','%26',str_replace(' ','+',$sp[name]))."\">&gt;&gt; ".htmlspecialchars($sp[name])."</option>\n";
+		}
+	}
 }
 
 # [ Off-menu pages ]
 if(count($offmenu_pages) > 0){
-	$dropdown_options .= "       <option value=\"\" style=\"background-color: #ccc;\">[".lang("Off-Menu Pages")."]</option>\n";
+	$dropdown_options .= "       <option value=\"\" style=\"font-style:italic;background-color: #ccc;\">[".lang("Off-Menu Pages")."]</option>\n";
 	foreach ( $offmenu_pages as $key=>$op ) {
-	   $dropdown_options .= "       <option value=\"".$op."\">".$op."</option>\n";
+		$TMP_CHK = eregi_replace(" ", "_", $op);
+		if ($CUR_USER_ACCESS == "WEBMASTER" || strpos($CUR_USER_ACCESS, ";".$TMP_CHK.";") !== false || eregi(";MOD_ALLPAGES;", $CUR_USER_ACCESS) ) { // Admin is authorized, build page row now
+			$dropdown_options .= "       <option style=\"font-style:normal!important;\" value=\"".str_replace('&','%26',str_replace(' ','+',$op))."\">".htmlspecialchars($op)."</option>\n";
+		}
 	}
 }
 

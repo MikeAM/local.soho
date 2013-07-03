@@ -6,7 +6,9 @@ session_start();
 $curdir = getcwd();
 chdir(str_replace(basename(__FILE__), '', __FILE__));
 require_once('../../../includes/product_gui.php');
+require_once("../../../includes/SohoEmail_class/SohoEmail.php");
 chdir($curdir);
+
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
 ## Version 4.5
@@ -55,7 +57,7 @@ function GEN_KEY() {
 ### PERFORM SAVE (NEW) EVENT ACTION				    ###
 #######################################################
 
-if ($ACTION == "SAVE_EVENT") {
+if ($_REQUEST['ACTION'] == "SAVE_EVENT") {
 
 	// ---------------------------------------------------------------
 	// First Get all Posted Variables into Memory and deal with them
@@ -98,9 +100,16 @@ if ($ACTION == "SAVE_EVENT") {
 	// Prepare title/detail vars for inclusion into data table
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	$EVENT_TITLE = addslashes($EVENT_TITLE);
-	$EVENT_DETAILS = addslashes($EVENT_DETAILS);
-
+//	$EVENT_TITLE = slashthis($EVENT_TITLE);
+//	$EVENT_DETAILS = slashthis($EVENT_DETAILS);
+	if($_POST['EVENT_CARTPAGE']!=''){
+		$EVENT_DETAILPAGE = $_POST['EVENT_CARTPAGE'];
+	}
+	$EVENT_TITLE = str_replace("'", "&rsquo;", $EVENT_TITLE);	
+	$EVENT_DETAILS = str_replace("'", "&rsquo;", $EVENT_DETAILS);	
+	$EVENT_DETAILPAGE = str_replace("'", "&rsquo;", $EVENT_DETAILPAGE);	
+	$EVENT_CATEGORY = str_replace("'", "&rsquo;", $EVENT_CATEGORY);
+	$KEYWORDS = str_replace("'", "&rsquo;", $KEYWORDS);
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Finish building intitial mySql query
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,7 +150,9 @@ if ($ACTION == "SAVE_EVENT") {
 		$email_str .= "$etitle\n$edate ($etime)\n\n$edetail";
 		$email_str .= "\n\n\n** THIS IS AN AUTO-GENERATED MESSAGE; DO NOT REPLY **";
 
-		mail("$EVENT_EMAIL_CC", "$SERVER_NAME Calendar Update", "$email_str", "From: webmaster@$SERVER_NAME");
+		if(!SohoEmail($EVENT_EMAIL_CC, preg_replace('/^www\./i','',$_SESSION['this_ip']), "$SERVER_NAME Calendar Update", str_replace("\n","<br/>\n", $email_str))){
+			mail("$EVENT_EMAIL_CC", "$SERVER_NAME Calendar Update", "$email_str", "From: webmaster@$SERVER_NAME");
+		}
 
 	} // End Email Event
 

@@ -56,7 +56,43 @@ function no_recur() {
 	RECUR4.style.display = 'none';
 
 }
+function addevensub(){
+	var formgo = 1;
+	if(document.getElementById('EVENT_TITLE').value.length < 3){
+		alert('Please enter a Title');
+		formgo = 0;
+	}
+	if(formgo == 1){
+		document.addeve.submit();
+	}
+}
 
+function toggText(){
+	$("#EVENT_DETAILS").css("background-color","#FFFFFF");
+	if(document.getElementById('EVENT_DETAILPAGE').selectedIndex > 0){
+		document.getElementById('EVENT_CARTPAGE').selectedIndex=0;
+		//document.getElementById('EVENT_DETAILS').setAttribute('readonly', true);
+		$("#EVENT_DETAILS").attr("readonly", true);
+		$("#EVENT_DETAILS").css("background-color","#EBEBE4");
+	} else {
+		if(document.getElementById('EVENT_CARTPAGE').selectedIndex > 0){
+			document.getElementById('EVENT_DETAILPAGE').selectedIndex=0;
+			//document.getElementById('EVENT_DETAILS').setAttribute('readonly', true);
+			$("#EVENT_DETAILS").attr("readonly", true);
+			$("#EVENT_DETAILS").css("background-color","#EBEBE4");
+		} else {
+			//document.getElementById('EVENT_DETAILS').removeAttribute('readonly',0);
+			$("#EVENT_DETAILS").removeAttr("readonly");
+			$("#EVENT_DETAILS").css("background-color","#FFFFFF");
+			
+		}
+	}
+}
+function sText(){
+	if((document.getElementById('START_TIME').selectedIndex+1) >= document.getElementById('END_TIME').selectedIndex && document.getElementById('END_TIME').selectedIndex!= 0){
+		document.getElementById('END_TIME').selectedIndex=eval(document.getElementById('START_TIME').selectedIndex+2);
+	}
+}
 </SCRIPT>
 
 <style>
@@ -82,25 +118,25 @@ $saveOn = "class=\"btn_save\" onMouseover=\"this.className='btn_saveon';\" onMou
 <INPUT TYPE=HIDDEN NAME="ACTION" VALUE="SAVE_EVENT">
 <INPUT TYPE=HIDDEN NAME="EVENT_DATE" VALUE="<?php echo "$ay-$am-$ad"; ?>">
 
-<TABLE WIDTH="700" BORDER="0" ALIGN="CENTER" CELLPADDING="5" CELLSPACING="0" class="feature_sub">
+<TABLE BORDER="0" ALIGN="left" CELLPADDING="5" CELLSPACING="0" class="feature_sub" style="min-width:700px;">
  <TR>
-  <TD WIDTH="50%" ALIGN="LEFT" VALIGN="TOP" class="fsub_title">
+  <TD WIDTH="50%" ALIGN="LEFT" VALIGN="TOP" class="fsub_title"><span style="display:none;">
    <?php echo lang("Apply To"); ?>:
 	<SELECT NAME="APLLY_SAVE_ACTION" CLASS=text style='width: 200px; background: #EFEFEF;'>
     <OPTION VALUE="A" SELECTED><?php echo lang("THIS EVENT ONLY"); ?></OPTION>
     <!-- <OPTION VALUE="B"><?php echo lang("All occurrences of this event"); ?></OPTION> -->
-   </SELECT>
+   </SELECT></span>
   </TD>
   <TD WIDTH="50%" ALIGN=RIGHT class="fsub_title" style="padding-right: 5px;">
-<button onClick="document.addeve.submit();" TYPE="button" class="greenButton"><span><span><?php echo lang("Save Event"); ?></span></span></button>
+<button onClick="addevensub();" TYPE="button" class="greenButton"><span><span><?php echo lang("Save Event"); ?></span></span></button>
   </td>
  </tr>
  <tr align="right">
   <td width="50%" align="left"><?php echo lang("Event Date"); ?>: <B><?php echo $display_dow.", ".$event_date; ?></B>
    &nbsp;&nbsp;</TD>
   <td width="50%"> <?php echo lang("Start Time"); ?>:
-   <select name="START_TIME" class="text" style='width: 75px;'>
-	 <option value="" selected>n/a</option>
+   <select name="START_TIME" id="START_TIME" onChange="sText()" class="text" style='width: 95px;'>
+	 <option value="" selected>N/A</option>
 
 		<?php
 
@@ -127,7 +163,7 @@ $saveOn = "class=\"btn_save\" onMouseover=\"this.className='btn_saveon';\" onMou
 
 		?>
       </SELECT> <?php echo lang("End Time"); ?>:
-      <SELECT NAME="END_TIME" CLASS="text" STYLE='width: 75px;'>
+      <SELECT id="END_TIME" NAME="END_TIME" CLASS="text" STYLE='width: 95px;'>
       <OPTION VALUE="[none]">[none]</OPTION>
       <OPTION VALUE="" SELECTED>N/A</OPTION>
 
@@ -158,13 +194,45 @@ $saveOn = "class=\"btn_save\" onMouseover=\"this.className='btn_saveon';\" onMou
       </SELECT> </TD>
   </TR>
   <TR>
-    <TD COLSPAN="2"><?php echo lang("Event Title"); ?>:<BR> <INPUT TYPE="text" NAME="EVENT_TITLE" CLASS="text" STYLE='width: 100%;'>
+    <TD COLSPAN="2"><?php echo lang("Event Title"); ?>:<BR> <INPUT TYPE="text" NAME="EVENT_TITLE" id="EVENT_TITLE" CLASS="text" STYLE='width: 98%;'>
     </TD>
   </TR>
+  
   <TR>
-    <TD><?php echo lang("Event Details (Description)"); ?>:<BR> <TEXTAREA NAME="EVENT_DETAILS" CLASS="text" STYLE="width: 100%; HEIGHT: 115px;" WRAP=VIRTUAL></TEXTAREA>
+    <TD COLSPAN="2">
+      <?php echo lang('Link to Page or Product'); ?><BR> <SELECT onchange="document.getElementById('EVENT_CARTPAGE').selectedIndex=0;toggText();" NAME="EVENT_DETAILPAGE" CLASS="text" ID="EVENT_DETAILPAGE" STYLE='min-width: 140px; max-width:20%;'>
+        <OPTION VALUE="" SELECTED>Select Page</OPTION>
+		<?php
+
+		// Removed reliance upon "type" pages in V4.6 (Still works for upgrades)
+		$result = mysql_query("SELECT page_name, url_name, link FROM site_pages ORDER BY page_name");
+		while ($row = mysql_fetch_array($result)) {
+			if(!preg_match('/^(http)(s)?:/i', $row['link'])){
+				echo "<OPTION VALUE=\"$row[page_name]\">$row[page_name]</OPTION>\n";
+			}
+		}
+
+		?>
+      </SELECT>
+<?php
+echo " OR ";
+echo "<SELECT onchange=\"document.getElementById('EVENT_DETAILPAGE').selectedIndex=0;toggText();\" NAME=\"EVENT_CARTPAGE\" CLASS=\"text\" ID=\"EVENT_CARTPAGE\" STYLE='min-width: 140px; max-width:80%;'>\n";
+echo "        <OPTION VALUE=\"\" SELECTED>Select Cart Item</OPTION>\n";
+		// Removed reliance upon "type" pages in V4.6 (Still works for upgrades)
+		$results = mysql_query("SELECT PRIKEY,PROD_SKU,PROD_NAME FROM cart_products ORDER BY PROD_SKU, PROD_NAME");
+		while ($cart = mysql_fetch_array($results)) {			
+			echo "<OPTION VALUE=\"".$cart['PRIKEY']."\">".$cart['PROD_SKU'].' - '.$cart['PROD_NAME']."</OPTION>\n";
+		}
+
+		
+echo "      </SELECT>\n";
+?>
+<br/><p style="margin:10px 20px 0px 20px;">- OR -</p>
+</td></tr>
+  <TR>
+    <TD><?php echo lang("Event Details (Description)"); ?>:<BR> <TEXTAREA NAME="EVENT_DETAILS" id="EVENT_DETAILS" CLASS="text" STYLE="width: 100%; HEIGHT: 115px;" WRAP=VIRTUAL></TEXTAREA>
     </TD>
-    <TD ALIGN="LEFT" VALIGN="TOP"><?php echo lang("Event Category"); ?>:<BR> <SELECT NAME="EVENT_CATEGORY" CLASS="text" STYLE='width: 200px;'>
+    <TD ALIGN="LEFT" VALIGN="TOP"><?php echo lang("Event Category"); ?>:<BR> <SELECT NAME="EVENT_CATEGORY" id="EVENT_CATEGORY" CLASS="text" STYLE='width: 200px;'>
         <OPTION VALUE="ALL" SELECTED><?php echo lang("All"); ?></OPTION>
         <?php
 
@@ -177,7 +245,7 @@ $saveOn = "class=\"btn_save\" onMouseover=\"this.className='btn_saveon';\" onMou
       </SELECT>
       <BR>
       <BR>
-      <?php echo lang("Security Code (Group)"); ?>:<BR> <SELECT NAME="EVENT_SECURITYCODE" CLASS="text" ID="EVENT_SECURITYCODE" STYLE='width: 200px;'>
+      <?php echo lang("Security Code (Group)"); ?>:<BR> <SELECT NAME="EVENT_SECURITYCODE" CLASS="text" id="EVENT_SECURITYCODE" STYLE='width: 200px;'>
         <OPTION VALUE="Public" SELECTED><?php echo lang("Public"); ?></OPTION>
 		<?php
 
@@ -188,23 +256,12 @@ $saveOn = "class=\"btn_save\" onMouseover=\"this.className='btn_saveon';\" onMou
 
 		?>
       </SELECT>
-      <BR>
-      <BR>
-      Detail Page:<BR> <SELECT NAME="EVENT_DETAILPAGE" CLASS="text" ID="EVENT_DETAILPAGE" STYLE='width: 200px;'>
-        <OPTION VALUE="" SELECTED>N/A</OPTION>
-		<?php
-
-		// Removed reliance upon "type" pages in V4.6 (Still works for upgrades)
-		$result = mysql_query("SELECT page_name, url_name, link FROM site_pages ORDER BY page_name");
-		while ($row = mysql_fetch_array($result)) {
-			if(!preg_match('/^http:/i', $row['link'])){
-				echo "<OPTION VALUE=\"$row[page_name]\">$row[page_name]</OPTION>\n";
-			}
-		}
-
-		?>
-      </SELECT> </TD>
-  </TR>
+<?php
+      
+echo "      </TD>\n";
+echo "  </TR>\n";
+  ?>
+  
   <TR>
     <TD><?php echo lang("When saving or changing this event, email a notice to the following email addresses"); ?>:<BR>
       <INPUT TYPE="text" NAME="EVENT_EMAIL_CC" CLASS="text" STYLE='width: 100%;'>

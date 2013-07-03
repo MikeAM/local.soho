@@ -33,7 +33,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 session_start();
-include($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 
 # Determines which types of fields can have which types of properties
 include_once("nocando.inc.php");
@@ -197,8 +197,9 @@ if ( $_GET['save_field'] != "" ) {
 
    # Saving field title/label? Then save dbname too (except for emailaddr field that's special)
    if ( $_GET['save_field'] == "title" && $_SESSION['form_fields'][$_GET['field_id']]['field_type'] != "email" )  {
+   	
       if ( $globalprefObj->get('utf8') == 'on' ) {
-      	$_SESSION['form_fields'][$_GET['field_id']]['dbname'] = $_GET['newvalue'];
+      	$_SESSION['form_fields'][$_GET['field_id']]['dbname'] = supersterilize($_GET['newvalue']);
       } else {
       	$_SESSION['form_fields'][$_GET['field_id']]['dbname'] = supersterilize($_GET['newvalue']);
       }

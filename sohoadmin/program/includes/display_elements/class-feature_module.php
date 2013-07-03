@@ -1,5 +1,5 @@
 <?php
-//error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 ##########################################################################################################################################
@@ -47,10 +47,13 @@ class feature_module {
    var $csslink; // Link to external stylesheet
    var $sohoadmin; // SMT folder name
    var $jscripts; // Module-specific javascript
-   var $popdivs; // Div layers above main module layer
+   var $popdivs; // Div layers above main module layer	
+	var $httpvar;
+
 
 
    function feature_module($modtitle = "", $navlayer = "main menu") {
+   	$this->httpvar = httpvar();
       $this->sohoadmin = "sohoadmin";
       $this->css_main = "/program/product_gui.css";
       //$this->css_main = "/program/includes/product_interface.css";
@@ -64,7 +67,7 @@ class feature_module {
       $html_head .= "<head>\n";
       $html_head .= "<title>".$this->title."</title>\n";
       $html_head .= "\n";
-      $html_head .= "<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n";
+      //$html_head .= "<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n";
       $html_head .= "<meta http-equiv=\"pragma\" content=\"no-cache\">\n";
       $html_head .= "<meta http-equiv=\"expires\" content=\"-1\">\n";
 
@@ -72,7 +75,7 @@ class feature_module {
       $html_head .= "<!-------------------------------------->\n";
       $html_head .= "<!-----------Stylesheet Link------------>\n";
       $html_head .= "<!-------------------------------------->\n";
-      $html_head .= "<link rel=\"stylesheet\" href=\"http://".$_SESSION['docroot_url']."/".$this->sohoadmin.$this->css_main."\">\n";
+      $html_head .= "<link rel=\"stylesheet\" href=\"".$this->httpvar.$_SESSION['docroot_url']."/".$this->sohoadmin.$this->css_main."\">\n";
       //$html_head .= "<script language=\"JavaScript\" type=\"text/javascript\" src=\"http://".$_SESSION['docroot_url']."/".$this->sohoadmin."/program/includes/display_elements/wz_tooltip.js\"></script>\n";
 
       $html_head .= "\n\n";
@@ -216,7 +219,7 @@ class feature_module {
 
       $html_output .= "</table>\n";
       $html_output .= "</div>\n";
-      $html_output .= "<script language=\"JavaScript\" type=\"text/javascript\" src=\"http://".$_SESSION['docroot_url']."/".$this->sohoadmin."/program/includes/display_elements/wz_tooltip.js\"></script>\n";
+      $html_output .= "<script language=\"JavaScript\" type=\"text/javascript\" src=\"".$this->httpvar.$_SESSION['docroot_url']."/".$this->sohoadmin."/program/includes/display_elements/wz_tooltip.js\"></script>\n";
       $html_output .= "</body>\n";
       $html_output .= "</html>\n";
 

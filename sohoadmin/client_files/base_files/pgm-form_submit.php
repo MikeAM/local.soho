@@ -1,24 +1,17 @@
 <?php
-
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
 ################################################################################
 ## Soholaunch(R) Site Management Tool
-## Version 	4.6
-## Revised	4.9.3 r33
 ##
-## Author: 			Mike Johnston [mike.johnston@soholaunch.com]
 ## Homepage:	 	http://www.soholaunch.com
-## Bug Reports: 	http://bugzilla.soholaunch.com
-## Release Notes:	sohoadmin/build.dat.php
 ################################################################################
 
 ##############################################################################
 ## COPYRIGHT NOTICE
-## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston
-## Copyright 2003-2007 Soholaunch.com, Inc.
+## Copyright 1999-2012 Soholaunch.com, Inc.
 ## All Rights Reserved.
 ##
 ## This script may be used and modified in accordance to the license
@@ -34,7 +27,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 session_start();
-error_reporting(0);
 track_vars;
 
 /**
@@ -43,10 +35,12 @@ track_vars;
 * file.
 */
 	
-	include_once("sohoadmin/client_files/pgm-site_config.php");
-	include_once("sohoadmin/program/includes/shared_functions.php");
+include_once("sohoadmin/client_files/pgm-site_config.php");
+include_once("sohoadmin/program/includes/shared_functions.php");
 
-	include_once("sohoadmin/program/includes/smt_functions.php");
+include_once("sohoadmin/program/includes/smt_functions.php");
+require_once("sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
+error_reporting('341');
 	eval(hook("pgm-form_submit.php:top-before-page-processing"));
 	
 	$globalprefObj = new userdata('global');
@@ -68,6 +62,9 @@ track_vars;
 		$EMAILTO = $_POST['EMAILTO'];
 	}
 	
+	if(shell_exec('echo hi') == '') { $whoami = exec("whoami"); } else { $whoami = shell_exec("whoami"); }
+	$server_email_address=str_replace("\n", '', $whoami)."@".php_uname("n");
+	
 	if($formpref->get('include-captcha')=='on' && isset($_POST) && ($_POST['capval'] == '' || !isset($_POST['capval']))){
 		$getpagecont = include_r("http://".$_SESSION['this_ip']."/".str_replace(' ', '_', $_POST['PAGEREQUEST']).".php");
 		if(preg_match('/name="capval"/m', $getpagecont) && ($_POST['capval'] == '' || !isset($_POST['capval']))){
@@ -82,7 +79,7 @@ track_vars;
 	if(array_key_exists('capval', $_POST) || array_key_exists('cap', $_POST)){
 		$form_verificationk = '';
 		$form_verificationk = $_SESSION['form_verification'];
-		unset($_SESSION['form_verification']);
+		//unset($_SESSION['form_verification']);
 		if($form_verificationk != md5(strtoupper($_POST['cap'])) || $form_verificationk == '') {
 			header("Location: http://".$_SESSION['this_ip']."/index.php?pr=".$_POST['PAGEREQUEST']);
 			echo "<script type=\"text/javascript\"> \n";
@@ -199,47 +196,53 @@ track_vars;
 * Insert function to kill all non alpha/numeric characters from data
 * for database storage
 */
-
-	function sterilize_char ($sterile_var) {
-	
-		$sterile_var = stripslashes($sterile_var);
-		$sterile_var = eregi_replace(";", ",", $sterile_var);
-		$sterile_var = eregi_replace(" ", "_", $sterile_var);
-	
-		$st_l = strlen($sterile_var);
-		$st_a = 0;
-		$tmp = "";
-	
-		while($st_a != $st_l) {
-			$temp = substr($sterile_var, $st_a, 1);
-			if (eregi("[0-9a-z_]", $temp)) { $tmp .= $temp; }
-			$st_a++;
-		}//endwhile
-	
-		$sterile_var = $tmp;
-		return $sterile_var;
-	
-	}//sterilize_char
+	if(!function_exists('sterilize_char')){
+		function sterilize_char ($sterile_var) {
+		
+			$sterile_var = stripslashes($sterile_var);
+			$sterile_var = str_replace(";", ",", $sterile_var);
+			$sterile_var = str_replace(" ", "_", $sterile_var);
+			$st_l = strlen($sterile_var);
+			$st_a = 0;
+			$tmp = "";
+			while($st_a != $st_l) {
+				$temp = substr($sterile_var, $st_a, 1);
+				if (eregi("[0-9a-z_]", $temp)) { $tmp .= $temp; }
+				$st_a++;
+			}//endwhile	
+			$sterile_var = $tmp;
+			return $sterile_var;	
+		}//sterilize_char
+	}
 
 /**
 * Insert validate email function
 */
 
+if(!function_exists('email_is_valid')){
 	function email_is_valid ($email) {
-	   if (eregi("^[0-9a-z]([+-_.]?[0-9a-z])*@[0-9a-z]([-.]?[0-9a-z])*\\.[a-z]{2,4}$", $email, $check)) {
-	      return TRUE;
-	   }//endif
-	
-	   return FALSE;
-	
-	}//email_is_valid
+		if(!function_exists('filter_var')){
+			if(preg_match("/^[A-Z0-9._%-+]+@[A-Z0-9._%-+]+\.[A-Z]{2,4}$/i",$email)){
+				return TRUE;
+			} else {
+				return FALSE;
+			}
+		} else {
+			if(filter_var($email,FILTER_VALIDATE_EMAIL) === false){
+				return FALSE;
+			} else {
+				return TRUE;	
+			}
+		}
+	}	// END VALIDATE EMAIL FUNCTION
+}
 
 /**
 * Setup known variable array; unknowns are form generated
 */
 
 	$SOHO_VAR = ";EMAILTO;PAGEREQUEST;DATABASE;PAGEGO;RESPONSEFROM;SUBJECTLINE;RESPONSEFILE;";
-	$SOHO_VAR .= "REQUIRED FIELDS;SELFCLOSE;CUST FILENAME;CUSTOMERNUMBER;UNIQUETOKEN;";
+	$SOHO_VAR .= "REQUIRED FIELDS;SELFCLOSE;CUST FILENAME;CUSTOMERNUMBER;UNIQUETOKEN;required fields;";
 
 /**
 * Expected Variable Listing and what they tell this process
@@ -262,6 +265,13 @@ track_vars;
 * 
 * var emailaddr			Customers Email Address to send confirmation email
 */
+	if (strtoupper(substr(PHP_OS,0,3)=='WIN')) {
+	  $eol="\r\n";
+	} elseif (strtoupper(substr(PHP_OS,0,3)=='MAC')) {
+	  $eol="\r";
+	} else {
+	  $eol="\n";
+	}
 
 	$PAGEREQUEST = eregi_replace(' ', '_', $PAGEREQUEST);
 	$filename = "$cgi_bin/".$PAGEREQUEST.".con";
@@ -563,18 +573,18 @@ track_vars;
 				$value = eregi_replace("\r", "", $value);
 	
 				if (!eregi("emailaddr", $name) && !eregi("EMAILTO", $name) && !eregi("RESPONSEFROM", $name)){
-					$value = eregi_replace("_", " ", $value);
+					$value = str_replace("_", " ", $value);
 				}//endif
 	
 				$name = stripslashes($name);
-	
+				
 				if ( $globalprefObj->get('utf8') != 'on' ) {
 					$name = sterilize_char($name);
 				}
 	
-				$name = eregi_replace("_", " ", $name);
+				$name = str_replace("_", " ", $name);
 	
-				if (!eregi(";$name;", $SOHO_VAR)) {
+				if (!preg_match("/".$name."/", $SOHO_VAR)) {
 					if (eregi("emailaddr", $name)) { 
 						$name = lang("Email Address"); $value = strtolower($value); $visitor_email = strtolower($value); 
 					}//endif
@@ -644,9 +654,9 @@ track_vars;
 		
 				if ( count($_FILES) > 0 ) {
 		
-				include_once($_SESSION['doc_root'].'/sohoadmin/program/includes/class-send_file.php');
+				//include_once($_SESSION['doc_root'].'/sohoadmin/program/includes/class-send_file.php');
 				
-				$test = new attach_mailer($name = "", $from = "$RESPONSEFROM", $to = "$EMAILTO", $cc = "", $bcc = "", $subject = "".lang("Website Form Submission")."");
+				//$test = new attach_mailer($name = "", $from = "$RESPONSEFROM", $to = "$EMAILTO", $cc = "", $bcc = "", $subject = "".lang("Website Form Submission")."");
 				$o_dir = getcwd();
 				chdir($_SESSION['doc_root'].'/sohoadmin/filebin/');
 				if(is_dir('tmp_upload')){ rmdirr('tmp_upload'); }
@@ -660,10 +670,10 @@ track_vars;
 							if(file_exists($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum])) {
 								if(preg_match('/\.(gif|jpg|jpeg|png|bmp)$/i', $_FILES['fileupload']['name'][$filnum])) {
 									//$test->add_html_image($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
-									$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
+									//$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
 									$purefiles[] = $_FILES['fileupload']['name'][$filnum];
 								} elseif(preg_match('/\.zip$/i', $_FILES['fileupload']['name'][$filnum])) {
-									$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
+									//$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
 									$purefiles[] = $_FILES['fileupload']['name'][$filnum];
 								} else {
 									$SLASH = DIRECTORY_SEPARATOR;
@@ -671,10 +681,10 @@ track_vars;
 									soho_create_zip($zipped_file, $_FILES['fileupload']['name'][$filnum]);
 									$purefiles[] = $_FILES['fileupload']['name'][$filnum];
 									if(file_exists($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$zipped_file)){
-										$test->add_attach_file($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$zipped_file);
+									//	$test->add_attach_file($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$zipped_file);
 //										unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$zipped_file);
 									} else {
-										$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/tmp_upload/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
+									//	$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/tmp_upload/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
 									}
 //								unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$_FILES['fileupload']['name'][$filnum]);
 								}
@@ -683,18 +693,17 @@ track_vars;
 					}
 				}
 
-			$test->html_body = "<html><pre>$soho_email</pre></html>";
-			$test->text_body = strip_tags($test->html_body, "<a>");
-			if($test->process_mail() == true ) {
+			$emailattachments = array(
+				"attachments"=>$purefiles
+			);
+			if(SohoEmail($EMAILTO, $RESPONSEFROM, lang("Website Form Submission"), "<html><pre>$soho_email</pre></html>", $emailattachments)){
+				foreach($purefiles as $pfile){
+					unlink(basename($pfile));
+				}
+//			if($test->process_mail() == true ) {
 				//echo "mail sent";
 			}else{
-				if (strtoupper(substr(PHP_OS,0,3)=='WIN')) {
-				  $eol="\r\n";
-				} elseif (strtoupper(substr(PHP_OS,0,3)=='MAC')) {
-				  $eol="\r";
-				} else {
-				  $eol="\n";
-				}
+
 				$zipped_file = 'upload_files.zip';
 				unlink($zipped_file);
 				soho_create_zip($zipped_file, $purefiles);
@@ -716,8 +725,8 @@ track_vars;
 				$f_type=filetype($f_name);
 				fclose($handle);
 				# Common Headers
-				$headers .= 'From: '.$from_name.' <'.$from_address.'>'.$eol;
-				$headers .= 'Reply-To: '.$from_name.' <'.$from_address.'>'.$eol;
+				$fromheaders = 'From: '.$from_name.' <'.$from_address.'>'.$eol;
+				$headers = 'Reply-To: '.$from_name.' <'.$from_address.'>'.$eol;
 				$headers .= 'Return-Path: '.$from_name.' <'.$from_address.'>'.$eol;     // these two to set reply address
 				$headers .= "Message-ID: <".$now." TheSystem@".$_SERVER['SERVER_NAME'].">".$eol;
 				$headers .= "X-Mailer: PHP v".phpversion().$eol;           // These two to help avoid spam-filters
@@ -748,7 +757,17 @@ track_vars;
 				
 				# SEND THE EMAIL
 				ini_set(sendmail_from, $from_address);  // the INI lines are to force the From Address to be used !
-				mail("$EMAILTO", $subject, $msg, $headers);
+				///if(!SohoEmail($EMAILTO, $RESPONSEFROM, $subject, $msg)){
+				if(!mail("$EMAILTO", $subject, $msg, $fromheaders.$headers)){
+					$error_msg[]=lang("Not able to send client email")." ".(__LINE__ - 1)."<br/>".$fromheaders.$headers;
+					$fromheaders = 'From: '.$_SESSION['this_ip'].' <'.$server_email_address.'>'.$eol;
+					if(!mail("$EMAILTO", $subject, $msg, $fromheaders.$headers)){
+						$error_msg[]=lang("Not able to send client email")." ".(__LINE__ - 1)."<br/>".$fromheaders.$headers;	
+					}
+				}
+//				} else {
+//					echo 'sent 1b';	
+//				}
 				ini_restore(sendmail_from);
 				
 			}//end else
@@ -766,27 +785,30 @@ track_vars;
 			* to be included in the FOREACH statement.
 			* This foreach uses $soho_email in the mail function.
 			*/
-
 			$soho_email = fixEncoding($soho_email);
-	
 			if ( $visitor_email != "" ) { $emailfrom = $visitor_email; } else { $emailfrom = $RESPONSEFROM; }
 			foreach($EMAILTO_ADMIN as $var=>$val){
 				if(strlen($val)>5){
 					//$from = $emailfrom;
-
 					$headers  = 'MIME-Version: 1.0' . "\r\n";
 					$headers .= 'Content-type: text/plain; charset=UTF-8' . "\r\n";
-////					$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-
-					if ( $formpref->get('double-email') != 'yes' ) {
-						//$headers .= 'To: '. $val . "\r\n";
+					$fromheaders = 'From: '.$RESPONSEFROM.' <'.$RESPONSEFROM.'>'."\r\n";
+					$fromheaders .= 'Reply-To: '.$RESPONSEFROM.' <'.$RESPONSEFROM.'>'."\r\n";
+					if($_POST['subjectline']!=''){
+						$email_sub='('.lang("Website Contact").') '.str_replace("\\",'',str_replace("'",'',str_replace('"','',$_POST['subjectline']))); 
+					} else {
+						$email_sub=lang("Website Form Submission"); 
 					}
-					
-					if ( $formpref->get('from-header') != 'disabled' ) {
-						$headers .= 'From: '.$RESPONSEFROM . "\r\n";
-						$headers .= 'Reply-To: '.$RESPONSEFROM.' <'.$RESPONSEFROM.'>'."\r\n";
+					if(!SohoEmail($val, $RESPONSEFROM, $email_sub, str_replace("\n","<br/>",$soho_email))){
+						if(!mail("$val", $SUBJECTLINE, $soho_email, $headers.$fromheaders)){
+							$error_msg[]=lang("Not able to send client email")." ".(__LINE__ - 1)."<br/>".$headers.$fromheaders;
+							$fromheaders = 'From: '.$_SESSION['this_ip'].' <'.$server_email_address.'>'."\r\n";
+							$fromheaders .= 'Reply-To: '.$RESPONSEFROM.' <'.$RESPONSEFROM.'>'."\r\n";
+							if(!mail("$val", $SUBJECTLINE, $soho_email, $headers.$fromheaders)){
+								$error_msg[]=lang("Not able to send client email")." ".(__LINE__ - 1)."<br/>".$headers.$fromheaders;
+							}
+						}
 					}
-					mail("$val", $SUBJECTLINE, $soho_email, $headers);
 				}
 			}
 		}
@@ -812,9 +834,10 @@ track_vars;
 	
 			$name = stripslashes($name);
 			$name = sterilize_char($name);
-			$name = eregi_replace("_", " ", $name);
+			$name = str_replace("_", " ", $name);
 	
-			if (!eregi(";$name;", $SOHO_VAR) && $name!='capval' && $name!='cap') {
+			//if (!eregi(";$name;", $SOHO_VAR) && $name!='capval' && $name!='cap') {
+			if (!preg_match("/".$name."/", $SOHO_VAR)  && $name!='capval' && $name!='cap') {
 				$soho_email .= $name.": [".$value."]\n";
 			}//endif
 	
@@ -846,7 +869,7 @@ track_vars;
 			$value = eregi_replace("\r", "", $value);
 	
 			if (!eregi("emailaddr", $name) && !eregi("EMAILTO", $name) && !eregi("RESPONSEFROM", $name) && !eregi("EMAIL_ADDRESS", $name)){
-				$value = eregi_replace("_", " ", $value);	// Replace underscores with spaces Bug #0000619
+				$value = str_replace("_", " ", $value);	// Replace underscores with spaces Bug #0000619
 			}//endif
 	
 			$name = stripslashes($name);
@@ -854,7 +877,7 @@ track_vars;
 			$name = sterilize_char($name);	#this may cause issues for non-english non-utf8 chars
 			if ( $globalprefObj->get('utf8') != 'on' ) {
 //				$name = sterilize_char($name);
-				$name = eregi_replace("_", " ", $name);
+				$name = str_replace("_", " ", $name);
 			}//endif
 	
 			if (eregi("emailaddr", $name)){ 
@@ -870,10 +893,11 @@ track_vars;
 		} else {
 			$soho_email = eregi_replace("EMAILADDR", lang("Email Address"), $soho_email);
 		}//endif
-	
-		if ($SUBJECTLINE == ""){ 
-			$SUBJECTLINE = "Website Form Submission"; 
-		}//endif
+		if($_POST['SUBJECTLINE']==''){
+			$_POST['SUBJECTLINE']= lang("Website Form Submission");
+		}
+		
+
 	
 		if ($EMAILTO == ""){ 
 			$EMAILTO = "$dot_com <webmaster@$dot_com>"; 
@@ -896,15 +920,22 @@ track_vars;
 		}//endif
 	
 		$EMAILADDR = eregi_replace(",.*", "", $EMAILADDR);
-				if (email_is_valid($EMAILADDR)){
+				if(email_is_valid($EMAILADDR)){
 					$soho_email = fixEncoding($soho_email);
-
 					$headers  = 'MIME-Version: 1.0' . "\r\n";
 					$headers .= 'Content-type: text/plain; charset=UTF-8' . "\r\n";
-//					$headers .= 'To: '. $EMAILADDR . "\r\n";
-					$headers .= 'From: '.$RESPONSEFROM . "\r\n";
-					
-					mail("$EMAILADDR", "$SUBJECTLINE", "$soho_email", "$headers") || Die (lang("Not able to send client email"));
+					$fromheaders = 'From: '.$RESPONSEFROM.' <'.$RESPONSEFROM.'>'."\r\n";
+					$fromheaders .= 'Reply-To: '.$RESPONSEFROM.' <'.$RESPONSEFROM.'>'."\r\n";
+					if(!SohoEmail($EMAILADDR, $RESPONSEFROM, $_POST['SUBJECTLINE'], str_replace("\n","<br/>",$soho_email))){
+						if(!mail("$EMAILADDR", $_POST['SUBJECTLINE'], "$soho_email", "$headers".$fromheaders)){
+							$error_msg[]=lang("Not able to send client email")." ".(__LINE__ - 1)."<br/>".$headers.$fromheaders;
+							$fromheaders = 'From: '.$_SESSION['this_ip'].' <'.$server_email_address.'>'."\r\n";
+							$fromheaders .= 'Reply-To: '.$RESPONSEFROM.' <'.$RESPONSEFROM.'>'."\r\n";			
+							if(!mail("$EMAILADDR", "$SUBJECTLINE", "$soho_email", "$headers".$fromheaders)){
+								$error_msg[]=lang("Not able to send client email")." ".(__LINE__ - 1)."<br/>".$headers.$fromheaders;
+							}
+						}					
+					}
 				}//endif
 
 		}//endif
@@ -928,15 +959,19 @@ track_vars;
 		$TABLE_NAME = strtoupper($TABLE_NAME);
 		$TABLE_NAME = "UDT_".$TABLE_NAME;
 	
-		$tbl_exist = 0;
-	
-		$result = mysql_list_tables("$db_name");
+		
+		if(!table_exists($tbl_name)){
+			$tbl_exist = 0;
+		} else {
+			$tbl_exist = 1;
+		}
+		$result = soho_list_tables();
 	
 		$i = 0;
 	
 		while ($i < mysql_num_rows ($result)) {
 			$tb_names[$i] = mysql_tablename($result, $i);
-			if ($tb_names[$i] == $TABLE_NAME) { $tbl_exist = 1; }
+			//if ($tb_names[$i] == $TABLE_NAME) { $tbl_exist = 1; }
 			$i++;
 		}
 	
@@ -946,17 +981,18 @@ track_vars;
 	
 			reset($_POST);
 			while (list($name, $value) = each($_POST)) {
-	
+				$name = str_replace("-","_", str_replace(" ","_", $name));
 				$name = stripslashes($name);
 				$name = sterilize_char($name);	#this may cause issues for non-english non-utf8 chars
 				if ( $globalprefObj->get('utf8') != 'on' ) {
 					//$name = sterilize_char($name);
-					$name = strtoupper($name);
+					//$name = strtoupper($name);
 				}//endif
 	
-				$tmp_chk = eregi_replace(" ", "_", $SOHO_VAR);	// Replace spaces with underscores for form names
+				$tmp_chk = str_replace(" ", "_", $SOHO_VAR);	// Replace spaces with underscores for form names
 	
-				if (!eregi(";$name;", $tmp_chk)) {
+				//if (!eregi(";$name;", $tmp_chk)) {
+				if (!preg_match("/".$name."/", $tmp_chk)) {
 	
 					$SQL_CREATE .= "$name BLOB, ";			// Create all fields as CHAR(255) by default.
 																// You can change this in the "Database Table Manager"
@@ -979,17 +1015,17 @@ track_vars;
 				$value = mb_convert_encoding($value, 'HTML-ENTITIES', 'UTF-8');
 				$name = mb_convert_encoding($name, 'HTML-ENTITIES', 'UTF-8');
 			}//endif
-	
+				$name = str_replace("-","_", str_replace(" ","_", $name));
 				$name = stripslashes($name);
 				$name = sterilize_char($name);	#this may cause issues for non-english non-utf8 chars
 				if ( $globalprefObj->get('utf8') != 'on' ) {
 					//$name = sterilize_char($name);
-					$name = strtoupper($name);
+					//$name = strtoupper($name);
 				}//endif
 	
-				$tmp_chk = eregi_replace(" ", "_", $SOHO_VAR);
+				$tmp_chk =str_replace(" ", "_", $SOHO_VAR);
 	
-				if (!eregi(";$name;", $tmp_chk)) {
+				if (!preg_match("/".$name."/", $tmp_chk)) {
 					$i++;
 					$PASSED_FORM_NAMES[$i] = $name;
 				}//endif
@@ -1105,7 +1141,16 @@ $form_sub_ins['time'] = time();
 $dbqry = new mysql_insert("form_submissions", $form_sub_ins);
 $dbqry->insert();
 
-
+#### TOGGLE ON-OFF EMAIL SEND ERRORS
+$show_email_errors=0;
+if(count($error_msg)>0 && $_SESSION['CUR_USER_ACCESS']=='WEBMASTER' && $show_email_errors==1){
+	foreach($error_msg as $var=>$val){
+		$val=str_replace('<',"&lt;",str_replace('>',"&gt;",$val));
+		$error_msg[$var]=$val;
+	}
+//	echo testArray($error_msg);
+//	exit;
+}
 
 	if (eregi("yes", $SELFCLOSE)) {
 		echo "<HTML><HEAD><TITLE>".lang("Form Submitted").". ".lang("Thank You")."!</TITLE></HEAD>\n";
@@ -1128,7 +1173,6 @@ $dbqry->insert();
 	}//endif
 
 	$PAGEGO = eregi_replace(" ", "_", $PAGEGO);
-
 	
 	header("Location: ".pagename($PAGEGO));
 	exit;

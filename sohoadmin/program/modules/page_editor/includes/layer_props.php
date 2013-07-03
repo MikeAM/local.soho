@@ -36,10 +36,11 @@ chdir($curdir);
 			?>
 
 		</SELECT>
-		<!--<br><br>
-		<INPUT type=radio id="photoUser" name="photoDisplay" onClick="photoDisable()" value="user"><label for="photoUser">Show all albums</label>&nbsp;
-		<INPUT type=radio id="photoSelected" name="photoDisplay" onClick="photoDisable()" value="selected" checked><label for="photoSelected">Show selected album</label>
-		-->
+		<br><br>
+		<INPUT type=radio id="photoAlb" name="photoDisplay" onClick="photoDisable()" value="selected" checked><label for="photoAlb">Show Photo Album</label>
+		<INPUT type=radio id="photoSlide" name="photoDisplay" onClick="photoDisable()" value="user"><label for="photoSlide">Show Slider Box</label>&nbsp;
+		
+		
 		<input type=hidden  name="photoDisplay" value="selected">
 		</td>
 		<td align="center" valign="middle">
@@ -219,8 +220,8 @@ chdir($curdir);
 
 		</td><td align="center" valign="middle">
 
-		&nbsp;<input type="button" class="mikebut" onMouseOver="this.className='mikebutOn';" onMouseOut="this.className='mikebut';" value=" OK " onClick="show_hide_layer('objectbar','','show','imageLink','','hide');inputImageLink();">
-		&nbsp;&nbsp;<input type="button" class="mikebut" onMouseOver="this.className='mikebutOn';" onMouseOut="this.className='mikebut';" value=" Cancel " onClick="show_hide_layer('objectbar','','show','imageLink','','hide');makeUnScroll(ColRowID);">
+		&nbsp;<button type="button" class="greenButton" value=" OK " onClick="show_hide_layer('objectbar','','show','imageLink','','hide');inputImageLink();"><span><span> OK </span></span></button>
+		&nbsp;&nbsp;<button type="button" class="redButton"  value=" Cancel " onClick="show_hide_layer('objectbar','','show','imageLink','','hide');makeUnScroll(ColRowID);"><span><span>Cancel</span></span></button>
 
 
    	</td>
@@ -512,7 +513,7 @@ if($getSpec['df_country']!=''){
 	<table cellpadding="0" cellspacing="0" width="100%" class="prop_table">
 		<tr>
 			<td align="center" valign="middle">
-		<b>You may choose to place a .WAV or .MP3 file on this page for site visitors to download.</b><br/><br/>
+		<b>Choose an audio file to place on this page for site visitors to play and download.</b><br/><br/>
 
 		<!--- New school way to pull fresh file lists -->
 		<span id="mp3FileList">File list container</span>
@@ -532,38 +533,45 @@ if($getSpec['df_country']!=''){
 <!-- #### BEGIN VIDEO LAYER (3.5 MOD)						  #### -->
 <!-- ############################################################# -->
 
-<script language="javascript">
-function vidSize(ddval) {
-   var valStuff = ddval.split(";");
-   //alert('ddval[0] = '+valStuff[2]);
-   document.getElementById("videow").value=valStuff[1];
-   document.getElementById("videoh").value=valStuff[2];
-}
-</script>
-
 <DIV ID="videolayer" class="prop_layer" style="" >
 
-   <div class="prop_head">Video File Selection</div>
+   <div class="prop_head">Video: Which video do you want to embed on this page?</div>
 
-	<table cellpadding="0" cellspacing="0" width="100%" class="prop_table">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" class="prop_table">
 		<tr>
-			<td align="center" valign="middle">
-		<b>Select the video file you wish to allow site visitors to view.</b><br>
-		<font color="#666666"><B>[ Acceptable file formats include: .AVI .MOV .MPEG .MPG .WMV .ASF .ASX .IPIX .SWF ]</B></font><br/><br/>
-
-		<!--- New school way to pull fresh file lists -->
-		<span id="videoFileList">File list container</span>
-
-		<b>Width:</b> <input name="videow" id="videow" type="text" size="4" value="<?php echo $mediaheight; ?>" STYLE='font-family: Arial; font-size: 8pt; '> &nbsp;
-		<b>Height:</b> <input name="videoh" id="videoh" type="text" size="4" value="<?php echo $mediawidth; ?>" STYLE='font-family: Arial; font-size: 8pt; '>
-
-		</td><td align="center" valign="middle">
-
-		<button type="button" class="blueButton" onClick="show_hide_layer('objectbar','','show','videolayer','','hide');OkVideoData();"><span><span>OK</span></span></button>
-		&nbsp;&nbsp;<button type="button" class="grayButton" onClick="show_hide_layer('objectbar','','show','videolayer','','hide');replaceImageData();makeUnScroll(ColRowID);"><span><span>Cancel</span></span></button><br/><br/>
-      <button type="button" class="blueButton" onClick="loadUploadDialog('vid');show_hide_layer('objectbar','','show','videolayer','','hide');"><span><span>Upload File</span></span></button>
-	</td>
-	</tr>
+			<td class="container-video-url-label"><label class="property-label">Video URL:</label></td>
+			<td><input type="text" class="field-video-url" id="videourl" placeholder="e.g., http://www.youtube.com/watch?v=eDYEnkTsz1U"></td>			
+			<td rowspan="2" class="container-video-dimensions" valign="top">
+				<div class="group">
+					<div class="video-dimension-fieldset">
+						<label class="property-label video-label-width">Width:</label>
+						<input name="videow" id="videow" type="text" size="4" value="<?php echo $mediaheight; ?>" STYLE='font-family: Arial; font-size: 8pt; '> &nbsp;
+					</div>
+					<div class="video-dimension-separator">
+						X
+					</div>
+					<div class="video-dimension-fieldset">
+						<label class="property-label video-label-height">Height:</label> 
+						<input name="videoh" id="videoh" type="text" size="4" value="<?php echo $mediawidth; ?>" STYLE='font-family: Arial; font-size: 8pt; '>
+					</div>
+				</div>
+			</td>
+			<td rowspan="2" class="container-video-buttons">
+				<button type="button" class="greenButton" onClick="show_hide_layer('objectbar','','show','videolayer','','hide');OkVideoData();"><span><span><strong>OK</strong></span></span></button>
+				<button type="button" class="grayButton" onClick="show_hide_layer('objectbar','','show','videolayer','','hide');replaceImageData();makeUnScroll(ColRowID);"><span><span>Cancel</span></span></button>
+				<button type="button" class="btn-upload blueButton" onClick="loadUploadDialog('vid');show_hide_layer('objectbar','','show','videolayer','','hide');"><span><span>Upload File</span></span></button>
+		   </td>
+		</tr>
+		
+		<tr>
+			<td class="container-video-url-label"><label class="property-label">&ndash;OR&ndash; From Files:</label></td>
+			<td>
+				<!--- Pull fresh file lists -->
+				<span id="videoFileList">
+					File list container
+				</span>
+			</td>			
+		</tr>
 	</table>
 </DIV>
 
@@ -649,7 +657,7 @@ echo "		alert('A file named '+words[i]+' already exists!  Please choose a differ
 echo "		var rett='yes'; \n";
 echo "		return false; \n";
 echo "	} \n";
-echo "	var filelist = '".$dafile."';\n";
+echo "	var filelist = '".str_replace("'","\'", $dafile)."';\n";
 echo "	var words=filelist.split(\";\") \n";
 echo "	for (i=0; i<words.length; i++) { \n";
 echo "		var texas = newFileName; \n";
@@ -679,8 +687,30 @@ echo "		OkNewCustomData(newFileName); \n";
 echo "	}  \n";
 echo "} \n";
 
-echo "</script>\n";
 ?>
+
+function NewsFeedSel(){
+	document.getElementById('facebook_options').style.display='none';
+	document.getElementById('twitter_options').style.display='none';
+	document.getElementById('sohoblog_options').style.display='none';
+	var nwsf = document.getElementById('newsfeed_sel');
+	var newsfeedtype=nwsf.options[nwsf.selectedIndex].value;
+	if(newsfeedtype=='facebook'){
+		document.getElementById('facebook_options').style.display='block';
+	} else {
+		if(newsfeedtype=='twitter'){
+			document.getElementById('twitter_options').style.display='block';
+		} else {
+			if(newsfeedtype=='sohoblog'){
+				document.getElementById('sohoblog_options').style.display='block';
+			}
+			
+		}
+	}
+}
+
+
+
 
 </script>
 
@@ -843,4 +873,113 @@ echo "</script>\n";
 		echo "</tr>\n";
 		?>
 </table>
+</div>
+
+
+
+<!-- ############################################################# -->
+<!-- #### BEGIN News Feed                            #### -->
+<!-- ############################################################# -->
+<div id="newsFeedLayer" class="prop_layer" style="height:145px;" >
+   <div class="prop_head">News Feeds</div>
+	<table cellpadding="0" cellspacing="0" width="100%" class="prop_table" style="padding:6px;">
+		<tr>
+			<td align="left" valign="top">
+				News Feed: <select id="newsfeed_sel" NAME="newsfeed_sel" STYLE='font-family: Arial; font-size: 8pt; width: 180px;' onChange='parent.frames.body.NewsFeedSel();' onBlur='parent.frames.body.NewsFeedSel();' onFocus='parent.frames.body.NewsFeedSel();'>
+				<OPTION VALUE="" SELECTED>Choose News Feed</OPTION>
+				<OPTION VALUE="facebook" >Facebook Wall Feed</OPTION>
+				<OPTION VALUE="twitter" >Twitter Feed</OPTION>
+				<OPTION VALUE="sohoblog">Soholaunch Blog</OPTION>
+				</select>
+<?php
+$tweetfeeds = new userdata("twitterfeed");
+$twitterid=$tweetfeeds->get('twid');
+$nfeeds = new userdata("facebookfeed");
+$facebookid=$nfeeds->get('fbid');
+?>
+
+
+				<div id="facebook_options" style="display:none;margin:2px;">
+					<div style="margin:2px;display:block;">Facebook ID:<input type="text" size=22 id="facebook_id" name="facebook_id" value="<?php echo $facebookid; ?>"></div>
+					<div style="margin:2px;display:block;">Posts to Display:<select id="fb_post_limit" NAME="fb_post_limit" STYLE='font-family: Arial; font-size: 8pt; width: 40px;'>
+					<?php
+					$xou = 0;
+					while($xou <= 20){
+						++$xou;
+						if($xou == 6){
+							echo "<OPTION VALUE=\"".$xou."\" SELECTED>".$xou."</OPTION>\n";
+						} else {
+							echo "<OPTION VALUE=\"".$xou."\">".$xou."</OPTION>\n";	
+						}
+					}
+					?>
+					</select></div>
+					<div style="margin:2px;display:inline;">Show Follow Us Link<input type="checkbox" id="fb_show_follow_us" name="fb_show_follow_us" checked /></div>
+					<div style="margin:2px;display:inline;">Hide Authors<input type="checkbox" id="fb_hide_author" name="fb_hide_author" checked /></div>
+					<div style="margin:2px;display:inline;">Show Images<input type="checkbox" id="fb_include_pictures" name="fb_include_pictures" /></div>
+				</div>
+				
+				<div id="twitter_options" style="display:none;margin:2px;">
+					<div style="margin:2px;display:block;">Twitter ID:<input type="text" size=22 id="twitter_id" name="twitter_id" value="<?php echo $twitterid; ?>"></div>
+					<div style="margin:2px;display:block;">Posts to Display:<select id="tw_post_limit" NAME="tw_post_limit" STYLE='font-family: Arial; font-size: 8pt; width: 40px;'>
+					<?php
+					$xou = 0;
+					while($xou <= 20){
+						++$xou;
+						if($xou == 6){
+							echo "<OPTION VALUE=\"".$xou."\" SELECTED>".$xou."</OPTION>\n";
+						} else {
+							echo "<OPTION VALUE=\"".$xou."\">".$xou."</OPTION>\n";	
+						}
+					}
+					?>
+					</select></div>
+					<div style="margin:2px;display:inline;">Show Follow Us Link<input type="checkbox" id="tw_show_follow_us" name="tw_show_follow_us" checked /></div>
+				</div>
+				
+				
+				<div id="sohoblog_options" style="display:none;margin:2px;">
+
+					<div style="margin:2px;display:block;">Select Blog Category:<select id="sohoblog_cat" NAME="sohoblog_cat" STYLE='font-family: Arial; font-size: 8pt; width: 240px;'>
+					<OPTION VALUE="All" SELECTED>All Categories</OPTION>
+					<?php
+					$getcats=mysql_query("select * from blog_category");
+					while($getcatsar = mysql_fetch_assoc($getcats)){
+						$category_label[$getcatsar['prikey']]=$getcatsar['category_name'];
+					}
+					$blogcatsq=mysql_query("select prikey,blog_category from blog_content group by blog_category order by timestamp");
+					while($blogcatsar = mysql_fetch_assoc($blogcatsq)){
+						echo "<OPTION VALUE=\"".$blogcatsar['blog_category']."\">".$category_label[$blogcatsar['blog_category']]."</OPTION>\n";	
+					}
+					?>
+					</select></div>
+
+
+
+					<div style="margin:2px;display:block;">Posts to Display:<select id="sohoblog_post_limit" NAME="sohoblog_post_limit" STYLE='font-family: Arial; font-size: 8pt; width: 40px;'>
+					<?php
+					$xou = 0;
+					while($xou <= 20){
+						++$xou;
+						if($xou == 6){
+							echo "<OPTION VALUE=\"".$xou."\" SELECTED>".$xou."</OPTION>\n";
+						} else {
+							echo "<OPTION VALUE=\"".$xou."\">".$xou."</OPTION>\n";	
+						}
+					}
+					?>
+					</select></div>
+					<div style="margin:2px;display:inline;">Show Timestamp<input type="checkbox" id="sohoblog_timestamp" name="sohoblog_timestamp" checked /></div>
+					<div style="margin:2px;display:inline;">Show "Read More" link<input type="checkbox" id="sohoblog_readmore" name="sohoblog_readmore" checked /></div>
+					<div style="margin:2px;display:inline;">Show Author<input type="checkbox" id="sohoblog_author" name="sohoblog_author"/></div>
+				</div>
+
+		</td><td align="center" valign="middle"><br/>
+
+		<button type="button" class="blueButton" onClick="parent.frames.body.OkNewsFeed();"><span><span>OK</span></span></button>
+		&nbsp;&nbsp;<button type="button" class="grayButton" onClick="show_hide_layer('objectbar','','show','newsFeedLayer','','hide');"><span><span>Cancel</span></span></button>
+
+   	</td>
+   	</tr>
+   </table>
 </div>

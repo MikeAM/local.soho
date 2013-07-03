@@ -1,7 +1,7 @@
 <?php
 //apd_set_pprof_trace();
-
-error_reporting(E_PARSE);
+header("X-XSS-Protection: 0");
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -78,7 +78,10 @@ $mod_props = special_hook('page_editor_object');
 
 // Count extensions
 $extend_count = count($mod_props);
-
+$addons_installed = 0;
+if($extend_count > 0){
+	$addons_installed = 1;
+}
 
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
@@ -127,7 +130,7 @@ $mouseover="buttonhighlight";
 ## DEVNOTE: All redirects must occur before any headers are sent to browser
 ##########################################################################################
 
-if ( $_GET['currentPage'] == "" ) {
+if ( $_REQUEST['currentPage'] == "" ) {
 	header ("Location: ../open_page.php?=SID");
 	exit;
 }
@@ -152,24 +155,69 @@ include("initialize.php");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
+<?php
+if(preg_match('/MSIE/i',$_SERVER['HTTP_USER_AGENT'])){
+	echo "	<meta content=\"IE=8\" http-equiv=\"X-UA-Compatible\" />\n";
+}
+?>
 <title>Page Editor</title>
 <?php
 echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UT".'F-8">';
+$t_time = time();
+echo "<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">\n";
+echo "<META HTTP-EQUIV=\"Expires\" CONTENT=\"-1\">\n";
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"../../product_gui.css?randid=".$t_time."\">\n";
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"includes/page_editor.css?randid=".$t_time."\">\n";
+echo "<meta name=\"SKYPE_TOOLBAR\" content=\"SKYPE_TOOLBAR_PARSER_COMPATIBLE\"/>\n";
+
 ?>
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-<META HTTP-EQUIV="Expires" CONTENT="-1">
-<link rel="stylesheet" type="text/css" href="../../product_gui.css">
-<link rel="stylesheet" type="text/css" href="includes/page_editor.css">
-<script language="JavaScript" src="../../includes/display_elements/js_functions.php"></script>
-<script language="javascript" type="text/javascript" src="../tiny_mce/tiny_mce.js"></script>
-<script language="javascript" type="text/javascript" src="includes/drop_cell.js"></script>
-<script language="javascript" type="text/javascript" src="includes/mootools.v1.1.js"></script>
-<script language="javascript" type="text/javascript" src="includes/general.js"></script>
-<script type="text/javascript" src="../tiny_mce/plugins/media/js/embed.js"></script>
-<link rel="stylesheet" href="../../includes/product_buttons-ultra.css">
+
+<script type="text/javascript" src="../../../client_files/jquery.min.js"></script>
+<script type="text/javascript" src="../../../client_files/jquery-ui.min.js"></script>
+<script type="text/javascript">
+<?php
+echo "function reloadDDmenu(){\n";
+
+
+echo "}\n\n";
+?>
+
+jQuery(document).bind("dragstart", function(e) {
+     if (e.target.nodeName.toUpperCase() != "IMG") {
+         //return false;
+     }          
+});
+</script>
+
+<?php
+//object_table height:66px!important;width:788px!important
+//objectbar  width:790px;
+
+echo "<script language=\"JavaScript\" src=\"../../includes/display_elements/js_functions.php\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"../tiny_mce/tiny_mce.js?randid=".$t_time."\"></script>\n"; 
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"includes/drop_cell.js?randid=".$t_time."\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"includes/mootools.v1.1.js?randid=".$t_time."\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"includes/general.js?randid=".$t_time."\"></script>\n";
+echo "<script type=\"text/javascript\" src=\"../tiny_mce/plugins/media/js/embed.js?randid=".$t_time."\"></script>\n";
+echo "<link rel=\"stylesheet\" href=\"../../includes/product_buttons-ultra.css?randid=".$t_time."\">\n";
+?>
+<style>
+.help-text,.drag,.ob1,.ob2,.droppedItem,.droppedItem img,#cell_container,.droppedItem .TXTCLASS{
+	-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;	
+}
+.TXTCLASS { position:relative; }
+
+.blockerimg { width:700px;height:169px;border:0px;z-index:10;position:absolute; }
+</style>
+<style>
+frame,html,body,#object_table {
+	 -webkit-text-size-adjust:none!important; -ms-text-size-adjust:none!important; -moz-text-size-adjust:none!important; text-size-adjust:none!important; 
+}
+</style>
 <script type="text/javascript">
 // Bring our header nav back
-parent.document.getElementById('master_frameset').rows = '29,*,1,19';
+//parent.document.getElementById('master_frameset').rows = '29,*,1,19';
+parent.document.getElementById('master_frameset').rows = '29,*,0';
 
 document.onkeydown = checkKeycode
 function checkKeycode(e) {
@@ -185,29 +233,56 @@ function checkKeycode(e) {
 }
 </script>
 
-<!--
-**************************************************************************************************
-** PAGE EDITING SCRIPT AND WORD PROCESSOR BY MIKE JOHNSTON and modified by Joe Lain             **
-** Email: joe.lain@soholaunch.com                                                               **
-**                                                                                              **
-**************************************************************************************************
-Modified by Joe Lain for Firefox Compatibility and PinEdit text editor and then
-again for TinyMCE editor, cell expandability and visual display effects.
--->
-
 
 <script language="javascript">
 
 <?php
+echo "jQuery(document).ready(function(){\n";
+echo "	parent.frames.header.$('#jumpmenudiv').load('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/sitepages-dd.inc.php?page_editordd=1');\n";
+### reload dropdowns
+echo "	parent.frames.ultramenu.$('#ddpagediv').load('".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/sitepages-dd.inc.php');\n";
 
+echo "jQuery('.TXTCLASS').prepend('<img class=\"blockerimg\" src=\"whitespace.gif\">');\n";
+echo "if ( parent.frames.ultramenu.$('li > a').hasClass('selected') ) {\n";
+echo '	parent.frames.ultramenu.$(\'li > a\').removeClass(\'selected\');'."\n";
+echo "}\n";	
+echo "if ( parent.frames.ultramenu.$('div > a').hasClass('selected') ) {\n";
+echo '	parent.frames.ultramenu.$(\'div > a\').removeClass(\'selected\');'."\n";
+echo "}\n";
+echo "if ( parent.frames.ultramenu.$('ul > li').hasClass('selectedbox') ) {\n";
+echo '	parent.frames.ultramenu.$(\'ul > li\').removeClass(\'selectedbox\');'."\n";
+echo "}\n";
+echo "	parent.frames.ultramenu.$('li > a[href$=\"/sohoadmin/program/modules/open_page.php\"]').parent().parent().parent().addClass('selectedbox');\n";
+echo "	parent.frames.ultramenu.$('div > a[href$=\"/sohoadmin/program/modules/open_page.php\"]').parent().parent().addClass('selectedbox');\n";
+echo "	parent.frames.ultramenu.$('li > a[href$=\"/sohoadmin/program/modules/open_page.php\"]').addClass('selected');\n";	
+
+echo "	top.header.loadedPage=top.header.getPageEditorContents();\n";
+//echo "	alert(loadedPage);\n";
+//echo "document.getElementById('cell_container').innerHTML;\n";
+
+echo "});\n";
 ##########################################################################################
 ## If preview page was selected from the main menu, open another browser window
 ## and call this specific page to view
 ##########################################################################################
-$thisPage = eregi_replace(" ", "_", $_GET['currentPage']);
+//foreach($_GET as $var=>$val){
+//$zzz .= $var.' = '.$val.'   ';	
+//}
+//echo  "alert('".$zzz."');\n";
+
+$_REQUEST['currentPage'] = str_replace('%26','&',$_REQUEST['currentPage']);
+$thisPage = str_replace(" ", "_", $_REQUEST['currentPage']);
 if ($previewWindow == 1) {
 	$previewWindow = 0;
-	echo "MM_openBrWindow('http://$this_ip/".pagename($thisPage, "&")."nosessionkill=1','prevwindow','width=790,height=450, status=yes, scrollbars=yes,resizable=yes,toolbar=yes');\n\n";
+	//echo "alert('hi');\n";
+	//echo "MM_openBrWindow('http://$this_ip/".pagename($thisPage, "&")."nosessionkill=1','prevwindow','width=790,height=450, status=yes, scrollbars=yes,resizable=yes,toolbar=yes');\n\n";
+	
+echo "            
+            newwindow=window.open('javascript:void window.focus()', '_newtab');
+            newwindow.close();
+            newwindow=window.open('".httpvar().$this_ip."/".pagename($thisPage, "&")."nosessionkill=1','_newtab');
+            newwindow.focus();\n";
+	
 }
 
 // Display changes info or reload?
@@ -233,10 +308,16 @@ function show_screen() {
 	//show_hide_layer('NOSAVE_LAYER','','hide');
 	show_hide_layer('userOpsLayer','','show');
 
-	var p = 'Editing Page: <? echo $_GET['currentPage']; ?>';
+	var p = 'Editing Page: <? echo  htmlspecialchars($_REQUEST['currentPage']); ?>';
 	parent.frames.footer.setPage(p);
 
 	disable_links();
+	if(document.getElementById('sidebarcountload').value > 0){
+		parent.header.document.getElementById('sidebartoggletext').innerHTML='Edit Sidebar';
+		parent.header.document.getElementById('sidebarbuttndiv').style.display='block';
+	} else {
+		parent.header.document.getElementById('sidebarbuttndiv').style.display='none';
+	}
 }
 
 // This is the main javascript workhorse
@@ -284,6 +365,7 @@ function show_mods(){
 </script>
 <?php
 	echo "<script language=\"javascript\">\n";
+	echo "var blogstuff = 0;\n";
 	include('tiny_init.php');
 ?>
 
@@ -325,7 +407,6 @@ function show_mods(){
       html = html.replace('<BLINK>','');
       html = html.replace('</BLINK>','');
 
-
       // Convert media objects to editor readable images
       //var inst = tinyMCE.getInstanceById(tinyMCE.selectedInstance.editorId);
       var inst = tinyMCE.activeEditor; 
@@ -338,6 +419,9 @@ function show_mods(){
    function toggleEditor(id) {
       //alert('ok')
       // Hide addon layer if visible
+      
+      
+      
       $('objectbar_mods').style.display='none';
       $('objectbar').style.display='none';
    	var elm = document.getElementById(id);
@@ -346,17 +430,21 @@ function show_mods(){
       //alert(html)
 
    	if (tinyMCE.getInstanceById(id) == null){
+   	
+		jQuery('.blockerimg').remove();
+   	
    	   //alert('ok2---'+id)
    	   //$('tiny_editor_loading').style.display='block'
-
    		tinyMCE.execCommand('mceAddControl', false, id);
    	   $('tiny_editor_container').style.display='block';
    	   // Fix table border display
-   	   setTimeout("tinyMCE.execInstanceCommand(tinyMCE.selectedInstance.editorId,'mceToggleVisualAid',false);tinyMCE.execInstanceCommand(tinyMCE.selectedInstance.editorId,'mceToggleVisualAid',false);",1000);
+   	   setTimeout("tinyMCE.execInstanceCommand(tinyMCE.selectedInstance.editorId,'mceToggleVisualAid',false);tinyMCE.execInstanceCommand(tinyMCE.selectedInstance.editorId,'mceToggleVisualAid',false);tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.getContent());",1000);
+   	   
    	   //alert('ok2')
    	}else{
    		tinyMCE.execCommand('mceRemoveControl', false, id);
    	   $('tiny_editor_container').style.display='none';
+   	   jQuery('.TXTCLASS').prepend('<img class="blockerimg" src="whitespace.gif">');
    	}
    }
 
@@ -400,15 +488,48 @@ window.addEvent('domready', function(){
 
    //window.setStyle('width', 750);
 <?php
-if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
-	echo "$('cell_container').setStyle('height', (drop_height-10));\n";	
-} else {
-	echo "$('cell_container').setStyle('height', drop_height);\n";	
-}
+	if(startpage()==$PROP_name && file_exists($_SESSION['doc_root']."/sohoadmin/program/modules/site_templates/pages/".$CUR_TEMPLATE."/home.php")){
+		$filenamet = $_SESSION['doc_root']."/sohoadmin/program/modules/site_templates/pages/".$CUR_TEMPLATE."/home.php";
+	} elseif(startpage()==$PROP_name && file_exists($_SESSION['doc_root']."/sohoadmin/program/modules/site_templates/pages/".$CUR_TEMPLATE."/home.html")){
+		$filenamet = $_SESSION['doc_root']."/sohoadmin/program/modules/site_templates/pages/".$CUR_TEMPLATE."/home.html";
+	} else {
+		$filenamet = $_SESSION['doc_root']."/sohoadmin/program/modules/site_templates/pages/".$CUR_TEMPLATE."/index.php";
+		if(!file_exists($filenamet)){
+			$filenamet = $_SESSION['doc_root']."/sohoadmin/program/modules/site_templates/pages/".$CUR_TEMPLATE."/index.html";
+		}
+	}
+
+	if(array_pop(explode('.',basename($filenamet))) == 'php'){
+		$curdirr = getcwd();
+		ob_start();
+		chdir(str_replace(basename($filenamet),'',$filenamet));
+		include(basename($filenamet));
+		$ttbody = ob_get_contents();
+		ob_end_clean();
+		chdir($curdirr);	
+	} else {
+		$filet = fopen("$filenamet", "r");
+		$ttbody = fread($filet,filesize($filenamet));
+		fclose($filet);
+	}
+	if(!table_exists('sidebar_boxes')){
+		create_table('sidebar_boxes');
+	}
+	if(!table_exists('sidebar_default')){
+		create_table('sidebar_default');
+	}
+	$sidebarcount=substr_count($ttbody, '#BOX');
+//if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
+	echo "$('cell_container').setStyle('height', (drop_height-10));\n";
+	echo "$('sidebar_container').setStyle('height', (drop_height-10));\n";
+
+//} else {
+//	echo "$('cell_container').setStyle('height', drop_height);\n";	
+//}
 ?>
    
    
-   $('cell_container').setStyle('width', 770);
+   $('cell_container').setStyle('width', 780);
    //$('body').setStyle('height', '100);
    //$('body').setStyle('overflow', 'hidden');
 //   parent.body.style.overflow='hidden';
@@ -498,53 +619,68 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
 
    	drop.addEvents({
    		'over': function(el, obj){
-   			this.setStyle('background-color', '#3E99DF');
+   			if(document.getElementById(this.id).className != 'editTable disabledrop'){
+   				this.setStyle('background-color', '#3E99DF');
+   			}
    		},
    		'leave': function(el, obj){
-   			this.setStyle('background-color', '#F8F8FF');
+   			//if(document.getElementById(this.id).className != 'editTable disabledrop'){
+   				this.setStyle('background-color', '#F8F8FF');
+   			//}
    		},
    		'drop': function(el, obj){
+			
 
    		   //alert(el.id+'-'+obj.id)
-   		   objPos = new Array(el.getStyle('Top'), el.getStyle('Left'))
+   		   
    		   //alert(objPos[0]+'-'+objPos[1])
    		   //alert(mouseCords.top+'-'+mouseCords.left)
    			//el.remove();
    			//alert(itemCords.top)
          	el.setStyle('top', 0);
          	el.setStyle('left', 0);
+         	//alert(document.getElementById(this.id).className);
+         	if(document.getElementById(this.id).className != 'editTable disabledrop'){
+         		objPos = new Array(el.getStyle('Top'), el.getStyle('Left'))  		   
+         	
    //			fx[index].start({
    //				'height': this.getStyle('height').toInt() + 30,
    //				'background-color' : ['#78ba91', '#F8F8FF']
    //			});
-            var moveSize = 50;
+            var moveSize = 80;
             if(el.id != "oDeleteIt"){
                // This is the action cell
       			var myEffects = new Fx.Styles(this.id, {duration: 800, transition: Fx.Transitions.Circ.easeInOut});
             	myEffects.start({
-      				'height': this.getStyle('height').toInt() + moveSize,
+      				//'height': this.getStyle('height').toInt() + moveSize,
+      				'height': this.offsetHeight.toInt() + moveSize,
       				'background-color' : ['#3E99DF', '#F8F8FF']
             	});
             	if(this.id.charAt(5) != 1){
          			var myEffectsRow1 = new Fx.Styles('TDR'+this.id.charAt(3)+'C1', {duration: 800, transition: Fx.Transitions.Circ.easeInOut});
                	myEffectsRow1.start({
-         				'height': this.getStyle('height').toInt() + moveSize
+         				//'height': this.getStyle('height').toInt() + moveSize
+         				'height': this.offsetHeight.toInt() + moveSize
+         				
                	});
                }
             	if(this.id.charAt(5) != 2){
          			var myEffectsRow2 = new Fx.Styles('TDR'+this.id.charAt(3)+'C2', {duration: 800, transition: Fx.Transitions.Circ.easeInOut});
                	myEffectsRow2.start({
-         				'height': this.getStyle('height').toInt() + moveSize
+         				//'height': this.getStyle('height').toInt() + moveSize
+         				'height': this.offsetHeight.toInt() + moveSize
                	});
                }
                if(this.id.charAt(5) != 3){
          			var myEffectsRow3 = new Fx.Styles('TDR'+this.id.charAt(3)+'C3', {duration: 800, transition: Fx.Transitions.Circ.easeInOut});
                	myEffectsRow3.start({
-         				'height': this.getStyle('height').toInt() + moveSize
+         				//'height': this.getStyle('height').toInt() + moveSize
+         				'height': this.offsetHeight.toInt() + moveSize
                	});
                }
             }
          	objectAction(el, el.id, this.id);
+         	}
          	//alert(el+'---'+el.id+'---'+this.id)
    			//$('TDR1C2').style.height = $('TDR1C2').getStyle('height').toInt() + 30
    			//$('TDR1C3').style.height = $('TDR1C3').getStyle('height').toInt() + 30
@@ -606,11 +742,15 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
       
       if (objId == "oSocial"){ show_hide_layer('objectbar','','hide','socialMediaLayer','','show'); }
       
+      if (objId == "oNewsFeed"){ show_hide_layer('objectbar','','hide','newsFeedLayer','','show'); }
+      
       if (objId == "oForms") {
          $('form_display').style.display='block';
+		parent.header.document.getElementById('PAGE_EDITOR_LAYER').style.visibility='hidden';
       	var url = "formlib/forms.php";
          formType = "Forms";
          ajaxDo(url, 'form_display');
+         
       }
       if (objId == "oCalendar") show_hide_layer('objectbar','','hide','calendarlayer','','show');
       if (objId == "oDirections") show_hide_layer('objectbar','','hide','mapquest','','show');
@@ -635,7 +775,7 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
       if (objId == "oBlog") show_hide_layer('objectbar','','hide','blogLayer','','show');
       if (objId == "oFaq") show_hide_layer('objectbar','','hide','faqLayer','','show');
 
-      <?
+      <?php
       // Add plugin javascript call to show layer or custom function
       for( $x=0; $x < $extend_count; $x++ ) {
       	//echo "dd.elements.".$mod_props[$x]['draggable_object_id'].".hide();\n";
@@ -662,9 +802,11 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
       if (objId == "oDeleteIt") {
          //alert('ok')
          var daArea = $(ColRowID);
-         var daAreaHeight = daArea.style.height;
+         //var daAreaHeight = daArea.style.height;
+         var daAreaHeight = daArea.offsetHeight;
          var daAreaTop = daArea.getTop();
-         var areaRemaining = daArea.style.height;
+         //var areaRemaining = daArea.style.height;
+         var areaRemaining = daArea.offsetHeight;
          //var win_scroll = window.pageYOffset || document.documentElement.scrollTop;
          var win_scroll = $('cell_container').pageYOffset || $('cell_container').scrollTop;
 
@@ -686,7 +828,9 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
 
          for (i=0; i<daArea.childNodes.length; i++){
             if (daArea.childNodes[i].className=="droppedItem"){
-               itemHeight = daArea.childNodes[i].style.height.toInt()
+               //itemHeight = daArea.childNodes[i].style.height.toInt();
+               itemHeight = daArea.childNodes[i].offsetHeight.toInt();
+               
                //alert(newMouseEndY+'---'+itemHeight)
                //-622-100
                if(newMouseEndY <= itemHeight){
@@ -695,16 +839,17 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
                   daArea.removeChild(daArea.childNodes[i].nextSibling);
                   daArea.removeChild(daArea.childNodes[i]);
 
-                  checkCellEmpty()
+                  checkCellEmpty();
+                  fixdropwidths();
                   break;
                }else{
-                  newMouseEndY = newMouseEndY - itemHeight - 20
+                  newMouseEndY = newMouseEndY - itemHeight - 20;
                   //alert(mouseEndY)
                }
             }
          }
          checkRow(ColRowID)
-
+		
       }
    }
 
@@ -718,14 +863,86 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
          }
       }
       if(is_empty){
-         daArea.innerHTML = "<img src=\"pixel.gif\" border=\"0\" height=\"50%\" width=\"199\">";
+         daArea.innerHTML = "<img src=\"pixel.gif\" border=\"0\" height=\"50%\" width=\"99\">";
       }
    }
+   
+	function fixdropwidths(){
+		if(document.getElementById('sidebar_container').style.display!='block'){
+			var minminwidth=82;
+			var normwidth=235;
+			var normwidth=240;
+			var normsubtract=normwidth-minminwidth;
+			var mydivRow=1;
+			while(mydivRow <= 10){
+				
+				var myCol = 1;
+				//for( var myCol = 1; myCol <= 3; myCol++ ){
+				while(myCol <= 3){
+					
+					var myDivsSel = $('TDR'+mydivRow+'C'+myCol);;
+					var myDivsC = document.getElementById('TDR'+mydivRow+'C2');
+					var myDivsL = document.getElementById('TDR'+mydivRow+'C1');
+					var myDivsR = document.getElementById('TDR'+mydivRow+'C3');
+					if(myCol==1 || myCol==3){
+						if(myDivsSel.innerHTML.search("pixel.gif") > 0){
+							if(myDivsSel.offsetWidth > (minminwidth+4)){						
+								
+								myDivsSel.style.width=minminwidth+'px';
+								myDivsC.style.width=((myDivsC.offsetWidth-2)+normsubtract)+'px';
+							} else {
+							//	alert(myDivsSel.id+' '+myDivsSel.offsetWidth+' '+myCol);	
+							}
+						} else {
+							if(myDivsSel.offsetWidth < (minminwidth+4)){
+								myDivsSel.style.width=normwidth+'px';
+								myDivsC.style.width=((myDivsC.offsetWidth-2)-normsubtract)+'px';
+							}
+						}
+					}
+				   if(myCol==2){			   		
+				    		if( myDivsL.innerHTML.search("pixel.gif") > 0 && myDivsL.offsetWidth > (minminwidth+4)){
+							myDivsL.style.width=minminwidth+'px';
+							myDivsC.style.width=((myDivsC.offsetWidth-2)+normsubtract)+'px';
+				    		}
+				    		if(myDivsR.innerHTML.search("pixel.gif") > 0 && myDivsR.offsetWidth > (minminwidth+4)){
+							myDivsR.style.width=minminwidth+'px';
+							myDivsC.style.width=((myDivsC.offsetWidth-2)+normsubtract)+'px';
+				    		}
+				    	}
+					myCol++;
+				}
+				//alert(myDivsL.offsetWidth+' '+myDivsC.offsetWidth+' '+myDivsR.offsetWidth);
+				mydivRow++;
+			}
+		}
+	}
+   
    var reCheckRow = 0;
+   
    function checkRow(boxID, isFull){
       //alert(boxID)
-      var cellHeight = 0;
+	<?php echo "var sidebarcounted = ".$sidebarcount.";\n"; ?>
+	var cellHeight = 0;
+	if(boxID.charAt(0)+boxID.charAt(1)+boxID.charAt(2)=='TDB'){
+		////sidebar
+		var cellTotals = 0;
+		var myDivs = $(boxID)
+		for( var nug = 0; nug < myDivs.childNodes.length; nug++ ){
+			if(myDivs.childNodes[nug].className=='droppedItem'){
+				// cam change july 2012
+				cellTotals = cellTotals + parseInt(myDivs.childNodes[nug].offsetHeight) + 12;
+			}
+		}
+		cellHeight=cellTotals;
+		if(cellHeight < 160){
+			cellHeight = 160;
+		}
+		myDivs.setAttribute("style", "height: "+cellHeight+"px;")
+		// sidebar
+	} else {
 
+	var cellHeight = 0;
    	var currentRow = boxID.charAt(3)
    	if(boxID.charAt(4) == 0){
    	   currentRow = 10;
@@ -735,32 +952,15 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
 
          var cellTotals = 0;
          var myDivs = $('TDR'+currentRow+'C'+col)
-         //alert($('TDR'+currentRow+'C'+col).childNodes.length)
-//         if(!isFull)
-//            alert('num childs---'+myDivs.childNodes.length)
-
          for( var nug = 0; nug < myDivs.childNodes.length; nug++ ){
-//            if(!isFull)
-//               alert('node type('+myDivs.childNodes[nug].nodeType+')---nodeName('+myDivs.childNodes[nug].nodeName+')---current #('+nug+')')
-            //alert('ok')
             if(myDivs.childNodes[nug].className=='droppedItem'){
-               //alert('found droppedItem in '+col)
-               cellTotals = cellTotals + parseInt(myDivs.childNodes[nug].style.height) + 20
+               // cam change july 2012
+               cellTotals = cellTotals + parseInt(myDivs.childNodes[nug].offsetHeight) + 12;
             }else if(myDivs.childNodes[nug].nodeType == 1 && myDivs.childNodes[nug].nodeName != "IMG" && myDivs.childNodes[nug].nodeName != "BR"){
-               //alert('1111 node type('+myDivs.childNodes[nug].nodeType+')---nodeName('+myDivs.childNodes[nug].nodeName+')---current #('+nug+')')
                reCheckRow = 1;
-
-
-               //alert('num childs---'+myDivs.childNodes.length)
-               //alert('fixing element ('+myDivs.childNodes[nug].nodeName+') class('+myDivs.childNodes[nug].tagName+')')
-
-               //alert(myDivs.innerHTML)
-
                var removeDis = myDivs.childNodes[nug];
                var removedItem = myDivs.childNodes[nug].cloneNode(true);
                //alert(myDivs.innerHTML)
-
-               //alert('removed item')
             	var d = new Date();
             	RandNum = 'convertedPlugin';
             	RandNum += d.getUTCHours();
@@ -768,70 +968,46 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
             	RandNum += d.getUTCSeconds();
             	RandNum += d.getUTCMilliseconds();
             	RandNum = RandNum.toString();
-
-               //alert('got rand')
-
                var divWrapper=document.createElement("div")
                divWrapper.setAttribute("id", RandNum)
                divWrapper.setAttribute("class", "droppedItem")
                divWrapper.setAttribute("style", "height: 150px;")
-
-               //alert('created div')
-
                divWrapper.appendChild(removedItem)
-
-               //var newtext=document.createTextNode("A new div")
-               //divWrapper.appendChild(newtext)
-
                var nextKid = myDivs.childNodes[nug].nextSibling
-
-               //alert(myDivs.innerHTML)
                myDivs.replaceChild(divWrapper,removeDis)
-               //alert(myDivs.innerHTML)
-               //alert('appended new item!')
-
-               //setTimeout("$('"+RandNum+"').className='droppedItem'",1000)
                $(RandNum).className='droppedItem'
                $(RandNum).style.height='150px'
             }
-
-            //alert(myDivs[nug].style.height)
-            //cellTotals = cellTotals + parseInt(myDivs[nug].style.height) + 20
          }
-
          if(cellTotals > cellHeight){
             cellHeight = cellTotals
          }
 
       }
-      if(cellHeight < 85)
+      if(cellHeight < 85){
          cellHeight = 85;
+     }
 
-      //alert(cellHeight)
-      //cellHeight = cellHeight + 40
-      //alert(cellHeight)
-
-      // This is the action cell
-		var myEffects = new Fx.Styles(boxID, {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
+	var myEffects = new Fx.Styles(boxID, {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
    	myEffects.start({
 			'height': cellHeight,
 			'background-color' : ['#3E99DF', '#F8F8FF']
    	});
 
    	if(boxID.charAt(5) != 1){
-			var myEffectsRow1 = new Fx.Styles('TDR'+currentRow+'C1', {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
+		var myEffectsRow1 = new Fx.Styles('TDR'+currentRow+'C1', {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
       	myEffectsRow1.start({
 				'height': cellHeight
       	});
       }
    	if(boxID.charAt(5) != 2){
-			var myEffectsRow2 = new Fx.Styles('TDR'+currentRow+'C2', {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
+		var myEffectsRow2 = new Fx.Styles('TDR'+currentRow+'C2', {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
       	myEffectsRow2.start({
 				'height': cellHeight
       	});
       }
       if(boxID.charAt(5) != 3){
-			var myEffectsRow3 = new Fx.Styles('TDR'+currentRow+'C3', {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
+		var myEffectsRow3 = new Fx.Styles('TDR'+currentRow+'C3', {duration: 500, transition: Fx.Transitions.Circ.easeInOut});
       	myEffectsRow3.start({
 				'height': cellHeight
       	});
@@ -842,9 +1018,12 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
 
       if(reCheckRow == 1){
          reCheckRow = 0;
-         //alert('checking again...')
          checkPageAreas('start');
       }
+
+      fixdropwidths();
+      }
+   	//
    }
 
    function checkPageAreas(numRun){
@@ -854,16 +1033,90 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
          var myDivsCheck = 'TDR'+numRun+'C1'
          checkRow(myDivsCheck, true)
       }else if(numRun == 'start'){
-         var myDivsCheck = 'TDR1C1'
-         checkRow(myDivsCheck, true)
+         var myDivsCheck = 'TDR1C1';
+         checkRow(myDivsCheck, true);
       }
    }
+   
+	function sidebarheightsload(){
+		<?php echo "var sidebarcounted = ".$sidebarcount.";\n"; ?>
+		if(sidebarcounted > 0){
+			for( var sbcol = 1; sbcol <= sidebarcounted; sbcol++ ){
+				checkRow('TDB'+sbcol, true);
+			}
+		}
+	}
+   
 
    function joeFun() {
       $('daele').value = request.readyState
    }
+   
+
+function togglesidebar(){
+	var sidebardisableobjs=['oPrint', 'oBlog', 'oTableSearch','addons','oPopup']
+	if(document.getElementById('cell_container').style.display=='block'){
+		document.getElementById('cell_container').style.display='none';
+		document.getElementById('sidebar_container').style.display='block';
+		
+		parent.header.document.getElementById('sidebartoggletext').innerHTML='&lt;&lt;Back';
+		sidebarheightsload();
+		sidebarradio();
+		for( var sbobjdis = 0; sbobjdis < sidebardisableobjs.length; sbobjdis++ ){
+			document.getElementById(sidebardisableobjs[sbobjdis]).style.display='none';
+		}
+	} else {
+		document.getElementById('cell_container').style.display='block';
+		document.getElementById('sidebar_container').style.display='none';
+		parent.header.document.getElementById('sidebartoggletext').innerHTML='Sidebar';
+		for( var sbobjdis = 0; sbobjdis < sidebardisableobjs.length; sbobjdis++ ){
+			document.getElementById(sidebardisableobjs[sbobjdis]).style.display='block';
+		}
+	}
+	return true;
+}
 
 </script>
+<style>
+.top {
+	position:absolute;
+	background:#DCDCDC url('../../includes/images/top-bg.png') 0px 0px repeat-x; 
+	height:49px;
+	max-height:49px;
+	min-width:800px; /* Chris's Change */
+	margin:0px;
+	margin-top:-49px;
+	padding:0px;
+	border:0px;
+	width:100%;
+}
+.top-left
+{
+	position:absolute;
+	background:#DCDCDC url('../../includes/images/top-left.png') 0px 0px repeat-x; 
+	width:250px;
+	height:11px;
+	z-index:1;
+	top:-3px;
+	left:-238px;
+}
+body {	
+	padding-top:5px;
+	background:#F8F8FF;
+	
+}
+.container{
+	min-width: 800px;
+	background:#F8F8FF url('../../includes/images/vert-bg.png') repeat-y;	
+	background-attachment: scroll;
+	background-position: -218px 0;
+	background-repeat: repeat-y;
+	overflow-x: visible;
+	overflow-y: visible;   
+}
+#addons,.nodrag {  -moz-user-select: none;-webkit-user-select: none;-webkit-user-drag: none; }
+#oText,#addons { width 87px; }
+</style>
 
 </head>
 
@@ -877,8 +1130,50 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
                    |_|          |__/
 <!-- ############################################################# -->
 
-<body id="body" style="background:#F8F8FF; " onload="show_screen();">
-<div style="position:relative;padding:0;margin:0;width:790px;margin-left: auto; margin-right: auto;">
+<body id="body" onload="show_screen();">
+
+<div class="container" style="position:relative;">
+<div class="top"></div>
+<div class="top-left" ></div>
+<?php
+//echo "<div id=\"testtest\" style=\"width:300px;height:300px;\"></div>\n";
+//$sidebarcount=1;
+echo "<input type=\"hidden\" id=\"sidebarcountload\" value=\"".$sidebarcount."\">\n";
+if($sidebarcount > 0){
+	//echo "<div id=\"sidebarbuttndiv\" onClick=\"togglesidebar();sidebarradio();\" style=\"position:absolute;top:5px;right:50%;margin-right:410px;\"><a class=\"grayButton\" href=\"javascript:void(0);\"><span id=\"sidebartoggletext\">Sidebar</span></a></div>\n";
+	//echo "<div id=\"sidebarbuttndiv\" onClick=\"togglesidebar();sidebarradio();\" style=\"position:absolute;top:5px;left:30px;\"><a class=\"grayButton\" href=\"javascript:void(0);\"><span id=\"sidebartoggletext\">Sidebar</span></a></div>\n";
+}
+
+$tiny = "<div id=\"tiny_editor_container\" style=\"padding:0 25px;position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; border: 0px solid green; z-index:1000; display: none;\">
+   <!--- Editor Textarea -->
+   <textarea id=\"tiny_editor\" name=\"tiny_editor\"  style=\"position:relative;height:100%;  width: 100%;\"></textarea>
+
+   <!--- Cancel / Done buttons -->
+
+      <!--- Test button
+      <input onClick=\"testtable();\" type=\"button\" id=\"debug_edit\" value=\"  Table Debug  \" style=\"width: 150px;padding: 1px;\" /> -->
+	<div style=\"position:relative;width:50%;\">
+		<div id=\"saveIt\" style=\"position:fixed; bottom: 0px; right: 20%; z-index:1002; display:block;\">
+		
+		 <button onClick=\"tinyMCE.execInstanceCommand('tiny_editor','mceCodeEditor',false);\" type=\"button\" id=\"html_view\" class=\"grayButton\" style=\"margin-right: 10em;font-weight:bold;\"><span><span>HTML View</span></span></button>
+		
+		  <!--- Cancel -->
+		  <button onClick=\"toggleEditor('tiny_editor');show_hide_icons();parent.header.flip_header_nav('PAGE_EDITOR_LAYER');\" type=\"button\" id=\"cancel_edit\" class=\"redButton\" style=\"margin-right: 1em;\"><span><span> [x] Cancel </span></span></button>
+		
+		  <!--- Done -->
+		  <button onClick=\"onSaveFileSOHO();show_hide_icons();\" type=\"button\" id=\"save_content\" style=\"font-weight: bold;\" class=\"greenButton\"><span><span>Update</span></span></button>
+		</div>
+	</div>
+</div>\n";
+echo $tiny;
+?>
+<!--- EDITOR LOADING -->
+<div id="overlay_edit">&nbsp;</div>
+<div id="tiny_editor_loading">
+   Working...
+</div>
+	
+<div style="position:relative;padding:0;margin:0;width:790px;margin-left: auto; margin-right: auto;height:99%;">
 
 
 <?
@@ -893,7 +1188,7 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT'])) {
       <!--- <img src="http://demo4.soholaunch.com/sohoadmin/icons/ajax-loader2.gif" width="60" height="30" border="0"> -->
    </div>
 </div>
-<div id="form_display">&nbsp;</div>
+<div id="form_display" style="width:810px;">&nbsp;</div>
 <div id="upload_display">
    <iframe src="" id="upload_frame" name="upload_frame" ></iframe>
 </div>
@@ -954,64 +1249,16 @@ echo "<div id=\"simple_editor_container\" style=\"position: absolute; height: 10
 
 ?>
 
-<!-- ############################################################# --
-             ___    _ _ _             ___ _         __  __
-            | __|__| (_) |_ ___ _ _  / __| |_ _  _ / _|/ _|
-            | _|/ _` | |  _/ _ \ '_| \__ \  _| || |  _|  _|
-            |___\__,_|_|\__\___/_|   |___/\__|\_,_|_| |_|
-<!-- ############################################################# -->
-
-<?php
-//if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT']) || eregi("opera", $_SERVER['HTTP_USER_AGENT']) ) {
-//   $editorHeight = "450px";
-//}else{
-//   if(eregi("Firefox/3", $_SERVER['HTTP_USER_AGENT'])){
-//      $editorHeight = "435px";
-//   }else{
-//      $editorHeight = "475px";
-//   }
-//}
-?>
-<div id="tiny_editor_container" style="position: absolute; top: 0px; left: 0px; bottom: 0px; right: 0px; border: 0px solid green; z-index:1000; display: none;">
-   <!--- Editor Textarea -->
-   <textarea id="tiny_editor" name="tiny_editor"  style="position:relative;height:100%;  width: 100%;"></textarea>
-
-   <!--- Cancel / Done buttons -->
-
-      <!--- Test button
-      <input onClick="testtable();" type="button" id="debug_edit" value="  Table Debug  " style="width: 150px;padding: 1px;" /> -->
-	<div style="position:relative;width:50%;">
-    <div id="saveIt" style="position:fixed; bottom: 0px; right: 20%; z-index:1002; display:block;">
-
-     <button onClick="tinyMCE.execInstanceCommand('tiny_editor','mceCodeEditor',false);" type="button" id="html_view" class="grayButton" style="margin-right: 10em;font-weight:bold;"><span><span>HTML View</span></span></button>
-
-      <!--- Cancel -->
-      <button onClick="toggleEditor('tiny_editor');show_hide_icons();parent.header.flip_header_nav('PAGE_EDITOR_LAYER');" type="button" id="cancel_edit" class="redButton" style="margin-right: 1em;"><span><span> [x] Cancel </span></span></button>
-
-      <!--- Done -->
-      <button onClick="onSaveFileSOHO();show_hide_icons();" type="button" id="save_content" style="font-weight: bold;" class="greenButton"><span><span>Update</span></span></button>
-   </div>
-</div>
-</div>
-
-<!--- EDITOR LOADING -->
-<div id="overlay_edit">&nbsp;</div>
-<div id="tiny_editor_loading">
-   Working...
-</div>
-
-<!-- Display: none; will fix scroll problem -->
-
 <FORM id="save" name="save" method="post" action="save_page.php" STYLE='Display: NONE;'>
 
 <!-- ============================================================ -->
 <!-- ============= PAGE PROPERTIES LAYER ======================== -->
 <!-- ============================================================ -->
-
+<?php echo "<input type=\"hidden\" id=\"currentpageprik\" name=\"currentpageprik\" value=\"".$currentpageprik."\">\n"; ?>
 <div id="pageproperties" style="position:absolute; left:0px; top:1%; width:100%; height:525px; z-index:200001; border: 0px inset black; overflow: auto; visibility: hidden;">
 <table border="0" cellpadding="0" width="100%"><tr><td align="center" valign="middle">
 
-	<?
+	<?php
 
 	// For easier editing, the page properties layer was created as an include
 	// In the last updates before release, this was still being modified heavily
@@ -1033,7 +1280,7 @@ echo "<div id=\"simple_editor_container\" style=\"position: absolute; height: 10
 
 <div id="saveaslayer" style="position:absolute; left:0px; top:40%; width:100%; height:350px; z-index:200; border: 0px inset black; overflow: auto; visibility: hidden;">
 <table border="0" cellpadding="0" width="100%"><tr><td align="center" valign="middle">
-	<?
+	<?php
 
 	include("layers/save_as_layer.php");
 
@@ -1048,14 +1295,14 @@ echo "<div id=\"simple_editor_container\" style=\"position: absolute; height: 10
 
 <div id="HiddenSaveLayer" style="position:absolute; width:100%; height:50%; z-index:1; left: 0px; top: 15%; overflow: none; visibility: hidden;">
 
-<?
+<?php
 
 if ($totalHidden != 0) {
 	for ($x=1;$x<=$totalHidden;$x++) {
 		echo ("$hiddenValue[$x]");
 	}
 }
-echo ("<SPAN id=\"saveForm\" class=\"hidden\"><input type=\"hidden\" id=\"currentPage\" name=\"currentPage\" value=\"".$_GET['currentPage']."\"><input type=\"hidden\" name=\"serial_number\" value=\"".$serial_number."\"><input type=\"hidden\" id=\"dot_com\" name=\"dot_com\" value=\"".$dis_site."\"></SPAN>\n");
+echo ("<SPAN id=\"saveForm\" class=\"hidden\"><input type=\"hidden\" id=\"currentPage\" name=\"currentPage\" value=\"".$_REQUEST['currentPage']."\"><input type=\"hidden\" name=\"serial_number\" value=\"".$serial_number."\"><input type=\"hidden\" id=\"dot_com\" name=\"dot_com\" value=\"".$dis_site."\"></SPAN>\n");
 ?>
 
 <span id="desctext"><? echo lang("Click on an object above and drag it onto a drop zone for page placement."); ?></span>
@@ -1063,10 +1310,7 @@ echo ("<SPAN id=\"saveForm\" class=\"hidden\"><input type=\"hidden\" id=\"curren
 
 </div>
 </FORM>
-
-
-
-<?
+<?php
 
 // Determine which icons to pull based on language
 //======================================================
@@ -1086,9 +1330,8 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT']) || eregi("opera", $_SERVER['HTTP
 }else{
    $barWidth = "781";
 }
-$barWidth = "790";
+$barWidth = "780";
 ?>
-
 
 <div id="objectbar" style="visibility: visible; width:790px;">
    <div class="help-text">
@@ -1102,177 +1345,138 @@ $barWidth = "790";
    </div>
 
 
-   <table id="object_table" border="0" cellpadding="0" cellspacing="0" align="center" width="<? echo $barWidth; ?>" height="100%" style="border: 1px solid #245981;">
 
-    <tr>
+   <div id="object_table" border="0" cellpadding="0" cellspacing="0" align="center" style="-moz-user-select: none;-webkit-user-select: none;height:66px!important;width:788px!important;background-color:#245981;margin:0 auto; border: 1px solid #245981;">
+<?php
 
-     <!-- Text Editor -->
-     <td rowspan="2" class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';" width="80px">
-     	<img class="drag" name="MYeditor" id="oText" value="oText" src="<? echo $ipre; ?>texteditor-normal.gif" width="80px">
-     </td>
-
-     <!-- My Images -->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     	<img class="drag" name="MYimages" id="oImage" src="<? echo $ipre; ?>images.gif" width="80px" height="18px">
-     </td>
-
-     <!-- Forms -->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYforms" id="oForms" src="<? echo $ipre; ?>forms.gif" width="80px" height="18px" ></td>
-
-     <!-- Documents -->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYdocs" id="oDocs" src="<? echo $ipre; ?>docs.gif" width="80px" height="18px" ></td>
-
-     <!--- Hit Counter --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-      <img class="drag" name="MYcounter" id="oCounter" src="<? echo $ipre; ?>counter.gif" width="80px" height="18px" ></td>
-
-     <!-- Auth Login -->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYauth" id="oSecureLogin" src="<? echo $ipre; ?>login.gif" width="80px" height="18px" ></td>
-
-     <!-- Custom Code -->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYcust" id="oCustom" src="<? echo $ipre; ?>customcode.gif" width="80px" height="18px" ></td>
-
-     <!-- Shopping -->
-     <td rowspan="2" class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYshop" id="oCart" src="<? echo $ipre; ?>shopping.gif" width="80px"/></td>
-
-     <!-- Delete Object -->
-     <td width="81px" rowspan="3" height="60px" align="center" id="oDelete" bgcolor="#3E99DF" class="ob1">
-     <img class="drag" name="MYdelete" id="oDeleteIt" src="<? echo $ipre; ?>deleteobj.gif" ></td>
-
-     </tr>
+$dragitems='';
 
 
-    <tr>
-
-     <!--- Sign-Up 
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYsignup" id="oNewsletter" src="<? echo $ipre; ?>newsletter.gif" width="80px" height="18px" ></td>
-     --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYsignup" id="oSocial" src="<? echo $ipre; ?>socialmedia.gif" width="80px" height="18px" ></td>     
-
-     <!-- Calendar -->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYcalendar" id="oCalendar" src="<? echo $ipre; ?>calendar.gif" width="80px" height="18px" ></td>
-
-     <!-- Directions -->
-<?
-
-// Disable map object? (intl. request)
-//==========================================
-if ( $map_obj != "disabled" ) {
-   echo "     <td class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
-   echo "      <img class=\"drag\" id=\"oDirections\" src=\"".$ipre."directions.gif\" width=\"80\" height=\"18\"></td>\n";
+if($addons_installed == 1){
+	$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\" style=\"height:42px;width:87px;\">\n";
+	$dragitems .= "<img class=\"drag\" name=\"MYeditor\" id=\"oText\" value=\"oText\" src=\"".$ipre."texteditor2.gif\" width=\"80px\" style=\"top:3px;height:36px;width:80px;\">\n";
+	$dragitems .= "</div>\n";	
 } else {
-   echo "     <td class=\"ob2\">&nbsp;</td>\n";
+	$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\" style=\"height:64px;width:87px;\">\n";
+	$dragitems .= "<img class=\"drag\" name=\"MYeditor\" id=\"oText\" value=\"oText\" src=\"".$ipre."texteditor.gif\" width=\"80px\">\n";
+	$dragitems .= "</div>\n";	
 }
 
 
-?>
+$dragitems .= "<div style=\"height:64px;width:87px;background-color:#3E99DF;float:right;\" align=\"center\" id=\"oDelete\" bgcolor=\"#3E99DF\" class=\"ob1\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYdelete\" id=\"oDeleteIt\" src=\"".$ipre."deleteobj.gif\" >\n";
+$dragitems .= "</div>\n";
 
-     <!--- Date Stamp --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-      <img class="drag" name="MYdate" id="oDate" src="<? echo $ipre; ?>datestamp.gif" width="80px" height="18px" ></td>
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYimages\" id=\"oImage\" src=\"".$ipre."images.gif\" width=\"80px\" height=\"18px\">\n";
+$dragitems .= "</div>\n";
 
-     <!--- Print Page --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-      <img class="drag" name="MYprint" id="oPrint" src="<? echo $ipre; ?>printpage.gif" width="80px" height="18px" ></td>
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYforms\" id=\"oForms\" src=\"".$ipre."forms.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYdocs\" id=\"oDocs\" src=\"".$ipre."docs.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYcounter\" id=\"oCounter\" src=\"".$ipre."counter.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYprint\" id=\"oPrint\" src=\"".$ipre."printpage.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYsearch\" id=\"oTableSearch\" src=\"".$ipre."searchdb.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div style=\"float:right!important;\" class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYblog\" id=\"oBlog\" src=\"".$ipre."blog.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">     \n";
+$dragitems .= "<img class=\"drag\" name=\"MYsupersearch\" id=\"supersearch_obj\" src=\"".$engdash."supersearch_obj.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
 
 
-     <!--- FAQs --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-      <img class="drag" name="MYfaq" id="oFaq" src="<? echo $ipre; ?>faq.gif" width="80px" height="18px" ></td>
+
+$dragitems .= "<div style=\"float:right!important;\" class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYnewsfeed\" id=\"oNewsFeed\" src=\"".$ipre."newsfeed.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+//$dragitems .= "<div style=\"float:right!important;height:42px;\" class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+//$dragitems .= "<img class=\"drag\" name=\"MYshop\" id=\"oCart\" src=\"".$ipre."shopping.gif\" width=\"80px\"/>\n";
+//$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYsignup\" id=\"oSocial\" src=\"".$ipre."socialmedia.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
 
 
-<?
 
-//# SitePal object?
-//if ( sitepal_allowed() ) {
-//   # yes
-//   echo "     <!-- SitePal -->\n";
-//   echo "     <td class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
-//   echo "     <img class=\"drag\" name=\"MYsitepal\" id=\"sitepal_obj\" src=\"".$engdash."sitepal.gif\" width=\"80px\" height=\"18px\" ></td>\n";
-//} else {
-//   # no
-//   echo "     <td width=\"81\" height=\"20\" align=\"center\" valign=\"middle\" class=\"ob2\" style=\"cursor: default;\">&nbsp;</td>\n";
-//}
 
-?>
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYcalendar\" id=\"oCalendar\" src=\"".$ipre."calendar.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
 
-    </tr>
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" id=\"oDirections\" src=\"".$ipre."directions.gif\" width=\"80\" height=\"18\">\n";
+$dragitems .= "</div>\n";
 
-    <!---###################################################################################################--->
-    <!------------------------------------ Drag and Drop Icons: ROW THREE ------------------------------------->
-    <!---###################################################################################################--->
-    <tr>
-	
-	<td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYblog" id="oBlog" src="<? echo $ipre; ?>blog.gif" width="80px" height="18px" >
-     </td>
-     <!--- Table Search --->
-     <!---
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     	 <img class="drag" name="MYsearch" id="oTableSearch" src="<? echo $ipre; ?>searchdb.gif" width="80px" height="18px" >
-     </td>
-	--->
-     <!--- PopUp Win --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYpopup" id="oPopup" src="<? echo $ipre; ?>popup.gif" width="80px" height="18px" >
-     </td>
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYdate\" id=\"oDate\" src=\"".$ipre."datestamp.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
 
-     <!--- Audio Files --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYaudio" id="oMP3" src="<? echo $ipre; ?>audio.gif" width="80px" height="18px" ></td>
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYauth\" id=\"oSecureLogin\" src=\"".$ipre."login.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
 
-     <!--- Video Files --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYvideo" id="oVideo" src="<? echo $ipre; ?>video.gif" width="80px" height="18px" ></td>
 
-     <!--- Photo Album --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <img class="drag" name="MYphoto" id="oPhotoAlbum" src="<? echo $ipre; ?>photoalbum.gif" width="80px" height="18px" ></td>
 
-     <!--- Blogs --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';">
-     <!---<img class="drag" name="MYblog" id="oBlog" src="<? echo $ipre; ?>blog.gif" width="80px" height="18px" >--->
-     <img class="drag" name="MYsearch" id="oTableSearch" src="<? echo $ipre; ?>searchdb.gif" width="80px" height="18px" >
-     </td>
-
-     <!--- Faqs --->
- <?
-
-# SitePal object?
-if ( supersearch_allowed() ) {
-   # yes
-   echo "     <!-- SitePal -->\n";
-   echo "     <td class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
-   echo "     <img class=\"drag\" name=\"MYsupersearch\" id=\"supersearch_obj\" src=\"".$engdash."supersearch_obj.gif\" width=\"80px\" height=\"18px\" ></td>\n";
-} else {
-   # no
-   echo "     <td width=\"81\" height=\"20\" align=\"center\" valign=\"middle\" class=\"ob2\" style=\"cursor: default;\">&nbsp;</td>\n";
+if($addons_installed == 1){
+	$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\" onClick=\"show_mods();\" style=\"width:87px;height:20px;\">\n";
+	$dragitems .= "	<div style=\"position:absolute;z-index:2;width:82px;height:20px;border:0px solid red;\"><img src=\"pixel.gif\" border=\"0\" width=\"82px\" height=\"20x\" style=\"width:82px;height:20px;\"></div>\n";
+	$dragitems .= "	<img  class=\"nodrag\" name=\"addons\" id=\"addons\" src=\"".$ipre."addons.gif\" width=\"80px\" height=\"18px\" style=\"z-index:1;top:1px;\">\n";
+	$dragitems .= "</div>\n";
 }
 
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYfaq\" id=\"oFaq\" src=\"".$ipre."faq.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYcust\" id=\"oCustom\" src=\"".$ipre."customcode.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYpopup\" id=\"oPopup\" src=\"".$ipre."popup.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYaudio\" id=\"oMP3\" src=\"".$ipre."audio.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYvideo\" id=\"oVideo\" src=\"".$ipre."video.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYphoto\" id=\"oPhotoAlbum\" src=\"".$ipre."photoalbum.gif\" width=\"80px\" height=\"18px\" >\n";
+$dragitems .= "</div>\n";
+
+//$dragitems .= "<div class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">     \n";
+//$dragitems .= "<img class=\"drag\" name=\"MYsearch\" id=\"oTableSearch\" src=\"".$ipre."searchdb.gif\" width=\"80px\" height=\"18px\" >\n";
+//$dragitems .= "</div>\n";
+
+$dragitems .= "<div style=\"float:right!important;\" class=\"ob2\" onmouseover=\"this.className='ob1';\" onmouseout=\"this.className='ob2';\">\n";
+$dragitems .= "<img class=\"drag\" name=\"MYshop\" id=\"oCart\" src=\"".$ipre."shopping_sm.gif\" width=\"80px\"/>\n";
+$dragitems .= "</div>\n";
+
+echo $dragitems;
 ?>
 
-     <!--- Addons/Mods --->
-     <td class="ob2" onmouseover="this.className='ob1';" onmouseout="this.className='ob2';" onClick="show_mods();">
-     <img class="drag" name="addons" id="addons" src="<? echo $ipre; ?>addons.gif" width="80px" height="18px" ></td>
-
-<?
-//eval(hook("pe_ff-draggable_page_object", basename(__FILE__)));
-?>
-
-     <!--- Blank Object Spacers --->
-     <!--- <td width="81" height="20" align="center" valign="middle" class="ob2">&nbsp;</td> --->
-     <!--- <td width="81" height="20" align="center" valign="middle" class="ob2">&nbsp;</td> --->
-    </tr>
-
-   </table>
+   </div>
 
 </div>
 
@@ -1282,9 +1486,6 @@ if ( supersearch_allowed() ) {
     <!---###################################################################################################--->
 
 <div id="objectbar_mods">
-
-
-
 <!---###################################################################################################---
 						             _     _                            __  __           _
 						    /\      | |   | |                          |  \/  |         | |
@@ -1294,17 +1495,13 @@ if ( supersearch_allowed() ) {
 						/_/    \_\__,_|\__,_|\___/|_| |_|___/          |_|  |_|\___/ \__,_|___/
 
 <!---###################################################################################################--->
-
    <div class="help-text">
-      <? echo lang("Click on an object below and drag it onto a drop zone for page placement."); ?>
+      <?php echo lang("Click on an object below and drag it onto a drop zone for page placement."); ?>
    </div>
    <table id="objectmods_table" border="0" cellpadding="0" cellspacing="0" align="center" width="<? echo $barWidth; ?>" style="border: 1px solid #245981;">
-
     <tr>
-
-     	<td align="left" valign="top" style="width: 100%; height: 70px; background-color: #3E99DF;">
-
-     	<?
+     	<td align="left" valign="top" style="width: 100%; height: 70px; background-color: #3E99DF;">    
+     <?php
      		$top = 15;
      		$left = 8;
      		$cntr = 0;
@@ -1334,13 +1531,19 @@ if ( supersearch_allowed() ) {
    </table>
 </div>
 
-
-
 <div id="nugget">&nbsp;</div>
 
-<div id="cell_container">
 
-	<?
+<?php
+
+echo "<div id=\"sidebar_container\" style=\"display:none;\">\n";
+include('sidebar.php');
+echo "</div>\n";
+?>
+
+<div id="cell_container" style="display:block;">
+
+	<?php
 
 	/**********************************************************************
       New Page Editor Drag and Drop in ie and Firefox- (Joe Lain 10-12-05)
@@ -1359,6 +1562,7 @@ if ( supersearch_allowed() ) {
 		// Ouput each cell with correct pre-existing content (if any)
 		//---------------------------------------------------------------
 		for ($y=1;$y<=3;$y++) {
+			
 		   $noBlink = 0;
 		   $cellContent = "";
 			$areaId = "R" . $x . "C" . $y; // Used to pull existing cell content from loaded var data of same name (Ends up as 'R2C3' for 'ROW 2, COL 3')
@@ -1367,6 +1571,7 @@ if ( supersearch_allowed() ) {
 
 			// Format cell properties (b/c nobody likes to side scroll, least of all us dev types)
 			//-------------------------------------------------------------------------------------------
+			
 			$zProps = " id=\"".$tdid."\" value=\"".$tdid."\"";
 			//$zProps .= " style=\"\"";
 
@@ -1379,15 +1584,15 @@ if ( supersearch_allowed() ) {
 			//echo "(".${$areaId}.")";
 			$endMatches = "";
          if ( eregi("pixel.gif",$contentVar) || !eregi($findThis, $contentVar) ){
-            $contentVar = "<IMG height=\"50%\" src=\"pixel.gif\" width=\"199\" border=\"0\">";
+            $contentVar = "<IMG height=\"50%\" src=\"pixel.gif\" width=\"99\" border=\"0\">";
          }else{
             //echo "<textarea style=\"height: 100px; border: 1px dashed #000000;\">".$contentVar."</textarea>\n";
-
-            # Remove older js edit calls
-            $my_rep = "textEdit\([^,]+,'([^']+)'\)";
-            $contentVar = eregi_replace($my_rep, "startEditor('\\1')", $contentVar);
-            $my_rep = "newEdit\([^,]+,'([^']+)'\)";
-            $contentVar = eregi_replace($my_rep, "startEditor('\\1')", $contentVar);
+// Removed August 2012 - cameron allen
+//            # Remove older js edit calls
+//            $my_rep = "textEdit\([^,]+,'([^']+)'\)";
+//            $contentVar = eregi_replace($my_rep, "startEditor('\\1')", $contentVar);
+//            $my_rep = "newEdit\([^,]+,'([^']+)'\)";
+//            $contentVar = eregi_replace($my_rep, "startEditor('\\1')", $contentVar);
 //echo "<script>\nalert(' ".str_replace("'", '', str_replace('<', '', str_replace('>', '', $contentVar)))."');</script>\n";
 
             // Start obj conversion to new method
@@ -1405,16 +1610,16 @@ if ( supersearch_allowed() ) {
 
                      if(eregi("ADOBELINK", $val)){
                         $disFree = "<img src=client/adobe_link.gif border=0 class=tHead><!-- ##ADOBELINK## -->";
-                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"199\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
+                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><span style=\"width:100%;height:15px;background:#000;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"99\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
                      }elseif(eregi("FLASHLINK", $val)){
                         $disFree = "<img src=client/flash_link.gif border=0 class=tHead><!-- ##FLASHLINK## -->";
-                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"199\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
+                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"99\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
                      }elseif(eregi("WINAMPLINK", $val)){
                         $disFree = "<img src=client/winamp_link.gif border=0 class=tHead><!-- ##WINAMPLINK## -->";
-                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"199\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
+                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"99\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
                      }elseif(eregi("QUICKTIMELINK", $val)){
                         $disFree = "<img src=client/quicktime_link.gif border=0 class=tHead><!-- ##QUICKTIMELINK## -->";
-                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"199\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
+                        $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 50px;\"><img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"99\"><br clear=\"all\">\n".$disFree."</div><!-- ~~~ -->\n";
                      }else{
                         //echo "<textarea style=\"height: 100px; border: 1px dashed #000000;\">".$val."</textarea>\n";
 
@@ -1461,17 +1666,17 @@ if ( supersearch_allowed() ) {
 
                   		   }
 						
-                           $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 120px;\">\n<img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"199\"><br clear=\"all\">\n".$pulled_content."\n</div><!-- ~~~ -->\n";
+                           $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 120px;\">\n<img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"99\"><br clear=\"all\">\n".$pulled_content."\n</div><!-- ~~~ -->\n";
 
                         }else{                  # Didnt find <br clear="all">
 //$outbr[1] = preg_replace('/ src="images\//', ' src="http://'.$this_ip.'/images/',  $outbr[1]);
                            # Check to see if there is a <br>
-                           # Some old pages have <IMG style="CURSOR: move" height=15 hspace=0 src="images/text_header.gif" width=199 align=left border=0><BR>
+                           # Some old pages have <IMG style="CURSOR: move" height=15 hspace=0 src="images/text_header.gif" width=99 align=left border=0><BR>
                            $find_ends = '<br>(.*)';
                            $endMatches = eregi($find_ends, $val, $outbr);
  
                            if(strlen($outbr[1]) > 0)
-                              $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 120px;\">\n<img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"199\"><br clear=\"all\">\n".$outbr[1]."\n</div><!-- ~~~ -->\n";
+                              $cellContent .= "<div id=\"CONVERTEDOBJ".rand(100, 10000).$y."\" class=\"droppedItem\" style=\"height: 120px;\">\n<img src=\"images/text_header.gif\" style=\"cursor: move;\" align=\"middle\" border=\"0\" height=\"15\" hspace=\"0\" vspace=\"0\" width=\"99\"><br clear=\"all\">\n".$outbr[1]."\n</div><!-- ~~~ -->\n";
 
                            //echo "<textarea style=\"height: 100px; border: 1px dashed #000000;\">(".strlen($outbr[1]).")(".$outbr[1].")</textarea>\n";
                         }
@@ -1493,13 +1698,14 @@ if ( supersearch_allowed() ) {
 //		   echo "</textarea>\n";
 
 			echo "     </div>\n";
+		
 		}
 	}
 
 echo "</div>\n";
 
-
-
+ 
+ 
 ###########################################################################################################
 ### ALL LAYERS BELOW THIS, ARE LAYERS THAT APPEAR ON TOP OF THE OBJECT LAYER WHEN AN OBJECT IS DROPPED ON
 ### A DROP AREA. FOR INSTANCE: THESE LAYERS ARE WHERE USERS WOULD SELECT IMAGES, DATABASE TABLES, ETC.
@@ -1545,7 +1751,7 @@ if ( supersearch_allowed() ) {
 <div id="DELETEPAGE" style="position:absolute; width:100%; height:100%; z-index:160; left: 0px; top: 0px; overflow: none; visibility: hidden">
 <?
 echo ("<table border=0 cellpadding=0 cellspacing=0 width=100% height=100% bgcolor=maroon><tr><td align=center valign=center>\n");
-echo ("<font face=Arial size=4 color=white><B>DELETING \"".$_GET['currentPage']."\" PAGE NOW...</font></b></td></tr></table>\n");
+echo ("<font face=Arial size=4 color=white><B>DELETING \"".$_REQUEST['currentPage']."\" PAGE NOW...</font></b></td></tr></table>\n");
 ?>
 </div>
 
@@ -1571,9 +1777,9 @@ eval(hook("pe-properties_dialog_layer", basename(__FILE__)));
 <?
 
 if ($theNewsFlag == 1) {
-	$cpDis = "Editing Newsletter: \"<U>".$_GET['currentPage']."</U>\"";
+	$cpDis = "Editing Newsletter: \"<U>".htmlspecialchars($_REQUEST['currentPage'])."</U>\"";
 } else {
-	$cpDis = "Editing: \"<U>".$_GET['currentPage']."</U>\"";
+	$cpDis = "Editing: \"<U>".htmlspecialchars($_REQUEST['currentPage'])."</U>\"";
 }
 echo "var newStatus = '$cpDis';\n";
 
@@ -1595,6 +1801,7 @@ for (var i = 0; i < objects.length; i++)
 }
 
 </script>
+</div>
 </div>
 </body>
 </html>

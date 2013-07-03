@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -15,8 +15,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 ##############################################################################
 ## COPYRIGHT NOTICE
-## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston 
-## Copyright 2003-2007 Soholaunch.com, Inc.
+## Copyright 1999-2011 Soholaunch.com, Inc.
 ## All Rights Reserved.
 ##
 ## This script may be used and modified in accordance to the license
@@ -40,8 +39,7 @@ if ( file_exists($sobj_incfile) ) {
 } else {
    session_start();
 }
-
-error_reporting(0);
+error_reporting('341');
 
 ## Pull 100% legit docroot from path to this script
 //==============================================================

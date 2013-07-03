@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -52,7 +52,7 @@ $df_favicon = $site_favicon;
 
 # Define different html layout files to check for in a given template foder
 # ...set globally here for use in various loops
-$layout_files = array("index.html", "home.html", "cart.html");
+$layout_files = array("index.html", "home.html", "cart.html","index.php", "home.php", "cart.php");
 
 # Defined globally here so you don't have to type out this path over and over again
 $tpl_base_path = $_SESSION['docroot_path']."/sohoadmin/program/modules/site_templates/pages";
@@ -66,7 +66,7 @@ if ( $_GET['todo'] == "fix_suexec_error" ) {
 
 # Restore template prefs
 $tplpref = new userdata("template");
-
+$wapsetting = new userdata('wap_template');
 # Save user image settings
 if ( $_POST['todo'] == "save_userimg" ) {
    foreach ( $_POST['userimg'] as $key=>$value ) {
@@ -74,16 +74,19 @@ if ( $_POST['todo'] == "save_userimg" ) {
    }
 }
 
-if($_POST['wap_template'] != ''){
-	if($_POST['wap_template'] == 'yes'){
-		$wapsetting = new userdata('wap_template');
-		$wapsetting->set('template', 'WAP-minimal-none') ;
+if($_POST['action'] == 'wap_preference'){
+	if($_POST['wap_template'] != ''){
+		//$wapsetting = new userdata('wap_template');
+		//$wapsetting->set('template', 'WAP-minimal-none') ;
+		//$wapsetting->set('template', 'Responsive-Vertical_Foundation-none') ;
+		$wapsetting->set('template', slashthis($_POST['wap_template']));
+		
 	} else {
-		$wapsetting = new userdata('wap_template');
+		//$wapsetting = new userdata('wap_template');
 		$wapsetting->set('template', '') ;
 	}	
 }
-
+$waptemplate=$wapsetting->get('template');
 # unset_pagetemplate - Unset page template assignment
 if ( $_GET['unset_pagetemplate'] != "" ) {
    $qry = "update site_pages set template = '' where page_name = '".$_GET['unset_pagetemplate']."'";
@@ -315,9 +318,11 @@ if (is_dir($directory)) {
 		if(is_dir($directory.'/'.$files)){
 			if (strlen($files) > 2) {
 				eval(hook("site_templates.php:template-file-loop"));
-				if(file_exists($directory.'/'.$files.'/index.html') || file_exists($directory.'/'.$files.'/cart.html') || file_exists($directory.'/'.$files.'/news.html') || file_exists($directory.'/'.$files.'/home.html')){
-					$templatecount++;
-					$templateFile[$templatecount] = $files;
+				if(!preg_match('/^NEWSLETTER-/',$files)){					
+					if(file_exists($directory.'/'.$files.'/index.html') || file_exists($directory.'/'.$files.'/cart.html') || file_exists($directory.'/'.$files.'/news.html') || file_exists($directory.'/'.$files.'/home.html') || file_exists($directory.'/'.$files.'/index.php') || file_exists($directory.'/'.$files.'/cart.php') || file_exists($directory.'/'.$files.'/news.php') || file_exists($directory.'/'.$files.'/home.php')){
+						$templatecount++;
+						$templateFile[$templatecount] = $files;
+					}
 				}
 			}
 		}      
@@ -369,7 +374,17 @@ $CONTENTAREA_VAR = chop($CONTENTAREA_VAR);
 #######################################################
 ### Read current info from site_specs
 #######################################################
+# Verify that at least one row exists in site_specs
 $spcRez = mysql_query("SELECT * from site_specs");
+$specs_row_count = mysql_num_rows($spcRez);
+if ( $specs_row_count < 1 ) {
+	$data = array();
+	$data['prikey'] = '1'; // Will auto-increment anyway, but class needs a value to be passed
+	$query = new mysql_insert('site_specs', $data);
+	$query->insert();
+	$spcRez = mysql_query("SELECT * from site_specs");
+}
+
 $pullSpec = mysql_fetch_array($spcRez);
 
 $headertext = $pullSpec['df_hdrtxt'];
@@ -393,6 +408,7 @@ $df_city = $pullSpec['df_city'];
 ########################################################################################
 
 $SELECT_OPTS = "<OPTION VALUE=\"\" style='font-family: Tahoma; font-size: 8pt;'>".lang("Select Base Template")."...</OPTION>\n";
+$SELECT_OPTS_Mobile = '';
 natcasesort($templateFile);
 $sorted_template = $templateFile;
 unset($templateFile);
@@ -414,6 +430,7 @@ for ($x=0;$x<=$numTemplates;$x++) {
          if ( !eregi("none", $tmp[2]) && trim($tmp[2]) != '' ) { $display .= "($tmp[2])"; }
          if ($templateFile[$x] == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
          $SELECT_OPTS .= "<OPTION VALUE=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">".$display."</OPTION>\n";
+         $SELECT_OPTS_Mobile .= "<OPTION VALUE=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">".$display."</OPTION>\n";
 
       } else {
          $display = "CUSTOM > ".$custarray[1];
@@ -426,6 +443,7 @@ for ($x=0;$x<=$numTemplates;$x++) {
 
          if ($thisFile == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
          $SELECT_OPTS .= "<OPTION VALUE=\"$thisFile\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">$display</OPTION>\n";
+         $SELECT_OPTS_Mobile .= "<OPTION VALUE=\"$thisFile\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">$display</OPTION>\n";
       }
 
    } elseif ( !eregi("unzips", $templateFile[$x]) ) {
@@ -437,8 +455,14 @@ for ($x=0;$x<=$numTemplates;$x++) {
       if ( strlen($tmp[1]) > 1 ) { $display .= "  > $tmp[1] "; }
       if ( !eregi("none", $tmp[2]) && strlen(trim($tmp[2])) > 1 ) { $display .= "($tmp[2])"; }
       if ($templateFile[$x] == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
+      if ($templateFile[$x] == $waptemplate) { $isSelmob = " selected"; } else { $isSelmob = ""; }
+      
       //if ( $tmp[1] != "" ) {
          $SELECT_OPTS .= "<OPTION VALUE=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">".$display."</OPTION>\n";
+		if($templateFile[$x]!='Responsive-Vertical_Foundation-none'){
+         		$SELECT_OPTS_Mobile .= "<OPTION VALUE=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSelmob.">".$display."</OPTION>\n";
+     	}
+         
       //}
 
    } // End If CUSTOM
@@ -477,18 +501,32 @@ while($page_template = mysql_fetch_array($result)){
 }
 
 $indiv_temp_count = count($page_temps);
-
-for($j = 0; $j < $indiv_temp_count; $j++){
-   $filename = "http://".$this_ip."/sohoadmin/program/modules/site_templates/pages/".$page_temps[$j]."/index.html";
-   $filename2 = $doc_root."/sohoadmin/program/modules/site_templates/pages/".$page_temps[$j]."/index.html";
-   $SUB_HTML_TEMP[$j] = eregi_replace("[_-]"," ", $page_temps[$j]);
-   $SUB_TEMP_NAME[$j] = $page_names[$j];
-   ob_start();
-      if(!include($filename2)){
-         echo include_r($filename);
-      }
-      $SUB_HTML[$j] = ob_get_contents();
-   ob_end_clean();
+//echo testArray($page_temps);
+for($j = 0; $j < $indiv_temp_count; $j++){	
+	if(file_exists($doc_root."/sohoadmin/program/modules/site_templates/pages/".$page_temps[$j]."/index.php")){
+		$indexfile='index.php';
+	} else {
+		$indexfile='index.html';
+	}
+	$filename = httpvar().$this_ip."/sohoadmin/program/modules/site_templates/pages/".$page_temps[$j]."/".$indexfile;
+	$filename2 = $doc_root."/sohoadmin/program/modules/site_templates/pages/".$page_temps[$j]."/".$indexfile;
+	//echo $filename2;
+	//echo $page_temps[$j];
+	$SUB_HTML_TEMP[$j] = eregi_replace("[_-]"," ", $page_temps[$j]);
+	//$SUB_HTML_TEMP[$j] = $page_temps[$j];
+	$SUB_TEMP_NAME[$j] = $page_names[$j];
+	ob_start();
+	$origdir=getcwd();
+	chdir($doc_root."/sohoadmin/program/modules/site_templates/pages/".$page_temps[$j]);
+	   if(!include($indexfile)){
+	   	//echo $page_temps[$j];
+	   	//echo 'nooooooooooooooo'; exit;
+	      echo include_r($filename);
+	   }
+	   $SUB_HTML[$j] = ob_get_contents();
+	chdir($origdir);
+	ob_end_clean();
+	//echo $doc_root."<br/>";
 }
 
 ##################################################################################
@@ -673,7 +711,13 @@ function upload_logo_favicon() {
 }
 
 function showHelp(){
-   window.open('help_center/help_center.php','billy','width=800, height=600, scrollbars=auto');
+<?php
+	if($_SESSION['help_link']!=''){
+		echo "window.open('".$_SESSION['help_link']."','billy','width=800, height=600, scrollbars=auto');\n";
+	} else {
+		echo "window.open('help_center/help_center.php','billy','width=800, height=600, scrollbars=auto');\n";	
+	}	
+?>
 }
 
 function show_template(v) {
@@ -736,17 +780,17 @@ function findimgstuff2(){
 function showPreview(ele){
 	if(ele != ""){
 		
-		document.getElementById('daImage').src= 'http://<?php echo $this_ip; ?>/images/'+ele
+		document.getElementById('daImage').src= '<?php echo httpvar().$this_ip; ?>/images/'+ele
 		
 		var pic = document.getElementById('daImage');
 		var pichidden = document.getElementById('daImagehidden');
 		pichidden.src= '';
-		pichidden.src= 'http://<?php echo $this_ip; ?>/images/'+ele;
+		pichidden.src= '<?php echo httpvar().$this_ip; ?>/images/'+ele;
 		setTimeout("findimgstuff2()", 500);
-		document.getElementById('daImage').src= 'http://<?php echo $this_ip; ?>/images/'+ele;
+		document.getElementById('daImage').src= '<?php echo httpvar().$this_ip; ?>/images/'+ele;
 		
 	} else {
-		document.getElementById('daImage').src= 'http://<?php echo $this_ip; ?>/sohoadmin/program/modules/spacer.gif'
+		document.getElementById('daImage').src= '<?php echo httpvar().$this_ip; ?>/sohoadmin/program/modules/spacer.gif'
 	}
 }
 function findimgstuff(){
@@ -770,11 +814,11 @@ function showPreviewFav(ele){
 		var pic = document.getElementById('daFavicon');
 		var pichidden = document.getElementById('daFaviconhidden');
 		pichidden.src= '';
-		pichidden.src= 'http://<?php echo $this_ip; ?>/'+ele;
+		pichidden.src= '<?php echo httpvar().$this_ip; ?>/'+ele;
 		setTimeout("findimgstuff()", 500);
-		document.getElementById('daFavicon').src= 'http://<?php echo $this_ip; ?>/'+ele;
+		document.getElementById('daFavicon').src= '<?php echo httpvar().$this_ip; ?>/'+ele;
 	} else {
-		document.getElementById('daFavicon').src= 'http://<?php echo $this_ip; ?>/sohoadmin/program/modules/spacer.gif'
+		document.getElementById('daFavicon').src= '<?php echo httpvar().$this_ip; ?>/sohoadmin/program/modules/spacer.gif'
 	}
 }
 
@@ -793,7 +837,15 @@ function show_features(templt){
 
 </script>
 
+
 <style type="text/css">
+
+.tfield_hex{
+	width:60px;
+	/*margin-left:25px;*/
+	display:none;
+}
+	
 body {
    font-family : sans-serif;
 }
@@ -1063,7 +1115,7 @@ $onevent_bsthelp .= "toggleid('base_sel', 'visibility');";
 
 
 if ( plugins_allowed() && $_SESSION['hostco']['get_more_templates_link'] != "off" ) {
-   echo "<p style=\"margin: 0;text-align: right;\"><span onclick=\"window.open('http://".$_SESSION['hostco']['get_more_templates_url']."/Templates.php','Soholaunch_Addons', 'width='+screen.availWidth+', height='+screen.availHeight+', location, status, toolbar, resizeable, menubar, scrollbars');\" class=\"hand orange normal unbold font90 uline\" style=\"font-size: 90%; letter-spacing: normal;\">".lang("Get more templates")."</span></p>\n";
+   echo "<p style=\"margin: 0;text-align: right;\"><span onclick=\"window.open('".httpvar().$_SESSION['hostco']['get_more_templates_url']."/Templates.php','Soholaunch_Addons', 'width='+screen.availWidth+', height='+screen.availHeight+', location, status, toolbar, resizeable, menubar, scrollbars');\" class=\"hand orange normal unbold font90 uline\" style=\"font-size: 90%; letter-spacing: normal;\">".lang("Get more templates")."</span></p>\n";
 }
 ?>
 
@@ -1148,13 +1200,13 @@ if ( plugins_allowed() && $_SESSION['hostco']['get_more_templates_link'] != "off
          echo "   <td valign=\"middle\" align=\"left\" class=\"text\"><b>".lang("Content Area")."</b> - ".lang("Add content by going to")." <a href=\"open_page.php\">".lang("Edit Pages")."</a></td>\n";
          echo "   </tr>\n";
       }
-      if(eregi("#VMENU#", $SUB_HTML[$s]) || eregi("#VMAINS#", $SUB_HTML[$s]) || eregi("#VSUBS#", $SUB_HTML[$s])){
+      if(eregi("#VMENU#", $SUB_HTML[$s]) || eregi("#VMAINS#", $SUB_HTML[$s]) || eregi("#VSUBS#", $SUB_HTML[$s]) || eregi("#VFLYOUTMENU#", $SUB_HTML[$s])){
          $is_soho = 1;
          echo "   <tr>\n";
          echo "   <td valign=\"middle\" align=\"left\" class=\"text\"><b>".lang("Vertical Menu")."</b> - ".lang("Edit the menu layout in")." <a href=\"auto_menu_system.php\">".lang("Menu Navigation")."</a></td>\n";
          echo "   </tr>\n";
       }
-      if(eregi("#HMENU#", $SUB_HTML[$s]) || eregi("#HMAINS#", $SUB_HTML[$s]) || eregi("#HSUBS#", $SUB_HTML[$s])){
+      if(eregi("#HMENU#", $SUB_HTML[$s]) || eregi("#HMAINS#", $SUB_HTML[$s]) || eregi("#HSUBS#", $SUB_HTML[$s]) || eregi("#FLYOUTMENU#", $SUB_HTML[$s])){
          $is_soho = 1;
          echo "   <tr>\n";
          echo "   <td valign=\"middle\" align=\"left\" class=\"text\"><b>".lang("Horizontal Menu")."</b> - ".lang("Edit the menu layout in")." <a href=\"auto_menu_system.php\">".lang("Menu Navigation")."</a></td>\n";
@@ -1192,12 +1244,12 @@ if ( plugins_allowed() && $_SESSION['hostco']['get_more_templates_link'] != "off
       }
 ################################################
 ##TEMPORARILY DISABLE BLOG FEATURES#############
-//      if(eregi("#BOX1#", $SUB_HTML[$s])){
-//         $is_soho = 1;
-//         echo "   <tr>\n";
-//         echo "   <td valign=\"middle\" align=\"left\" class=\"text\"><b>".lang("Template Boxes")."<font color=\"#f7941d\" size=\"1\"><sup><i>".lang("NEW!")."</i></sup></font></b> - <a href=\"promo_boxes/promo_boxes.php\">".lang("Edit Template Boxes Now")."!</a></td>\n";
-//         echo "   </tr>\n";
-//      }
+      if(preg_match("/#BOX[0-9]+#/i", $SUB_HTML[$s])){
+         $is_soho = 1;
+         echo "   <tr>\n";
+         echo "   <td valign=\"middle\" align=\"left\" class=\"text\"><b>".lang("Template Sidebar")."<font color=\"#f7941d\" size=\"1\"><sup><i>".lang("NEW!")."</i></sup></font></b> - Edit the Sidebar in the Page Editor</td>\n";
+         echo "   </tr>\n";
+      }
 //      if(eregi("#PROMOTXT", $SUB_HTML[$s])){
 //         $is_soho = 1;
 //         echo "   <tr>\n";
@@ -1316,6 +1368,10 @@ function subAllForms(disForm){
 	$(disForm).append('<input type="hidden" name="actions" value="tab2" />');
 	$(disForm).append('<input type="hidden" name="showTab" value="tab2" />');
 	
+	$(disForm).append('<input type="hidden" name="buttons[DefaultButtons]" value="'+$("#DefaultButtons").val()+'" />');
+	$(disForm).append('<input type="hidden" name="buttons[buttonColor]" value="'+$("#buttonColor").val()+'" />');
+	$(disForm).append('<input type="hidden" name="buttons[DefaultActiveButtons]" value="'+$("#DefaultActiveButtons").val()+'" />');
+	$(disForm).append('<input type="hidden" name="buttons[activeColor]" value="'+$("#activeColor").val()+'" />');
 	$(disForm).submit();
 }
 
@@ -1330,7 +1386,138 @@ function subAllForms(disForm){
 |___/\___| \__| \__||_||_||_|\__, |/__/   |_| \__,_||_.__/
                              |___/
 /*---------------------------------------------------------------------------------------------------------*/
+
+if($_POST['action']=='button_preference' || $_POST['buttons']['DefaultButtons']!=''){
+	
+	if($_POST['buttons']['buttonColor']=='disabled'){
+		$_POST['buttons']['buttonColor']='disabled';
+		$_POST['buttons']['DefaultActiveButtons']='default';
+		$_POST['buttons']['activeColor']='';
+		$buttons['buttonColor']='disabled';
+		$buttons['activeColor']='';
+		$globalprefObj->set('buttonColor', $buttons['buttonColor']);
+		$globalprefObj->set('activeColor', $buttons['activeColor']);
+	} else {
+	
+		if($_POST['buttons']['DefaultButtons']=='default' || $_POST['buttons']['buttonColor']=='' || $_POST['buttons']['buttonColor']=='transparent'){
+			$buttons['buttonColor']='';
+		} else {
+			$buttons['buttonColor']	= $_POST['buttons']['buttonColor'];	
+		}
+		if($_POST['buttons']['DefaultActiveButtons']=='default' || $_POST['buttons']['activeColor']=='' || $_POST['buttons']['activeColor']=='transparent'){
+			$buttons['activeColor']='';
+		} else {
+			$buttons['activeColor']	= $_POST['buttons']['activeColor'];
+		}
+		$globalprefObj->set('buttonColor', $buttons['buttonColor']);
+		$globalprefObj->set('activeColor', $buttons['activeColor']);
+	}
+}
+
+
+$buttons['buttonColor']=$globalprefObj->get("buttonColor");
+$buttons['activeColor']=$globalprefObj->get("activeColor");
+
+
+echo "<link rel=\"Stylesheet\" type=\"text/css\" href=\"../includes/jPicker/css/jPicker-1.1.6.css\" />\n";
+echo "<link rel=\"Stylesheet\" type=\"text/css\" href=\"../includes/jPicker/jPicker.css\" />\n";
+
+echo "<link id=\"buttonpreviews\" rel=\"stylesheet\" type=\"text/css\" href=\"../../client_files/ultra-custom-button.css.php?id=previewtable&hex=".str_replace('#','',$buttons['buttonColor'])."&hex2=".str_replace('#','',$buttons['activeColor'])."&randid=".time()."\" />\n";
 ?>
+
+<script src="../includes/jPicker/jpicker-1.1.6.js" type="text/javascript"></script>
+<script type="text/javascript">
+function toggleCustButtons(){
+	var useCstB=document.getElementById('DefaultButtons').selectedIndex;
+	if(useCstB==1){
+		document.getElementById('DefaultActiveButtons').disabled=false;
+		document.getElementById('buttonColordDiv').style.display='inline';
+		document.getElementById('activeColordDiv').style.display='inline';
+		//document.getElementById('activeButtonTR').style.display='block';		
+	} else {
+		if(useCstB==2){
+			document.getElementById('buttonColordDiv').style.display='none';
+			document.getElementById('activeColordDiv').style.display='none';
+			$("#buttonColor").val('disabled');
+			$('#buttonColordDiv span.jPicker span.Icon span.Color').css({ backgroundColor: 'transparent' });
+			$('#buttonColordDiv span.jPicker span.Icon span.Image').css({ visibility: 'visible' });	
+			document.getElementById('DefaultActiveButtons').selectedIndex=0;
+			document.getElementById('DefaultActiveButtons').disabled=true;			
+		} else {
+			document.getElementById('DefaultActiveButtons').disabled=false;
+			document.getElementById('buttonColordDiv').style.display='none';
+			document.getElementById('activeColordDiv').style.display='none';
+			$("#buttonColor").val('');
+			$('#buttonColordDiv span.jPicker span.Icon span.Color').css({ backgroundColor: 'transparent' });
+			$('#buttonColordDiv span.jPicker span.Icon span.Image').css({ visibility: 'visible' });			
+		}
+		//$.jPicker.List[1].color.active.val('hex', 'e2ddcf', this);
+		//document.getElementById('activeButtonTR').style.display='none';
+	}
+
+	var useCstA=document.getElementById('DefaultActiveButtons').selectedIndex;
+	if(useCstA==1){
+		document.getElementById('activeColordDiv').style.display='inline';
+		//document.getElementById('activeButtonTR').style.display='block';
+		//alert($.jPicker.List[0].color.active.val())
+	} else {
+		document.getElementById('activeColordDiv').style.display='none';
+		$("#activeColor").val('');
+		$('#activeColordDiv span.jPicker span.Icon span.Color').css({ backgroundColor: 'transparent' });
+		$('#activeColordDiv span.jPicker span.Icon span.Image').css({ visibility: 'visible' });
+		//alert($.jPicker.List[0].color.active.val())
+	}
+	
+	var bColr = document.getElementById('buttonColor').value.replace("#","");
+	var hColr = $("#activeColor").val().replace("#","");
+	if(hColr=='' && bColr==''){ hColr='E4E4E4'; }
+	if(bColr==''){ bColr='DBDBDB';document.getElementById('buttonColor').value='DBDBDB'; }
+	
+	
+
+	$("#buttonpreviews").attr("href", "../../client_files/ultra-custom-button.css.php?id=previewtable&hex="+bColr+"&hex2="+hColr);
+}
+
+$(document).ready(
+	function(){
+		
+		$('.tfield_hex').jPicker({
+			window:{
+
+				expandable: true,
+				position:{
+					x: '0', // acceptable values "left", "center", "right",
+					y: '70', // acceptable values "top", "bottom", "center", or relative px
+				}
+			
+			},
+			images:{
+				clientPath: '../includes/jPicker/images/', // Path to image files
+			}
+	},
+	
+	function(color, context)
+	{
+		var all = color.val('all');
+
+		if(all==null){
+			document.getElementById(this.id).value='transparent';
+		} else {
+			document.getElementById(this.id).value='#'+all.hex;
+		}
+		//alert(this.id);
+		//alert($("#buttonColor").val());
+		if(this.id=='buttonColor' || this.id=='activeColor'){
+			var bColr = $("#buttonColor").val().replace("#","");
+			var hColr = $("#activeColor").val().replace("#","");
+			if(bColr=='transparent'){ bColr='';$("#DefaultButtons").val('0');toggleCustButtons(); }
+			if(hColr=='transparent'){ hColr='';$("#DefaultActiveButtons").val('0');toggleCustButtons(); }			
+			$("#buttonpreviews").attr("href", "../../client_files/ultra-custom-button.css.php?id=previewtable&hex="+bColr+"&hex2="+hColr);
+		}
+	});
+	
+});
+</script>
 
 <table id="tab2-content" border="0" cellspacing="0" cellpadding="5" class="feature_sub tab_content" style="display: none;">
  <tr>
@@ -1340,6 +1527,8 @@ function subAllForms(disForm){
 if(isset($_REQUEST['showTab']) && $_REQUEST['showTab'] == "tab2"){
    echo $msg;
 }
+
+
 
 
 /*---------------------------------------------------------------------------------------------------------*
@@ -1377,7 +1566,7 @@ if ( findin_template("_userimg") ) {
       <form id="template1" name="template1" method="post" action="site_templates.php">
       <input type="hidden" name="action" value="head_slogan">
       <input type="hidden" name="showTab" value="tab2">
-         <table width="685"  border="0" cellspacing="0" cellpadding="0" class="feature_sub" style="border-bottom: 0px; margin-top: 5px;">
+         <table width="685"  border="0" cellspacing="0" cellpadding="0" class="feature_sub" style="border-bottom: 0px; margin-top: 8px;">
           <tr>
            <td class="fsub_title"><?php echo lang("Website Title & Slogan"); ?></td>
            <td align="right" class="fsub_title">
@@ -1428,7 +1617,7 @@ if ( findin_template("_userimg") ) {
          <input type="hidden" name="MAX_FILE_SIZE" value="3000000">
          <input type="hidden" name="action" value="upload_logo">
          <input type="hidden" name="showTab" value="tab2">
-         <table width="685"  border="0" cellpadding="5" cellspacing="0" class="feature_sub" style="border-bottom: 1px;">
+         <table width="685"  border="0" cellpadding="5" cellspacing="0" class="feature_sub" style="margin-top:8px;border-bottom: 1px;">
           <tr>
            <td class="fsub_title">
    <?php echo lang("Website Logo Image"); ?>
@@ -1495,11 +1684,11 @@ if ( findin_template("_userimg") ) {
                if($origH > 100){
                   $origH = 100;
 			}
-               echo "   <img id=\"daImage\" style=\"padding: 10px; border: 1px solid #666666; width:".$origW."px; height:".$origH."px;\" src=\"http://".$this_ip."/images/".$df_logo."\">\n";
-               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\"><img id=\"daImagehidden\" src=\"http://".$this_ip."/images/".$df_logo."\"></div>\n";
+               echo "   <img id=\"daImage\" style=\"padding: 10px; border: 1px solid #666666; width:".$origW."px; height:".$origH."px;\" src=\"".httpvar().$this_ip."/images/".$df_logo."\">\n";
+               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\"><img id=\"daImagehidden\" src=\"".httpvar().$this_ip."/images/".$df_logo."\"></div>\n";
             }else{
-               echo "   <img id=\"daImage\" style=\"padding: 10px; border: 1px solid #666666;\" src=\"http://".$this_ip."/sohoadmin/program/modules/spacer.gif\" width=\"150\" height=\"100\">\n";
-               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\"><img id=\"daImagehidden\" src=\"http://".$this_ip."/sohoadmin/program/modules/spacer.gif\"></div>\n";
+               echo "   <img id=\"daImage\" style=\"padding: 10px; border: 1px solid #666666;\" src=\"".httpvar().$this_ip."/sohoadmin/program/modules/spacer.gif\" width=\"150\" height=\"100\">\n";
+               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\"><img id=\"daImagehidden\" src=\"".httpvar().$this_ip."/sohoadmin/program/modules/spacer.gif\"></div>\n";
             }
             ?>
 
@@ -1513,7 +1702,7 @@ if ( findin_template("_userimg") ) {
          <form id="template3" name="template3" method="post" action="site_templates.php">
          <input type="hidden" name="action" value="business">
          <input type="hidden" name="showTab" value="tab2">
-            <table width="685"  border="0" cellpadding="5" cellspacing="0" class="feature_sub" style="border-bottom: 0px;">
+            <table width="685"  border="0" cellpadding="5" cellspacing="0" class="feature_sub" style="margin-top:8px;border-bottom: 0px;">
              <tr>
               <td class="fsub_title">
       <?php echo lang("Business Information"); ?>
@@ -1606,6 +1795,107 @@ if ( findin_template("_userimg") ) {
   
 
 
+      <form id="buttonColorfrm" name="buttonColorfrm" method="post" action="site_templates.php">
+      <input type="hidden" name="action" value="button_preference">
+      <input type="hidden" name="showTab" value="tab2">
+         <table width="685"  border="0" cellspacing="0" cellpadding="0" class="feature_sub" style="border-bottom: 0px; margin-top: 5px;">
+          <tr>
+           <td class="fsub_title"><?php echo lang("Website Buttons"); ?></td>
+           <td align="right" class="fsub_title">
+            <button type="button" class="greenButton" onclick="subAllForms('#buttonColorfrm');"><span><span><?php echo lang("Save"); ?></span></span></button>
+           </td>
+          </tr>
+         </table>
+        
+
+
+<?php
+####################################################################
+### Button COLORS
+####################################################################
+$BUTTON_DISPLAY = "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" width=\"685\"  class=\"feature_sub colorz\" >\n";
+$BUTTON_DISPLAY .= "    <tr style=\"height:33px;\">\n";
+$BUTTON_DISPLAY .= "     <td align=\"left\" valign=\"top\" style=\"width:85px;white-space:nowrap;\">\n";
+$BUTTON_DISPLAY .= "      ".lang("Button Color").":\n";
+$BUTTON_DISPLAY .= "     </td>\n";
+$BUTTON_DISPLAY .= "     <td align=\"left\" valign=\"middle\" id=\"buttonPickerTD\" >\n";
+
+$BUTTON_DISPLAY .= "	<select id=\"DefaultButtons\" name=\"buttons[DefaultButtons]\" class=\"text\" style=\"vertical-align:middle;\" ONCHANGE=\"toggleCustButtons();\">\n";
+
+if($buttons['buttonColor']==''){
+	$BUTTON_DISPLAY .= "		<option value=\"default\" selected=\"selected\">".lang('Automatic')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"custom\">".lang('Custom')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"disabled\">".lang('Disabled')."</option>\n";
+	$buttonDivS='none';
+	$buttonTRS='none';
+	//$buttons['buttonColor']='#DBDBDB';
+	
+}elseif($buttons['buttonColor']=='disabled'){
+	$BUTTON_DISPLAY .= "		<option value=\"default\">".lang('Automatic')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"custom\" >".lang('Custom')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"disabled\" selected=\"selected\">".lang('Disabled')."</option>\n";
+	$buttonDivS='none';
+	$buttonTRS='none';	
+} else {
+	$BUTTON_DISPLAY .= "		<option value=\"default\">".lang('Automatic')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"custom\" selected=\"selected\">".lang('Custom')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"disabled\">".lang('Disabled')."</option>\n";
+	$buttonDivS='inline';
+	$buttonTRS='block';
+}
+$BUTTON_DISPLAY .= "	</select>\n\n";
+
+$BUTTON_DISPLAY .= "	<div id=\"buttonColordDiv\" style=\"text-align:left;padding:0px;margin:0px;display:".$buttonDivS.";\">\n";
+$BUTTON_DISPLAY .= "      <input type=\"text\" name=\"buttons[buttonColor]\" id=\"buttonColor\" value=\"".$buttons['buttonColor']."\" class=\"tfield_hex\">\n\n\n";
+$BUTTON_DISPLAY .= "	</div>\n";
+//$BUTTON_DISPLAY .= "      <input type=\"radio\" name=\"DefaultButtons\" value=\"default\" checked />\n";
+//$BUTTON_DISPLAY .= "      <input type=\"radio\" name=\"DefaultButtons\" value=\"custom\" />\n";
+//$BUTTON_DISPLAY .= "      <input id=\"resetButtonColor\" type=\"checkbox\"/>\n\n\n";
+
+$BUTTON_DISPLAY .= "     </td>\n";
+$BUTTON_DISPLAY .= "     <td id=\"previewtable\" align=\"center\" valign=\"middle\" style=\"vertical-align:middle;text-align:center;\" rowspan=\"2\">\n";
+$BUTTON_DISPLAY .= "      <input type=\"button\" class=\"text\" value=\"".lang("Button Preview")."\">\n";
+$BUTTON_DISPLAY .= "     </td>\n";
+
+$BUTTON_DISPLAY .= "    </tr>\n\n";
+
+$BUTTON_DISPLAY .= "    <tr style=\"height:33px;\">\n";
+$BUTTON_DISPLAY .= "     <td align=\"left\" valign=\"top\" style=\"margin-bottom:5px;width:85px;white-space:nowrap;\">\n";
+$BUTTON_DISPLAY .= "      ".lang("Hover Color").":\n";
+$BUTTON_DISPLAY .= "     </td>\n";
+$BUTTON_DISPLAY .= "     <td align=\"left\" valign=\"middle\"  >\n";
+if($buttons['buttonColor']=='disabled'){
+	$BUTTON_DISPLAY .= "	<select id=\"DefaultActiveButtons\" name=\"buttons[DefaultActiveButtons]\" class=\"text\" style=\"vertical-align:middle;\" ONCHANGE=\"toggleCustButtons();\" disabled>\n";
+} else {
+	$BUTTON_DISPLAY .= "	<select id=\"DefaultActiveButtons\" name=\"buttons[DefaultActiveButtons]\" class=\"text\" style=\"vertical-align:middle;\" ONCHANGE=\"toggleCustButtons();\">\n";
+}
+if($buttons['activeColor']==''){
+	$BUTTON_DISPLAY .= "		<option value=\"default\" selected=\"selected\">".lang('Automatic')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"custom\">".lang('Custom')."</option>\n";
+	$buttonDivS='none';
+	$buttonTRS='none';
+} else {
+	$BUTTON_DISPLAY .= "		<option value=\"default\">".lang('Automatic')."</option>\n";
+	$BUTTON_DISPLAY .= "		<option value=\"custom\" selected=\"selected\">".lang('Custom')."</option>\n";
+	$buttonDivS='inline';
+	$buttonTRS='block';
+}
+$BUTTON_DISPLAY .= "	</select>\n\n";
+
+$BUTTON_DISPLAY .= "	<div id=\"activeColordDiv\" style=\"padding:0px;margin:0px;display:".$buttonDivS.";\">\n";
+$BUTTON_DISPLAY .= "      	<input type=\"text\" name=\"buttons[activeColor]\" id=\"activeColor\" value=\"".$buttons['activeColor']."\" class=\"tfield_hex\">\n\n\n";
+$BUTTON_DISPLAY .= "	</div>\n";
+$BUTTON_DISPLAY .= "     </td>\n";
+$BUTTON_DISPLAY .= "    </tr>\n\n";
+
+$BUTTON_DISPLAY .= "   </table>\n\n";
+echo $BUTTON_DISPLAY;
+?>
+
+
+      
+      </form>
+      
 
       <form id="waptemplate" name="waptemplate" method="post" action="site_templates.php">
       <input type="hidden" name="action" value="wap_preference">
@@ -1621,7 +1911,7 @@ if ( findin_template("_userimg") ) {
          <table width="685"  border="0" cellpadding="5" cellspacing="0" class="feature_sub">
           <tr>
            <td colspan=2>
-            <?php echo lang("Use 'mobile-device optimized template' for visitors viewing the site from a mobile device?"); ?>
+            <?php echo lang("Select template for visitors viewing the site from a mobile device").":"; ?>
            </td>
           </tr>
           <tr>
@@ -1630,15 +1920,19 @@ if ( findin_template("_userimg") ) {
 <?php
 
 
-$wapsetting = new userdata('wap_template');
+
+echo "			<OPTION value=\"\">".lang("Use Normal Template")."</OPTION>\n";
+if ('Responsive-Vertical_Foundation-none' == $waptemplate) { $isSelmob = " selected"; } else { $isSelmob = ""; }
+echo "			<OPTION value=\"Responsive-Vertical_Foundation-none\" ".$isSelmob.">RESPONSIVE &gt; Vertical Foundation&nbsp;(".lang("recommended").")</OPTION>\n";
+echo $SELECT_OPTS_Mobile;
 //$wapsetting->set('template', 'WAP-minimal-none') ;
-if($wapsetting->get('template') != ''){
-	echo "			<OPTION value=\"no\">No</OPTION>\n";
-	echo "			<OPTION value=\"yes\" SELECTED>Yes</OPTION>\n";
-} else {
-	echo "			<OPTION value=\"no\" SELECTED>No</OPTION>\n";
-	echo "			<OPTION value=\"yes\">Yes</OPTION>\n";
-}
+//if($wapsetting->get('template') != ''){
+//	echo "			<OPTION value=\"\">Normal Template</OPTION>\n";
+//	echo "			<OPTION value=\"yes\" SELECTED>Yes</OPTION>\n";
+//} else {
+//	echo "			<OPTION value=\"no\" SELECTED>No</OPTION>\n";
+//	echo "			<OPTION value=\"yes\">Yes</OPTION>\n";
+//}
 ?>
 			</select>
            </td>
@@ -1653,7 +1947,7 @@ if($wapsetting->get('template') != ''){
          <input type="hidden" name="MAX_FILE_SIZE" value="3000000">
          <input type="hidden" name="action" value="upload_logo">
          <input type="hidden" name="showTab" value="tab2">
-         <table width="685"  border="0" cellpadding="5" cellspacing="0" class="feature_sub" style="border-bottom: 1px;">
+         <table width="685"  border="0" cellpadding="5" cellspacing="0" class="feature_sub" style="margin-top:8px;border-bottom: 1px;">
           <tr>
            <td class="fsub_title">
    <?php echo lang("Website Favicon Image"); ?>
@@ -1721,12 +2015,12 @@ if($wapsetting->get('template') != ''){
                   $origH = 32;                  
                }
 
-               echo "   <img id=\"daFavicon\" style=\"width: ".$origW."px; height: ".$origH."px; padding: 0px; border: 0px solid #666666;\" src=\"http://".$this_ip."/".$df_favicon."\">\n";
-               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\" id=\"daFaviconDiv\"><img id=\"daFaviconhidden\" src=\"http://".$this_ip."/".$df_favicon."\"></div>\n";
+               echo "   <img id=\"daFavicon\" style=\"width: ".$origW."px; height: ".$origH."px; padding: 0px; border: 0px solid #666666;\" src=\"".httpvar().$this_ip."/".$df_favicon."\">\n";
+               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\" id=\"daFaviconDiv\"><img id=\"daFaviconhidden\" src=\"".httpvar().$this_ip."/".$df_favicon."\"></div>\n";
                
             }else{
-               echo "   <img id=\"daFavicon\" style=\"padding: 0px; border: 0px solid #666666;\" src=\"http://".$this_ip."/sohoadmin/program/modules/spacer.gif\">\n";
-               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\" id=\"daFaviconDiv\"><img id=\"daFaviconhidden\" src=\"http://".$this_ip."/sohoadmin/program/modules/spacer.gif\"></div>\n";                              
+               echo "   <img id=\"daFavicon\" style=\"padding: 0px; border: 0px solid #666666;\" src=\"".httpvar().$this_ip."/sohoadmin/program/modules/spacer.gif\">\n";
+               echo "   <div style=\"position: absolute; z-index: -999; top:-99999px; left:-99999px; width:1500px; height:1500px;\" id=\"daFaviconDiv\"><img id=\"daFaviconhidden\" src=\"".httpvar().$this_ip."/sohoadmin/program/modules/spacer.gif\"></div>\n";                              
             }
             ?>
 
@@ -1818,12 +2112,20 @@ echo "<script language=\"javascript\">\n";
 echo "show_hide_layer('Layer1','','hide','userOpsLayer','','show');\n";
 
 echo "   show_template('".$CUR_TEMPLATE."')\n";
-
 if(isset($_REQUEST['showTab'])){
-   echo "   showid('".$_REQUEST['showTab']."-content')\n";
-   echo "   hideid('tab1-content')\n";
-   echo "   setClass('layout_".$_REQUEST['showTab']."', 'tab-on')\n";
-   echo "   setClass('layout_tab1', 'tab-off')\n";
+	echo "function timeout_trigger() {\n";
+	echo "   showid('".$_REQUEST['showTab']."-content')\n";
+	echo "   hideid('tab1-content')\n";
+	echo "   setClass('layout_".$_REQUEST['showTab']."', 'tab-on')\n";
+	echo "   setClass('layout_tab1', 'tab-off')\n";
+	echo "}\n";
+
+	echo "function timeout_init() {\n";
+	echo "    setTimeout('timeout_trigger()', 100);\n";
+	echo "}\n";
+
+	echo "timeout_init();\n";
+
 }
 
 //# TESTING: Force default to Settings tab

@@ -129,7 +129,7 @@ function e_back(a) {
       echo "<u><b>".lang("Preferences")."</b></u><br/>\n";
       echo "<b>".lang("Preserve line breaks in event details/description popup")."?</b>\n";
       ?>
-      <select id="preserve_breaks" name="preserve_breaks" onchange="document.location.href='display_settings.php?preserve_breaks='+this.value">
+      <select id="preserve_breaks" name="preserve_breaks" onchange="document.location.href='cal_display_settings.php?preserve_breaks='+this.value">
        <option value="no" selected><? echo lang("No"); ?> (default)</option>
        <option value="yes"><? echo lang("Yes"); ?></option>
       </select>

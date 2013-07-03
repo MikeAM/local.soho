@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -33,7 +33,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 session_start();
-include_once($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 include_once("_forms_manager_functions.inc.php");
 
 $test=range(0, 10);

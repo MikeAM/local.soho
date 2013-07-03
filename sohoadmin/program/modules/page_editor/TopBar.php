@@ -1,5 +1,41 @@
+<?php
+error_reporting('341');
+if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
-<link rel="stylesheet" href="http://ultra.soholaunch.com/sohoadmin/program/includes/product_buttons-ultra.css">
+
+###############################################################################
+## Soholaunch(R) Site Management Tool
+## Version 4.5
+##      
+## Author: 			Mike Johnston [mike.johnston@soholaunch.com]                 
+## Homepage:	 	http://www.soholaunch.com
+## Bug Reports: 	http://bugzilla.soholaunch.com
+## Release Notes:	sohoadmin/build.dat.php
+###############################################################################
+
+##############################################################################
+## COPYRIGHT NOTICE                                                     
+## Copyright 1999-2006 Soholaunch.com, Inc. and Mike Johnston  
+##                                                                        
+## This script may be used and modified in accordance to the license      
+## agreement attached (license.txt) except where expressly noted within      
+## commented areas of the code body. This copyright notice and the comments  
+## comments above and below must remain intact at all times.  By using this 
+## code you agree to indemnify Soholaunch.com, Inc, its coporate agents   
+## and affiliates from any liability that might arise from its use.                                                        
+##                                                                           
+## Selling the code for this program without prior written consent is       
+## expressly forbidden and in violation of Domestic and International 
+## copyright laws.  		                                           
+###############################################################################
+$curdir = getcwd();
+chdir(str_replace(basename(__FILE__), '', __FILE__));
+require_once('../../includes/product_gui.php');
+chdir($curdir);
+
+
+echo "<link rel=\"stylesheet\" href=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/product_buttons-ultra.css\">\n";
+?>
 <script language="JavaScript">
 
 function killErrors() {
@@ -74,7 +110,8 @@ function open_new_window(theURL,winName,features) {
 }
 
 function viewsite() {
-	open_new_window('http://ultra.soholaunch.com/index.php?nosessionkill=1','VIEWSITE','width=780,height=450, scrollbars=yes,resizable=yes,toolbar=yes');
+
+<?php echo "	open_new_window('".httpvar().$_SESSION['docroot_url']."/index.php?nosessionkill=1','VIEWSITE','width=780,height=450, scrollbars=yes,resizable=yes,toolbar=yes');\n"; ?>
 }
 
 function page_properties() {
@@ -460,7 +497,7 @@ alert(saveText);
 								}
 							}
                    saveText = saveText+"<TEXTAREA NAME=R10C3 STYLE=display: none>"+tempValue+"</TEXTAREA>";
-            saveText = saveText+"<input type=hidden name=redirect value="+redirect+"><input type=hidden name=serial_number value=''><input type=hidden name=dot_com value='ultra.soholaunch.com'>";
+            saveText = saveText+"<input type=hidden name=redirect value="+redirect+"><input type=hidden name=serial_number value=''><input type=hidden name=dot_com value='<?php echo $_SESSION['docroot_url']; ?>'>";
 		
    		//parent.body.saveForm.innerHTML = saveText;			// Finalize "Save Data"
    		SendSaveText(saveText);			// Finalize "Save Data"
@@ -815,7 +852,7 @@ alert(saveText);
 								}
 							}
                  saveText = saveText+"<TEXTAREA NAME=R10C3 STYLE=display: none>"+tempValue+"</TEXTAREA>";
-            saveText = saveText+"<input type=hidden name=redirect value="+redirect+"><input type=hidden name=serial_number value=''><input type=hidden name=dot_com value='ultra.soholaunch.com'>";
+            saveText = saveText+"<input type=hidden name=redirect value="+redirect+"><input type=hidden name=serial_number value=''><input type=hidden name=dot_com value='<?php echo $_SESSION['docroot_url']; ?>'>";
 
 		document.getElementById('saveForm.innerHTML = saveText;			// Finalize "Save Data"
 		document.getElementById('save.submit();							// Save current Page
@@ -839,7 +876,7 @@ alert(saveText);
 </SCRIPT>
 
 <!------------------------PAGE_EDITOR_LAYER------------------------>
-<div  background="http://<?php echo $_SESSION['docroot_url']; ?>/sohoadmin/program/includes/images/top-bg.png" style="height:36px;position:relative; visibility: visible; display:block;margin: 0px; vertical-align: top;z-index:999999;">
+<div  background="<?php echo httpvar().$_SESSION['docroot_url']; ?>/sohoadmin/program/includes/images/top-bg.png" style="height:36px;position:relative; visibility: visible; display:block;margin: 0px; vertical-align: top;z-index:999999;">
  <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
    <td align="left" valign="top" style="padding-top: 5px;">

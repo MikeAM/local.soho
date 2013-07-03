@@ -254,7 +254,7 @@ if ($_POST['action'] == "update") {
 	if($CUR_TEMPLATE == 'include') {
 		$nft= '';
 	} else {
-		$nft = '&nft=../../../../program/modules/super_search/search_template';
+		$nft = '&nft=blank_template';
 	}
 	
 	while ($row = mysql_fetch_array($numresults)) {

@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
@@ -32,8 +33,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## copyright laws.
 ###############################################################################
 
-
-error_reporting(E_PARSE);
 session_start();
 
 if ( $_SESSION['ORDER_NUMBER'] == '' && $_SESSION['final_display_reload'] != '') {
@@ -42,10 +41,10 @@ if ( $_SESSION['ORDER_NUMBER'] == '' && $_SESSION['final_display_reload'] != '')
 }
 
 # Include config script
-include("pgm-cart_config.php");
+include_once("pgm-cart_config.php");
 
-include('pull-policies.inc.php');
-
+include_once('pull-policies.inc.php');
+error_reporting('341');
 
 foreach($_REQUEST as $name=>$value){
 	${$name} = $value;
@@ -163,7 +162,7 @@ $form_order_date = date("m/d/Y");
 						$form_x_of_total = $xf + 1;
 						$formstuffs['FORM_NUMBER'] = $form_x_of_total." of ".$fcount;
 						$formstuffs['PURCHASER'] = $_SESSION['BFIRSTNAME']." ".$_SESSION['BLASTNAME'];
-            $formstuffs['ORDER_DATE'] = $form_order_date;
+            				$formstuffs['ORDER_DATE'] = $form_order_date;
 
 						$frminsrt = new mysql_insert($TABLE_NAME, $formstuffs);
 
@@ -221,8 +220,8 @@ if ($OFFLINE_FLAG == "1") {				// This is being processed as an offline cc trans
 
 	//echo $VERIFY_CCNUM_CLASS;
 
-	include("prod_validate.class.inc.php");
-
+	include_once("prod_validate.class.inc.php");
+error_reporting('341');
 	$Form = new CreditCardValidationSolution;
 //   echo "<br>\$Form->CCVSNumber = {$VERIFY_CCNUM_CLASS}<br>";
    $Form->CCVSNumber = $VERIFY_CCNUM_CLASS;
@@ -240,7 +239,7 @@ if ($OFFLINE_FLAG == "1") {				// This is being processed as an offline cc trans
       	echo "<CENTER><FONT COLOR=WHITE FACE=VERDANA><H3>$err_code</H3></FONT>\n\n";
 		echo "<TABLE BORDER=0 CELLPADDING=5 CELLSPACING=0 WIDTH=600 ALIGN=CENTER><TR><TD align=center valign=top>\n\n";
 
-		include("prod_offline_card.inc");
+		include_once("prod_offline_card.inc");
 
 		echo "</TD></TR></TABLE>\n";
 		echo "</BODY></HTML>\n";
@@ -281,7 +280,7 @@ if ($OFFLINE_FLAG == "1") {				// This is being processed as an offline cc trans
 
 	# Count down the inventory for all products ordered
 	# and change display status if we have reached zero.
-	include("pgm-inventory.php");
+	include_once("pgm-inventory.php");
 
 	// -----------------------------------------------------------------------
 	// Pull Invoice HTML from invoice data table for display of final invoice
@@ -295,7 +294,7 @@ if ($OFFLINE_FLAG == "1") {				// This is being processed as an offline cc trans
 	// EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	//$ORDER_NUMBER = $ORDER_NUMBER;
-	include("pgm-email_notify.php");
+	include_once("pgm-email_notify.php");
 
 
 }
@@ -333,7 +332,7 @@ if ( $INNOVGATE_FLAG == "1" ) {				// This is being processed as an online cc tr
 	   	}
 	}
    	// Count down the inventory for all products; change display status if fully depleated (zero inv).
-   	include("pgm-inventory.php");
+   	include_once("pgm-inventory.php");
 
    	// Pull Invoice HTML from invoice data table for display of final invoice
    	// **************************************************************************
@@ -346,7 +345,7 @@ if ( $INNOVGATE_FLAG == "1" ) {				// This is being processed as an online cc tr
    	## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
    	## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
    	//$ORDER_NUMBER = $ORDER_NUMBER;
-   	include("pgm-email_notify.php");
+   	include_once("pgm-email_notify.php");
    	/*-----------*/
 
    } // End if transaction approved
@@ -392,7 +391,7 @@ if ( $_REQUEST['DPS_FLAG'] == "1" ) {				// This is being processed as an online
    	}
 
    	// Count down the inventory for all products; change display status if fully depleated (zero inv).
-   	include("pgm-inventory.php");
+   	include_once("pgm-inventory.php");
 
    	// Pull Invoice HTML from invoice data table for display of final invoice
    	// **************************************************************************
@@ -405,7 +404,7 @@ if ( $_REQUEST['DPS_FLAG'] == "1" ) {				// This is being processed as an online
    	## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
    	## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
    	//$ORDER_NUMBER = $ORDER_NUMBER;
-   	include("pgm-email_notify.php");
+   	include_once("pgm-email_notify.php");
    	/*-----------*/
 
 } // End processing DPS
@@ -437,7 +436,7 @@ if ( $EWAY_FLAG == "1" ) {				// This is being processed as an online cc transac
    	}
 
    	// Count down the inventory for all products; change display status if fully depleated (zero inv).
-   	include("pgm-inventory.php");
+   	include_once("pgm-inventory.php");
 
    	// Pull Invoice HTML from invoice data table for display of final invoice
    	// **************************************************************************
@@ -450,7 +449,7 @@ if ( $EWAY_FLAG == "1" ) {				// This is being processed as an online cc transac
    	## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
    	## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
    	//$ORDER_NUMBER = $ORDER_NUMBER;
-   	include("pgm-email_notify.php");
+   	include_once("pgm-email_notify.php");
    	/*-----------*/
 
 } // End processing eWay
@@ -489,7 +488,7 @@ if ( $PAYPOINT_FLAG == "1" ) {
       // Show Credit Card Processing Form
       ######################################################################################
 //      ob_start();
-//         include("prod_paypoint_card.inc");
+//         include_once("prod_paypoint_card.inc");
 //         $THIS_DISPLAY .= ob_get_contents();
 //      ob_end_clean();
    } else {
@@ -529,7 +528,7 @@ if ( $PAYPOINT_FLAG == "1" ) {
 
 
       // Count down the inventory for all products; change display status if fully depleated (zero inv).
-      include("pgm-inventory.php");
+      include_once("pgm-inventory.php");
 
 
 
@@ -542,7 +541,7 @@ if ( $PAYPOINT_FLAG == "1" ) {
 
       ## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
       ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      include("pgm-email_notify.php");
+      include_once("pgm-email_notify.php");
 
 
    } // End if transaction was approved/declined
@@ -590,7 +589,7 @@ if ( $AUTHORIZE_FLAG == "1" ) {
 //   //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //   $fsock_class = $_SESSION['docroot_path']."/sohoadmin/program/includes/remote_actions/class-fsockit.php";
 //   //echo "$fsock_class"; exit;
-//   if ( !include($fsock_class) ) {
+//   if ( !include_once($fsock_class) ) {
 //      echo "Error: Could not include socket class!";
 //      exit;
 //   }
@@ -635,12 +634,12 @@ if ( $AUTHORIZE_FLAG == "1" ) {
       // Show Credit Card Processing Form
       ######################################################################################
       ob_start();
-      if ( !include("prod_authorize_card.php") ) {
+      if ( !include_once("prod_authorize_card.php") ) {
          echo lang("Unable to include prod_authorize_card.php"); exit;
       }
       $THIS_DISPLAY .= ob_get_contents();
       ob_end_clean();
-
+error_reporting('341');
 
    } else {
 
@@ -682,7 +681,7 @@ if ( $AUTHORIZE_FLAG == "1" ) {
     }
 
       // Count down the inventory for all products; change display status if fully depleated (zero inv).
-      include("pgm-inventory.php");
+      include_once("pgm-inventory.php");
 
 
 
@@ -695,7 +694,7 @@ if ( $AUTHORIZE_FLAG == "1" ) {
 
       ## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
       ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      include("pgm-email_notify.php");
+      include_once("pgm-email_notify.php");
 
 
    } // End if transaction was approved/declined
@@ -703,6 +702,47 @@ if ( $AUTHORIZE_FLAG == "1" ) {
 
 } // End processing Authorize.net
 
+
+if ( $PAYPALPRO_FLAG == "1" ) {
+//	if ( $_SERVER['REMOTE_ADDR'] == '50.79.231.201' ) { echo '<p>'.__FILE__.':'.__LINE__.'</p>'; exit; }
+   /*----------------------------------------------------------------------------------------------------------*
+	PAYPAL PRO
+   /*----------------------------------------------------------------------------------------------------------*/
+
+      //echo "Update data table now<br>";
+      //echo testArray($scResult);
+
+      ## Build MySQL update
+      ##-----------------------------------------------------------------------------
+      $scStuff = "SET PAY_METHOD = 'PayPal Pro', TRANSACTION_ID = '', ";
+      $scStuff .= "CC_TYPE = '".$CC_TYPE."', CC_NUM = '".ccsafe($CC_NUM)."', ";
+      $scStuff .= "CC_DATE = '".$CC_MON."/".$CC_YEAR."', TRANSACTION_STATUS = 'Paid' ";
+      $scStuff .= "WHERE ORDER_NUMBER = '".$ORDER_NUMBER."'";
+
+		// Update cart_invoice table
+		//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+		if ( !mysql_query("UPDATE cart_invoice $scStuff") ) {
+		   echo lang("Could not update 'cart_invoice' table because")." ".mysql_error().".<br> ".lang("Please contact webmaster").".\n";
+		   exit;
+		}
+
+      // Count down the inventory for all products; change display status if fully depleated (zero inv).
+      include_once("pgm-inventory.php");
+
+
+      // Pull Invoice HTML from invoice data table for display of final invoice
+      // **************************************************************************
+      $result = mysql_query("SELECT INVOICE_HTML FROM cart_invoice WHERE ORDER_NUMBER = '$ORDER_NUMBER'");
+      $tmp = mysql_fetch_array($result);
+
+      $INVOICE = $tmp['INVOICE_HTML'];
+
+      ## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
+      ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      include_once("pgm-email_notify.php");
+
+
+} // End processing PayPalPro
 
 
 if ( $INTERNETSECURE_FLAG == "1" ) {
@@ -727,12 +767,12 @@ if ( $INTERNETSECURE_FLAG == "1" ) {
       // Show Credit Card Processing Form
       ######################################################################################
       ob_start();
-      if ( !include("prod_internetsecure_card.php") ) {
+      if ( !include_once("prod_internetsecure_card.php") ) {
          echo lang("Unable to include prod_internetsecure_card.php"); exit;
       }
       $THIS_DISPLAY .= ob_get_contents();
       ob_end_clean();
-
+error_reporting('341');
 
    } else {
 
@@ -774,7 +814,7 @@ if ( $INTERNETSECURE_FLAG == "1" ) {
 
 
       // Count down the inventory for all products; change display status if fully depleated (zero inv).
-      include("pgm-inventory.php");
+      include_once("pgm-inventory.php");
 
 
 
@@ -787,7 +827,7 @@ if ( $INTERNETSECURE_FLAG == "1" ) {
 
       ## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
       ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      include("pgm-email_notify.php");
+      include_once("pgm-email_notify.php");
 
 
    } // End if transaction was approved/declined
@@ -896,8 +936,8 @@ if ($PNREF != "" && $USER4 == "VERISIGN_GATEWAY") {		// We just identified this 
 	$_SESSION['CART_QTY'] = $USER6;
 	$_SESSION['CART_SKUNO'] = $USER7;
 
-	include("pgm-inventory.php");
-	include("pgm-email_notify.php");
+	include_once("pgm-inventory.php");
+	include_once("pgm-email_notify.php");
 
 } // End VeriSign Return
 
@@ -923,7 +963,7 @@ if ( isset($meth) && $meth == "eway" && $AUTH_CODE != '' ) {
 //	if ( $_SERVER['REMOTE_ADDR'] == '70.89.253.74' ) {echo '<p>'.basename(__FILE__).': '.__LINE__.'</p>'; exit; }
 	# for hackers
 	if ( $_REQUEST['AUTH_CODE'] != '' ) { echo 'Invalid eWay Authorization Code'; exit; }
-	if ( $_SERVER['REMOTE_ADDR'] == '70.89.253.74' ) {echo testArray($_POST).'['.$ORDER_NUMBER.']'; }
+	
 
 //  	$ORDER_NUMBER = $invoice;
 
@@ -938,8 +978,8 @@ if ( isset($meth) && $meth == "eway" && $AUTH_CODE != '' ) {
 //  	echo '<textarea>'.$INVOICE.'</textarea>';
 //  	if ( $_SERVER['REMOTE_ADDR'] == '70.89.253.74' ) {echo '<p>'.basename(__FILE__).': '.__LINE__.'</p>'; exit; }
 
-  	include("pgm-inventory.php");
-  	include("pgm-email_notify.php");
+  	include_once("pgm-inventory.php");
+  	include_once("pgm-email_notify.php");
 
 } // End if eway return
 
@@ -948,9 +988,7 @@ if ( isset($meth) && $meth == "eway" && $AUTH_CODE != '' ) {
 if ( isset($meth) && ($meth == "eway_uk_paid" || $meth == "eway_uk_cancelled") && $pporder != "" ) {
 
    if ( $meth == "eway_uk_paid" ) {
-   	if ( $_SERVER['REMOTE_ADDR'] == '70.89.253.74' ) {
-   		echo testArray($_REQUEST);
-   	}
+
    	
 	   if ( $cartpref->get('ewayuk_testmode') == 'on' ) {
 	   	$querystring="CustomerID=87654321&UserName=TestAccount&AccessPaymentCode=".$_REQUEST['AccessPaymentCode'];
@@ -1008,9 +1046,7 @@ if ( isset($meth) && ($meth == "eway_uk_paid" || $meth == "eway_uk_cancelled") &
 			$passed_ordernum = $_GET['ordercode'];
 		}
 		
-		if ( $_SERVER['REMOTE_ADDR'] == '70.89.253.74' ) {
-			echo testArray($responseArr);
-		}
+
 			
 		if ( $responseArr['trxnstatus'] == 'false' ) {
 			echo '<div style="width: 700px;margin: 10% auto;paddding: 15px;backgrond-color: #ffdbdb;border: 2px solid #ff0000;text-align: center;">';
@@ -1027,8 +1063,8 @@ if ( isset($meth) && ($meth == "eway_uk_paid" || $meth == "eway_uk_cancelled") &
 	   	$result = mysql_query($qryStr);
 	//   	echo $qryStr.'<br/>['.mysql_num_rows($result).']';
 	   	$tmp = mysql_fetch_array($result);
-	   	include("pgm-inventory.php");
-	   	include("pgm-email_notify.php");
+	   	include_once("pgm-inventory.php");
+	   	include_once("pgm-email_notify.php");
 	   }
 
 
@@ -1060,6 +1096,13 @@ $ORDER_NUMBER = $_REQUEST['merchant_ref'];
 
    if ( $_REQUEST['ec'] == "0" ) {
 
+	$get_invoicestatus=mysql_query("select TRANSACTION_STATUS from cart_invoice where ORDER_NUMBER = '$ORDER_NUMBER' limit 1");
+	$pays_rez=mysql_fetch_assoc($get_invoicestatus);
+	if($pays_rez['TRANSACTION_STATUS']=='Paid'){
+		header("Location: ../index.php");
+		exit;
+	}
+
    	mysql_query("UPDATE cart_invoice SET PAY_METHOD = 'Paystation', TRANSACTION_STATUS = 'Paid' WHERE ORDER_NUMBER = '$ORDER_NUMBER'");
 
    	// -----------------------------------------------------------------------
@@ -1073,12 +1116,12 @@ $ORDER_NUMBER = $_REQUEST['merchant_ref'];
 
    	// Count down the inventory for all products ordered and change display status
    	// if we have reached zero.
-   	include("pgm-inventory.php");
+   	include_once("pgm-inventory.php");
 
    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    	// EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   	include("pgm-email_notify.php");
+   	include_once("pgm-email_notify.php");
 
 
    } else {
@@ -1132,12 +1175,12 @@ if ( isset($meth) && $meth == "paypro" ) {
 
    	// Count down the inventory for all products ordered and change display status
    	// if we have reached zero.
-   	include("pgm-inventory.php");
+   	include_once("pgm-inventory.php");
 
    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    	// EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   	include("pgm-email_notify.php");
+   	include_once("pgm-email_notify.php");
 
 
    } else {
@@ -1171,9 +1214,9 @@ if ( $_REQUEST['todo'] == 'transactium_success' ) {
 
  	$INVOICE = $tmp['INVOICE_HTML'];
 
- 	include("pgm-inventory.php");
+ 	include_once("pgm-inventory.php");
 	$cust_email = $tmp['BILLTO_EMAILADDR'];
- 	include("pgm-email_notify.php");
+ 	include_once("pgm-email_notify.php");
 }
 
 
@@ -1218,12 +1261,12 @@ if ( isset($meth) && $meth == "paypal" && $pporder != "" ) {
 
    	// Count down the inventory for all products ordered and change display status
    	// if we have reached zero.
-   	include("pgm-inventory.php");
+   	include_once("pgm-inventory.php");
 		$cust_email = $tmp['BILLTO_EMAILADDR'];
    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    	// EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
    	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   	include("pgm-email_notify.php");
+   	include_once("pgm-email_notify.php");
 
 
    } else {
@@ -1253,7 +1296,7 @@ eval(hook("pgm-show_invoice.php:gateway_catch"));
 ##############################################################################
 // CUSTOM PHP INCLUDE RETURN
 ##############################################################################
-if ( $EWAY_FLAG != 1 && $nochex_return != 1 && $AUTHORIZE_FLAG != 1 && $PAYPOINT_FLAG != 1 && $VERISIGN_CONFIRM != 1 && $OFFLINE_FLAG != 1 && $pporder == "" && $INNOVGATE_FLAG != "1" && $PAYPRO_FLAG != "1" && $DPS_FLAG != "1" && $PAYSTATION_FLAG != 1) {		// This must be a gateway include return huh?
+if ( $PAYPALPRO_FLAG != 1 && $EWAY_FLAG != 1 && $nochex_return != 1 && $AUTHORIZE_FLAG != 1 && $PAYPOINT_FLAG != 1 && $VERISIGN_CONFIRM != 1 && $OFFLINE_FLAG != 1 && $pporder == "" && $INNOVGATE_FLAG != "1" && $PAYPRO_FLAG != "1" && $DPS_FLAG != "1" && $PAYSTATION_FLAG != 1) {		// This must be a gateway include return huh?
 
 	// Update Transaction ID and Status
 	// ---------------------------------
@@ -1268,7 +1311,10 @@ if ( $EWAY_FLAG != 1 && $nochex_return != 1 && $AUTHORIZE_FLAG != 1 && $PAYPOINT
 		$QSTAR_WRITE = "";
 
 	}
-
+	if(($OPTIONS['PAYMENT_INCLUDE']=='' && $PAY_METHOD=='') || $ORDER_NUMBER==''){
+		header("Location: start.php");
+		exit;
+	}
 	mysql_query("UPDATE cart_invoice SET
 		TRANSACTION_ID = '$TRANSACTION_ID $QSTAR_WRITE',
 		TRANSACTION_STATUS = 'Closed',
@@ -1286,14 +1332,14 @@ if ( $EWAY_FLAG != 1 && $nochex_return != 1 && $AUTHORIZE_FLAG != 1 && $PAYPOINT
 	// Count down the inventory for all products ordered and change display status
 	// if we have reached zero.
 
-	include("pgm-inventory.php");
+	include_once("pgm-inventory.php");
 
 } // End gateway include return
 
 
 if($nochex_return == 1){
       // Count down the inventory for all products; change display status if fully depleated (zero inv).
-      include("pgm-inventory.php");
+      include_once("pgm-inventory.php");
       // Pull Invoice HTML from invoice data table for display of final invoice
       // **************************************************************************
       $result = mysql_query("SELECT INVOICE_HTML FROM cart_invoice WHERE ORDER_NUMBER = '$ORDER_NUMBER'");
@@ -1303,7 +1349,7 @@ if($nochex_return == 1){
 
       ## EMAIL APPROPRIATE RECIEPTS TO CUSTOMER AND WEBMASTER
       ##<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      include("pgm-email_notify.php");			
+      include_once("pgm-email_notify.php");			
 }
 
 ############################################################################################################################################################
@@ -1359,7 +1405,7 @@ $DISPLAY_HEADER .= "<BR><DIV ALIGN=RIGHT><FONT SIZE=1 FACE=ARIAL class=text><A h
 $THIS_DISPLAY = "";
 $THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text>\n";
 $THIS_DISPLAY .= "<TR><TD ALIGN=LEFT VALIGN=TOP class=text WIDTH=50%>\n";
-
+if($OPTIONS[BIZ_PAYABLE]!=''){
 	$THIS_DISPLAY .= "$OPTIONS[BIZ_PAYABLE]<BR>\n";
 	$THIS_DISPLAY .= "$OPTIONS[BIZ_ADDRESS_1]<BR>\n";
 		if ($OPTIONS[BIZ_ADDRESS_2] != "") {
@@ -1367,7 +1413,7 @@ $THIS_DISPLAY .= "<TR><TD ALIGN=LEFT VALIGN=TOP class=text WIDTH=50%>\n";
 		}
 	$THIS_DISPLAY .= "$OPTIONS[BIZ_CITY], $OPTIONS[BIZ_STATE]  $OPTIONS[BIZ_POSTALCODE]<BR>\n";
 	$THIS_DISPLAY .= "$OPTIONS[BIZ_PHONE]</FONT>\n";
-
+}
 $THIS_DISPLAY .= "</TD><TD ALIGN=LEFT VALIGN=TOP class=text WIDTH=50%>\n";
 
 $THIS_DISPLAY .= "<BR><B>".lang("Order Date")."</B>: <font size=3><TT>$ORDER_DATE &nbsp;&nbsp;$ORDER_TIME</TT></FONT>\n";
@@ -1413,11 +1459,11 @@ $THIS_DISPLAY .= "</TD></TR></TABLE><BR>\n";
 // use such as statistics reporting of sku data, etc... Tons of
 // flexibility here.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+error_reporting('341');
 if ($OPTIONS['INVOICE_INCLUDE'] != "" && $disOrder != "Cancelled" ) {
 
 	ob_start();
-		include("../media/".$OPTIONS['INVOICE_INCLUDE']);
+		include_once("../media/".$OPTIONS['INVOICE_INCLUDE']);
 		$THIS_DISPLAY .= ob_get_contents();
 	ob_end_clean();
 
@@ -1490,6 +1536,129 @@ if ($OFFLINE_FLAG == "1") {
 	$THIS_DISPLAY .= "<BR>$CC_MON/$CC_YEAR<BR><BR>\n\n";
 	$THIS_DISPLAY .= "</TD>\n\n";
 
+}
+
+
+error_reporting('341');
+if($disOrder != "Cancelled" && $_SESSION['CART_KEYID']!=''){
+	$regform_signup = '';
+	$kartkeys = explode(';',$_SESSION['CART_KEYID']);
+	$usrsng = " where";
+	foreach($kartkeys as $kval){
+		$kval=preg_replace('/[^0-9]/','',$kval);
+		$usrsng .= " product_id='".$kval."' or";
+	}
+	$usrsng = preg_replace('/ or$/','',$usrsng);
+	$find_secstuffq = mysql_query("select * from cart_products_usersignup ".$usrsng);
+	if(mysql_num_rows($find_secstuffq) > 0){
+		while($find_secstuff = mysql_fetch_assoc($find_secstuffq)){
+			if($find_secstuff['groups']!=''){
+				$regform_signup .= $find_secstuff['groups'].';';
+				if($find_secstuff['expiration']==0){
+					$thisexprdate = '0000-00-00';
+				} else {
+					$thisexprdate = date('Y-m-d',strtotime('+'.$find_secstuff['expiration'].' days'));	
+				}
+			}
+		}
+		$regform_signup = preg_replace('/;$/','',$regform_signup);
+	}
+	if($regform_signup!=''){	
+		$exist_flag = 0;
+		$result = mysql_query("SELECT PRIKEY, USERNAME, PASSWORD FROM sec_users WHERE USERNAME = '".$_SESSION['BEMAILADDRESS']."'");
+		$exist_flag = mysql_num_rows($result);
+		while($remem_get_qry = mysql_fetch_array($result)){
+			$cart_rem_prik = $remem_get_qry['PRIKEY'];
+			
+		}
+		$MD5CODE = md5(str_replace(" ", "",$_SESSION['BEMAILADDRESS'].$_SESSION['BFIRSTNAME']." ".$_SESSION['BLASTNAME']));
+		if ($cart_rem_prik != '') {			
+			mysql_query("UPDATE sec_users set
+			OWNER_NAME = '".slashthis($_SESSION['BFIRSTNAME'])." ".slashthis($_SESSION['BLASTNAME'])."',
+			OWNER_EMAIL = '".slashthis($_SESSION['BEMAILADDRESS'])."',
+			USERNAME = '".slashthis($_SESSION['BEMAILADDRESS'])."',
+			PASSWORD = '".slashthis($_SESSION['BPASSWORD'])."',
+			BFIRSTNAME = '".slashthis($_SESSION['BLASTNAME'])."',
+			BLASTNAME = '".slashthis($_SESSION['BLASTNAME'])."',
+			BCOMPANY = '".slashthis($_SESSION['BCOMPANY'])."',
+			BADDRESS1 = '".slashthis($_SESSION['BADDRESS1'])."',
+			BADDRESS2 = '".slashthis($_SESSION['BADDRESS2'])."',
+			BCITY = '".slashthis($_SESSION['BCITY'])."',
+			BSTATE = '".slashthis($_SESSION['BSTATE'])."',
+			BCOUNTRY = '".slashthis($_SESSION['BCOUNTRY'])."',
+			BZIPCODE = '".slashthis($_SESSION['BZIPCODE'])."',
+			BPHONE_SUFFIX = '".slashthis($_SESSION['BPHONE'])."',
+			BEMAILADDRESS = '".slashthis($_SESSION['BEMAILADDRESS'])."',
+			SFIRSTNAME = '".slashthis($_SESSION['SFIRSTNAME'])."',
+			SLASTNAME = '".slashthis($_SESSION['SLASTNAME'])."',
+			SCOMPANY = '".slashthis($_SESSION['SCOMPANY'])."',
+			SADDRESS1 = '".slashthis($_SESSION['SADDRESS1'])."',
+			SADDRESS2 = '".slashthis($_SESSION['SADDRESS2'])."',
+			SCITY = '".slashthis($_SESSION['SCITY'])."',
+			SSTATE = '".slashthis($_SESSION['SSTATE'])."',
+			SCOUNTRY = '".slashthis($_SESSION['SCOUNTRY'])."',
+			SZIPCODE = '".slashthis($_SESSION['SZIPCODE'])."',
+			SPHONE_SUFFIX = '".slashthis($_SESSION['SPHONE'])."',
+			GROUPS = '".$regform_signup."',
+			EXPIRATION_DATE = '".$thisexprdate."',
+			MD5CODE = '".$MD5CODE."' 			
+			WHERE PRIKEY='".$cart_rem_prik."'");
+		} else {
+			$randomstuff = time();
+			mysql_query("insert into sec_users ( OWNER_EMAIL, USERNAME, PASSWORD ) values('".$randomstuff."','".$randomstuff."','".$randomstuff."')");
+			mysql_query("UPDATE sec_users set
+			OWNER_NAME = '".slashthis($_SESSION['BFIRSTNAME'])." ".slashthis($_SESSION['BLASTNAME'])."',
+			OWNER_EMAIL = '".slashthis($_SESSION['BEMAILADDRESS'])."',
+			USERNAME = '".slashthis($_SESSION['BEMAILADDRESS'])."',
+			PASSWORD = '".slashthis($_SESSION['BPASSWORD'])."',
+			BFIRSTNAME = '".slashthis($_SESSION['BLASTNAME'])."',
+			BLASTNAME = '".slashthis($_SESSION['BLASTNAME'])."',
+			BCOMPANY = '".slashthis($_SESSION['BCOMPANY'])."',
+			BADDRESS1 = '".slashthis($_SESSION['BADDRESS1'])."',
+			BADDRESS2 = '".slashthis($_SESSION['BADDRESS2'])."',
+			BCITY = '".slashthis($_SESSION['BCITY'])."',
+			BSTATE = '".slashthis($_SESSION['BSTATE'])."',
+			BCOUNTRY = '".slashthis($_SESSION['BCOUNTRY'])."',
+			BZIPCODE = '".slashthis($_SESSION['BZIPCODE'])."',
+			BPHONE_SUFFIX = '".slashthis($_SESSION['BPHONE'])."',
+			BEMAILADDRESS = '".slashthis($_SESSION['BEMAILADDRESS'])."',
+			SFIRSTNAME = '".slashthis($_SESSION['SFIRSTNAME'])."',
+			SLASTNAME = '".slashthis($_SESSION['SLASTNAME'])."',
+			SCOMPANY = '".slashthis($_SESSION['SCOMPANY'])."',
+			SADDRESS1 = '".slashthis($_SESSION['SADDRESS1'])."',
+			SADDRESS2 = '".slashthis($_SESSION['SADDRESS2'])."',
+			SCITY = '".slashthis($_SESSION['SCITY'])."',
+			SSTATE = '".slashthis($_SESSION['SSTATE'])."',
+			SCOUNTRY = '".slashthis($_SESSION['SCOUNTRY'])."',
+			SZIPCODE = '".slashthis($_SESSION['SZIPCODE'])."',
+			SPHONE_SUFFIX = '".slashthis($_SESSION['SPHONE'])."',
+			GROUPS = '".$regform_signup."',
+			EXPIRATION_DATE = '".$thisexprdate."',
+			MD5CODE = '".$MD5CODE."' 			
+			WHERE OWNER_EMAIL='".$randomstuff."' and USERNAME='".$randomstuff."' and PASSWORD='".$randomstuff."'");
+		}
+	
+		$getsecuserid=mysql_query("select PRIKEY from sec_users where USERNAME='".slashthis($_SESSION['BEMAILADDRESS'])."' limit 1");
+		$gotsecuserid=mysql_fetch_assoc($getsecuserid);
+	
+		require_once("../sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
+		$globalprefObj = new userdata('global');
+
+		$msgTxt = $globalprefObj->get('custom_login_email');
+		$rez = mysql_query("select * from sec_users where USERNAME='".slashthis($_SESSION['BEMAILADDRESS'])."' limit 1");		
+		$getUser = mysql_fetch_assoc($rez);
+		$fieldnameArr = array_keys($getUser);
+	//	echo testArray($getUser, '500');
+		
+		foreach ( $fieldnameArr as $key ) {
+			$msgTxt = str_replace('['.$key.']', $getUser[$key], $msgTxt);
+		}
+		$headers = 'From: '.$globalprefObj->get('login-email-from')."\r\n".'Reply-To: '.$globalprefObj->get('login-email-from')."\r\n" .'X-Mailer: PHP/' . phpversion();
+		
+		if(!SohoEmail($getUser['OWNER_EMAIL'], $globalprefObj->get('login-email-from'), $globalprefObj->get('login-email-subject'), str_replace("\n","<br/>\n", $msgTxt))){
+			//mail($getUser['OWNER_EMAIL'], $globalprefObj->get('login-email-subject'), $msgTxt, $headers);
+		}
+	}
 }
 
 
@@ -1709,7 +1878,6 @@ if ($OPTIONS[BIZ_ADDRESS_1] != "" && $OPTIONS[BIZ_POSTALCODE] != "") {
 
 $FINAL_DISPLAY .= "</TABLE>";
 
-
 ###########################################################################
 ### THE pgm-realtime_builder.php FILE COMPILES THE TEMPLATE DATA AND PAGE
 ### CONTENT DATA TOGETHER AND PUTS IT OUT AS THE $template_header AND
@@ -1720,7 +1888,7 @@ $FINAL_DISPLAY .= "</TABLE>";
 
 $module_active = "yes";
 include ("pgm-template_builder.php");
-
+error_reporting('341');
 #######################################################
 
 echo ("$template_header\n");

@@ -36,6 +36,15 @@ $result = mysql_query("SELECT * FROM cart_paypal");
 $PAYPAL = mysql_fetch_array($result);
 
 $cartpref = new userdata("cart");
+$category_customsort='';
+if($cartpref->get("category_customsort")=='custom'){
+	$category_customsort='custom';
+}
+
+$display_cat_prodcount = '';
+if($cartpref->get("hide_cat_prodcount")=='hide'){
+	$display_cat_prodcount = 'hide';
+}
 
 // *********************************************************************
 // ** SOHOLAUNCH OPEN SOURCE CODE CONTENT MANAGEMENT SYSTEM           **
@@ -66,11 +75,11 @@ $cartpref = new userdata("cart");
 	// Start Search Column HTML
 	// ----------------------------------------------------
 	$date = date("F j, Y");
-
+	$logindispay = 1;
    # Display Date, Login button, or Welcome text?
-   echo "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" id=\"searchcolumn-login_or_date\">\n";
-   echo " <tr>\n";
-   echo "  <td style=\"padding:0px;margin:0px;\" valign=\"top\">\n";
+   $logindisp = "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" id=\"searchcolumn-login_or_date\">\n";
+   $logindisp .= " <tr>\n";
+   $logindisp .= "  <td style=\"padding:0px;margin:0px;\" valign=\"top\">\n";
 
 	# PREF: Show login button?
 	if ( !eregi("Y", $OPTIONS['DISPLAY_LOGINBUTTON']) ) {
@@ -81,32 +90,35 @@ $cartpref = new userdata("cart");
 		} else {
 			$dis = $date;
 			$dis = "&nbsp;";
+			$logindispay = 0;
 		}
 
-		echo "   ".$dis."\n";
+		$logindisp .= "   ".$dis."\n";
 
 	} else {
 		# YES: "Welcome..." or [Client Login]
 		if ( isset($_SESSION['SOHO_AUTH']) && isset($_SESSION['SOHO_PW']) && isset($_SESSION['OWNER_NAME']) ) {
 		   # "Welcome..."
-			echo "".lang("Welcome").", <br/><b>".$OWNER_NAME."</b>\n";
-			echo "(<a href=\"../pgm-secure_login.php?todo=logout&backto=".base64_encode($_SERVER['FULL_URL'])."\">".lang("Log-out")."</a>)\n";
+			$logindisp .= "".lang("Welcome").", <br/><b>".$OWNER_NAME."</b>\n";
+			$logindisp .= "(<a href=\"../pgm-secure_login.php?todo=logout&backto=".base64_encode($_SERVER['FULL_URL'])."\">".lang("Log-out")."</a>)\n";
 
 		} else {
 		   # [Client Login]
-			echo "<form name=\"LOGINBUT\" method=\"post\" action=\"../pgm-secure_login.php\">\n";
-			echo "<input type=\"hidden\" name=\"sc\" value=1>\n";
-			echo "<input TYPE=\"SUBMIT\" value=\"".lang("Client Login")."\" class=\"FormLt1\" style='height: 19px; font-size: 7pt;'></form>\n";
+			$logindisp .= "<form name=\"LOGINBUT\" method=\"post\" action=\"../pgm-secure_login.php\">\n";
+			$logindisp .= "<input type=\"hidden\" name=\"sc\" value=1>\n";
+			$logindisp .= "<input TYPE=\"SUBMIT\" value=\"".lang("Client Login")."\" class=\"FormLt1\" style='font-size: 7pt;'></form>\n";
 		}
 
 	} // End Display Login Button
 
-   echo "  </td>\n";
-   echo " </tr>\n";
-   echo "</table>\n\n";
+   $logindisp .= "  </td>\n";
+   $logindisp .= " </tr>\n";
+   $logindisp .= "</table>\n\n";
+if($logindispay==1){
+	echo $logindisp;
+}
 
-
-	echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" align=\"center\" width=\"100%\" class=\"shopping-selfcontained_box\" id=\"seach-column-main\">\n";
+	echo "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" align=\"center\" class=\"shopping-selfcontained_box\" id=\"seach-column-main\">\n";
 
 	// ----------------------------------------------------
 	// Is the Search Box Display On or Off
@@ -139,7 +151,14 @@ $cartpref = new userdata("cart");
 
 	if (eregi("Y", $OPTIONS[DISPLAY_CATEGORIES])) {
 		if(!is_array($catz)){
-			$getcats = mysql_query("SELECT * FROM cart_category ORDER BY category");
+			
+			if($category_customsort=='custom'){
+				$getcats = mysql_query("SELECT * FROM cart_category ORDER BY sortorder ASC, category ASC");
+			} else {
+				$getcats = mysql_query("SELECT * FROM cart_category ORDER BY category ASC");
+			}
+			
+			//$getcats = mysql_query("SELECT * FROM cart_category ORDER BY category");
 			while ($rowz = mysql_fetch_array ($getcats)) {
 				if (strlen($rowz['category']) > 2) {
 					$catz[$rowz['keyfield']]= array('name'=>$rowz['category'], 'level'=>$rowz['level'], 'subs'=>$rowz['subs'], 'parent'=>$rowz['parent'], 'product_count'=>$rowz['product_count']);
@@ -169,17 +188,32 @@ $cartpref = new userdata("cart");
 		
 		foreach($catz as $cvar=>$cval){
 			if($catz[$cvar]['level'] == '1' && $cval['product_count'] > 0){
-				echo " &nbsp;<a href=\"start.php?browse=1&cat=".$cvar."&=SID\">".$cval['name']."&nbsp;(".$cval['product_count'].")</a><br/>\n";
+				if($display_cat_prodcount=='hide'){
+					echo " &nbsp;<a href=\"start.php?browse=1&cat=".$cvar."&=SID\">".$cval['name']."</a><br/>\n";
+				} else {
+					echo " &nbsp;<a href=\"start.php?browse=1&cat=".$cvar."&=SID\">".$cval['name']."&nbsp;(".$cval['product_count'].")</a><br/>\n";
+				}
 				if($cval['subs']!=''){
 					$thesubs = explode(',',$cval['subs']);
 					foreach($thesubs as $sbval){						
 						if(($cat == $cvar || $cat == $sbval || $sbval == $catz[$cat]['parent']) && $catz[$sbval]['product_count'] > 0){
-							echo " &nbsp;&nbsp;&nbsp;&gt;&nbsp;<a href=\"start.php?browse=1&cat=".$sbval."&=SID\">".$catz[$sbval]['name']."&nbsp;(".$catz[$sbval]['product_count'].")</a><br/>\n";
+							
+							if($display_cat_prodcount=='hide'){
+								echo " &nbsp;&nbsp;&nbsp;&gt;&nbsp;<a href=\"start.php?browse=1&cat=".$sbval."&=SID\">".$catz[$sbval]['name']."</a><br/>\n";
+							} else {
+								echo " &nbsp;&nbsp;&nbsp;&gt;&nbsp;<a href=\"start.php?browse=1&cat=".$sbval."&=SID\">".$catz[$sbval]['name']."&nbsp;(".$catz[$sbval]['product_count'].")</a><br/>\n";	
+							}
+							
 							if($catz[$sbval]['subs'] != ''){
 								$subsubz = explode(',', $catz[$sbval]['subs']);
 								foreach($subsubz as $subsubval){
 									if($catz[$cat]['level'] > 1 && $catz[$subsubval]['product_count'] > 0 && ($catz[$subsubval]['parent'] == $cat || $cat == $subsubval)){
-										echo " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&nbsp;<a href=\"start.php?browse=1&cat=".$subsubval."&=SID\">".$catz[$subsubval]['name']."&nbsp;(".$catz[$subsubval]['product_count'].")</a><br/>\n";
+										if($display_cat_prodcount=='hide'){
+											echo " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&nbsp;<a href=\"start.php?browse=1&cat=".$subsubval."&=SID\">".$catz[$subsubval]['name']."</a><br/>\n";
+										} else {
+											echo " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&nbsp;<a href=\"start.php?browse=1&cat=".$subsubval."&=SID\">".$catz[$subsubval]['name']."&nbsp;(".$catz[$subsubval]['product_count'].")</a><br/>\n";	
+										}
+										
 									}
 								}
 							}
@@ -237,17 +271,21 @@ $cartpref = new userdata("cart");
 
 	<?
 
+		
 		echo "<tr>\n";
-		echo " <th align=\"center\" valign=\"middle\" bgcolor=\"#".$OPTIONS[DISPLAY_HEADERBG]."\">\n";
-		echo "  ".lang("Shopping Cart")."<br/>\n";
+		//echo " <th align=\"center\" valign=\"middle\" bgcolor=\"#".$OPTIONS[DISPLAY_HEADERBG]."\">\n";
+		echo " <th align=\"center\" valign=\"middle\" >\n";
+		if ($CART_KEYID != "") {
+			echo "  ".lang("Shopping Cart")."<br/>\n";
+		}
 		echo " </th>\n";
-		echo "</tr>\n";
+		echo "</tr>\n";		
 
 		echo "<tr>\n";
 		echo " <td id=\"searchcolumn-items_in_cart\">\n";
 
 		if ($CART_KEYID == "") {
-			echo "<br/><div align=\"center\">".lang("Your cart is empty.")."</div><br/>\n";
+			//echo "<br/><div align=\"center\">".lang("Your cart is empty.")."</div><br/>\n";
 
 		} else {
 
@@ -302,7 +340,9 @@ $cartpref = new userdata("cart");
 			$checkout_button .= "<INPUT TYPE=HIDDEN NAME=CART_QTY VALUE=\"$CART_QTY\">\n";
 			$checkout_button .= "<INPUT TYPE=HIDDEN NAME=CART_UNITSUBTOTAL VALUE=\"$CART_UNITSUBTOTAL\">\n";
 			$checkout_button .= "<INPUT TYPE=HIDDEN NAME=WIN_FULL_PATH VALUE=\"$WIN_FULL_PATH\">\n";
-			$checkout_button .= "<INPUT TYPE=IMAGE SRC=\"checkout_button.gif\" WIDTH=106 HEIGHT=25 ALIGN=ABSMIDDLE BORDER=0 STYLE='cursor: hand;'>\n";
+			//$checkout_button .= "<INPUT TYPE=IMAGE SRC=\"checkout_button.gif\" WIDTH=106 HEIGHT=25 ALIGN=ABSMIDDLE BORDER=0 STYLE='cursor: hand;'>\n";
+			$checkout_button .= "<input type=\"submit\" value=\"CHECKOUT\" class=\"text\" ALIGN=ABSMIDDLE style=\"margin-top:10px;\">\n";
+			
 			$checkout_button .= "</FORM>\n";
 
 			echo $checkout_button;

@@ -84,12 +84,20 @@ if($_POST['action'] == 'changethisip'){
 }
 
 $globalprefObj = new userdata('global');
+if($globalprefObj->get('tinymode')==''){
+	$globalprefObj->set('tinymode', 'basic');
+}
+
 
 if($globalprefObj->get('goog_trans')==''){
 	$globalprefObj->set('goog_trans', 'off');
 }
 if($globalprefObj->get('goog_trans_website')==''){
 	$globalprefObj->set('goog_trans_website', 'off');
+}
+
+if($_GET['tinymode']!=''){
+	$globalprefObj->set('tinymode', $_GET['tinymode']);
 }
 
 if($_GET['goog_trans']!=''){
@@ -103,7 +111,6 @@ if($_GET['goog_trans']!=''){
 if($_GET['goog_trans_website']!=''){
 	$globalprefObj->set('goog_trans_website', $_GET['goog_trans_website']);
 }
-
 
 
 $MOD_TITLE = "Global Settings";
@@ -171,6 +178,11 @@ if ( $globalprefObj->get('utf8') == "" ) {
 if ( $_GET['setutf8'] != "" ) {
 	$globalprefObj->set('utf8', $_GET['setutf8']);
 	$report[] = 'UTF8 preference set to: '.$_GET['setutf8'];
+}
+
+if ( $_GET['styleToggle'] != "" ) {
+	$globalprefObj->set('styleToggle', $_GET['styleToggle']);
+	$report[] = 'Text Editor Stylesheet preference set to: '.$_GET['styleToggle'];
 }
 
 
@@ -403,16 +415,17 @@ function langchk() {
    $langDir = "../../language/*.php";
    $output = '';
 	foreach (glob($langDir) as $langfile) {
-   	if(file_exists($langfile)) {
-   		$lfile = basename($langfile);
-   		$lname = eregi_replace('_', ' ', $lfile);
-   		$lname = eregi_replace('\.php', '', $lname);
-
-   		# Ability to turn off languages with credits
-   		if ( $lname != "dutch" || (strtolower($lname) == "dutch" && $_SESSION['hostco']['dutch_lang'] == "on") ) {
-      	   $output .= "<option value=\"". strtolower($lfile)."\">".ucfirst($lname)."</option>\n";
-      	}
-   	}
+	   	if(file_exists($langfile)) {
+	   		$lfile = basename($langfile);
+	   		$lname = eregi_replace('_', ' ', $lfile);
+	   		$lname = eregi_replace('\.php', '', $lname);
+			 if($lname!='index'){
+	   			# Ability to turn off languages with credits
+		   		if ( $lname != "dutch" || (strtolower($lname) == "dutch" && $_SESSION['hostco']['dutch_lang'] == "on") ) {
+		      	   $output .= "<option value=\"". strtolower($lfile)."\">".ucfirst($lname)."</option>\n";
+		      	}
+	     	}
+	   	}
 	}
 	return($output);
 }
@@ -437,7 +450,6 @@ $THIS_DISPLAY .= "   </div>\n";
 
 $THIS_DISPLAY .= "  </td>\n";
 $THIS_DISPLAY .= " </tr>\n";
-
 
 
 $saveHref = basename($_SERVER['PHP_SELF'])."?goog_trans='+document.getElementById('goog_trans').value;";
@@ -559,6 +571,38 @@ if ( $_GET['todo'] == "change_startpage" ) { // Edit
 
 }
 $THIS_DISPLAY .= "    </tr>\n";
+
+
+$THIS_DISPLAY .= "    <tr>\n";
+$THIS_DISPLAY .= "     <td style=\"white-space: nowrap;\">".lang("Text Editor Mode").":</td>\n";
+$THIS_DISPLAY .= "     <td width=\"100%\">\n";
+$saveTiny = basename($_SERVER['PHP_SELF'])."?tinymode='+document.getElementById('tinymode').value;";
+$THIS_DISPLAY .= "   <select name=\"tinymode\" id=\"tinymode\" style=\"width: 150px;\" class=\"text\" onchange=\"document.location.href='".$saveTiny.";\">\n";
+$THIS_DISPLAY .= "    <option value=\"basic\">Normal</option>\n";
+$THIS_DISPLAY .= "    <option value=\"advanced\">Advanced</option>\n";
+$THIS_DISPLAY .= "   </select>\n";
+$THIS_DISPLAY .= "   <script type=\"text/javascript\">document.getElementById('tinymode').value = '".$globalprefObj->get('tinymode')."';</script>\n";
+
+$THIS_DISPLAY .= "     </td>\n";
+$THIS_DISPLAY .= "    </tr>\n";
+
+/*---------------------------------------------------------------------------------------------------------*
+Toggle style import in text editor
+/*---------------------------------------------------------------------------------------------------------*/
+$THIS_DISPLAY .= " <tr>\n";
+$THIS_DISPLAY .= "  <td align=\"left\" valign=\"top\">\n";
+$THIS_DISPLAY .= "   <label>".lang('Text Editor should use your template\'s stylesheet?')."</label>\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= "  <td align=\"left\" valign=\"top\">\n";
+$saveHref = basename($_SERVER['PHP_SELF'])."?styleToggle='+document.getElementById('styleToggle').value;";
+$THIS_DISPLAY .= "   <select name=\"styleToggle\" id=\"styleToggle\" style=\"width: 150px;\" class=\"text\" onchange=\"document.location.href='".$saveHref.";\">\n";
+$THIS_DISPLAY .= "    <option value=\"no\">No</option>\n";
+$THIS_DISPLAY .= "    <option value=\"yes\">Yes</option>\n";
+$THIS_DISPLAY .= "   </select>\n";
+$THIS_DISPLAY .= "   <script type=\"text/javascript\">document.getElementById('styleToggle').value = '".$globalprefObj->get('styleToggle')."';</script>\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= " </tr>\n";
+
 $THIS_DISPLAY .= "   </table>\n";
 $THIS_DISPLAY .= "  </td>\n";
 

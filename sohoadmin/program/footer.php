@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -41,7 +41,7 @@ error_reporting(E_PARSE);
 
 
 # Include core interface files!
-if ( !include("includes/product_gui.php") ) {
+if ( !require_once("includes/product_gui.php") ) {
    echo "\n\n<!--------\n\n\n\n <!---Could not include this file:<br>[".$product_gui."]---> \n\n\n\n-------->\n\n";
 }
 
@@ -111,7 +111,7 @@ $thisYear = date("Y");
 # This really should to be a div instead of frame (todo for v5)
 
 $disHTML = "<HTML><HEAD><TITLE>STATUS BAR</TITLE>\n";
-$disHTML .= "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n";
+$disHTML .= "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UT"."F-8\">\n";
 $disHTML .= "<link rel=\"stylesheet\" href=\"product_gui.css\">\n";
 $disHTML .= "<link rel=\"stylesheet\" href=\"includes/display_elements/product_gui-v2.css\">\n";
 
@@ -243,12 +243,10 @@ $disHTML .= "function check_session() {\n";
 //   # Default, non-demo mode: Alert about saved data b4 logout
 //   $disHTML .= "	event.returnValue = \"".lang("NOTE: Any data outstanding will not be saved.")."\";\n";
 //}
-$disHTML .= "	event.returnValue = \"".lang("NOTE: Any data outstanding will not be saved.")."\";\n";
+//$disHTML .= "	event.returnValue = \"".lang("NOTE: Any data outstanding will not be saved.")."\";\n";
 $disHTML .= "}\n";
 
-$disHTML .= "function load_credits() {\n";
-$disHTML .= "	window.open(\"credits.php?<?=SID?>\",\"\",\"width=520,height=420,scroll=no,status=no\");\n";
-$disHTML .= "}\n";
+
 $disHTML .= "</SCRIPT>\n";
 $disHTML .= "<STYLE>\n";
 $disHTML .= ".ctable { font-family: Arial; font-size: 11px; color: #000000; letter-spacing: 1px; }\n";

@@ -27,7 +27,7 @@ error_reporting(E_PARSE);
 //==============================================================
 function table_exist($tablename) {
    global $db_name;
-   $result = mysql_list_tables("$db_name");
+   $result = mysql_query('show tables from '.$db_name);
    $i = 0;
    while ($i < mysql_num_rows ($result)) {
       $tb_names[$i] = mysql_tablename ($result, $i);

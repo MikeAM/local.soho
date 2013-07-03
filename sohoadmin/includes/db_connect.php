@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -47,7 +47,7 @@ session_start();
 $link = mysql_connect("$db_server", "$db_un","$db_pw") || die("Could not connect to database '$db_name' ($db_server). Your database server may be down or your database setup may be wrong.");
 mysql_query("SET SESSION SQL_MODE = ''");
 if ( !$sel = mysql_select_db("$db_name") ) { echo "Could not select database because: <i>".mysql_error()."</i><br>\n"; exit; }
-if ( !$result = mysql_list_tables("$db_name") ) { echo "Could not list tables because: <i>".mysql_error()."</i><br>\n"; exit; }
+if ( !$result = mysql_query('show tables from '.$db_name) ) { echo "Could not list tables because: <i>".mysql_error()."</i><br>\n"; exit; }
 
 $i = 0;
 $match = 0;

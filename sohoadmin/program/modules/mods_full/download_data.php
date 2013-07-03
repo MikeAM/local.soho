@@ -52,9 +52,10 @@ $THIS_DISPLAY .= "<head>\n";
 
 $globalprefObj = new userdata('global');
 if ( $globalprefObj->get('utf8') == 'on' ) {
-	$THIS_DISPLAY .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n";
+	$THIS_DISPLAY .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UT"."F-8\">\n";
 } else {
-	$THIS_DISPLAY .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n";
+	//$THIS_DISPLAY .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n";
+	$THIS_DISPLAY .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UT"."F-8\">\n";
 }
 
 $THIS_DISPLAY .= "<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\">\n";
@@ -483,7 +484,7 @@ if ($action == "import3") {
 ### READ ALL CURRENT DATABASE TABLES INTO MEMORY    ###
 #######################################################
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 
 # Store in separate arrays so they can be organized accordingly when displayed
@@ -708,7 +709,8 @@ if ( $action == "" ) {
          $empty_ok = "[ <a href=\"download_data.php?action=empty&table=".$tablename."&".SID."\" class=\"del\">".lang("Empty")."</a>";
 
          # Added for Multi-User Access Check
-         if ( $CUR_USER_ACCESS == "WEBMASTER" || eregi(";".$tablename.";", $CUR_USER_ACCESS) ) {
+		if($CUR_USER_ACCESS == "WEBMASTER" || preg_match("/;(MOD_ALLDBS|".$tablename.")/i", $CUR_USER_ACCESS)){
+         //if ( $CUR_USER_ACCESS == "WEBMASTER" || eregi(";".$tablename.";", $CUR_USER_ACCESS) ) {
             $tdstyle =  "border-bottom: 1px dashed #ccc;";
             if ( hasMod("dbtable") ) {
                $viewonclick = "document.location.href='database_manager/enter_edit_data.php?mt=".$tablename."&".SID."';";
@@ -804,7 +806,8 @@ if ( $action == "" ) {
       if (!eregi("CTEMP_", $this_data[0])) {
 
          # Added for Multi-User Access Check
-         if ( $CUR_USER_ACCESS == "WEBMASTER" || eregi(";$this_data[0];", $CUR_USER_ACCESS) ) {
+         if($CUR_USER_ACCESS == "WEBMASTER" || preg_match("/;(MOD_ALLDBS|".$this_data[0].")/i", $CUR_USER_ACCESS)){
+         //if ( $CUR_USER_ACCESS == "WEBMASTER" || eregi(";$this_data[0];", $CUR_USER_ACCESS) ) {
             $tdstyle =  "border-bottom: 1px dashed #ccc;";
             if ( hasMod("dbtable") ) {
                $viewonclick = "document.location.href='database_manager/enter_edit_data.php?mt=".$tablename."&".SID."';";
@@ -906,7 +909,8 @@ if ( $action == "" ) {
       if (!eregi("CTEMP_", $this_data[0])) {
 
          # Added for Multi-User Access Check
-         if ( eregi("WEBMASTER", $CUR_USER_ACCESS) || eregi(";".$this_data[0].";", $CUR_USER_ACCESS)) {
+         if($CUR_USER_ACCESS == "WEBMASTER" || preg_match("/;(MOD_ALLDBS|".$this_data[0].")/i", $CUR_USER_ACCESS)){
+         //if ( eregi("WEBMASTER", $CUR_USER_ACCESS) || eregi(";".$this_data[0].";", $CUR_USER_ACCESS)) {
             $tdstyle =  "border-bottom: 1px dashed #ccc;";
             $THIS_DISPLAY .= "    <tr class=\"".$bg."\" onmouseover=\"this.className='bg_yellow';\" onmouseout=\"this.className='".$bg."';\">\n";
             $THIS_DISPLAY .= "     <td style=\"cursor: default;".$tdstyle."\" align=\"left\" valign=\"middle\"><b>".$this_data[1]."</b></td>\n";

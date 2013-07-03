@@ -705,11 +705,10 @@ $HTML .= "</TR>\n";
 // Register ORDER_TOTAL with our session for databasing and payment processing
 // -------------------------------------------------------------------------------------
 
-if (!session_is_registered("ORDER_TOTAL")) {
-	session_register("ORDER_TOTAL");
-}
 
-$_SESSION['ORDER_TOTAL'] = $ORDER_TOTAL;
+if($ORDER_TOTAL!=''){
+	$_SESSION['ORDER_TOTAL'] = $ORDER_TOTAL;
+}
 
 
 $HTML .= "</TABLE>\n\n";

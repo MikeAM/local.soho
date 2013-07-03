@@ -40,7 +40,7 @@ include("../../includes/product_gui.php");
 #######################################################
 
 $tBG = "white";
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 $CURRENT_TABLES = "     <OPTION VALUE=\"\" STYLE='COLOR: darkblue;'>Current database tables...</OPTION>\n";
 while ($i < mysql_num_rows ($result)) {

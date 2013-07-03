@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /sohoadmin/
+Disallow: /tCustom/
+Disallow: /template/
+Disallow: /pgm-email_friend.php
+Disallow: /pgm-form_submit.php
+Disallow: /pgm-*
+Disallow: /phpinfo.php
+Sitemap: http://#thisip#/sitemap.xml.php

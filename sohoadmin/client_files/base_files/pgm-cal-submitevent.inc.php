@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 ###############################################################################
@@ -29,16 +29,55 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## expressly forbidden and in violation of Domestic and International 
 ## copyright laws.  		                                           
 ###############################################################################
+include_once('sohoadmin/includes/emulate_globals.php');
+include_once("sohoadmin/client_files/pgm-site_config.php");
+include_once("sohoadmin/program/includes/shared_functions.php");
+include_once("sohoadmin/program/includes/smt_functions.php");
+
+error_reporting('341');
+
+
+$pr=$_POST['pr'];
+$CHANGE_CAT=$_POST['CHANGE_CAT'];
+$SEL_MONTH=$_POST['SEL_MONTH'];
+$SEL_YEAR=$_POST['SEL_YEAR'];
+$PUBLIC_SUBMIT_EVENT=$_POST['PUBLIC_SUBMIT_EVENT'];
+
+
+if($_POST['CALFORM_NAME']!=''){
+$CALFORM_NAME = $_POST['CALFORM_NAME'];
+$CALFORM_EMAILADDRESS = $_POST['CALFORM_EMAILADDRESS'];
+$CALFORM_MONTH = $_POST['CALFORM_MONTH'];
+$CALFORM_DAY = $_POST['CALFORM_DAY'];
+$CALFORM_YEAR = $_POST['CALFORM_YEAR'];
+$CALFORM_CATEGORY = $_POST['CALFORM_CATEGORY'];
+$CALFORM_START_TIME = $_POST['CALFORM_START_TIME'];
+$CALFORM_END_TIME = $_POST['CALFORM_END_TIME'];
+$CALFORM_TITLE = $_POST['CALFORM_TITLE'];
+$CALFORM_DETAILS = $_POST['CALFORM_DETAILS'];
+}
+$CHANGE_CAT=$_POST['CHANGE_CAT'];
+$SEL_MONTH=$_POST['SEL_MONTH'];
+$SEL_YEAR=$_POST['SEL_YEAR'];
+
+$dType = $_POST['dType'];
+$DETAIL_SEARCH_KEYWORDS = $_POST['DETAIL_SEARCH_KEYWORDS'];
+$SORT_RESULTS_BY = $_POST['SORT_RESULTS_BY'];
+$SORT_BY_ORDER = $_POST['SORT_BY_ORDER'];
+if($CAL_MOD_PAGE==''){
+	$CAL_MOD_PAGE = $pr;	
+}
 
 
 reset($HTTP_POST_VARS);
-while (list($name, $value) = each($HTTP_POST_VARS)) {
-		$value = htmlspecialchars($value);	// Bugzilla #13
-		${$name} = $value;
-}
+//while (list($name, $value) = each($HTTP_POST_VARS)) {
+//		$value = htmlspecialchars($value);	// Bugzilla #13
+//		${$name} = $value;
+//}
 
+
+echo "<FORM NAME=\"calformedit\" METHOD=POST ACTION=\"".pagename($CAL_MOD_PAGE)."\">\n";
 ?>
-<FORM NAME="calformedit" METHOD=POST ACTION="index.php">
 <INPUT TYPE=HIDDEN NAME="pr" VALUE="<? echo str_replace('"', '', str_replace("'", '', $CAL_MOD_PAGE)); ?>">
 <INPUT TYPE=HIDDEN NAME="FORM_SUBMIT_STEP" VALUE="2">
 <INPUT TYPE=HIDDEN NAME="PUBLIC_SUBMIT_EVENT" VALUE="-">
@@ -71,20 +110,20 @@ if ($EDIT_DATA[PRIKEY] != "") {
 		$copts .= "<OPTION VALUE=\"$r[Category_Name]\" $osel>$r[Category_Name]</OPTION>\n";
 	}
 	if (isset($OWNER_NAME) && $DISPLAY[ALLOW_PERSONAL_CALENDARS] == "Y") {
-		$copts .= "<OPTION VALUE=\"AUTH:$MD5CODE\" SELECTED>".$lang["Private"].": $OWNER_NAME</OPTION>\n";
+		$copts .= "<OPTION VALUE=\"AUTH:$MD5CODE\" SELECTED>".lang("Private").": $OWNER_NAME</OPTION>\n";
 	}
 
 	$MONTH_OPTIONS = "";
-
+	$lastyear = date('Y',strtotime('-366 days'));
 	for ($x=1;$x<=12;$x++) {
-		$val = date("m", mktime(0,0,0,$x,1,2002));
-		$display = date("M", mktime(0,0,0,$x,1,2002));
+		$val = date("m", mktime(0,0,0,$x,1,$lastyear));
+		$display = date("M", mktime(0,0,0,$x,1,$lastyear));
 		if ($val == $set_m) { $SEL = "SELECTED"; } else { $SEL = ""; }
 		$MONTH_OPTIONS .= "<OPTION VALUE=\"$val\" $SEL>$display</OPTION>\n";
 	}
 	
 	$YEAR_OPTIONS = "";
-	for ($x=2002;$x<=2015;$x++) {
+	for ($x=$lastyear;$x<=($lastyear+5);$x++) {
 		if ($x == $set_y) { $SEL = "SELECTED"; } else { $SEL = ""; }
 		$YEAR_OPTIONS .= "<OPTION VALUE=\"$x\" $SEL>$x</OPTION>\n";
 	}
@@ -92,7 +131,7 @@ if ($EDIT_DATA[PRIKEY] != "") {
 
 ?>
 
-<TABLE WIDTH="90%" BORDER="0" CELLSPACING="0" CELLPADDING="5" CLASS="text" BGCOLOR="#EFEFEF" STYLE="border: 1px inset black;">
+<TABLE WIDTH="90%" BORDER="0" CELLSPACING="0" CELLPADDING="5" CLASS="text" STYLE="border: 1px inset black;">
   <TR> 
     <TD COLSPAN="2" BGCOLOR="<? echo $DISPLAY[BACKGROUND_COLOR]; ?>">
      <FONT COLOR="<? echo $DISPLAY[TEXT_COLOR]; ?>" FACE=VERDANA SIZE=2><B><? echo lang("Submit an Event"); ?>:</B></FONT></TD>
@@ -142,10 +181,10 @@ if ($EDIT_DATA[PRIKEY] != "") {
 			if ($z == 24) { $clock_flag = "am"; }
 			$d = "$v:00 $clock_flag";
 			
-			if ($EDIT_DATA[PRIKEY] == "") {
-				if ($d == "9:00 am") { $SEL = "SELECTED"; } else { $SEL = ""; }
+			if ($EDIT_DATA['PRIKEY'] == "") {
+				if ($d == "9:00 am") { $SEL = "selected=\"selected\" SELECTED"; } else { $SEL = ""; }
 			} 
-			echo "<OPTION VALUE=\"$v2:00\" STYLE='background: #EFEFEF; color: black;' $SEL>$d</OPTION>\n";
+			echo "<OPTION VALUE=\"$v2:00\" STYLE=\"background: #EFEFEF; color: black;\" $SEL>$d</OPTION>\n";
 			echo "<OPTION VALUE=\"$v2:15\" STYLE='color: #999999;'>$v:15 $clock_flag</OPTION>\n";
 			echo "<OPTION VALUE=\"$v2:30\" STYLE='color: #999999;'>$v:30 $clock_flag</OPTION>\n";
 			echo "<OPTION VALUE=\"$v2:45\" STYLE='color: #999999;'>$v:45 $clock_flag</OPTION>\n";			
@@ -154,8 +193,9 @@ if ($EDIT_DATA[PRIKEY] != "") {
       </SELECT>
       End Time: 
       <SELECT NAME="CALFORM_END_TIME" CLASS="text" STYLE='width: 80px;'>
-        <OPTION VALUE="" >N/A</OPTION>
-        <?php
+<?php
+   //  echo "   <OPTION VALUE=\"\" >N/A</OPTION>\n";
+        
 		$clock_flag = "am";
 		for ($z=1;$z<=24;$z++) {			
 			$v = $z;
@@ -168,7 +208,12 @@ if ($EDIT_DATA[PRIKEY] != "") {
 			if ($z == 24) { $clock_flag = "am"; }			
 
 			$d = "$v:00 $clock_flag";
-			echo "<OPTION VALUE=\"$v2:00\" STYLE='background: #EFEFEF; color: black;' $SEL>$d</OPTION>\n";
+			
+			if ($EDIT_DATA['PRIKEY'] == "") {
+				if ($d == "10:00 am") { $SEL = "selected=\"selected\" SELECTED"; } else { $SEL = ""; }
+			} 
+			
+			echo "<OPTION VALUE=\"$v2:00\" STYLE=\"background: #EFEFEF; color: black;\" $SEL>$d</OPTION>\n";
 			echo "<OPTION VALUE=\"$v2:15\" STYLE='color: #999999;'>$v:15 $clock_flag</OPTION>\n";
 			echo "<OPTION VALUE=\"$v2:30\" STYLE='color: #999999;'>$v:30 $clock_flag</OPTION>\n";
 			echo "<OPTION VALUE=\"$v2:45\" STYLE='color: #999999;'>$v:45 $clock_flag</OPTION>\n";
@@ -185,7 +230,7 @@ if ($EDIT_DATA[PRIKEY] != "") {
   </TR>
   <TR> 
     <TD>&nbsp;</TD>
-    <TD ALIGN="CENTER" VALIGN="MIDDLE"><INPUT TYPE="submit" NAME="Submit" VALUE="<? echo $lang["Submit Event"]; ?>" CLASS="FormLt1"></TD>
+    <TD ALIGN="CENTER" VALIGN="MIDDLE"><INPUT TYPE="submit" NAME="Submit" VALUE="<? echo lang("Submit Event"); ?>" CLASS="FormLt1"></TD>
   </TR>
   <TR ALIGN="CENTER"> 
     <TD COLSPAN="2" class=smtext><font color=#999999><? echo lang("All fields are required to submit an event except Event End Time and Event Details."); ?></font></TD>

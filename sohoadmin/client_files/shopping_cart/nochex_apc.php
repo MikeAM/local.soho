@@ -1,10 +1,9 @@
 <?php
 // Payment confirmation from http post
-include("pgm-cart_config.php");
+include_once("pgm-cart_config.php");
 error_reporting(E_PARSE);
+require_once("../sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
 
-
-$your_email = 'you@domain.com'; // your merchant account email address
 function nochex_http_post($server, $port, $url, $vars) {
 	// get urlencoded vesion of $vars array
 	$urlencoded = "";
@@ -72,8 +71,10 @@ $cart_opt = mysql_fetch_assoc($cart_optq);
 if($nochex_auth == 1 && $_REQUEST['order_id'] != ''){	
 	$ORDER_NUMBER = $_REQUEST['order_id'];
 	mysql_query("UPDATE cart_invoice SET PAY_METHOD = 'NoChex', TRANSACTION_STATUS = 'Paid' WHERE ORDER_NUMBER = '$ORDER_NUMBER'");
-	mail($cart_opt['BIZ_EMAIL_NOTICE'], 'New '.$this_ip.' purchase ', "APC Purchase Notification <br/>\n".$msg.$debug);
-	exit;
+	if(!SohoEmail($cart_opt['BIZ_EMAIL_NOTICE'], preg_replace('/^www\./i','',$_SESSION['this_ip']), 'New '.$this_ip.' purchase ', "APC Purchase Notification <br/>\n".$msg.$debug)){
+		mail($cart_opt['BIZ_EMAIL_NOTICE'], 'New '.$this_ip.' purchase ', "APC Purchase Notification <br/>\n".$msg.$debug);
+	}
+	
 }
 
 if($_REQUEST['status'] == 'cancel' && $_REQUEST['orderid'] != ''){

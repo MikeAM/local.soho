@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '' || $_REQUEST['_SESSION'] != '') { exit; }
 
 #=====================================================================================
@@ -13,7 +13,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 # module and keep it's look consistent with the rest of the product
 #=====================================================================================
 
-error_reporting(E_PARSE);
 session_start();
 
 # Include core files
@@ -44,13 +43,13 @@ class sohoBlog
 	 */
 	function saveEntry($pkg){
 
-		$postCat = $this->db_string_format($pkg['del_cat']);
-		$postTitle = $this->db_string_format($pkg['postTitle']);
-		$postBody = $this->db_string_format($pkg['postBody']);
-		$postTags = $this->db_string_format($pkg['postTags']);
-		$postAuthor = $this->db_string_format($pkg['blog_author']);
-		$postStatus = $this->db_string_format($pkg['live']);
-		$allow_comments = $this->db_string_format($pkg['allow_comments']);
+		$postCat = slashthis($pkg['del_cat']);
+		$postTitle = slashthis($pkg['postTitle']);
+		$postBody = slashthis($pkg['postBody']);
+		$postTags = slashthis($pkg['postTags']);
+		$postAuthor = slashthis($pkg['blog_author']);
+		$postStatus = slashthis($pkg['live']);
+		$allow_comments = slashthis($pkg['allow_comments']);
 		$tags = $postTags;
 		if ($postCat == "NULL")
 		{
@@ -80,13 +79,13 @@ class sohoBlog
 	function updateEntry($pkg)
 	{
 		$id = $pkg['id'];
-		$postCat = $this->db_string_format($pkg['del_cat']);
-		$postTitle = $this->db_string_format($pkg['postTitle']);
-		$postBody = $this->db_string_format($pkg['postBody']);
-		$postTags = $this->db_string_format($pkg['postTags']);
-		$postAuthor = $this->db_string_format($pkg['blog_author']);
-		$postStatus = $this->db_string_format($pkg['live']);
-		$allow_comments = $this->db_string_format($pkg['allow_comments']);
+		$postCat = slashthis($pkg['del_cat']);
+		$postTitle = slashthis($pkg['postTitle']);
+		$postBody = slashthis($pkg['postBody']);
+		$postTags = slashthis($pkg['postTags']);
+		$postAuthor = slashthis($pkg['blog_author']);
+		$postStatus = slashthis($pkg['live']);
+		$allow_comments = slashthis($pkg['allow_comments']);
 		$tags = $postTags;
 		
 		if ($postCat == "NULL")
@@ -111,11 +110,11 @@ class sohoBlog
 
 	function addAuthor($array)
 	{
-		$firstname = $this->db_string_format($array['firstname']);
-		$lastname = $this->db_string_format($array['lastname']);
-		$email = $this->db_string_format($array['email']);
-		$password = $this->db_string_format($array['password']);
-		$passwordCheck = $this->db_string_format($array['passwordCheck']);
+		$firstname = slashthis($array['firstname']);
+		$lastname = slashthis($array['lastname']);
+		$email = slashthis($array['email']);
+		$password = slashthis($array['password']);
+		$passwordCheck = slashthis($array['passwordCheck']);
 
 		if (!preg_match("/^([a-zA-Z0-9-_]+)$/", $firstname))
 		{
@@ -138,7 +137,7 @@ class sohoBlog
 	}
 	function saveCategory($string)
 	{
-		$string = $this->db_string_format($string);
+		$string = slashthis($string);
 		
 		$qry = "INSERT INTO blog_category (category_name) VALUES ('".$string."')";
 		if(!mysql_query($qry))
@@ -269,7 +268,7 @@ class sohoBlog
 
 	function updateTitle($id, $title)
 	{
-		$title = $this->db_string_format($title);
+		$title = slashthis($title);
 		$qry = "UPDATE blog_content SET blog_title='".$title."' WHERE prikey = '".$id."'";
 		if (!mysql_query($qry))
 		{
@@ -338,7 +337,7 @@ class blogEntry extends sohoBlog
 	function addTags($string)
 	{
 		$oldTags = $this->getTags();
-		$newTags = $this->db_string_format($string);
+		$newTags = slashthis($string);
 		$tags = $oldTags.", ".$newTags;
 		$this->saveTags($tags);
 		return 0;
@@ -362,7 +361,7 @@ class blogEntry extends sohoBlog
 
 	function saveTags($tags)
 	{
-		$tags = $this->db_string_format($tags);
+		$tags = slashthis($tags);
 		$qry = "UPDATE blog_content SET blog_tags = '".$tags."' WHERE prikey = '".$this->id."'";
 		if (!mysql_query($qry))
 		{

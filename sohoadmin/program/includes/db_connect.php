@@ -40,8 +40,8 @@ error_reporting(0);
 
 $link = mysql_connect("$db_server", "$db_un","$db_pw") || die("Could not connect to database '$db_name' ($db_server). Check your database setup.");
 mysql_query("SET SESSION SQL_MODE = ''");
-$sel = mysql_select_db("$db_name"); 
-$result = mysql_list_tables("$db_name");
+$sel = mysql_select_db("$db_name");
+$result = mysql_query('show tables from '.$db_name);
 
 	$i = 0; 
 	$match = 0;

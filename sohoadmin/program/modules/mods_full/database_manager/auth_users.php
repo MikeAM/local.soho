@@ -133,7 +133,7 @@ function process() {
 if ($STEP_NUM == "") {
 
 	$pass = 0;
-	$result = mysql_list_tables("$db_name");
+	$result = soho_list_tables();
 	$i = 0;
 	while ($i < mysql_num_rows ($result)) {
 		$tb_names[$i] = mysql_tablename ($result, $i);
@@ -181,7 +181,7 @@ if ($STEP_NUM == "") {
 
 	// Read all UDT's into selection box variable for selection by client
 
-	$result = mysql_list_tables("$db_name");
+	$result = soho_list_tables();
 	$i = 0;
 	$CURRENT_TABLES = "     <OPTION VALUE=\"\" STYLE='COLOR: darkblue;'>".lang("Current UDT Tables...")."</OPTION>\n";
 	while ($i < mysql_num_rows ($result)) {

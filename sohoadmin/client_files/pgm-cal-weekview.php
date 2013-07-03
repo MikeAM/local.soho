@@ -58,12 +58,43 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 		$CHANGE_CAT = "ALL";
 	}
 	
-	?>
+echo "<script type=\"text/javascript\" src=\"sohoadmin/client_files/jquery.min.js\"></script>
+<script type=\"text/javascript\">
+function openEvent(eid){
+	document.getElementById('event_details_div').style.display='block';
+	$('#event_details_div').load('pgm-cal-details.inc.php?id='+eid, function() {
+		return true;
+	});
+	//document.getElementById('event_details_div').innerHTML='
+}
+function openPagego(cid){
+	//document.getElementById('event_details_div').style.display='block';
+	//$('#event_details_div').load('shopping/pgm-more_information.php?&nft=blank_template&id='+cid, function() {
+	//$('#event_details_div').load('pgm-cal-details.inc.php?id='+cid, function() {
+	//	return true;
+	//});
+	//document.getElementById('event_details_div').innerHTML='
+	document.location.href=cid.replace(/ /g,'_')+'.php';
+}
+function openCart(cid,event_id){
+	//document.getElementById('event_details_div').style.display='block';
+	//$('#event_details_div').load('shopping/pgm-more_information.php?&nft=blank_template&id='+cid, function() {
+	//$('#event_details_div').load('pgm-cal-details.inc.php?id='+cid, function() {
+	//	return true;
+	//});
+	//document.getElementById('event_details_div').innerHTML='
+	document.location.href='shopping/pgm-more_information.php?&id='+cid+'&event='+event_id;
+}					
 
-<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=90% ALIGN=CENTER>
+</script>\n";
+
+echo "<div style=\"position:relative;width:99%;margin-bottom:5px;\">\n";
+echo "<div id=\"event_details_div\"  style=\"position:absolute;z-index:99999;display:none;border:3px solid ".$DISPLAY['BACKGROUND_COLOR'].";width:100%;top:0;left:0;padding:0px;background-color:#EFEFEF;\"></div>\n";
+?>
+<TABLE BORDER=0 CELLPADDING=3 CELLSPACING=0 WIDTH=100% ALIGN=CENTER>
 <tr><td align=right><? echo $DISP_CAT_NAME; ?></td></tr>
 </TABLE>
-<TABLE BORDER=1 CELLPADDING=3 CELLSPACING=0 WIDTH=90% ALIGN=CENTER STYLE='border-color: black;'>
+<TABLE BORDER=1 CELLPADDING=3 CELLSPACING=0 WIDTH=100% ALIGN=CENTER STYLE='border-color: black;'>
 <TR> 
 
     <?
@@ -111,10 +142,14 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 	for ($x=1;$x<=7;$x++) {
 		$tDate = date("Y-m-d", mktime(0,0,0,$this_month,$zz,$this_year));
 		$today_chk = "$this_year-$this_month-$this_day";
+		$bb=''; 
+		//if ($tDate == $today_chk) { $bg = "oldlace"; } else { $bg = "WHITE"; }
+		if ($tDate == $today_chk) { $BGCOLOR = ''; $bb=' border:6px solid '.$DISPLAY['TEXT_COLOR'].'; '; $fontColor = "#000"; } else { $BGCOLOR = ""; $fontColor = "inherit"; }
 	
-		if ($tDate == $today_chk) { $bg = "oldlace"; } else { $bg = "WHITE"; }
 	
-		echo "<TD ALIGN=LEFT VALIGN=TOP CLASS=\"smtext day_square\" BGCOLOR=$bg STYLE='width: 65px; border-color: black;'>";
+	
+		//echo "<TD ALIGN=LEFT VALIGN=TOP CLASS=\"smtext day_square\" BGCOLOR=$bg STYLE='width: 65px; border-color: black;'>";
+		echo "  <td align=\"left\" valign=\"top\" bgcolor=\"".$BGCOLOR."\" class=\"day_square smtext\" style=\"".$bb." height: 100px; width: 100px;color: ".$fontColor.";\">\n";
 			
 		if ($CHANGE_CAT != "ALL") {
 			$twkresult = mysql_query("SELECT PRIKEY, EVENT_TITLE, EVENT_START, EVENT_END, EVENT_DETAILS, EVENT_DETAILPAGE FROM calendar_events WHERE EVENT_DATE = '$tDate' AND $SEC_SEARCH AND EVENT_CATEGORY = '$CHANGE_CAT' ORDER BY EVENT_START");
@@ -135,12 +170,41 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
             	$mm = date("g:ia", mktime($tmp[0],$tmp[1],$tmp[2],$this_month,1,$this_year));
 				}
 			
-				if (strlen($row[EVENT_DETAILS]) > 3 || $row[EVENT_DETAILPAGE] != "") {
-					echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"#\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$row[PRIKEY]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
-					echo "$row[EVENT_TITLE]</a></span><BR><span class=\"event-time\">$mm";
-				} else {
-					echo "<span class=\"event-container\"><span class=\"event-title\">$row[EVENT_TITLE]</span><BR><span class=\"event-time\">$mm";
-				}
+//				if (strlen($row['EVENT_DETAILS']) > 3 || $row['EVENT_DETAILPAGE'] != "") {
+//					echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"#\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$row[PRIKEY]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
+//					echo "$row[EVENT_TITLE]</a></span><BR><span class=\"event-time\">$mm";
+//				} else {
+//					echo "<span class=\"event-container\"><span class=\"event-title\">$row[EVENT_TITLE]</span><BR><span class=\"event-time\">$mm";
+//				}
+				
+					
+						if(is_numeric($row['EVENT_DETAILPAGE'])){
+							echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" onclick=\"openCart('".$row['EVENT_DETAILPAGE']."','".$row['PRIKEY']."');\">";
+							echo "$row[EVENT_TITLE]</a></span><BR><span class=\"event-time\">$mm";
+						} else {
+							if($row['EVENT_DETAILPAGE'] != ""){
+								echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" onclick=\"openPagego('".$row['EVENT_DETAILPAGE']."');\">";
+								echo "$row[EVENT_TITLE]</a></span><BR><span class=\"event-time\">$mm";
+					//			echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" onclick=\"openPagego('".$row['EVENT_DETAILPAGE']."');\" style=\"color: ".$fontColor.";\">";								
+
+							} elseif (strlen($row['EVENT_DETAILS']) > 3){
+								echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" onclick=\"openEvent('".$row['PRIKEY']."');\">";
+								echo "$row[EVENT_TITLE]</a></span><BR><span class=\"event-time\">$mm";
+							} else {
+								//echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" style=\"color: ".$fontColor.";\" onclick=\"openEvent('".$row['PRIKEY']."');\">";
+								echo "<span class=\"event-container\"><span class=\"event-title\">$row[EVENT_TITLE]</span><BR><span class=\"event-time\">$mm";
+							}
+							
+							
+						}
+						
+				
+				
+				
+				
+				
+				
+				
 				
             if ($row['EVENT_END'] == "00:00:00") {
                $mm = "n/a"; // v4.9.2 r15 - fixes bug where "12:00am" would show for events with no end time asigned"
@@ -168,3 +232,4 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 </TR>
 
 </TABLE>
+</div>

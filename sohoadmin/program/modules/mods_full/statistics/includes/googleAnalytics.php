@@ -41,10 +41,10 @@ include_once('../../../../includes/smt_module.class.php');
 ### START HTML/JAVASCRIPT CODE			    ###
 #######################################################
 
-
-
+//
+//
 echo "<link rel=\"stylesheet\" href=\"http://".$_SESSION['this_ip']."/sohoadmin/program/product_gui.css\">\n";
-echo "<link rel=\"stylesheet\" href=\"http://".$_SESSION['this_ip']."/sohoadmin/program/includes/product_interface-ultra.css\">\n";
+//echo "<link rel=\"stylesheet\" href=\"http://".$_SESSION['this_ip']."/sohoadmin/program/includes/product_interface-ultra.css\">\n";
 echo "<link rel=\"stylesheet\" href=\"http://".$_SESSION['this_ip']."/sohoadmin/program/includes/product_buttons-ultra.css\">\n";
 
 
@@ -77,24 +77,24 @@ if ( $GOOGLE_secure_CODE != '' && trim($globalprefObj->get('google_analytics_non
 $GOOGLE_nonsecure_CODE = trim($globalprefObj->get('google_analytics_non'));
 $GOOGLE_secure_CODE = trim($globalprefObj->get('google_analytics_secure'));
 ?>
-
+<body style="background: #fff;">
 <script language="javascript">
 	function checkNgo(type) {
 		document.googleCode.submit()
 	}
 </script>
-<html style="background:#FFFFFF;">
-<head>
+
+
 <style type="text/css">
 textarea#google_code_non {
 	margin-top: 5px;
 	width: 650px;
-	height: 175px;
+	height: 200px;
 }
 img + p { margin-top: 0; }
 </style>
-<body style="background: #fff;">
-<table class="text" width='95%' cellspacing='0' cellpadding='0' border='0' align='center' style='font-size: 13px; overflow: scroll; margin-top: 10px;'>
+
+<table class="text" width='95%' cellspacing='0' cellpadding='0' border='0' align='center' style='font-size: 13px;  margin-top: 10px;'>
    <tr>
       <td valign='top'>
       	<img src="../analytics_logo.gif"/>
@@ -117,11 +117,11 @@ img + p { margin-top: 0; }
             <textarea id="google_code_secure" class="tfield" name="google_code_secure" cols="100" rows="6" style="overflow: auto;display: none;"><? echo $GOOGLE_secure_CODE; ?></textarea>
             <p><button class="redButton" type="button" onClick="document.location.href='../../statistics.php';"><span><span>Cancel</span></span></button>&nbsp;&nbsp;&nbsp;&nbsp;<button class="greenButton" type="button" onClick="checkNgo('secure')"><span><span>Save</span></span></button></p>
          </form>
+                  
       </td>
    </tr>
 </tbody>
 </table>
-
 </body>
 <?php
 

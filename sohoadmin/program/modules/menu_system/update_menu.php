@@ -110,58 +110,64 @@ function filterList( $item )
         return true;
     return false;
 }
-
+error_reporting('E_PARSE');
 #########################################################
 ### LOOP THRU PASSED VARS AND BUILD BASED ON EXPECTED ###
 ### VARIABLE DATA.  SOME PASSED VARS ARE UNIMPORTANT. ###
 #########################################################
 
 $tmp = array_filter( explode( "\n", $newMenu ), 'filterList' );
-
+foreach($tmp as $tvar=>$tval){
+	$tmp2[$tvar]['page']=$tval;
+	if($tval['0'].$tval['1']=='>>'){
+		$tval=trim(str_replace('>> ','',$tval));
+		$tmp2[$subpageof]['subs']=preg_replace('/^;/','',$tmp2[$subpageof]['subs'].';'.$tval);
+//		echo $tval."<br/>";	
+	} else {
+		$subpageof=$tvar;
+	}
+}
 
 
 reset($HTTP_POST_VARS);
-
+unset($tmp);
+$tmp=$tmp2;
+unset($tmp2);
 while (list($name, $value) = each($HTTP_POST_VARS)) {
-
-
 	$value = stripslashes($value);
 	${$name} = $value;
 }
 
+# Reset all sub-pages
+mysql_query("update site_pages set sub_pages = ''");
+
 		$tmpCnt = count($tmp);
-
 		$a=0;
-
-		for ($x=0; $x < $tmpCnt; $x++)
-		{
-            if ( ! $tmp[$x] )
-                continue;
-			elseif ( !ereg(">", $tmp[$x]) )
-			{
+		for ($x=0; $x < $tmpCnt; $x++){
+			if ( ! $tmp[$x]['page'] ){
+				continue;
+//			} elseif ( !ereg(">", $tmp[$x]) ){
+			} elseif($tmp[$x]['page']['0'].$tmp[$x]['page']['1']!='>>'){
 				$a++;
 
 				// Update Data Table with Numeric Value $a
 				// ----------------------------------------
-
-				$page_name = chop($tmp[$x]); // Clear all extra spaces for exact page name
-
+				$page_name = chop($tmp[$x]['page']); // Clear all extra spaces for exact page name
 				mysql_query("UPDATE site_pages SET main_menu = '$a' WHERE page_name = '$page_name'");
-			}
-			elseif (ereg(">", $tmp[$x]))
-			{
-				$this_page = ereg_replace(">> ", "", $tmp[$x]);
+				if(strlen($tmp[$x]['subs'])>=1){
+					mysql_query("UPDATE site_pages SET sub_pages = '".$tmp[$x]['subs']."' WHERE page_name = '$page_name'");		
+				}
+			} elseif($tmp[$x]['page']['0'].$tmp[$x]['page']['1']=='>>'){
+//			}elseif (ereg(">", $tmp[$x]['page'])){
+				$this_page = str_replace(">> ", "", $tmp[$x]['page']);
 				$this_page = chop($this_page); // Clear all extra spaces for exact page name
 
 				// Update Data Table with "Sub Page Of" data regarding this Main Page
 				// -------------------------------------------------------------------
-            if ( strlen($x) < 2 ) { $y = "0".$x; } else { $y = $x; } // So sort doesn't start screwing up after 9th sub menu item
-				mysql_query("UPDATE site_pages SET sub_page_of = '$page_name~~~$y' WHERE page_name = '$this_page'");
-
-			}
-
+				if ( strlen($x) < 2 ) { $y = "0".$x; } else { $y = $x; } // So sort doesn't start screwing up after 9th sub menu item
+					mysql_query("UPDATE site_pages SET sub_page_of = '$page_name~~~$y' WHERE page_name = '$this_page'");
+				}
 		} // End For $x Loop
-
 $filename = "$cgi_bin/menu.conf";
 
 if ( file_exists($filename) ) {

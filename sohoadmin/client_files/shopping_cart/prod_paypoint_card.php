@@ -248,9 +248,9 @@ echo "<!-- END SYSTEM -->\n";
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
  <tr>
   <td align="center" valign="top">
-   <table border="0" cellspacing="0" cellpadding="5"  style='border: 1px solid black;' align="center" bgcolor="#<? echo $OPTIONS[DISPLAY_CARTBG]; ?>">
+   <table border="0" cellspacing="0" cellpadding="5"  style='border: 1px solid black;' align="center" bgcolor="<? echo $OPTIONS[DISPLAY_CARTBG]; ?>">
     <tr>
-     <td colspan="2" class="text" align="left" bgcolor="#<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
+     <td colspan="2" class="text" align="left" bgcolor="<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
       &nbsp;
      </td>
     </tr>
@@ -258,9 +258,10 @@ echo "<!-- END SYSTEM -->\n";
     <tr>
      <td colspan="2" class="text" align="left">
       <font color="red">
-      <? echo lang("The total amount of your purchase"); ?>,
-      $<? echo $ORDER_TOTAL; ?>,
-      <? echo lang("will be charged to your credit card."); ?>
+      <?php echo lang("The total amount of your purchase"); ?>,
+      <?php $dSign = $OPTIONS['PAYMENT_CURRENCY_SIGN']; ?>
+      <?php echo $dSign.$ORDER_TOTAL; ?>,
+      <?php echo lang("will be charged to your credit card."); ?>
       </font>
      </td>
     </tr>
@@ -359,7 +360,7 @@ echo "<!-- END SYSTEM -->\n";
      </td>
     </tr>
     <tr>
-     <td colspan="2" class="text" align="center" bgcolor="#<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
+     <td colspan="2" class="text" align="center" bgcolor="<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
       <input type="button" value=" Process Order &gt;&gt;" class="FormLt1" name="button" onClick="document.pay_paypoint.submit()">
      </td>
     </tr>

@@ -62,7 +62,7 @@ $MONTHS[12] = "December";
 <HTML>
 <HEAD>
 <TITLE>Page Views by Hour</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<?php echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UT"."F-8\">\n"; ?>
 <LINK REL="stylesheet" HREF="../shared/soholaunch.css" TYPE="TEXT/CSS">
 <script language="JavaScript">
 
@@ -83,7 +83,7 @@ function show_num(M,d,hit) {
 </script>
 </HEAD>
 
-<BODY BGCOLOR="#EFEFEF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
 <?php
 
 	// First; find out what the first month logged in the system is and let's loop in DESC order
@@ -91,15 +91,15 @@ function show_num(M,d,hit) {
 	// ------------------------------------------------------------------------------------------
 
 	echo "<H5><FONT FACE=VERDANA><U>".$lang["PAGE VIEWS BY HOUR"]."</U></FONT></H5>\n";
-
+	$used=array();
 	//$result = mysql_query("SELECT DISTINCT Month, Year FROM stats_byhour ORDER BY Real_Date DESC");
-	$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_byhour  GROUP by Month UNION SELECT Month, Year, Real_Date FROM stats_byhour_archive GROUP by Month ORDER BY Real_Date DESC");
+	$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_byhour GROUP by Real_Date UNION SELECT Month, Year, Real_Date FROM stats_byhour_archive GROUP by Real_Date ORDER BY Real_Date DESC");
 
 	while($ALL_MONTHS = mysql_fetch_assoc($result)) {
-
+		if(!in_array($ALL_MONTHS['Month'].$ALL_MONTHS['Year'], $used)){
+			$used[]=$ALL_MONTHS['Month'].$ALL_MONTHS['Year'];
 			$db_result = mysql_query("SELECT * FROM stats_byhour WHERE Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]' UNION SELECT * FROM stats_byhour_archive WHERE Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]'");
 //			$db_result = mysql_query("SELECT Month, Year, SUM(Hits) FROM stats_byhour WHERE Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]' AND Hour = '$x_hr'");
-
 
 			$tHITS = 0;	// Calculate Total Page Views
 			$large_num = 0; // Calculate Largest Hour Total
@@ -193,6 +193,8 @@ function show_num(M,d,hit) {
 			echo "</DIV>\n";
 			echo "</TABLE><BR CLEAR=ALL><BR>\n";
 
+	
+		}
 	} // End While Month Loop
 
 ?>

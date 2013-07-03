@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -7,7 +7,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## Soholaunch(R) Site Management Tool
 ## Version 4.5
 ##
-## Author: 			Mike Johnston [mike.johnston@soholaunch.com]
 ## Homepage:	 	http://www.soholaunch.com
 ## Bug Reports: 	http://bugzilla.soholaunch.com
 ## Release Notes:	sohoadmin/build.dat.php
@@ -15,8 +14,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 ##############################################################################
 ## COPYRIGHT NOTICE
-## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston
-## Copyright 2003-2007 Soholaunch.com, Inc.
+## Copyright 1999-2013 Soholaunch.com, Inc.
 ## All Rights Reserved.
 ##
 ## This script may be used and modified in accordance to the license
@@ -38,8 +36,9 @@ require_once("../includes/product_gui.php");
 
 # Delete file
 if ( $_GET['delete_file'] != '' ) {
-	unlink($_SESSION['docroot_path'].'/'.$_GET['delete_file']);
-	$report[] = $_GET['delete_file'].' deleted';
+	unlink($_SESSION['docroot_path'].'/'.urldecode($_GET['delete_file']));
+	$displayfile = preg_replace('/^(images|media)\//i','',urldecode($_GET['delete_file']));
+	$report[] = $displayfile.' deleted';
 }
 
 
@@ -48,6 +47,49 @@ ob_start();
 ?>
 
 <style type="text/css">
+#right-panel {
+	min-width:800px;
+}
+#filebuttons {
+	height:22px;
+	top:118px;
+	right:37px;
+	width:330px;
+	position:fixed;
+	background-color:#FFF;
+	z-index:1099;
+}
+#filebuttons1 {
+	float:right;
+}
+#filebuttons2 {
+	float:right;
+	margin-right:20px;
+}
+#file_manager_module {
+	width:100%;
+	height:100%;
+	margin-top:90px;
+}
+#right-panel h3 {
+	height:34px;
+	width:96%!important;
+	min-width:800px;
+	top:49px;
+	position:fixed;
+	background-color:#FFF;
+	z-index:999;
+}
+#module_description_text {
+	height:57px;
+	top:83px;
+	width:96%!important;
+	position:fixed;
+	background-color:#FFF;
+	z-index:999;
+	margin-bottom:6px!important;
+}
+
 #imgPreviewWithStyles {
     background: #D6D6D6;
     -moz-border-radius: 10px;
@@ -91,6 +133,10 @@ tr.row_bgcolor2 td { background-color: #f8f9fd; }
 
 <script type="text/javascript">
 <!--
+
+function URL_decode(url) {
+	return decodeURIComponent(url.replace(/\+/g, ' '));
+}
 
 function killErrors() {
 		return true;
@@ -163,10 +209,30 @@ function verify_delete(prikey) {
 	}
 }
 
+function removeID(eleid){
+    return (elem=document.getElementById(eleid)).parentNode.removeChild(elem);
+}
+
 function saving_updates() {
 	show_hide_layer('Layer2','','hide','Layer1','','hide','Layer3','','show');
+	$(':input', '#CURRENT').each(function() {
+     	if(this.name.match(/^new_name/)){
+     		var varnum = this.name.replace(/^new_name/,'');
+     		var oldnamez = 'file'+varnum;
+     		var newnamez = 'new_name'+varnum;
+     		if(this.value==''){
+     			var curCnt = document.getElementById('true_count').value;
+     			//document.getElementById('true_count').value = eval(curCnt-1);
+				removeID(newnamez);
+				removeID(oldnamez);
+			}
+		}
+		
+	});
+	
 	document.CURRENT.submit();
 }
+
 
 function upload_now() {
 	window.location="upload_files.php";
@@ -187,8 +253,8 @@ parent.header.flip_header_nav('MAIN_MENU_LAYER');
 
 
 function delete_file(fileName) {
-	var usure = confirm('Are you sure you want to delete '+fileName.replace(/^(images|media)\//i, '')+'?');
-	
+	var displayFilename = URL_decode(fileName.replace(/^(images|media)\//i, ''));	
+	var usure = confirm('Are you sure you want to delete '+displayFilename+'?');	
 	if ( usure == true ) {
 		document.location = 'site_files.php?delete_file='+fileName;
 	}
@@ -206,21 +272,26 @@ function delete_file(fileName) {
 
 $count = 0;
 
+$video_extensionsArr = array('mov', 'mpg', 'wmv', 'mpeg', 'flv', 'mp4', 'swf', 'rm');
+
 # MEDIA/ -- Documents and custom includes
 $directory = $_SESSION['docroot_path']."/media";
 if (is_dir($directory)) {
 $handle = opendir("$directory");
 	while ($files = readdir($handle)) {
+		
 		if (strlen($files) > 2) {
 			$count++;
 			$tmp = "$directory/$files";
 			$tmp_space = filesize($tmp);
 			$tmp_srt = $files;
 			$site_File[strtolower($files)] = $tmp_srt . "~~~media~~~$tmp_space~~~" . $files;
+			preg_match('/([\d\s\w]+)$/i', $files, $out);
+			$file_extension = $out[0];
 
 			# Custom include scripts
-		if ( eregi("\.inc", $files) || eregi("\.php", $files)){
-			if($files!='index.php'){
+			if ( eregi("\.inc", $files) || eregi("\.php", $files)){
+				if($files!='index.php'){
 	   			$incFile[$files]['size'] = $tmp_space;
 	   			$incFile[$files]['name'] = $tmp_srt;
 	   			$incFile[$files]['dir'] = "media";
@@ -239,7 +310,7 @@ $handle = opendir("$directory");
    			$formFile[$files]['dir'] = "media";
 
    		# Video files
-   		} elseif ( eregi("\.avi", $files) || eregi("\.mov", $files) || eregi("\.mpg", $files) || eregi("\.wmv", $files) || eregi("\.mpeg", $files)) {
+   		} elseif ( in_array($file_extension, $video_extensionsArr) ) {
    			$vidFile[$files]['size'] = $tmp_space;
    			$vidFile[$files]['name'] = $tmp_srt;
    			$vidFile[$files]['dir'] = "media";
@@ -279,6 +350,15 @@ if (is_dir($directory)) {
 		if ( strlen($files) > 2 && !is_dir($directory."/".$files) ) {
 			$count++;
 			$tmp = "$directory/$files";
+			if ( eregi('"', $files) ) {
+				$new_name = str_replace('"', '', $files);
+				copy($tmp, $directory.'/'.$new_name);
+				unlink($tmp);  
+				$report[] = 'File <em>'.$files.'</em> contained invalid characters. A new version of the file has been created under the name <em>'.$new_name.'</em>. If you have placed this file on any pages, you should check those pages and re-place it.';
+				$tmp = "$directory/$new_file";
+				$files = $new_file;
+				continue;
+			}			
 			$tmp_space = filesize($tmp);
 			$tmp_srt = $files;
 			$site_File[$files] = $tmp_srt . "~~~images~~~$tmp_space~~~" . $files;
@@ -338,8 +418,14 @@ closedir($handle);
 if ($count > 1) { sort($site_file); };
 $file_count = count($site_file);
 
-?>
 
+echo "<div id=\"filebuttons\">\n";
+echo "	<button id=\"filebuttons1\" type=\"button\" class=\"greenButton\" onclick=\"saving_updates();\"><span><span>".lang("Update File Changes")."</span></span></button>\n";
+echo "	<button id=\"filebuttons2\" TYPE=BUTTON CLASS=\"greenButton\" onclick=\"upload_now();\"><span><span>".lang("Upload New Files")." </span></span></button>\n";
+//echo "<br/>   <font color=\"#FF0000\"><U>".lang("Remember")."</U>: ".lang("Changes and deletions are final and can not be undone.")."</font>\n";
+echo "</div>\n";
+?>
+<div id="file_manager_module">
 <!-- ======================================================================================================== -->
 <!-- ======================================================================================================== -->
 <!-- ======================================================================================================== -->
@@ -359,9 +445,9 @@ $file_count = count($site_file);
 <!-- ======================================================================================================== -->
 <!-- ======================================================================================================== -->
 <!-- ======================================================================================================== -->
+<div style="width:100%;height:">
 
-
-<form method=post action="site_files/update_files.php" name="CURRENT">
+<form method=post action="site_files/update_files.php" name="CURRENT" id="CURRENT">
 <img src="spacer.gif" height=5 width=500>
 <table border=0 cellpadding=0 cellspacing=0 width=100%>
  <tr>
@@ -391,7 +477,7 @@ $file_count = count($site_file);
 		      <img src="arrow.gif" width="17" height="13" align="absmiddle"><? echo lang("Current Site Files"); ?>
 			  </td>
 			  <td NOWRAP class="fgroup_title" style="text-align:right; padding-right:10px; width:177px;">
-		  <button TYPE=BUTTON CLASS="greenButton" onclick="upload_now();"><span><span> <? echo lang("Upload New Files"); ?> </span></span></button>
+		  <!-- <button TYPE=BUTTON CLASS="greenButton" onclick="upload_now();"><span><span> <? echo lang("Upload New Files"); ?> </span></span></button> -->
 			</td>
 			 </tr>
 			</table>
@@ -450,10 +536,10 @@ function prevImg($filedir, $filename) {
 	if (preg_match("/\.(gif|jpg|jpeg|bmp|png|tif|tiff)$/i", $filename)){
       //$preview = "<img src=\"site_files/preview.gif\" width=21 height=21 border=0 alt=\"Preview Image\" onclick=\"preview('$filedir/$filename');\" style=\"cursor: pointer;\">";
 		if(function_exists('smart_resize_image')){
-			$preview = "<div onclick=\"document.location='site_files/resize_image.php?img=".$filename."';\" style=\"width:25px;position:relative;margin-top:-10px;padding:0;cursor: pointer;\">\n";
+			$preview = "<div onclick=\"document.location='site_files/resize_image.php?img=".urlencode($filename)."';\" style=\"width:25px;position:relative;margin-top:-10px;padding:0;cursor: pointer;\">\n";
 			$preview .= "	<div style=\"position:absolute;top:0;left:0;height:18px;width:29px;background:url(site_files/preview.png) no-repeat -2px 0px;filter:alpha(opacity=40);opacity:.40;\">&nbsp;</div>\n";
 			$preview .= "	<div style=\"position:absolute;top:0;left:0;height:18px;width:29px;\">\n";
-			$preview .= "		<a href=\"site_files/resize_image.php?img=".$filename."\" style=\"text-decoration:none;border-bottom:1px dashed #EAA510;font-size:8px;font-weight:normal;color:#000;\"><span style=\"font-weight:bold;color:#000;\">E</span>dit</a>";
+			$preview .= "		<a href=\"site_files/resize_image.php?img=".urlencode($filename)."\" style=\"text-decoration:none;border-bottom:1px dashed #EAA510;font-size:8px;font-weight:normal;color:#000;\"><span style=\"font-weight:bold;color:#000;\">E</span>dit</a>";
 			$preview .= "	</div>\n";
 			$preview .= "</div>\n";			
 		} else {
@@ -528,11 +614,11 @@ if($the_file_count > 0){
       //echo "     <td style=\"color: #000099;\">\n"; 
       echo "     <td style=\"text-align:left;color: #000000;padding-top:0;padding-bottom:0;padding-left:15px;\">\n";
 		if($file['dir']=='images'){
-      		echo "      <div style=\"padding-top:3px;height:20px;width:100%;text-decoration:none;cursor: pointer;\" href=\"../../../".$file['dir']."/".$file['name']."\" onClick=\"document.location='site_files/resize_image.php?img=".$file['name']."';\">".$file['name']."</div>\n";
+      		echo "      <div style=\"padding-top:3px;height:20px;width:100%;text-decoration:none;cursor: pointer;\" href=\"../../../".$file['dir']."/".$file['name']."\" onClick=\"document.location='site_files/resize_image.php?img=".urlencode($file['name'])."';\">".$file['name']."</div>\n";
 		} else {
      		echo "      ".$file['name']."\n";	
 		}
-      echo "<input type=hidden name=\"file".$c."\" value=\"".$file['dir']."/".$file['name']."\">\n";
+      echo "<input type=hidden id=\"file".$c."\" name=\"file".$c."\" value=\"".$file['dir']."/".$file['name']."\">\n";
       echo "     </td>\n";
       
       # If demo site, dont allow rename or file delete
@@ -540,12 +626,12 @@ if($the_file_count > 0){
 
       # Rename field
       echo "     <td style=\"text-align:left;\">\n";
-      echo "      <input class=\"text\" type=\"text\" name=\"new_name".$c ."\" size=\"22\" ".$demo_disabled.">\n";
+      echo "      <input class=\"text\" type=\"text\" id=\"new_name".$c ."\" name=\"new_name".$c ."\" size=\"22\" ".$demo_disabled.">\n";
       echo "     </td>\n";
 
       # Delete checkbox
       echo "     <td style=\"text-align:left;\">\n";
-      echo "      [<span class=\"red hand\" onclick=\"delete_file('".$file['dir']."/".$file['name']."');\">X</span>]\n";
+      echo "      [<span class=\"red hand\" onclick=\"delete_file('".$file['dir']."/".urlencode($file['name'])."');\">X</span>]\n";
       echo "     </td>\n";
 //      echo "     <td>\n";
 //      echo "      <input type=\"checkbox\" id=\"file_delete".$c."\" name=\"file_delete".$c."\" value=\"yes\" onclick=\"verify_delete('".$c."');\" ".$demo_disabled.">\n";
@@ -594,7 +680,7 @@ mkFolder(lang("Unclassified files"), $wtfFile);
 echo "</table>\n";
 echo "</td></tr></table>\n";
 
-echo "<input type=hidden name=true_count value=\"".$c."\">\n";
+echo "<input type=hidden id=\"true_count\" name=\"true_count\" value=\"".$c."\">\n";
 echo "<table width=\"85%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" align=\"center\">\n";
 echo " <tr> \n";
 echo "  <td class=text align=\"right\" valign=\"middle\">\n";
@@ -654,7 +740,7 @@ echo '    }'."\n";
 echo '});'."\n";
 
 echo "</script>\n";
-
+echo "</div>\n";
 # Grab module html into container var
 $module_html = ob_get_contents();
 ob_end_clean();

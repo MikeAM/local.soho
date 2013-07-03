@@ -32,7 +32,9 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 session_start();
 error_reporting(0);
 require_once('../../../includes/product_gui.php');
-
+if($_REQUEST['selkey']!=''){
+	$selkey=$_REQUEST['selkey'];
+}
 if ($selkey == "Forms") {
 	$this_title = "FORMS LIBRARY";
 } else {
@@ -46,7 +48,7 @@ if ($selkey == "Forms") {
 	var width = (screen.width/2) - (650/2);
 	var height = (screen.height/2) - (500/2);
 	window.focus();
-	
+	   
 	
 function goGetTrue() {
    dataTrueForm = getCurrentTrue();
@@ -65,14 +67,15 @@ function closeMe() {
 }
 
 function sendEditVals(editType) {
-   alert('yay')
+   alert('yay');
+   
 }
    
 </script>
 
-   <div id="selection" style=""><a href="#">selection</a></div>
+   <div id="selection" style="height:50%;min-height:330px;" ><a href="#">selection</a></div>
    
-   <div id="preview" style="">preview</div>
+   <div id="preview" style="height:50%;overflow:auto;">preview</div>
 
 
 <script language="javascript">

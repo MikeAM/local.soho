@@ -33,9 +33,9 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 session_start();
 error_reporting(0);
-include_once("../../../includes/product_gui.php");
+require_once("../../../includes/product_gui.php");
 # Make sure session is restored (Mantis #4)
-if ( strlen($lang["Order Date"]) < 4 ) {
+if ( strlen(lang("Order Date")) < 4 ) {
    include("includes/config-global.php"); // Re-registers all global & session info
 }
 

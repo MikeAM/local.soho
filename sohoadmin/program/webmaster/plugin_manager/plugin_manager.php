@@ -6,7 +6,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 # Plugin Manager
 error_reporting(E_PARSE);
 session_start();
-include_once("../../includes/product_gui.php");
+require_once("../../includes/product_gui.php");
 error_reporting(E_PARSE);
 
 # Plugin install/misc functions (hook_attach, hook_special, etc)
@@ -253,7 +253,7 @@ if ( $_GET['todo'] == "update_check" || $_GET['todo'] == "plugin_updated" ) {
 //   echo "&nbsp;\n";
 //}
 ?>
-
+<div id="disable_plugin_installs" style="display: none;">
   <!------------------------------START: Install new plugin------------------------------>
    <form enctype="multipart/form-data" action="install_plugin.php" method="POST" name="plugin_upload_form">
    <input type="hidden" name="todo" value="install">
@@ -298,7 +298,7 @@ if ( $_SESSION['demo_site'] == "yes" ) {
 ?>
 	</form>
   <!------------------------------END: Install new plugin------------------------------>
-
+</div>
 <?
 # List installed plugins
 $result = mysql_query("select * from system_plugins ORDER BY TITLE ASC");

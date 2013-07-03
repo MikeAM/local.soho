@@ -36,6 +36,7 @@ if ( $_GET['section_id'] != '' ) {
 	$global_admin_prefs->set($_GET['thing_id'], $show_or_hide);
 	$_SESSION[$_GET['thing_id']] = $show_or_hide;
 	echo '<p>'.$_GET['thing_id'].'='.$show_or_hide.'</p>';
+
 } else {
 //	echo 'no heading id passed';
 }

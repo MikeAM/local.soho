@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -36,12 +36,13 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 // script has dependancies and programming that can not be modified.
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-error_reporting(E_PARSE);
+
 session_start();
 
-include("includes/autoconfig.php");
+include_once("includes/autoconfig.php");
+include_once("program/includes/SohoEmail_class/SohoEmail.php");
+if(!isset($_SESSION['keystroke_login'])){ $_SESSION['keystroke_login'] = $keystroke_login; }
 
-if (!session_is_registered("keystroke_login")) { session_register("keystroke_login"); }
 if ($keystroke == "on") {
 	$keystroke_login = $keystroke;
 }
@@ -125,22 +126,23 @@ if($_POST['todo'] == "send_password"){
 	if($_SESSION['email_hint']==''){
 		$_SESSION['email_hint'] = $webmaster_prefs->get("forgotpw_emailhint");
 	}
-	$recover_timer_mins = 15;
+	$recover_timer_mins = .1;
 
 	if($forgot_timer != "" && $forgot_timer > (time() - ($recover_timer_mins *60)) ){
 		$howlong = round((time() - $forgot_timer)/60);
 		if($howlong == 1){ $minlang = 'minute'; } else { $minlang = 'minutes'; }
 		$msgt .= "Your login info has was emailed to you ".$howlong." ".$minlang." ago.\n";
-		$msgt .= "<p><b>".lang("Note").":</b> ".lang("The email was sent to the main email address for this site.")." <br/>(Hint: ".$_SESSION['email_hint'].")</p> \n";		
+		$msgt .= "<p><b>".lang("Note").":</b> ".lang("The email was sent to the main email address for this site.")." <br/>(Hint: ".$_SESSION['email_hint'].")</p> \n";
+		$msgt .= "<p>*".lang("If don't see the email in your inbox, check your Junk folder.")."</p> \n";
 		$msg[] = $msgt;
 	} else {
 		unset($my_email_ar['df_email']);
 		# Pull password from db
-		$qry = "SELECT Username, Password FROM login WHERE First_Name = 'WEBMASTER' limit 1";
+		$qry = "SELECT Username,Email,Password FROM login WHERE First_Name = 'WEBMASTER' limit 1";
 		$rez = mysql_query($qry);
 		$getLogin = mysql_fetch_assoc($rez);	   
 		if(mysql_num_rows($rez) == 1){
-			$my_email = $getLogin['Username'];
+			$my_email = str_replace(' ','',$getLogin['Email']);
 			
 			# Build forgot my password email
 			$this_web_ip = $_SESSION['this_ip'];
@@ -150,28 +152,53 @@ if($_POST['todo'] == "send_password"){
 			$email_header .= "Content-Transfer-Encoding: 7bit\n";
 			$email_header .= "Content-Disposition: inline;\n\n";
 			
-			$email_msg = "".lang("You are receiving this message because somebody (presumably yourself) clicked the 'Email my login info to me' link")."\n";
+			$email_msg = "".lang("You are receiving this message because somebody (presumably yourself) clicked the 'Email my login info to me' link")." ";
 			$email_msg .= "".lang("on the sitebuilder login screen for your website")." (".$this_web_ip.").<br/><br/>";
 			
 			$email_msg .= "".lang("Your login information is")."...<br/>\n";
 			$email_msg .= "".lang("USERNAME").": <b>".$getLogin['Username']."</b><br/>\n";
 			$email_msg .= "".lang("PASSWORD").": <b>".$getLogin['Password']."</b><br/>\n";
 			# Send email now
-			if ( mail($my_email, $this_web_ip." ".lang("Site builder login info"), $email_msg, $from_addr.$email_header) ) {
-				$email_hint = '****'.preg_replace('/.*@/i', '@', $my_email);
+			if(SohoEmail($my_email, preg_replace('/^www\./i', '', $this_web_ip), $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg)){
+//			if(mail($my_email, $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg, $from_addr.$email_header)){
+				$email_hint = $my_email[0].'****'.preg_replace('/.*@/i', '@', $my_email);
 				$msgt .= lang("Your login info has been emailed to you.")."\n";
 				$msgt .= "<p><b>".lang("Note").":</b> ".lang("The email was sent to the main email address for this site.")." <br/>(Hint: ".$email_hint.")</p> \n";
+				$msgt .= "<p>*".lang("If don't see the email in your inbox, check your Junk folder.")."</p> \n";
 				$msg[] = $msgt;
 			} else {
-				$my_emailq = mysql_query("select df_email from site_specs limit 1");
-				$my_email_ar = mysql_fetch_assoc($my_emailq);
-				$my_email = $my_email_ar['df_email'];
-				$email_hint = '****'.preg_replace('/.*@/i', '@', $my_email);
-				mail($my_email, $this_web_ip." ".lang("Site builder login info"), $email_msg, $from_addr.$email_header);
-				$msgt .= lang("Your login info has been emailed to you.")."\n";
-				$msgt .= "<p><b>".lang("Note").":</b> ".lang("The email was sent to the main email address for this site.")." <br/>(Hint: ".$email_hint.")</p>\n";
-				$msg[] = $msgt;
+//				if(mail($my_email, $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg, $email_header)){
+				if(SohoEmail($my_email, preg_replace('/^www\./i', '', $this_web_ip), $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg)){
+					$email_hint = $my_email[0].'****'.preg_replace('/.*@/i', '@', $my_email);
+					$msgt .= lang("Your login info has been emailed to you.")."\n";
+					$msgt .= "<p><b>".lang("Note").":</b> ".lang("The email was sent to the main email address for this site.")." <br/>(Hint: ".$email_hint.")</p> \n";
+					$msgt .= "<p>*".lang("If don't see the email in your inbox, check your Junk folder.")."</p> \n";
+					$msg[] = $msgt;
+				} else {
+//					if(mail($my_email, $this_web_ip." Ultra ".lang("sitebuilder login info"), str_replace('</b>','',str_replace('<b>','',str_replace('<br/>',"",$email_msg))))){
+					if(SohoEmail($my_email, preg_replace('/^www\./i', '', $this_web_ip), $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg)){
+						$email_hint = $my_email[0].'****'.preg_replace('/.*@/i', '@', $my_email);
+						$msgt .= lang("Your login info has been emailed to you.")."\n";
+						$msgt .= "<p><b>".lang("Note").":</b> ".lang("The email was sent to the main email address for this site.")." <br/>(Hint: ".$email_hint.")</p> \n";
+						$msgt .= "<p>*".lang("If don't see the email in your inbox, check your Junk folder.")."</p> \n";
+						$msg[] = $msgt;
+					} else {
+							$my_emailq = mysql_query("select df_email from site_specs limit 1");
+							$my_email_ar = mysql_fetch_assoc($my_emailq);
+							$my_email = $my_email_ar['df_email'];
+							$email_hint = $my_email[0].'****'.preg_replace('/.*@/i', '@', $my_email);
+							//mail($my_email, $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg, $from_addr.$email_header);
+							SohoEmail($my_email, preg_replace('/^www\./i', '', $this_web_ip), $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg);
+							SohoEmail($getLogin['Username'], preg_replace('/^www\./i', '', $this_web_ip), $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg);
+							//mail($getLogin['Username'], $this_web_ip." Ultra ".lang("sitebuilder login info"), $email_msg, $from_addr.$email_header);
+							$msgt .= lang("Your login info has been emailed to you.")."\n";
+							$msgt .= "<p><b>".lang("Note").":</b> ".lang("The email was sent to the main email address for this site.")." <br/>(Hint: ".$email_hint.")</p>\n";
+							$msgt .= "<p>*".lang("If don't see the email in your inbox, check your Junk folder.")."</p> \n";
+							$msg[] = $msgt;
+					}
+				}
 			}
+
 			if($email_hint!=''){
 				$_SESSION['email_hint'] = $email_hint;
 				$webmaster_prefs->set("forgotpw_emailhint", $email_hint);
@@ -181,12 +208,24 @@ if($_POST['todo'] == "send_password"){
 	}
 } // End if todo = send_password
 
+
+if(($spanish=='yes' || $_SESSION['spanish']=='yes')&&$_REQUEST['lang']!='es'&& count($_POST)==0){
+	header("Location:index.php?lang=es#googtrans(en|es)");
+	exit;
+}
 ?>
 <!doctype html>
 <html>
 <head>
 <title><? echo $_SESSION['this_ip']; ?>: Log-in to manage your website</title>
-<meta http-equiv="Content-Type" CONTENT="text/html; charset=iso-8859-1"/>
+<?php
+
+$globalprefObj = new userdata('global');
+if($globalprefObj->get('goog_trans')!='off'){
+	echo display_google_translate();
+}
+echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ut"."f-8\">\n";
+?>
 <script language="javascript">
 <?php
 
@@ -245,7 +284,7 @@ ul li {
 #logo {
 	position: relative;
 	padding-bottom: 15px;
-	width: 255px;
+	width: 280px;
 	height: 60px;
 	/*border: 1px solid red;*/
 	margin: 0px auto;
@@ -254,8 +293,8 @@ ul li {
 	position: absolute;
 	margin: 0;
 	padding: 0;
-	left: 60px;
-	top: 40px;
+	left: 77px;
+	top: 55px;
 	font-size: 12px;
 	font-weight: bold;
 	color: #484848;
@@ -382,7 +421,7 @@ function loginNow() {
 	<!---parent table-->
 	<div id="login-box">
 		<div id="logo">
-			<img src="program/soholaunch-logo-noslogan.png"/>
+			<img src="program/includes/images/soholaunch-logo-noslogan.png"/>
 			<h1>Log-in to manage your website.</h1>
 		</div>
 		
@@ -426,7 +465,7 @@ if ( count($maxmsg) > 0 ) {
 ?>
 		<!---cell: help/info links-->
 		<div id="help-links">
-			<a href="help.html" rel="nofollow"><? echo lang("Reccommended browser settings"); ?></a> |
+			<a href="help.html" rel="nofollow"><? echo lang("Recommended browser settings"); ?></a> |
 			<strong><a href="javascript:void(0)" onClick="document.recover.submit();" rel="nofollow"><?=lang("Forgot my password"); ?></a></strong>
 		</div>	
 	

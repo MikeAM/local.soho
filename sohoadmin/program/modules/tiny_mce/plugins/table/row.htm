@@ -7,6 +7,7 @@
 	<script type="text/javascript" src="../../utils/form_utils.js"></script>
 	<script type="text/javascript" src="../../utils/editable_selects.js"></script>
 	<script type="text/javascript" src="js/row.js"></script>
+	<link rel="stylesheet" href="../../../../includes/product_buttons-ultra.css">
 	<link href="css/row.css" rel="stylesheet" type="text/css" />
 </head>
 <body id="tablerow" style="display: none">
@@ -147,8 +148,9 @@
 				</select>
 			</div>
 
-			<input type="submit" id="insert" name="insert" value="{#update}" />
-			<input type="button" id="cancel" name="cancel" value="{#cancel}" onclick="tinyMCEPopup.close();" />
+
+			<button type="submit" class="greenButton" role="button" name="insert" id="insert" style="background-image:none!important;margin:0px 10px;float:right!important;padding:0;height:22px;"/><span><span>{#update}</span></span></button>
+			<button type="button" id="cancel" name="cancel" value="{#cancel}" class="redButton" style="background-image:none!important;margin:0px 10px;float:right!important;padding:0;height:22px;"  onclick="tinyMCEPopup.close();" /><span><span>{#cancel}</span></span></button>
 		</div>
 	</form>
 </body>

@@ -259,11 +259,13 @@ if(!table_exists('user_access_rights')){
    border: 1px solid #d3e9ef;
    font-family: tahoma, verdana, arial, helvetica, sans-serif;
    font-size: 11px;
+position:relative;
 }
 
 .mod_links {
    font-weight: bold;
 }
+.fadein {position:relative; }
 </style>
 
 <script type="text/javascript">
@@ -397,7 +399,7 @@ if ( count($errors) > 0 ) {
    $THIS_DISPLAY .= "</div>\n";
 }
 
-$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"text\" width=\"100%\"><tr>\n";
+$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"text\" width=\"100%\" style=\"position:relative;\"><tr>\n";
 $THIS_DISPLAY .= "<td align=\"left\" valign=\"top\">\n";
 
 
@@ -504,7 +506,7 @@ if ($_SESSION['hostco']['sitepal_features'] == "on") {
    feature_array("SitePal", "MOD_SITEPAL", "sitepal");
 }
 feature_array("".lang("Backup/Restore")."", "MOD_BACKUPRESTORE", "backup_restore");
-feature_array("".lang("Manage Plugins")."", "MOD_PLUGINMANAGER", "plugins");
+//feature_array("".lang("Manage Plugins")."", "MOD_PLUGINMANAGER", "plugins");
 feature_array("".lang("Help Center")."", "MOD_HELPCENTER", "help_center");
 feature_array("".lang("Webmaster")."", "MOD_WEBMASTER", "webmaster");
 
@@ -639,6 +641,26 @@ function allpages_option() {
       }
    }
 }
+
+function alldb_option() {
+   var alldbsisnow = document.getElementById('MOD_ALLDBS').checked;
+
+   var dboptions = document.getElementById('db_rights').getElementsByTagName("input");
+   var max = dboptions.length;
+   for ( p = 0; p < max; p++ ) {
+      if ( alldbsisnow == true ) {
+         // All pages
+         document.getElementById('mmbtn_chk_9').checked = true;
+         dboptions[p].checked = true;
+         dboptions[p].disabled = true;
+      } else {
+         // Page-by-page
+         dboptions[p].checked = false;
+         dboptions[p].disabled = false;
+      }
+   }
+}
+
 </script>
 <?
 $THIS_DISPLAY .= ob_get_contents();
@@ -714,10 +736,22 @@ $THIS_DISPLAY .= "<b>".lang("Select each User Data Table this user should have a
 // == LOOP THROUGH ALL UDT_ TABLES AND PLACE CHECKBOX OPTIONS NEXT TO EACH FOR BLOB rightS
 // ========================================================================================
 
-$THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=2 CELLSPACING=0 WIDTH=90% CLASS=text>\n";
+
+$THIS_DISPLAY .= "<div id=\"allpages_option_container\">\n";
+$THIS_DISPLAY .= " <input type=\"checkbox\" name=\"MOD_ALLDBS\" id=\"MOD_ALLDBS\" onchange=\"alldb_option();\">\n";
+$THIS_DISPLAY .= " <label for=\"MOD_ALLDBS\">".lang("Give user access to edit all Data Tables, present and future").".</label>\n";
+$THIS_DISPLAY .= " <div class=\"ie_cleardiv\"></div>\n";
+$THIS_DISPLAY .= "</div>\n";
+
+if ( eregi("MOD_ALLDBS", $ACCESS_STRING) ) {
+   $THIS_DISPLAY .= "<script type=\"text/javascript\">document.getElementById('MOD_ALLDBS').checked = true;window.setTimeout('alldb_option()', 1000);</script>\n";
+}
+
+
+$THIS_DISPLAY .= "<TABLE id=\"db_rights\" BORDER=0 CELLPADDING=2 CELLSPACING=0 WIDTH=90% CLASS=text>\n";
 $rcnt = 1;
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 
 while ($i < mysql_num_rows ($result)) {

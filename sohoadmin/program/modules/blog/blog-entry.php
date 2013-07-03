@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '' || $_REQUEST['_SESSION'] != '') { exit; }
 
 #=====================================================================================
@@ -13,7 +13,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 # module and keep it's look consistent with the rest of the product
 #=====================================================================================
 
-error_reporting(E_PARSE);
 session_start();
 
 # Include core files
@@ -38,10 +37,10 @@ while($auth_ar = mysql_fetch_assoc($authqry)){
 	$author_array[$auth_ar['prikey']]['picture']=$auth_ar['PICTURE'];
 }
 
-include_once('blog-styles.php');
+
 # So you can write straight HTML without having to build every line into a container var (i.e. $disHTML .= "another line of html")
 ob_start();
-
+include_once('blog-styles.php');
 ?>
 
 <script type="text/javascript">

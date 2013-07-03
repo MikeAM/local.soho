@@ -54,7 +54,7 @@ while ($row = mysql_fetch_array($numresults)) {
 	$securegroup = '';
 	if ($row["username"] != '' ) {
 		$securegroup = $row["username"];
-		mysql_query("update site_pages set username='' where page_name='".$title."'");
+		//mysql_query("update site_pages set username='' where page_name='".$title."'");
 	}		
 		$templatef = $row["template"];
 		if($templatef != ''){
@@ -74,14 +74,17 @@ while ($row = mysql_fetch_array($numresults)) {
 	$url = "http://".$_SESSION['this_ip']."/".pagename($_GET['currentPage'], "&")."nft=blank_template";
 
 	$pagecontent = include_r($url);
-	$pagecontent = ob_get_contents();
+
 	$pagecontent = eregi_replace("(<input type=button class=FormLt1 value=\"Printable Page\")([^<])*", "", $pagecontent);
 	$remove = "<div align=\"center\"><a href=\"pgm-email_friend.php?mailpage=".$this_page."\"><font size=\"1\" face=\"Arial\">[ Email this page to a friend ]</font></a><BR></div>";
 	$pagecontent = str_replace($remove, "", $pagecontent);
 	$remove = "<div align=\"center\"><form name=\"printpage\"><input type=\"button\" class=\"FormLt1\" value=\"Printable Page\" onclick=\"window.open('pgm-print_page.php?currentPage=".$this_page."','printwin','scrollbars=yes,width=700,height=450');\"></form></div>\n</div>";
 	$pagecontent = str_replace($remove, "", $pagecontent);
 
+$pagecontent = preg_replace('/value="Printable Page"/i', 'value="Printable Page" style="display:none!important;"', $pagecontent);
 
+$pagecontent = preg_replace('/<html>/i', '', $pagecontent);
+$pagecontent = preg_replace('/<\/html>/i', '', $pagecontent);
 
 if ($securegroup != '' ) {
 	mysql_query("update site_pages set username='$securegroup' where page_name='$title'");
@@ -96,9 +99,8 @@ $template_line .= "<TITLE>".$url = "http://".$_SESSION['this_ip']."/".pagename($
 if(file_exists($css_file)){
 	$template_line .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$css_file."\"/></link>\n";
 }
-$template_line .= "<SCRIPT language=Javascript>\n window.print();\n</SCRIPT>\n\n";
 $template_line .= "</HEAD>\n\n";
-$template_line .= "<BODY style=\"background-color:white; color:black;\">\n\n";
+$template_line .= "<BODY style=\"background-color:white; color:black;\" onload=\"window.print();\">\n\n";
 
 $template_line .= "<CENTER>\n\n".$pagecontent."\n\n</CENTER>\n\n";
 
@@ -251,7 +253,7 @@ for ($xedusvar=0;$xedusvar<=$numtlines;$xedusvar++) {
 				include('http://'.$_SESSION['this_ip'].'/pgm-cal-monthview.php');
 				$shopmatch = 0;
 				$tablename = "calendar_display";
-				$result = mysql_list_tables("$thisDatabase");
+				$result = soho_list_tables();
 				$i = 0;
 				while ($i < mysql_num_rows ($result)) {
 					$tb_names[$i] = mysql_tablename ($result, $i);
@@ -357,7 +359,7 @@ for ($xedusvar=0;$xedusvar<=$numtlines;$xedusvar++) {
 
 								$shopmatch = 0;
 								$tablename = "calendar_events";
-								$result = mysql_list_tables("$thisDatabase");
+								$result = soho_list_tables();
 								$i = 0;
 								while ($i < mysql_num_rows ($result)) {
 									$tb_names[$i] = mysql_tablename ($result, $i);
@@ -443,7 +445,7 @@ for ($xedusvar=0;$xedusvar<=$numtlines;$xedusvar++) {
 
 			$shopmatch = 0;
 			$tablename = "calendar_display";
-			$result = mysql_list_tables("$thisDatabase");
+			$result = soho_list_tables();
 			$i = 0;
 			while ($i < mysql_num_rows ($result)) {
 				$tb_names[$i] = mysql_tablename ($result, $i);

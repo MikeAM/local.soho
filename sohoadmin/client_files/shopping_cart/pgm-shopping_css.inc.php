@@ -1,5 +1,9 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
+
+track_vars;
+
+include_once("pgm-cart_config.php");
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 #==========================================================================================================================================
@@ -12,7 +16,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 //echo "included!"; exit;
 
 # Get path to current template
-include_once("../sohoadmin/client_files/get_template_path.inc.php"); // Defines $template_fullpath and $template_foldername
+//include_once("../sohoadmin/client_files/get_template_path.inc.php"); // Defines $template_fullpath and $template_foldername
 
 # Pull cart CSS settings from db if not already set
 if ( !isset($getCss) ) {
@@ -22,8 +26,9 @@ if ( !isset($getCss) ) {
 }
 
 # Buffer output of css styles
-$module_css = "\n\n<!---css rules for cart system-->\n";
-$module_css .= "<style>\n";
+//$module_css = "\n\n<!---css rules for cart system-->\n";
+$module_css = "";
+//$module_css .= "<style>\n";
 
 # Get cart misc prefs
 $cartpref = new userdata("cart");
@@ -31,18 +36,41 @@ $cartpref = new userdata("cart");
 # DEFAULT: 95px for thumbnail images
 if ( $cartpref->get("thumb_width") == "" ) { $cartpref->set("thumb_width", 95); }
 
+
+if(preg_match('/(?i)msie [8-10]/i',$_SERVER['HTTP_USER_AGENT'])) {
+	header("X-Content-Type-Options: nosniff");
+	header("Content-type: text/css", true);	
+} else {
+
+	header("Content-Type: text/css");
+}
+session_cache_limiter('none');
+session_start();
 ob_start();
 
 //echo "Template Path: ".$template_fullpath."<br/>";
 //exit;
 
 ?>
+.cartnav {
+	width:100%;
+	text-align:left;
+	padding-bottom:3px;
+	position:relative;
+}
+.cartnavright {
+	float:right;
+	text-align:right;
+
+}
+
 #shopping_module table {
    font-family: arial, helvetica, sans-serif;
    font-size: 11px;
+   width:100%;
 <?php
 if($getCss['table_textcolor']!=''){
-	echo "	color: ".$getCss['table_textcolor'].";";
+	//echo "	color: ".$getCss['table_textcolor'].";";
 }
 ?>
 }
@@ -51,7 +79,10 @@ table.parent_table {
    width: 90%;
 }
 
-table.shopping-selfcontained_box, #moreinfo-summary, #moreinfo-pricing, #moreinfo-details, #moreinfo-comments, #searchcolumn table, #addcart-current_cart_contents {
+
+/*#searchcolumn table,#moreinfo-details, ,   #moreinfo-summary */
+
+table.shopping-selfcontained_box, #moreinfo-pricing, #moreinfo-comments, #addcart-current_cart_contents {
    border: 1px solid #ccc;
 <?php
 if($getCss['table_bgcolor']!=''){
@@ -62,8 +93,11 @@ if($getCss['table_bgcolor']!=''){
 }
 
 #shopping_module th {
-   background-color: <? echo $OPTIONS['DISPLAY_HEADERBG']; ?>;
-   color: <? echo $OPTIONS['DISPLAY_HEADERTXT']; ?>;
+   /* background-color: <?php echo $OPTIONS['DISPLAY_HEADERBG']; ?>; */
+   background-color:inherit;
+   
+/*   color: <?php echo $OPTIONS['DISPLAY_HEADERTXT']; ?>; */
+   
    text-align: left;
 }
 
@@ -79,7 +113,7 @@ table#moreinfo-pricing, table#moreinfo-summary, table#moreinfo-details {
 }
 
 table.shopping-selfcontained_box {
-	
+	width:98%;
 	margin-bottom:6px;
 }
 
@@ -113,13 +147,13 @@ div#additional_images-gallery_block {
 div.additional_images-thumb {
    float: left;
    overflow: hidden;
-   /*background-image: url('http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/icons/web20_bg.gif');*/
+   /*background-image: url('http://<?php echo $_SESSION['docroot_url']; ?>/sohoadmin/icons/web20_bg.gif');*/
    margin: 5px;
-   height: <? echo $cartpref->get("thumb_width"); ?>px;
+   height: <?php echo $cartpref->get("thumb_width"); ?>px;
 }
 div.additional_images-thumb img {
    border: 1px solid #efefef;
-   width: <? echo $cartpref->get("thumb_width"); ?>px;
+   width: <?php echo $cartpref->get("thumb_width"); ?>px;
 }
 /* This is the popup box that the larger images appear in on mouse-over */
 #trailimageid {
@@ -137,24 +171,25 @@ div.additional_images-thumb img {
  prod_search_column.inc.php
 --------------------------------------------------------*/
 #searchcolumn th {
-   background-color: <? echo $OPTIONS['DISPLAY_HEADERBG']; ?>;
-   color: <? echo $OPTIONS['DISPLAY_HEADERTXT']; ?>;
+  /* background-color: <?php echo $OPTIONS['DISPLAY_HEADERBG']; ?>;
+   color: <?php echo $OPTIONS['DISPLAY_HEADERTXT']; ?>; */
    text-align: left;
 }
 
 #searchcolumn-login_or_date td {
    padding: 5px;
-   vertical-align: top;
+   vertical-align: top;   
 }
 
 #searchcolumn-login_or_date {
    border-bottom: 0px;
+   width:100%;
    background-color: transparent;
 }
 
 #searchcolumn-items_in_cart {
-   color: <? echo $OPTIONS['DISPLAY_CARTTXT']; ?>;
-   background-color: <? echo $OPTIONS['DISPLAY_CARTBG']; ?>;
+   /* color: <?php echo $OPTIONS['DISPLAY_CARTTXT']; ?>;
+   background-color: <?php echo $OPTIONS['DISPLAY_CARTBG']; ?>; */
 }
 
 
@@ -164,7 +199,7 @@ div.additional_images-thumb img {
 --------------------------------------------------------*/
 span.price_caption {
    font-weight: bold;
-   color: #2e2e2e;
+   /* color: #2e2e2e; */
 }
 
 
@@ -191,7 +226,7 @@ span.price_caption {
 
 td.billingform-divider {
    font-weight: bold;
-   background-color: #efefef;
+   /*  background-color: #efefef; */
 }
 
 
@@ -207,15 +242,37 @@ div#edit_cart_option {
 }
 div#edit_cart_option a { font-weight: bold; }
 
-<?
+
+#shopping_module th,#searchcolumn-items_in_cart {
+	background-color: transparent;
+	/*color:inherit!important;*/
+}
+#seach-column-main,#searchcolumn-login_or_date {
+	border:0px!important;
+	width:100%;
+}
+#searchcolumn {
+	width:150px;
+	align:center;
+	text-align:left;
+}
+
+
+
+.cartText {
+	padding:4px;
+}
+<?php
 # CUSTOM TEMPLATE CSS: Use CSS file included with template? Include after, inherit new stuff
 $shopping_cart_css_file = $template_fullpath."/shopping_cart.css";
 if ( file_exists($shopping_cart_css_file) ) {
    include($shopping_cart_css_file);
+   $module_css=str_replace('#CONTENT#', '#CONTENT #', $module_css);
 }
 
 $module_css .= ob_get_contents();
 ob_end_clean();
-
-$module_css .= "</style>\n";
+$module_css=str_replace('#CONTENT#', '#CONTENT #', $module_css);
+//$module_css .= "</style>\n";
+echo $module_css;
 ?>

@@ -50,23 +50,24 @@ $globalprefObj = new userdata('global');
 $pagePossible = $currentPage;
 $gatewayKeyPage = str_replace("_", " ", $currentPage);
 
-$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages WHERE page_name = '$gatewayKeyPage'");
+$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template, content_regen FROM site_pages WHERE page_name = '$gatewayKeyPage'");
 $tmp = mysql_num_rows($result); // In case there is an underscore that exists in the page name
 if ($tmp <= 0) {
 	$gatewayKeyPage = $pagePossible;
-	$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages WHERE page_name = '$gatewayKeyPage'");
+	$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template, content_regen FROM site_pages WHERE page_name = '$gatewayKeyPage'");
 }
 
 // Build page properties
 // --------------------------------------------------------
-$row = mysql_fetch_array ($result);
-
+$row = mysql_fetch_assoc ($result);
+	$currentpageprik = $row['prikey'];
 	$PROP_name = $row["page_name"];
 	$PROP_splash = $row["splash"];
 	$prop_bgcolor = $row["bgcolor"];
 	$PROP_sec_code = $row["username"];
 	$PROP_pagetype = $row["type"];
-   $CUR_TEMPLATE = $row["template"];
+	$CUR_TEMPLATE = $row["template"];
+	$content_regen = $row["content_regen"];
 	$tmp = $row["password"];
 	$key_gate = split("~~~SEP~~~", $tmp);
 
@@ -236,16 +237,21 @@ $thisPage = eregi_replace(" ", "_", $thisPage);
 ##################################################################################
 
 $regenFile = "$cgi_bin/$thisPage";
-if(file_exists("$regenFile")) {
+
+if( $content_regen != '' ) {
+	$body = $content_regen;
+	
+} elseif ( file_exists("$regenFile") ) {
 	$file = fopen("$regenFile", "r");
-		$body = fread($file,filesize($regenFile));
+	$body = fread($file,filesize($regenFile));
 	fclose($file);
+	
 } else {
 	$body = '      <img src="pixel.gif" border="0" height="50%" width="199">     !~!
       <img src="pixel.gif" border="0" height="50%" width="199">     !~!
       <img src="pixel.gif" border="0" height="50%" width="199">     !~!
       <img src="pixel.gif" border="0" height="50%" width="199">     !~!
-<div id="NEWOBJ11524644" class="droppedItem" style="height: 120px;"><img src="images/text_header.gif" style="cursor: move;" align="center" border="0" height="15" hspace="0" vspace="0" width="199"><br clear="ALL"><div id="EDITOBJ11524644" class="TXTCLASS" onclick="startEditor(\'EDITOBJ11524644\');" align="left"><blink>Click here to add content.</blink></div></div><!-- ~~~ -->!~!
+<div id="NEWOBJ11524644" class="droppedItem" style="height: 120px;"><img src="images/text_header.gif" style="cursor: move;" align="center" border="0" height="15" hspace="0" vspace="0" width="199"><br clear="ALL"><div id="EDITOBJ1152'.rand(1001,9999).'" class="TXTCLASS" onclick="startEditor(this.id);" align="left"><blink>Click here to add content.</blink></div></div><!-- ~~~ -->!~!
       <img src="pixel.gif" border="0" height="50%" width="199">     !~!
       <img src="pixel.gif" border="0" height="50%" width="199">     !~!
       <img src="pixel.gif" border="0" height="50%" width="199">     !~!
@@ -278,7 +284,7 @@ if(file_exists("$regenFile")) {
 	//$body = preg_replace('~<div([^>]*)(class="TXTCLASS")([^>]*)(onclick="")([^>]*)>~i', '<div$1$2$3onclick="startEditor(this.id);"$5>', $body);
 
 	
-	$body = str_replace("192.168.1.102","$this_ip",$body);	// Re-Write Wizard Generated Content 4.6 Exclusive
+	//$body = str_replace("192.168.1.102","$this_ip",$body);	// Re-Write Wizard Generated Content 4.6 Exclusive
 
 	// Fix Wizard Bug found mostly on Windows OS (V4.6) Dec 2003
 	// -------------------------------------------------------------

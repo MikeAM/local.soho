@@ -14,35 +14,7 @@ var cursor =
    document.all ? document.all.cursor :
    document.getElementById ? document.getElementById('cursor') : null;
 
-// While dragging a cell, this keeps track of the coodinates.
-function movemouse(e)
-{
-  if (isdrag)
-  {
-   //$('dadrag').value='drag'
-   
-   //alert(moving);
-//    endX = dobj.style.left = nn6 ? tx + e.clientX - x : tx + event.clientX - x;
-//    endY = dobj.style.top  = nn6 ? ty + e.clientY - y : ty + event.clientY - y;
-    realEndX = nn6 ? e.clientX : event.clientX;
-    realEndY = nn6 ? e.clientY : event.clientY;
-//    $('dadragx').value=realEndX
-//    $('dadragy').value=realEndY
-    
-//   numEndX = Number(endX);
-//   midEndX = (numEndX+100);
-//   numEndY = Number(endY);
-//   midEndY = (numEndY+40);
-   
-   return false;
-  } else {
-   //$('dadrag').value='no'
-   if (ie)
-   {
-   	document.onmousemove=null;
-   }
-}
-}
+
 
 // Determines which cell is being dragged.
 // Makes the cells id(daMoving) availible for the
@@ -67,6 +39,7 @@ function selectmouse(e)
 //  $('dadragx').value=fobj.className
 //  $('dadragy').value=$('objectbar').style.visibility
 
+
   if (fobj.className=="droppedItem" && $('objectbar').style.visibility=='visible')
   {
     fobj_parent = nn6 ? fobj.parentNode : fobj.parentElement;
@@ -86,9 +59,69 @@ function selectmouse(e)
     //$('dadragy').value = 'YAY';
     document.body.style.cursor = 'move';
     document.onmousemove=movemouse;
+    
     //if (document.captureEvents) document.captureEvents(Event.MOUSEMOVE);
     return false;
   }
+}
+
+
+// While dragging a cell, this keeps track of the coodinates.
+function movemouse(e)
+{
+  if (isdrag)
+  {
+   //$('dadrag').value='drag'
+   
+   //alert(moving);
+//    endX = dobj.style.left = nn6 ? tx + e.clientX - x : tx + event.clientX - x;
+//    endY = dobj.style.top  = nn6 ? ty + e.clientY - y : ty + event.clientY - y;
+    realEndX = nn6 ? e.clientX : event.clientX;
+    realEndY = nn6 ? e.clientY : event.clientY;
+//    $('dadragx').value=realEndX
+//    $('dadragy').value=realEndY
+    
+//   numEndX = Number(endX);
+//   midEndX = (numEndX+100);
+//   numEndY = Number(endY);
+//   midEndY = (numEndY+40);
+if(isdrag && realEndX != '' ){
+	//if(isdrag  && $('dadrag').value=='yessss'){
+      numEndX = Number(realEndX);
+      numEndY = Number(realEndY);
+      var win_scroll = $('cell_container').pageYOffset || $('cell_container').scrollTop;
+      numEndY = numEndY + win_scroll;
+ 
+      var daMovingHTML = $(daMoving).innerHTML;
+ 
+      for ( r = 1; r <= 10; r++ ) {
+         for ( c = 1; c <= 3; c++ ) {
+            var box_Id = 'TDR'+r+'C'+c;
+            X_left = $(box_Id).getCoordinates().left;
+            X_right = $(box_Id).getCoordinates().right;
+            Y_top = $(box_Id).getCoordinates().top;
+            Y_bottom = $(box_Id).getCoordinates().bottom;
+            if (numEndX >= X_left && numEndX < X_right && numEndY >= Y_top && numEndY < Y_bottom && document.body.style.cursor=='move') {
+              $(box_Id).setStyle('background-color', '#3E99DF');      
+            } else {
+            	$(box_Id).setStyle('background-color', '#F8F8FF');
+               //n++;
+            }
+            //document.getElementById('testtest').innerHTML=document.body.style.cursor+'  '+cursor+'   '+document.body.style.cursor+'  '+$('dadrag').value;
+         }
+      }
+	//}
+}
+  // fobj.setStyle('background-color', '#3E99DF');
+
+   return false;
+  } else {
+   //$('dadrag').value='no'
+   if (ie)
+   {
+   	document.onmousemove=null;
+   }
+}
 }
 
 // When cell is dropped, gets X and Y coords.
@@ -96,13 +129,10 @@ function selectmouse(e)
 // box it was dropped in.
 function dropMe(e) {
    document.body.style.cursor = 'default';
-   n=0;
+   var n=0;
    if(isdrag && realEndX != ''){
       $('dadrag').value='yessss'
       isdrag=false;
-      
-         
-         
       numEndX = Number(realEndX);
       numEndY = Number(realEndY);
 //      numEndY = (numEndY+win_scroll);
@@ -129,7 +159,8 @@ function dropMe(e) {
             Y_bottom = $(box_Id).getCoordinates().bottom;
    
             
-            if (numEndX >= X_left && numEndX < X_right && numEndY >= Y_top && numEndY < Y_bottom && fobj_parent.id != box_Id) {
+            //if (numEndX >= X_left && numEndX < X_right && numEndY >= Y_top && numEndY < Y_bottom && fobj_parent.id != box_Id) {
+            if (numEndX >= X_left && numEndX < X_right && numEndY >= Y_top && numEndY < Y_bottom ) {
                //alert(fobj_parent.id+'===='+box_Id);
                //alert(numEndX+'-- >= --'+X_left+'---'+numEndX+'-- < --'+X_right+'---'+numEndY+'-- >= --'+Y_top+'---'+numEndY+'-- < --'+Y_bottom)
                //$('dadrag').value=box_Id
@@ -159,9 +190,9 @@ function dropMe(e) {
                // Is parent empty now that we removed the obj?
                var startCell = isParent.innerHTML;
                // Search for droppedItem class
-               var startCellSearch = startCell.search('droppedItem');
-               if(startCellSearch == -1){    // Parent is empty, make it 'empty' with our trusty pixel.gif
-                  isParent.innerHTML= '<IMG height="50%" src="pixel.gif" width="199" border="0">';
+               var startCellSearch = startCell.search('droppedItem');               
+               if(startCellSearch == -1 && fobj_parent.id != box_Id){    // Parent is empty, make it 'empty' with our trusty pixel.gif
+                  isParent.innerHTML= '<IMG height="50%" src="pixel.gif" width="99" border="0">';
                }
 
                //###############################################
@@ -225,7 +256,7 @@ function dropMe(e) {
                
                // Remove obj from parent
                var removedItem = isParent.removeChild($(daMoving))
-               checkRow(isParent.id)
+               checkRow(isParent.id);
             }
          }
 

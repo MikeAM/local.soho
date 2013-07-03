@@ -40,7 +40,7 @@ $qry = "SELECT PRIKEY, PROD_SKU, PROD_NAME, PROD_DESC, PROD_UNITPRICE, PROD_THUM
 $SINGLE_SKU_PROMO_HTML = '';
 $module_css = '';
 if($shopping_style_include != 1){	
-	include_once("sohoadmin/client_files/shopping_cart/pgm-shopping_css.inc.php"); // Defines $module_css
+	//include_once("sohoadmin/client_files/shopping_cart/pgm-shopping_css.inc.php"); // Defines $module_css
 }
 $shopping_style_include = 1;
 
@@ -62,17 +62,24 @@ $dType = $OPTIONS['PAYMENT_CURRENCY_TYPE'];
 
 $directory = "$doc_root/images";
 
-if (file_exists("$directory/$imagesrc")) {
+if ( file_exists("$directory/$imagesrc") && $imagesrc != '' ) {
    $tmparray = getImageSize("$directory/$imagesrc");
    $origw = $tmparray[0];
    $origh = $tmparray[1];
    $WH = "width=$origw height=$origh";
 
-   if ($origw > 114) {
-      $calc = 114 / $origw;
+//   if ($origw > 114) {
+//      $calc = 114 / $origw;
+//      $hcalc = $origh * $calc;
+//      $nheight = round($hcalc);
+//      $WH = "width=115 height=$nheight";
+//   }
+   
+   if ($origw > 149) {
+      $calc = 149 / $origw;
       $hcalc = $origh * $calc;
       $nheight = round($hcalc);
-      $WH = "width=115 height=$nheight";
+      $WH = "width=150 height=$nheight";
    }
 
    $IMAGE_PLACEMENT = "<a href=\"shopping/pgm-more_information.php?id=$PROD[PRIKEY]&=SID\">";
@@ -94,7 +101,7 @@ $SINGLE_SKU_PROMO_HTML .= "<div id=\"shopping_module\">\n";
 $SINGLE_SKU_PROMO_HTML .= " <form method=\"get\" action=\"shopping/pgm-more_information.php\">\n";
 $SINGLE_SKU_PROMO_HTML .= "  <input type=\"hidden\" name=\"id\" value=\"".$PROD['PRIKEY']."\">\n";
 
-$SINGLE_SKU_PROMO_HTML .= "  <table class=\"shopping-selfcontained_box\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\"90%\">\n";
+$SINGLE_SKU_PROMO_HTML .= "  <table class=\"shopping-selfcontained_box\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">\n";
 $SINGLE_SKU_PROMO_HTML .= "   <tr>\n";
 $SINGLE_SKU_PROMO_HTML .= "    <th>\n";
 $SINGLE_SKU_PROMO_HTML .= "     ".$PROD['PROD_NAME']."\n";
@@ -106,7 +113,7 @@ $SINGLE_SKU_PROMO_HTML .= "    </th>\n";
 $SINGLE_SKU_PROMO_HTML .= "   </tr>\n";
 
 $SINGLE_SKU_PROMO_HTML .= "   <tr>\n";
-$SINGLE_SKU_PROMO_HTML .= "    <td colspan=\"2\" align=\"left\" valign=\"top\" class=\"text\">\n";
+$SINGLE_SKU_PROMO_HTML .= "    <td colspan=\"2\" align=\"left\" valign=\"top\" class=\"text cartText\">\n";
 $SINGLE_SKU_PROMO_HTML .= "     ".$IMAGE_PLACEMENT;
 $SINGLE_SKU_PROMO_HTML .= "     ".$PROD['PROD_DESC']."<BR><div align=\"left\">\n";
 $SINGLE_SKU_PROMO_HTML .= "     [ <a href=\"shopping/pgm-more_information.php?id=$PROD[PRIKEY]&=SID\">".lang("More Information")."</a> ]</div>\n";

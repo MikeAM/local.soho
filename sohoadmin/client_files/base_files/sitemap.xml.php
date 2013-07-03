@@ -43,7 +43,7 @@ $gu = mysql_query("select prikey,page_name,url_name,type,custom_menu,sub_pages,s
 
 while($g_url = mysql_fetch_assoc($gu)){
 	if($g_url['url_name']!=startpage()){
-		$urls[]=array('url'=>'http://'.$_SESSION['this_ip'].'/'.$g_url['url_name'].'.php','modify'=>filemtime('sohoadmin/tmp_content/'.$g_url['url_name'].'.con'));
+		$urls[]=array('url'=>'http://'.$_SESSION['this_ip'].'/'.htmlspecialchars($g_url['url_name']).'.php','modify'=>filemtime('sohoadmin/tmp_content/'.$g_url['url_name'].'.con'));
 	}
 }
 

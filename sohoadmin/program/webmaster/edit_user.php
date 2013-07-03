@@ -386,7 +386,7 @@ $THIS_DISPLAY .= "<B>".lang("Select each User Data Table this user should have a
 $THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=2 CELLSPACING=0 WIDTH=90% CLASS=text>\n";
 $rcnt = 1;
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 
 while ($i < mysql_num_rows ($result)) {

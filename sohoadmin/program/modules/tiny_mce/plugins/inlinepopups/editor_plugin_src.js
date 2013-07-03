@@ -65,7 +65,7 @@
 			f.max_height = parseInt(f.max_height || 2000);
 			f.left = f.left || Math.round(Math.max(vp.x, vp.x + (vp.w / 2.0) - (f.width / 2.0)));
 			f.top = f.top || Math.round(Math.max(vp.y, vp.y + (vp.h / 2.0) - (f.height / 2.0)));
-			f.movable = f.resizable = true;
+			f.movable = f.resizable = false;
 			p.mce_width = f.width;
 			p.mce_height = f.height;
 			p.mce_inline = true;

@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -137,7 +137,7 @@ function verify_del(key) {
 function prev_sku(counter_num, imgfile) {
    if ( document.getElementById('prev-'+counter_num).innerHTML == '' ) {
       if ( imgfile != "none" ) {
-         document.getElementById('prev-'+counter_num).innerHTML = '<img src="http://<? echo $_SESSION['docroot_url']; ?>/images/'+imgfile+'" width="40">';
+         document.getElementById('prev-'+counter_num).innerHTML = '<img src="<? echo httpvar().$_SESSION['docroot_url']; ?>/images/'+imgfile+'" width="40">';
       } else {
          document.getElementById('prev-'+counter_num).innerHTML = '<span class="font90 gray_33">[No Img]</span>';
       }
@@ -177,7 +177,7 @@ if ( $_POST['showresults'] != "yes" ) { // Regular view...did NOT just run a sea
 
    # Existing sku list, clickable with thumbnails
    $edit_sku_list = "";
-   $edit_sku_list .= "<div id=\"edit_sku_list\" style=\"width: 350px;height: 240px;overflow: auto;\">\n";
+   $edit_sku_list .= "<div id=\"edit_sku_list\" style=\"min-width: 350px;height: 350px;overflow: auto;\">\n";
    $edit_sku_list .= " <table width=\"100%\" cellpadding=\"3\" cellspacing=\"0\" border=\"0\">\n";
 
    $edit_sku_list .= "    <tr>\n";
@@ -190,7 +190,7 @@ if ( $_POST['showresults'] != "yes" ) { // Regular view...did NOT just run a sea
    while ( $getSku = mysql_fetch_array($rez) ) {
       $testimg = $_SESSION['docroot_path']."/images/".$getSku['PROD_THUMBNAIL'];
       if ( $getSku['PROD_THUMBNAIL'] != "" && file_exists($testimg) ) {
-         $img_tag = "<img src=\"http://".$_SESSION['docroot_url']."/images/".$getSku['PROD_THUMBNAIL']."\" width=\"40\">";
+         $img_tag = "<img src=\"".httpvar().$_SESSION['docroot_url']."/images/".$getSku['PROD_THUMBNAIL']."\" width=\"40\">";
          $prev = $getSku['PROD_THUMBNAIL'];
       } else {
          $img_tag = "<span class=\"font90 gray_33\">[No Img]</span>";
@@ -200,7 +200,7 @@ if ( $_POST['showresults'] != "yes" ) { // Regular view...did NOT just run a sea
       if ( $bg == "bg_white" ) { $bg = "bg_gray_f8"; } else { $bg = "bg_white"; }
 
       # Load thumbnail onload?
-      if ( $cartpref->get("findsku_loadthumbs") == "onload" && $prev != "none" ) { $img_display = " <img src=\"http://".$_SESSION['docroot_url']."/images/".$prev."\" width=\"40\">"; } else { $img_display = ""; }
+      if ( $cartpref->get("findsku_loadthumbs") == "onload" && $prev != "none" ) { $img_display = " <img src=\"".httpvar().$_SESSION['docroot_url']."/images/".$prev."\" width=\"40\">"; } else { $img_display = ""; }
 
       $edit_sku_list .= "    <tr class=\"".$bg."\" onmouseover=\"prev_sku('".$n."', '".$prev."');this.className='bg_yellow';\" onmouseout=\"this.className='".$bg."';\">\n";
       $edit_sku_list .= "     <td align=\"center\" height=\"40\" style=\"padding: 0;\"><div id=\"prev-".$n."\">".$img_display."</div></td>\n";

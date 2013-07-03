@@ -9,8 +9,15 @@ var templates = {
 function preinit() {
 	var url;
 
-	if (url = tinyMCEPopup.getParam("external_link_list_url"))
+	if (url = tinyMCEPopup.getParam("external_link_list_url")){
 		document.write('<script language="javascript" type="text/javascript" src="' + tinyMCEPopup.editor.documentBaseURI.toAbsolute(url) + '"></script>');
+	}
+	
+	if (url = tinyMCEPopup.getParam("external_link_list_media")){
+		document.write('<script language="javascript" type="text/javascript" src="' + tinyMCEPopup.editor.documentBaseURI.toAbsolute(url) + '"></script>');
+	}
+	
+	
 }
 
 function changeClass() {
@@ -31,15 +38,31 @@ function init() {
 	document.getElementById('hrefbrowsercontainer').innerHTML = getBrowserHTML('hrefbrowser','href','file','advlink');
 	document.getElementById('popupurlbrowsercontainer').innerHTML = getBrowserHTML('popupurlbrowser','popupurl','file','advlink');
 	document.getElementById('linklisthrefcontainer').innerHTML = getLinkListHTML('linklisthref','href');
+	document.getElementById('linklistmediahrefcontainer').innerHTML = getMediaListHTML('linklistmedia','href');
 	document.getElementById('anchorlistcontainer').innerHTML = getAnchorListHTML('anchorlist','href');
 	document.getElementById('targetlistcontainer').innerHTML = getTargetListHTML('targetlist','target');
 
 	// Link list
 	html = getLinkListHTML('linklisthref','href');
-	if (html == "")
+	if (html == ""){
 		document.getElementById("linklisthrefrow").style.display = 'none';
-	else
+	} else {
 		document.getElementById("linklisthrefcontainer").innerHTML = html;
+	}
+	
+	html = getAnchorListHTML('anchorlist','href');
+	if (html == "")
+		document.getElementById("anchorlistrow").style.display = 'none';
+	else
+		document.getElementById("anchorlistcontainer").innerHTML = html;
+
+	
+	html = getMediaListHTML('linklistmedia','href');
+	if (html == ""){
+		document.getElementById("linklistmediahrefrow").style.display = 'none';
+	} else {
+		document.getElementById("linklistmediahrefcontainer").innerHTML = html;
+	}
 
 	// Resize some elements
 	if (isVisible('hrefbrowser'))
@@ -100,6 +123,8 @@ function init() {
 		selectByValue(formObj, 'rel', inst.dom.getAttrib(elm, 'rel'));
 		selectByValue(formObj, 'rev', inst.dom.getAttrib(elm, 'rev'));
 		selectByValue(formObj, 'linklisthref', href);
+		selectByValue(formObj, 'linklistmediahref', href);
+		
 
 		if (href.charAt(0) == '#')
 			selectByValue(formObj, 'anchorlist', href);
@@ -360,24 +385,28 @@ function setAttrib(elm, attrib, value) {
 }
 
 function getAnchorListHTML(id, target) {
-	var inst = tinyMCEPopup.editor;
-	var nodes = inst.dom.select('a.mceItemAnchor,img.mceItemAnchor'), name, i;
-	var html = "";
+	var ed = tinyMCEPopup.editor, nodes = ed.dom.select('a'), name, i, len, html = "";
 
-	html += '<select id="' + id + '" name="' + id + '" class="mceAnchorList" o2nfocus="tinyMCE.addSelectAccessibility(event, this, window);" onchange="this.form.' + target + '.value=';
-	html += 'this.options[this.selectedIndex].value;">';
-	html += '<option value="">---</option>';
+	for (i=0, len=nodes.length; i<len; i++) {
+		if ((name = ed.dom.getAttrib(nodes[i], "name")) != "")
+			html += '<option value="#' + name + '">' + name + '</option>';
 
-	for (i=0; i<nodes.length; i++) {
-		if ((name = inst.dom.getAttrib(nodes[i], "name")) != "")
+		if ((name = nodes[i].id) != "" && !nodes[i].href)
 			html += '<option value="#' + name + '">' + name + '</option>';
 	}
 
-	html += '</select>';
+	if (html == "")
+		return "";
+
+	html = '<select id="' + id + '" name="' + id + '" class="mceAnchorList"'
+		+ ' onchange="this.form.' + target + '.value=this.options[this.selectedIndex].value"'
+		+ '>'
+		+ '<option value="">---</option>'
+		+ html
+		+ '</select>';
 
 	return html;
 }
-
 function insertAction() {
 	var inst = tinyMCEPopup.editor;
 	var elm, elementArray, i;
@@ -470,10 +499,11 @@ function getSelectValue(form_obj, field_name) {
 	return elm.options[elm.selectedIndex].value;
 }
 
-function getLinkListHTML(elm_id, target_form_element, onchange_func) {
-	if (typeof(tinyMCELinkList) == "undefined" || tinyMCELinkList.length == 0)
+function getMediaListHTML(elm_id, target_form_element, onchange_func) {
+	if (typeof(tinyMCEMediaList) == "undefined" || tinyMCEMediaList.length == 0){
 		return "";
-
+	}
+	
 	var html = "";
 
 	html += '<select id="' + elm_id + '" name="' + elm_id + '"';
@@ -483,11 +513,45 @@ function getLinkListHTML(elm_id, target_form_element, onchange_func) {
 	if (typeof(onchange_func) != "undefined")
 		html += onchange_func + '(\'' + target_form_element + '\',this.options[this.selectedIndex].text,this.options[this.selectedIndex].value);';
 
-	html += '"><option value="">---</option>';
+	html += '"><option value="" style=\"font-weight:bold;\">--- SITE FILES DOWNLOAD ---</option>';
 
-	for (var i=0; i<tinyMCELinkList.length; i++)
-		html += '<option value="' + tinyMCELinkList[i][1] + '">' + tinyMCELinkList[i][0] + '</option>';
+	for (var i=0; i<tinyMCEMediaList.length; i++){
+		if(tinyMCEMediaList[i][1]==''){		
+			html += '<option style=\"font-weight:bold;\" value="' + tinyMCEMediaList[i][1] + '">' + tinyMCEMediaList[i][0] + '</option>';
+		} else {
+			html += '<option value="' + tinyMCEMediaList[i][1] + '">' + tinyMCEMediaList[i][0] + '</option>';	
+		}		
+	}
+	html += '</select>';
+	return html;
 
+	// tinyMCE.debug('-- image list start --', html, '-- image list end --');
+}
+
+
+
+function getLinkListHTML(elm_id, target_form_element, onchange_func) {
+	if (typeof(tinyMCELinkList) == "undefined" || tinyMCELinkList.length == 0){
+		return "";
+	}
+	var html = "";
+
+	html += '<select id="' + elm_id + '" name="' + elm_id + '"';
+	html += ' class="mceLinkList" onfoc2us="tinyMCE.addSelectAccessibility(event, this, window);" onchange="this.form.' + target_form_element + '.value=';
+	html += 'this.options[this.selectedIndex].value;';
+
+	if (typeof(onchange_func) != "undefined")
+		html += onchange_func + '(\'' + target_form_element + '\',this.options[this.selectedIndex].text,this.options[this.selectedIndex].value);';
+
+	html += '"><option value="" style=\"font-weight:bold;\">--- SITE PAGES ---</option>';
+
+	for (var i=0; i<tinyMCELinkList.length; i++){
+		if(tinyMCELinkList[i][1]==''){		
+			html += '<option style=\"font-weight:bold;\" value="' + tinyMCELinkList[i][1] + '">' + tinyMCELinkList[i][0] + '</option>';
+		} else {
+			html += '<option value="' + tinyMCELinkList[i][1] + '">' + tinyMCELinkList[i][0] + '</option>';	
+		}		
+	}
 	html += '</select>';
 
 	return html;

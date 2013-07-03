@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE && E_ERROR);
+error_reporting('341');
 ini_set("max_execution_time", "99");
 ini_set("default_socket_timeout", "99");
 ini_set("max_post_size", "200M");
@@ -49,13 +49,13 @@ if(file_exists($ncmd)){
  font-size: 8pt;
 }
 
-.nav_main { background-image: url(http://<?php echo $_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_save-off.jpg); } 
-.nav_mainon { background-image: url(http://<?php echo $_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_save-on.jpg); } 
+.nav_main { background-image: url(<?php echo httpvar().$_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_save-off.jpg); } 
+.nav_mainon { background-image: url(<?php echo httpvar().$_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_save-on.jpg); } 
 
 .nav_main, .nav_mainon, .nav_mainmenu, .nav_mainmenuon, .nav_save, .nav_saveon, .nav_soho, .nav_sohoon, .nav_logout, .nav_logouton { 
 	color: #FFFFFF; 
 	font-family: verdana, arial, helvetica, sans-serif; 
-	font-size: 10px; 
+	font-size: 10px;
 	cursor: pointer; 
 } 
 .nav_main, .nav_mainon, .nav_mainmenu, .nav_mainmenuon { 
@@ -86,11 +86,11 @@ if(file_exists($ncmd)){
 } 
 .nav_logout { 
 	border: 1px solid #595959; 
-	background-image: url(http://<?php echo $_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_logout-off.jpg); 
+	background-image: url(<?php echo httpvar().$_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_logout-off.jpg); 
 } 
 .nav_logouton { 
 	border: 1px solid #595959; 
-	background-image: url(http://<?php echo $_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_logout-on.jpg); 
+	background-image: url(<?php echo httpvar().$_SESSION['this_ip']; ?>/sohoadmin/program/includes/display_elements/graphics/btn-nav_logout-on.jpg); 
 } 
 .btn_edit, .btn_editon, .btn_save, .btn_saveon, .btn_delete, .btn_deleteon, .btn_build, .btn_buildon, .btn_risk, .btn_riskon { 
 	background-color: #C3DEFF; 

@@ -17,7 +17,6 @@ $module->description = "You may create up to 10 new pages at a time. Please only
 
 $module->goodtogo();
 /*---------------------------------------------------------------------------------------------------------*/
-
 $globalprefObj = new userdata('global');
 $_SESSION['utf8value'] = $globalprefObj->get('utf8');
 $_SESSION['goog_trans'] = $globalprefObj->get('goog_trans');
@@ -72,10 +71,10 @@ class smt_module {
    function good_to_go() {
 
       # REPORT_MESSAGES?
-      if ( count($GLOBALS['report']) > 0 ) {
+      if ( count($GLOBALS['report']) > 0) {
          $report_bullets = "<ul>\n";
-         for ( $r = 0; $r < count($GLOBALS['report']); $r++ ) {
-            $report_bullets .= " <li>".$GLOBALS['report'][$r]."</li>\n";
+         for ( $rr = 0; $rr < count($GLOBALS['report']); $rr++ ) {
+            $report_bullets .= " <li>".$GLOBALS['report'][$rr]."</li>\n";
          }
          $report_bullets .= "</ul>\n";
          $this->output = str_replace("#REPORT_DISPLAY#", "block", $this->output);
@@ -146,7 +145,7 @@ class smt_module {
 		}
       //$this->output = eregi_replace("#ICON_IMG#", $this->icon_img, $this->output);
       
-      $this->output = str_replace("#HEADING_TEXT#", $this->heading_text, $this->output);
+      $this->output = str_replace("#HEADING_TEXT#", str_replace("'",'&#39;',$this->heading_text), $this->output);
 	
 	if(!is_array($disabled_modules)){
 		$disabled_modules = array();

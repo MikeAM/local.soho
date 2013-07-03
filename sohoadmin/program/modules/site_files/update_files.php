@@ -6,8 +6,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
 ## Version 4.5
-##      
-## Author: 			Mike Johnston [mike.johnston@soholaunch.com]                 
+##
 ## Homepage:	 	http://www.soholaunch.com
 ## Bug Reports: 	http://bugzilla.soholaunch.com
 ## Release Notes:	sohoadmin/build.dat.php
@@ -15,8 +14,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 ##############################################################################
 ## COPYRIGHT NOTICE                                                     
-## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston 
-## Copyright 2003-2007 Soholaunch.com, Inc.
+## Copyright 1999-2013 Soholaunch.com, Inc.
 ## All Rights Reserved.  
 ##                                                                        
 ## This script may be used and modified in accordance to the license      
@@ -33,6 +31,9 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 session_start();
 require_once('../../includes/product_gui.php');
+
+
+
 function sterilize ($sterile_var) {
 	$sterile_var = stripslashes($sterile_var);
 	$st_l = strlen($sterile_var);
@@ -91,12 +92,12 @@ for ($x=0;$x<=$true_count;$x++) {
    // ==========================================================
    // ==========================================================
 
-   if ($delete_flag == "yes") { 
+   if ($delete_flag == "yes" && $delete_flag!='') { 
 
       $dfile = $base_dir . $old_filename;
       unlink($dfile);
 
-   } else {
+   } elseif($old_filename!='') {
    
       if (strlen($new_filename) > 2) {
 
@@ -119,9 +120,42 @@ for ($x=0;$x<=$true_count;$x++) {
 
          $old = $base_dir . $old_filename;
          $new = $base_dir . $tmpdir . "/" . $new_filename;
-
-         // echo ("$old >> $new");
-         // exit;
+         
+		$findblog = mysql_query("select prikey, blog_data from blog_content where blog_data like '%".slashthis($old_filename)."%'");
+		while($bgot = mysql_fetch_assoc($findblog)){			
+			mysql_query("update blog_content set blog_data='".slashthis(str_replace($old_filename,$tmpdir . "/" . $new_filename, $bgot['blog_data']))."' where prikey='".$bgot['prikey']."'");
+		}
+		
+		$oldImgName=str_replace('images/','',$old_filename);
+		$findcart = mysql_query("select PRIKEY, PROD_THUMBNAIL, PROD_FULLIMAGENAME, other_images  from cart_products where PROD_THUMBNAIL like '%".slashthis($oldImgName)."%' or PROD_FULLIMAGENAME like '%".slashthis($oldImgName)."%' or other_images like '%".slashthis($oldImgName)."%'");
+		while($cartgot = mysql_fetch_assoc($findcart)){			
+			mysql_query("update cart_products set PROD_THUMBNAIL='".slashthis(str_replace($oldImgName, $new_filename, $cartgot['PROD_THUMBNAIL']))."', PROD_FULLIMAGENAME='".slashthis(str_replace($oldImgName, $new_filename, $cartgot['PROD_FULLIMAGENAME']))."', other_images='".slashthis(str_replace($oldImgName, $new_filename, $cartgot['other_images']))."' where PRIKEY='".$cartgot['PRIKEY']."'");		
+		}
+         
+		foreach (glob($base_dir."/sohoadmin/tmp_content/*.*") as $cNregen) {
+			if(preg_match('/\.(con|regen)/',$cNregen)){
+				if(strpos(file_get_contents($cNregen),$old_filename)!== false){
+					$gg=fopen($cNregen, "r");
+					$filecontentz = fread($gg,filesize($cNregen));
+					$filecontentz = str_replace($old_filename,$tmpdir . "/" . $new_filename, $filecontentz);					
+					fclose($gg);
+					$gg=fopen($cNregen, "w");
+					fwrite($gg,$filecontentz);					
+					fclose($gg);
+					//echo $cNregen."<br/>";
+				}
+			}
+		}
+	
+		$findpages = mysql_query("select prikey, content, content_regen  from site_pages where content like '%".slashthis($old_filename)."%' or content_regen like '%".slashthis($old_filename)."%'");
+		while($pagesgot = mysql_fetch_assoc($findpages)){			
+			mysql_query("update site_pages set content='".slashthis(str_replace($old_filename, $tmpdir . "/" . $new_filename, $pagesgot['content']))."', content_regen='".slashthis(str_replace($old_filename, $tmpdir . "/" . $new_filename, $pagesgot['content_regen']))."' where PRIKEY='".$pagesgot['prikey']."'");		
+		}
+		
+		
+//		echo $old_filename."<br/>";
+//         echo ("$old >> $new");
+//         exit;
 
          rename("$old", "$new"); 
 

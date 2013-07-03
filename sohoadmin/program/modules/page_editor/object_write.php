@@ -36,7 +36,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 require_once('../../includes/product_gui.php');
-
+$tab = "	";
+$leadingtabs = $tab.$tab.$tab;
 $spacer = ""; //Killed spacer 2004-03-12
 $sfont = "<font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\"><B>";
 $nfont = "<font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"2\">";
@@ -46,7 +47,9 @@ $object = split("~~~", $thisrow);
 $objcount = count($object);
 $objcount--;
 
-$droparea .= "<div>\n";
+if($divlayout!=1){
+	$droparea .= "<div>\n";
+}
 
 for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
@@ -57,7 +60,13 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 	########################################
 	#### DIRECTIONS OBJECT				####
 	########################################
-	
+	if (eregi("##NEWSFEED", $thisobj)) {
+
+		$tmp = eregi("<!-- ##NEWSFEED;(.*)## -->", $thisobj, $out);
+		$tmp = '<!-- ##NEWSFEED-'.$out[1].'## -->';
+		$droparea .= $tmp."\n";
+		
+	}
 	if (eregi("##SOC_", $thisobj)) {
 
 		$tmp = eregi("<!--##(.*)## -->", $thisobj, $out);
@@ -82,58 +91,58 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 				// Insert MAPQUEST(tm) Search
 
-				$droparea .= "<form action=\"http://www.mapquest.com/maps/map.adp\" target=\"_blank\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"countrycode\" value=\"250\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"country\" value=\"US\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"address\" value=\"".$mapaddr[0]."\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"city\" value=\"".$mapaddr[1]."\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"state\" value=\"".$mapaddr[2]."\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"zipcode\" value=\"".$mapaddr[3]."\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"addtohistory\">\n";
-				$droparea .= "<input type=\"submit\" value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
-				$droparea .= "<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": MapQuest<SUP>tm</SUP>\n\n";
-				$droparea .= "</form>\n\n";
+				$droparea .= $leadingtabs."<form action=\"http://www.mapquest.com/maps/map.adp\" target=\"_blank\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"countrycode\" value=\"250\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"country\" value=\"US\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"address\" value=\"".$mapaddr[0]."\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"city\" value=\"".$mapaddr[1]."\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"state\" value=\"".$mapaddr[2]."\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"zipcode\" value=\"".$mapaddr[3]."\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"addtohistory\">\n";
+				$droparea .= $leadingtabs."<input type=\"submit\" value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
+				$droparea .= $leadingtabs."<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": MapQuest<SUP>tm</SUP>\n\n";
+				$droparea .= $leadingtabs."</form>\n\n";
 
 		} elseif ($mapaddr[4] == "GOOGLEMAPS") {
 
 				// Insert GOOGLEMAPS
-				$droparea .= "<form name=\"mapFrom\" action=\"http://maps.google.com/maps\" method=\"GET\" target=\"_blank\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"saddr\" value=\"\" />\n";
-				$droparea .= "<input type=\"hidden\" name=\"daddr\" id=\"daddr\" value=\"".$mapaddr[0].", ".$mapaddr[1].", ".$mapaddr[2]." ".$mapaddr[3]." ".$mapaddr[5]."\" />\n";
-				$droparea .= "<input type=submit value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
-				$droparea .= "<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": Google Maps<SUP>tm</SUP>\n\n";
-				$droparea .= "<input type=\"hidden\" name=\"hl\" value=\"en\" />\n";
-				$droparea .= "</form>\n\n";
+				$droparea .= $leadingtabs."<form name=\"mapFrom\" action=\"http://maps.google.com/maps\" method=\"GET\" target=\"_blank\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"saddr\" value=\"\" />\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"daddr\" id=\"daddr\" value=\"".$mapaddr[0].", ".$mapaddr[1].", ".$mapaddr[2]." ".$mapaddr[3]." ".$mapaddr[5]."\" />\n";
+				$droparea .= $leadingtabs."<input type=submit value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
+				$droparea .= $leadingtabs."<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": Google Maps<SUP>tm</SUP>\n\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"hl\" value=\"en\" />\n";
+				$droparea .= $leadingtabs."</form>\n\n";
 
 //
-//				$droparea .= "<form name=\"mapFrom\" action=\"http://maps.yahoo.com/py/maps.py\" method=\"GET\" target=\"_blank\">\n";
+//				$droparea .= $leadingtabs."<form name=\"mapFrom\" action=\"http://maps.yahoo.com/py/maps.py\" method=\"GET\" target=\"_blank\">\n";
 //
-//				$droparea .= "<input type=\"hidden\" name=\"addr\" value=\"$mapaddr[0]\">\n";
-//				$droparea .= "<input type=\"hidden\" name=\"city\" value=\"$mapaddr[1]\">\n";
-//				$droparea .= "<input type=\"hidden\" name=\"state\" value=\"$mapaddr[2]\">\n";
-//				$droparea .= "<input type=\"hidden\" name=\"zip\" value=\"$mapaddr[3]\">\n";
-//				$droparea .= "<input type=\"hidden\" name=\"country\" value=\"us\">\n";
+//				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"addr\" value=\"$mapaddr[0]\">\n";
+//				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"city\" value=\"$mapaddr[1]\">\n";
+//				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"state\" value=\"$mapaddr[2]\">\n";
+//				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"zip\" value=\"$mapaddr[3]\">\n";
+//				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"country\" value=\"us\">\n";
 //
-//				$droparea .= "<input type=submit value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
-//				$droparea .= "<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": Yahoo! Maps<SUP>tm</SUP>\n\n";
-//				$droparea .= "</form>\n\n";
+//				$droparea .= $leadingtabs."<input type=submit value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
+//				$droparea .= $leadingtabs."<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": Yahoo! Maps<SUP>tm</SUP>\n\n";
+//				$droparea .= $leadingtabs."</form>\n\n";
 
 
 		} else {
 
 				// Insert YAHOO!(tm) Search
 
-				$droparea .= "<form name=\"mapFrom\" action=\"http://maps.yahoo.com/py/maps.py\" method=\"GET\" target=\"_blank\">\n";
+				$droparea .= $leadingtabs."<form name=\"mapFrom\" action=\"http://maps.yahoo.com/py/maps.py\" method=\"GET\" target=\"_blank\">\n";
 
-				$droparea .= "<input type=\"hidden\" name=\"addr\" value=\"$mapaddr[0]\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"city\" value=\"$mapaddr[1]\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"state\" value=\"$mapaddr[2]\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"zip\" value=\"$mapaddr[3]\">\n";
-				$droparea .= "<input type=\"hidden\" name=\"country\" value=\"us\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"addr\" value=\"$mapaddr[0]\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"city\" value=\"$mapaddr[1]\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"state\" value=\"$mapaddr[2]\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"zip\" value=\"$mapaddr[3]\">\n";
+				$droparea .= $leadingtabs."<input type=\"hidden\" name=\"country\" value=\"us\">\n";
 
-				$droparea .= "<input type=submit value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
-				$droparea .= "<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": Yahoo! Maps<SUP>tm</SUP>\n\n";
-				$droparea .= "</form>\n\n";
+				$droparea .= $leadingtabs."<input type=submit value=\" ".lang("Get Directions")." \" class=FormLt1>\n";
+				$droparea .= $leadingtabs."<BR><FONT STYLE='font-family: Arial; font-size: 7pt; color: #999999;'>".lang("Courtesy of").": Yahoo! Maps<SUP>tm</SUP>\n\n";
+				$droparea .= $leadingtabs."</form>\n\n";
 
 
 		} // End Search Type Check
@@ -176,13 +185,13 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 		// width=$l[$x] (For table)
 
-		$droparea .= "<table border=0 cellpadding=2 cellspacing=0 align=center>\n";
-		$droparea .= "  <tr>\n";
-		$droparea .= "    <td align=left valign=top class=smtext>\n";
-		$droparea .= "      <a href=\"media/$pdf_file\" target=\"_blank\"><img src=\"sohoadmin/program/modules/page_editor/client/pdf_download.gif\" border=0 width=21 height=22 vspace=0 hspace=3 align=absmiddle>$pdfdisplay</a> [$size]\n";
-		$droparea .= "    </td>\n";
-		$droparea .= "  </tr>\n";
-		$droparea .= "</table>\n";
+		$droparea .= $leadingtabs."<table border=0 cellpadding=2 cellspacing=0 align=center>\n";
+		$droparea .= $leadingtabs."  <tr>\n";
+		$droparea .= $leadingtabs."    <td align=left valign=top class=smtext>\n";
+		$droparea .= $leadingtabs."      <a href=\"media/$pdf_file\" target=\"_blank\"><img src=\"sohoadmin/program/modules/page_editor/client/pdf_download.gif\" border=0 width=21 height=22 vspace=0 hspace=3 align=absmiddle>$pdfdisplay</a> [$size]\n";
+		$droparea .= $leadingtabs."    </td>\n";
+		$droparea .= $leadingtabs."  </tr>\n";
+		$droparea .= $leadingtabs."</table>\n";
 
 	}
 
@@ -217,9 +226,9 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 			$size = $size . "Bytes";
 		 }
 
-		$droparea .= "<div style=\"padding 5px;\" class=\"text\" align=\"left\">";
-		$droparea .= "<a href=\"pgm-download_media.php?name=".$msword_file."\"><img src=\"sohoadmin/program/modules/page_editor/client/download_icon.gif\" border=\"0\" width=\"20\" height=\"19\" hspace=\"2\" vspace=\"2\" align=\"absmiddle\">\n";
-		$droparea .= "$msword_file</a> &nbsp;<font size=\"1\">[".$size."]</font></div><br>\n";
+		$droparea .= $leadingtabs."<div style=\"padding 5px;\" class=\"text\" align=\"left\">";
+		$droparea .= $leadingtabs."<a href=\"pgm-download_media.php?name=".$msword_file."\"><img src=\"sohoadmin/program/modules/page_editor/client/download_icon.gif\" border=\"0\" width=\"20\" height=\"19\" hspace=\"2\" vspace=\"2\" align=\"absmiddle\">\n";
+		$droparea .= $leadingtabs."$msword_file</a> &nbsp;<font size=\"1\">[".$size."]</font></div><br>\n";
 
 	}
 
@@ -229,8 +238,8 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 	if (eregi("##PRINTTHIS", $thisobj)) {
 		$tmplink = eregi_replace(" ", "_", $currentPage);
-		$droparea .= "<div align=\"center\"><form name=\"printpage\"><input type=\"button\" class=\"FormLt1\" value=\"".lang("Printable Page")."\" onclick=\"window.open('pgm-print_page.php?currentPage=$tmplink','printwin','scrollbars=yes,width=700,height=450');\">";
-		$droparea .= "</form></div>\n";
+		$droparea .= $leadingtabs."<div align=\"center\"><form name=\"printpage\"><input type=\"button\" class=\"FormLt1\" value=\"".lang("Printable Page")."\" onclick=\"window.open('pgm-print_page.php?currentPage=$tmplink','printwin','scrollbars=yes,width=700,height=450');\">";
+		$droparea .= $leadingtabs."</form></div>\n";
 	}
 
 	########################################
@@ -240,7 +249,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 	if (eregi("##EFRIEND", $thisobj)) {
 		$tmplink = eregi_replace(" ", "_", $currentPage);
 
-		$droparea .= "<div id=\"efriend\" align=\"center\">".$spacer."<a href=\"pgm-email_friend.php?mailpage=".$tmplink."\">[ ".lang("Email this page to a friend")." ]</a><BR>".$spacer."</div>\n";
+		$droparea .= $leadingtabs."<div id=\"efriend\" align=\"center\">".$spacer."<a href=\"pgm-email_friend.php?mailpage=".$tmplink."\">[ ".lang("Email this page to a friend")." ]</a><BR>".$spacer."</div>\n";
 
 	}
 
@@ -262,7 +271,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 		// Place Notice for builder program - counter must work in 'real-time'
 
-		$droparea .= "<div align=\"center\">".$spacer."<!-- ##COUNTER## --></div>\n";
+		$droparea .= $leadingtabs."<div align=\"center\">".$spacer."<!-- ##COUNTER## --></div>\n";
 
 	}
 
@@ -273,7 +282,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 	if (eregi("##MEMBERSHIP", $thisobj)) {
 		$tmp = eregi("<!-- ##MEMBERSHIP;(.*)## -->", $thisobj, $out);
 		$dataname = $out[1];
-		$droparea .= "<!-- ##MIKEINC;$dataname## -->\n\n";		// Treat this just like a custom PHP include
+		$droparea .= $leadingtabs."<!-- ##MIKEINC;$dataname## -->\n\n";		// Treat this just like a custom PHP include
 	}
 
 	########################################
@@ -283,7 +292,14 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 	if (eregi("##PHOTO", $thisobj)) {
 		$tmp = eregi("<!-- ##PHOTO;(.*)## -->", $thisobj, $out);
 		$dataname = $out[1];
-		$droparea .= "\n\n<!-- ##PHOTO;$dataname## -->\n\n";
+		$droparea .= $leadingtabs."\n\n<!-- ##PHOTO;$dataname## -->\n\n";
+	}
+
+
+	if (eregi("##SLIDER", $thisobj)) {
+		$tmp = eregi("<!-- ##SLIDER;(.*)## -->", $thisobj, $out);
+		$dataname = $out[1];
+		$droparea .= $leadingtabs."\n\n<!-- ##SLIDER;$dataname## -->\n\n";
 	}
 
 	########################################
@@ -293,7 +309,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 	if (eregi("##FAQ", $thisobj)) {
 		$tmp = eregi("<!-- ##FAQ;(.*)## -->", $thisobj, $out);
 		$dataname = $out[1];
-		$droparea .= "\n\n<!-- ##FAQ;$dataname## -->\n\n";
+		$droparea .= $leadingtabs."\n\n<!-- ##FAQ;$dataname## -->\n\n";
 	}
 
 	########################################
@@ -303,7 +319,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 	if (eregi("##BLOG", $thisobj)) {
 		$tmp = eregi("<!-- ##BLOG;(.*)## -->", $thisobj, $out);
 		$dataname = $out[1];
-		$droparea .= "\n\n<!-- ##BLOG;$dataname## -->\n\n";
+		$droparea .= $leadingtabs."\n\n<!-- ##BLOG;$dataname## -->\n\n";
 	}
 
 	########################################
@@ -317,10 +333,10 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 		$newscat = $tmp[0];
 		$contest = $tmp[1];
 		$dval = lang("Sign-up Now")." >>";
-		$droparea .= "<div align=\"center\">\n<form method=\"post\" action=\"newsletter.php\">\n";
-		$droparea .= "<input type=\"hidden\" name=\"newscategory\" value=\"$newscat\">\n";
-		$droparea .= "<input type=\"hidden\" name=\"contestvar\" value=\"$contest\">\n";
-		$droparea .= "<input type=\"submit\" class=FormLt1 value=\"$dval\">\n</form>\n</div>\n";
+		$droparea .= $leadingtabs."<div align=\"center\">\n<form method=\"post\" action=\"newsletter.php\">\n";
+		$droparea .= $leadingtabs."<input type=\"hidden\" name=\"newscategory\" value=\"$newscat\">\n";
+		$droparea .= $leadingtabs."<input type=\"hidden\" name=\"contestvar\" value=\"$contest\">\n";
+		$droparea .= $leadingtabs."<input type=\"submit\" class=FormLt1 value=\"$dval\">\n</form>\n</div>\n";
 	}
 
 	########################################
@@ -331,14 +347,14 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 		$tmp = eregi("<!-- ##SECURELOGIN;(.*)## -->", $thisobj, $out);
 		$BUTTON_NAME = $out[1];
 
-		$droparea .= "\n\n<!-- ##SECURELOGIN;".$BUTTON_NAME."## -->\n\n";
+		$droparea .= $leadingtabs."\n\n<!-- ##SECURELOGIN;".$BUTTON_NAME."## -->\n\n";
 
-//		$droparea .= "<div align=\"center\">\n";
-//		$droparea .= "<form method=\"post\" action=\"pgm-secure_login.php\">\n";
-//		$droparea .= "<table border=0 cellpadding=5 cellspacing=0 class=border width=199><tr><td align=center valign=top bgcolor=#EFEFEF>\n";
-//		$droparea .= "<input type=submit class=FormLt1 value=\"$BUTTON_NAME\"><BR>\n";
-//		$droparea .= "<font size=1 face=Arial, Helvetica>&nbsp;<BR>".lang("Forget your password")."? <a href=\"pgm-secure_remember.php\">".lang("Click Here").".</a>\n";
-//		$droparea .= "</td></tr></table>\n</form>\n</div>\n";
+//		$droparea .= $leadingtabs."<div align=\"center\">\n";
+//		$droparea .= $leadingtabs."<form method=\"post\" action=\"pgm-secure_login.php\">\n";
+//		$droparea .= $leadingtabs."<table border=0 cellpadding=5 cellspacing=0 class=border width=199><tr><td align=center valign=top bgcolor=#EFEFEF>\n";
+//		$droparea .= $leadingtabs."<input type=submit class=FormLt1 value=\"$BUTTON_NAME\"><BR>\n";
+//		$droparea .= $leadingtabs."<font size=1 face=Arial, Helvetica>&nbsp;<BR>".lang("Forget your password")."? <a href=\"pgm-secure_remember.php\">".lang("Click Here").".</a>\n";
+//		$droparea .= $leadingtabs."</td></tr></table>\n</form>\n</div>\n";
 
 	}
 
@@ -430,15 +446,20 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 		$directory = "$doc_root/images";
 
 		if (file_exists("$directory/$imagesrc")) {
-			$tmparray = getImageSize("$directory/$imagesrc");
+			$tmparray =  getimagesize("$directory/$imagesrc");
+
 			$origw = $tmparray[0];
 			$origh = $tmparray[1];
-			$WH = "width=$origw height=$origh";
-			if ($origw > $maxImgLen) {
-				$calc = $maxImgLen/$origw;
-				$hcalc = $origh*$calc;
-				$nheight = round($hcalc);
-				$WH = "width=\"".$maxImgLen."\" height=\"".$nheight."\"";
+			if($tmparray[0] > 5 && $tmparray[1] > 5){
+				$WH = "width=$origw height=$origh";
+				if ($origw > $maxImgLen && $maxImgLen != '') {
+					$calc = $maxImgLen/$origw;
+					$hcalc = $origh*$calc;
+					$nheight = round($hcalc);
+					$WH = "width=\"".$maxImgLen."\" height=\"".$nheight."\"";
+				}
+			} else {
+				$WH = '';	
 			}
 
 			$imagecode = "<img src=\"images/$imagesrc\" $WH border=\"0\">";
@@ -449,16 +470,16 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 		}
 
 		if (strlen($linkto) > 3) {
-			$imagesrc = "<a href=\"".pagename($linkto)."\">".$imagecode."</a>\n";
+			$imagesrc = "<a href=\"".pagename($linkto)."\">".$imagecode."</a>";
 			if (eregi("mailto:", $linkto)) {
-				$imagesrc = "<a href=\"".$linkto."\">".$imagecode."</a>\n";
+				$imagesrc = "<a href=\"".$linkto."\">".$imagecode."</a>";
 			}
 			if (eregi("https?://", $linkto)) {
-				$imagesrc = "<a href=\"".$linkto."\" target=\"_blank\">".$imagecode."</a>\n";
+				$imagesrc = "<a href=\"".$linkto."\" target=\"_blank\">".$imagecode."</a>";
 			}
 		}
 
-		$droparea .= "<div align=\"center\">\n".$spacer."\n".$imagesrc."<BR clear=all></div>\n";
+		$droparea .= "<div align=\"center\">".$imagesrc."<BR clear=all></div>\n";
 
 	}
 
@@ -606,17 +627,25 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 //  		exit;
 		// ==================================================
 
-		$formatSpacer = "          ";
-		$droparea .= "$spacer\n";
-		$droparea .= $formatSpacer."\n\n";
-		$droparea .= "\n\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" align=\"center\">\n";
-		$droparea .= " <tr>\n";
-		$droparea .= "  <td align=\"left\" valign=\"top\" class=\"sohotext\" width=\"100%\">";
-		$droparea .= "   ".$text."\n";
-		$droparea .= "  </td>\n";
-		$droparea .= " </tr>\n";
-		$droparea .= "</table>\n";
-		$droparea .= $formatSpacer."\n\n";
+		$formatSpacer = $leadingtabs;
+		if($divlayout==1){
+			$droparea .= "<div class=\"sohotext\">\n";
+			$droparea .= $leadingtabs."	".$text."\n";
+			$droparea .= $leadingtabs."</div>\n";
+			
+		} else {
+			$droparea .= "$spacer\n";
+			//$droparea .= $formatSpacer."\n\n";		
+			$droparea .= $leadingtabs."<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" align=\"center\">\n";
+			$droparea .= $leadingtabs." <tr>\n";
+			$droparea .= $leadingtabs."  <td align=\"left\" valign=\"top\" class=\"sohotext\" width=\"100%\">";
+			$droparea .= $leadingtabs."   ".$text."\n";
+			$droparea .= $leadingtabs."  </td>\n";
+			$droparea .= $leadingtabs." </tr>\n";
+			$droparea .= $leadingtabs."</table>\n";
+			//$droparea .= $formatSpacer."\n\n";
+		}
+		
 
 	}
 
@@ -657,9 +686,12 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 				$audiolink = "pgm-download_media.php?name=$audio_file";
 			}
 
-			$droparea .= "<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"199\" align=\"center\">\n<tr>\n<td align=\"left\" valign=\"top\" class=\"text\">";
-			$droparea .= "<a href=\"".$audiolink."\"><img src=\"sohoadmin/program/modules/page_editor/client/download_icon.gif\" border=\"0\" width=\"20\" height=\"19\" hspace=\"2\" vspace=\"2\" align=\"absmiddle\">\n";
-			$droparea .= "$this_display</a> <FONT STYLE='font-size: 7pt;'>[$size]</font></td>\n</tr>\n</table>\n";
+// Old Method: Download link
+//			$droparea .= "<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"199\" align=\"center\">\n<tr>\n<td align=\"left\" valign=\"top\" class=\"text\">";
+//			$droparea .= "<a href=\"".$audiolink."\"><img src=\"sohoadmin/program/modules/page_editor/client/download_icon.gif\" border=\"0\" width=\"20\" height=\"19\" hspace=\"2\" vspace=\"2\" align=\"absmiddle\">\n";
+//			$droparea .= "$this_display</a> <FONT STYLE='font-size: 7pt;'>[$size]</font></td>\n</tr>\n</table>\n";
+			
+			$droparea .= '<!-- ##audio;'.$audio_file.'## -->'."\n";
 
 	}
 
@@ -839,6 +871,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 		$video_file = $tmp[0];
 		$video_width = $tmp[1];
+		
 		$video_height = $tmp[2];
 		$video_setW = $tmp[3];
 		$video_setH = $tmp[4];
@@ -876,10 +909,8 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 		// Create 'View Video Button' for page display
 		// ------------------------------------------------------------------
 		$droparea .= "\n\n";
-		$droparea .= "<div align=\"center\"><form name=vidnet>\n";
-		$droparea .= "<input type=button value=\" ".lang("View Video")." \" class=\"FormLt1\" onclick=\"window.open('pgm-view_video.php?name=".$video_file."&w=".$video_width."&h=".$video_height."','videowin','width=".$openw.",height=".$openh.",location=no, menubar=no, titlebar=no, resizable=no, status=no, toolbar=no');\">\n";
-		$droparea .= "</form></div>\n\n";
-
+		
+		$droparea .= '<!-- ##video;'.$video_file.';'.$video_width.';'.$video_height.'## -->'."\n";
 	}
 
 
@@ -936,7 +967,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 		//if($flash_width != "" &&
 
-		$droparea = "<OBJECT classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,0,0\" ID=thisflashobj $flash_width $flash_height>\n";
+		$droparea .= "<OBJECT classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://active.macromedia.com/flash2/cabs/swflash.cab#version=4,0,0,0\" ID=thisflashobj $flash_width $flash_height>\n";
 		$droparea .= "<PARAM NAME=movie VALUE=\"$flashlocation/$flash_file[0]\">\n<PARAM NAME=loop VALUE=true>\n<PARAM NAME=menu VALUE=false>\n<param name=\"wmode\" value=\"transparent\">\n<PARAM NAME=quality VALUE=high>\n";
 		$droparea .= "<EMBED wmode=\"transparent\" src=\"$flashlocation/$flash_file[0]\" loop=true menu=false quality=high $flash_width $flash_height TYPE=\"application/x-shockwave-flash\" PLUGINSPAGE=\"http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash\"></EMBED>\n";
 		$droparea .= "</OBJECT>\n";
@@ -1075,7 +1106,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 		}
 
-		$droparea .= "\n\n</DIV>\n\n\n";
+		$droparea .= "</DIV>\n\n\n";
 
       # Mantis 412
       $droparea .= "<!-- #UNIQUETOKEN~~".$unique_token."~~#--->\n\n";
@@ -1135,6 +1166,7 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 		// $droparea .= "<tr>\n<td align=center valign=middle><a href=\"shopping/start.php?browse=1\"><img src=\"cart_browse.gif\" border=0 width=117 height=21></a><BR><img src=\"spacer.gif\" width=199 height=8 border=0></td>\n</tr>\n</table>\n</form>\n</div>\n";
 
 		$droparea .= "\n<!-- \n\nEND SHOPPING CART SEARCH OBJECT \n\n-->\n\n";
+		$droparea .= "</div>";
 
 	} // End if eregi ##CARTSEARCH
 
@@ -1246,7 +1278,9 @@ for ($numobj=0;$numobj<=$objcount;$numobj++) {
 
 } // End $numobj Loop
 
-$droparea .= "</div>\n";
+if($divlayout!=1){
+	$droparea .= "</div>\n";
+}
 
 // ---------------------------------------------------------
 // INSERT MAC OS DISPLAY FIX

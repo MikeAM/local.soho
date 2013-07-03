@@ -12,12 +12,13 @@
 //    -objHeight (optional)
 // Returns
 //    -objParent
-function objTemplate(objName, txtHead, objHeight){
+function objTemplate(objName, txtHead, objHeight) {
 
    var obj_items = new Array();
    var TextHeader = "";
-   if(!objHeight)
-      objHeight = 120;
+	if(!objHeight){
+		objHeight = 120;
+	}
    
 	d = new Date();
 	RandNum = objName;
@@ -35,8 +36,9 @@ function objTemplate(objName, txtHead, objHeight){
 	
 	//alert(objHeight)
 	
-	if(txtHead)
-	   TextHeader = "<img src=\"images/text_header.gif\" width=\"199\" height=\"15\" border=\"0\" align=\"center\" vspace=\"0\" hspace=\"0\" style='cursor: move;'><BR CLEAR=ALL>";
+	if(txtHead){
+		TextHeader = "<img src=\"images/text_header.gif\" width=\"199\" height=\"15\" border=\"0\" align=\"center\" vspace=\"0\" hspace=\"0\" style='cursor: move;'><BR CLEAR=ALL>";
+	}
 	var TableStart = "<div id=\""+RandNum+"\" class=\"droppedItem\" style=\"height: "+objHeight+"px;\">"+TextHeader;
    var TableEnd = "</div><!-- ~~~ -->";
    
@@ -102,12 +104,14 @@ function loadEditor(mode) {
    RandNum = tmplt[0];
    editorID = RandNum.replace("NEWOBJ", "EDITOBJ");
    
-   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<div id="+editorID+" class=\"TXTCLASS\" align=\"left\" onclick=\"startEditor('"+editorID+"');\">&nbsp;</div>");
-   document.getElementById(ColRowID).innerHTML= finalObj;
+   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<div id="+editorID+" class=\"TXTCLASS\" align=\"left\" onclick=\"startEditor(this.id);\">&nbsp;</div>");
    
+   document.getElementById(ColRowID).innerHTML= finalObj;
+   setTimeout("checkRow(ColRowID)",1500)
+   //checkRow(ColRowID);
    startEditor(editorID)
    
-   checkRow(ColRowID)
+   
 }
 
 //function setHtml(curtext,cont){
@@ -130,14 +134,19 @@ function loadEditor(mode) {
 function getImageData() {
    
    var finalObj,RandNum;
-   var tmplt = objTemplate('IMGOBJ', false);
+   var tmplt = objTemplate('IMGOBJ', true, 120);
+   
+   RandNum = tmplt[0];
+   imgID = RandNum.replace("IMGOBJ", "NEWIMGOBJ");
    
    disOne = $('oSel').selectedIndex;
 	tImage = eval("$('oSel').options["+disOne+"].value");
    
    <? echo ("tImage = \"http://$this_ip/images/\" + tImage;\n"); ?>
    
-   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<img src="+tImage+" border=1 class=tHead>");
+   // finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<img src="+tImage+" border=1 class=tHead>");
+   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<!-- ##IMAGE;"+tImage+";"+imgID+"## --><img src="+tImage+" border=0 id="+imgID+" class=tHead onClick=\"linkImage('"+imgID+"');\">");
+   
    
    if (tImage != "NONE") {
       document.getElementById(ColRowID).innerHTML= finalObj;
@@ -152,7 +161,7 @@ function getImageData() {
 function OkImageData() {
    
    var finalObj,RandNum;
-   var tmplt = objTemplate('IMGOBJ', true);
+   var tmplt = objTemplate('IMGOBJ', true, 120);
    
    RandNum = tmplt[0];
    imgID = RandNum.replace("IMGOBJ", "NEWIMGOBJ");
@@ -329,7 +338,7 @@ function OkCartSku() {
       document.getElementById(ColRowID).innerHTML= finalObj;
    }else{
       // Place single sku
-      var tmplt = objTemplate('SKUOBJ', true, 240);      
+      var tmplt = objTemplate('SKUOBJ', true, 140);      
       RandNum = tmplt[0];
       skuID = RandNum.replace("SKUOBJ", "SKUPROMO");   
    	disOne = $('SINGLESKU').selectedIndex;
@@ -395,6 +404,7 @@ function OkSocialMedia() {
 
 	checkRow(ColRowID)
 }
+
 
 
 // =========================================================
@@ -651,8 +661,10 @@ function OkMP3Data() {
    
 	disOne = $('mp3name').selectedIndex;
 	tMP3 = eval("$('mp3name').options["+disOne+"].value");
-   
-   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<div ID="+audioID+"><font style='font-family: Arial; font-size: 8pt;'><img src='client/download_icon.gif' align=absmiddle vspace=0 hspace=2 border=0 width=20 height=19><U><font color=blue>"+tMP3+"</font></u></font></div><!-- ##MP3;"+tMP3+"## -->");
+   displayFilename = tMP3.replace(new RegExp('[_]+', 'g'), ' ');
+   audioPlaceholder = "<div id="+audioID+" align=\"center\" class=\"grid-placeholder-audio\"><span class=\"grid-filename audio\">"+displayFilename;
+   audioPlaceholder = audioPlaceholder + "</span></div><!-- ##MP3;"+tMP3+"## -->";
+   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", audioPlaceholder);
    
    if (tMP3 != "NONE") {
       document.getElementById(ColRowID).innerHTML= finalObj;
@@ -677,34 +689,43 @@ function OkVideoData() {
    
 	disOne = $('videoname').selectedIndex;
 	tVideo = eval("$('videoname').options["+disOne+"].value");
+	if ( tVideo == 'NONE' ) {
+		tVideo = eval("$('videourl').value");
+	}
 
 	tVideoW = $('videow').value;
 	tVideoW = tVideoW.toString();
 
 	tVideoH = $('videoh').value;
 	tVideoH = tVideoH.toString();
+	
+	tVideoName = tVideo.replace('http://', '');
+	if ( tVideoName.match(/youtu/g) != null ) {
+		tVideoName = 'YouTube Video';
+	} else if ( tVideoName.match(/vimeo/g) != null ) {
+		tVideoName = 'Vimeo Video';
+	}
+	
+	if ( tVideoW == '' ) { tVideoW = 500; }
+	if ( tVideoH == '' ) { tVideoH = 312; }
+	tVideo = tVideo.concat(';'+tVideoW+';'+tVideoH);
 
-	var istVideo = tVideo.search(";;");
-	if(istVideo > 0){
-	   tVideo = tVideo.replace(';;',';'+tVideoW+';'+tVideoH);
-	}else{
-      var disTing = tVideo.indexOf(";");
-      tVideo = tVideo.substring(0, disTing);
-      tVideo = tVideo.concat(';'+tVideoW+';'+tVideoH);
-   }
-
-	//tVideoFull = tVideo+" "+tVideoW+"W X "+tVideoH+"H";
 	var flash_file_test = tVideo.search(".swf");
-
 	if (flash_file_test > 0) {		// This is a FLASH file
 		OkFlashData(tVideo,tVideoW,tVideoH,videoID,tmplt);
 		tVideo = "NONE";
 	}
    
-   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<div ID="+videoID+" align=center><font style='font-family: Arial; font-size: 7pt;'><button type=\"button\" class=\"blueButton\"><span><span>Play Video</span></span></button><BR><FONT COLOR=#999999>[ "+tVideo+" ]</FONT></font></div><!-- ##VIDEO;"+tVideo+";"+tVideoW+";"+tVideoH+"## -->");
+   objCaption = "<div ID="+videoID+" align=\"center\" class=\"grid-video-placeholder\"><span class=\"grid-filename\">"+tVideoName;
+   if ( tVideoW > 0 && tVideoH > 0 ) {
+   	objCaption = objCaption + ' <span class="grid-video-dimensions">('+tVideoW+' &times; '+tVideoH+')</span>';
+   }
+   objCaption = objCaption + "</span></div><!-- ##VIDEO;"+tVideo+"## -->";
+   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", objCaption);
    
    if (tVideo != "NONE") {
       document.getElementById(ColRowID).innerHTML= finalObj;
+      $('videourl').value = '';
    }
 
 	checkRow(ColRowID)
@@ -803,7 +824,8 @@ function photoalbum() {
    
    var finalObj,RandNum;
    var tmplt = objTemplate('PHOTOALBUMOBJ', true, 80);
-   
+   var photoalbvar = document.getElementById('photoAlb').checked;
+   //alert(document.getElementById('photoDisplay').value);
 //	if($('photoUser').checked){
 //      finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<font style='font-family: Arial; font-size: 8pt;'><U><font color=darkblue>Photo Album</font></U></FONT><!-- ##CUSTOMHTML;pgm-photo_album.php## -->");
 //	}else{
@@ -815,8 +837,13 @@ function photoalbum() {
 		}else{
 
 			tphotocat = tphotocat.toString();
-
-         finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<font style='font-family: Arial; font-size: 8pt;'><U><font color=darkblue>Photo Album : "+tphotocatname+"</font></U></FONT><!-- ##PHOTO;"+tphotocat+"## -->");
+		
+		if(photoalbvar == true){
+			finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<font style='font-family: Arial; font-size: 8pt;'><U><font color=darkblue>Photo Album : "+tphotocatname+"</font></U></FONT><!-- ##PHOTO;"+tphotocat+"## -->");
+		} else {
+			finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<font style='font-family: Arial; font-size: 8pt;'><U><font color=darkblue>Photo Slider : "+tphotocatname+"</font></U></FONT><!-- ##SLIDER;"+tphotocat+"## -->");
+		}
+         
 
 		  	$('photocat').selectedIndex = 0;	// Reset Selection to Nothing(Null)
 		}
@@ -992,6 +1019,10 @@ function OkMP3DataUP(tMP3) {
    
    finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<div ID="+audioID+"><font style='font-family: Arial; font-size: 8pt;'><img src='client/download_icon.gif' align=absmiddle vspace=0 hspace=2 border=0 width=20 height=19><U><font color=blue>"+tMP3+"</font></u></font></div><!-- ##MP3;"+tMP3+"## -->");
    
+//   audioPlaceholder = "<div ID="+audioID+" align=\"center\" class=\"grid-placeholder-audio\"><span class=\"grid-filename audio\">"+tMP3;
+//   audioPlaceholder = audioPlaceholder + "</span></div><!-- ##MP3;"+tMP3+"## -->";
+//   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", audioPlaceholder);
+   
    if (tMP3 != "NONE") {
       document.getElementById(ColRowID).innerHTML= finalObj;
    }
@@ -1151,8 +1182,11 @@ function place_supersearch() {
 	doOperation = 0;
    var dataTrue = dataData.search("pixel.gif");
 
+
+
+
    // MoveObject_Graphic = ;
-	TableStart = "<table width=\"199\" border=\"0\" cellpadding=\"2\" cellspacing=\"0\" style=\"border: 1px inset black; background: #EFEFEF;\">\n";
+	TableStart = "<table width=\"199\" border=\"0\" cellpadding=\"2\" cellspacing=\"0\" style=\"margin-top:25px;border: 1px inset black; background: #EFEFEF;\">\n";
 
 	// 'Move Object' graphic
 	TableStart += " <tr>\n";
@@ -1165,27 +1199,171 @@ function place_supersearch() {
 	// Thumbnail Image
 	TableStart += " <tr>\n";
 	TableStart += "  <td valign=\"top\" width=\"64\">\n";
-	TableStart += "   <img src=\"http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/program/modules/super_search/page_editor/supersearch_dropzone.gif\" width=\"198\" height=\"66\" border=\"0\" style=\"cursor: move;\">";
+	TableStart += "   <img src=\"<? echo httpvar().$_SESSION['docroot_url']; ?>/sohoadmin/program/modules/super_search/page_editor/supersearch_dropzone.gif\" width=\"198\" height=\"66\" border=\"0\" style=\"cursor: move;\">";
    TableStart += "  </td>\n";
 
    TableStart += " </tr>\n";
    TableStart += "</table>\n";
    TableStart += "<!-- ##SUPERSEARCH## -->";
 
-	if (dataTrue > 0) {
-		//sContent = ;
-		sText = TableStart;
-		doOperation = 1;
-	} else {
-	   sText = dataData+"<BR>"+TableStart;
-		doOperation = 1;
-	}
+   var finalObj,RandNum;
+   var tmplt = objTemplate('SUPERSEARCH', true, 50);
+   
+   finalObj = tmplt[1].replace("##OBJ_DISPLAY##", TableStart);
+   document.getElementById(ColRowID).innerHTML= finalObj;
+   
+	setTimeout("checkRow(ColRowID)",1500)
 
-	if (doOperation == 1) {
-		document.getElementById(ColRowID).innerHTML= sText;
-		document.getElementById(ColRowID).style.backgroundColor= "#FFFFFF";
+
+//	if (dataTrue > 0) {
+//		//sContent = ;
+//		sText = TableStart;
+//		doOperation = 1;
+//	} else {
+//	   sText = dataData+"<BR>"+TableStart;
+//		doOperation = 1;
+//	}
+//
+//	if (doOperation == 1) {
+//		document.getElementById(ColRowID).innerHTML= sText;
+//		document.getElementById(ColRowID).style.backgroundColor= "#FFFFFF";
+//	}
+//   if ( window.checkPageAreas ){
+//      checkPageAreas('start');
+//   }
+}
+
+
+function newsfeedEditFB(ColRowID,fb_id_valv,fb_post_limitv,fb_show_follow_usv,fb_hide_authorv,fb_include_picturesv){
+	//alert(ColRowID);
+//	parent.frames.body.document.getElementById('oknewscolid').value=ColRowID;
+//      var ColRowID = ColRowID;
+//      var dataData = document.getElementById(ColRowID).innerHTML;
+//	//var ColRowID = ColRowID;
+//	//show_hide_layer('newsFeedLayer','','show','objectbar','','hide');
+//	show_hide_layer('objectbar','','hide','newsFeedLayer','','show');
+////	document.getElementById('twitter_options').style.display='none';
+////	document.getElementById('facebook_options').style.display='block';
+////	document.getElementById('facebook_id').value = fb_id_valv;
+////	document.getElementById('fb_post_limit').value = fb_post_limitv;
+////	document.getElementById('fb_show_follow_us').checked = fb_show_follow_usv;
+////	document.getElementById('fb_hide_author').checked = fb_hide_authorv;
+////	document.getElementById('fb_include_pictures').checked = fb_include_picturesv;
+
+}
+
+
+
+
+
+function OkNewsFeed() {	
+	var finalObj,RandNum;
+	var tmplt = objTemplate('NEWOBJ', true, 50);
+	var tdBase = '';
+	var RandNum = tmplt[0];
+	var newsfeedsID = RandNum.replace("NEWOBJ", "NEWSFEEDOBJ");
+	var nowgo = 0;
+	
+	var newsfeed_image = '';
+	var newsfeed_editbutton = '';
+	
+   	var nwsf = $('newsfeed_sel').selectedIndex;
+	var newsfeedtype = eval("$('newsfeed_sel').options["+nwsf+"].value");
+	//alert(newsfeedtype+'hi');
+	//var nwsf = document.getElementById('newsfeed_sel');
+	//var newsfeedtype=nwsf.options[nwsf.selectedIndex].value;
+	
+	if(newsfeedtype==''){
+		setTimeout("checkRow(ColRowID)",1000)
+		show_hide_layer('objectbar','','show','newsFeedLayer','','hide');
+	} else {
+		if(newsfeedtype=='facebook'){
+			var fb_id_val = document.getElementById('facebook_id').value;
+			if(fb_id_val == '' || isNaN(fb_id_val)==true){
+				if(fb_id_val == ''){
+					alert('Your Facebook ID Number is required.');
+				} else {
+					alert('Your Facebook ID must be a number.');
+				}
+				
+			} else {
+				nowgo = 1;
+				var newsfeed_image = "<img src='images/soc_facebook.png' style='margin-right:5px;margin-top:10px;width:20px;height:20px;'><br/>";								
+				
+				var news_feed_options = fb_id_val+'~'+document.getElementById('fb_post_limit').value;
+				if(document.getElementById('fb_show_follow_us').checked==true){
+					news_feed_options = news_feed_options+'~1';
+					var fb_show_follow_us_val = 'true';
+				} else {
+					news_feed_options = news_feed_options+'~0';
+					var fb_show_follow_us_val = 'false';
+				}
+				if(document.getElementById('fb_hide_author').checked==true){
+					var fb_hide_author_val = 'true';
+					news_feed_options = news_feed_options+'~1';
+				} else {
+					var fb_hide_author_val = 'false';
+					news_feed_options = news_feed_options+'~0';
+				}
+				if(document.getElementById('fb_include_pictures').checked==true){
+					var fb_include_pictures_val = 'true';
+					news_feed_options = news_feed_options+'~1';
+				} else {
+					var fb_include_pictures_val = 'false';
+					news_feed_options = news_feed_options+'~0';
+				}
+				//var newsfeed_editbutton = "<button class=\"grayButton\" onClick=\"newsfeedEditFB('"+fb_id_val+"','"+document.getElementById('fb_post_limit').value+"','"+fb_show_follow_us_val+"','"+fb_hide_author_val+"','"+fb_include_pictures_val+"');\"><span><span>edit feed</span></span></button>";
+				//var newsfeed_editbutton = " onclick=\"var ColRowID=this.parentNode.parentNode.id;newsfeedEditFB(this.parentNode.parentNode.id,'"+fb_id_val+"','"+document.getElementById('fb_post_limit').value+"','"+fb_show_follow_us_val+"','"+fb_hide_author_val+"','"+fb_include_pictures_val+"');\" ";
+				//var newsfeed_editbutton = "<button class=\"grayButton\" onClick=\"newsfeedEditFB('"+fb_id_val+"','"+document.getElementById('fb_post_limit').value+"','"+document.getElementById('fb_show_follow_us').checked+"','"+document.getElementById('fb_hide_author').checked+"','"+document.getElementById('fb_include_pictures').checked+"');\"><span>edit feed</span></button>";
+			}
+		} else {
+			if(newsfeedtype=='twitter'){
+				var tw_id_val = document.getElementById('twitter_id').value;
+				if(tw_id_val == ''){
+					alert('Your Twitter ID Number is required.');
+				} else {
+					nowgo = 1;					
+					var newsfeed_image = "<img src='images/soc_twitter.gif' style='margin-right:5px;margin-top:10px;width:20px;height:20px;'><br/>";
+					var news_feed_options = tw_id_val+'~'+document.getElementById('tw_post_limit').value;
+					if(document.getElementById('tw_show_follow_us').checked==true){
+						news_feed_options = news_feed_options+'~1';
+					} else {
+						news_feed_options = news_feed_options+'~0';
+					}
+				}
+			} else {
+				if(newsfeedtype='sohoblog'){
+					var sohoblog_cat = document.getElementById('sohoblog_cat').value;
+					nowgo = 1;
+					newsfeedtype = 'blog';
+					var newsfeed_image = "<img src='../../includes/images/blog-icon-small.png' style='margin-right:5px;margin-top:10px;width:20px;height:20px;'><br/>";
+					var news_feed_options = sohoblog_cat+'~'+document.getElementById('sohoblog_post_limit').value;
+					if(document.getElementById('sohoblog_timestamp').checked==true){
+						news_feed_options = news_feed_options+'~1';
+					} else {
+						news_feed_options = news_feed_options+'~0';
+					}
+					if(document.getElementById('sohoblog_readmore').checked==true){
+						news_feed_options = news_feed_options+'~1';
+					} else {
+						news_feed_options = news_feed_options+'~0';
+					}
+					if(document.getElementById('sohoblog_author').checked==true){
+						news_feed_options = news_feed_options+'~1';
+					} else {
+						news_feed_options = news_feed_options+'~0';
+					}
+				
+					
+				}
+			}
+		}
+		if(nowgo==1){
+		//alert("##NEWSFEED;"+newsfeedtype+";"+news_feed_options+"##");ColRowID
+			var finalObj = tmplt[1].replace("##OBJ_DISPLAY##", "<div align=center valign=middle "+newsfeed_editbutton+">"+newsfeed_image+"<font face=Arial size=1><B>News Feed: "+newsfeedtype+"</B></font></div><!-- ##NEWSFEED;"+newsfeedtype+";"+news_feed_options+"## -->");
+			document.getElementById(ColRowID).innerHTML= finalObj;
+			setTimeout("checkRow(ColRowID)",1000)
+			show_hide_layer('objectbar','','show','newsFeedLayer','','hide');
+		}
 	}
-   if ( window.checkPageAreas ){
-      checkPageAreas('start');
-   }
 }

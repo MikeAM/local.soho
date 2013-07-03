@@ -123,6 +123,7 @@ if ( $product_name != "proretail" && $product_name != "proedition" ) {
    /*----------------------------------------------*/
 unset($_SESSION['product_mode']);
 unset($_SESSION['suspend_msg']);
+unset($_SESSION['ticketupdate']);
    if ( $pulse['code'] == "" ) {
       /*--------------------*
       echo "<center><BR><BR><font face=\"tahoma,arial,sans-serif\" color=\"darkred\">";
@@ -168,5 +169,10 @@ unset($_SESSION['suspend_msg']);
 
 
 }
+
+if($pulse['message']=="ticketupdate"){
+	$_SESSION['ticketupdate'] = time();
+}
+
 include('includes/sense_pulse.php');
 ?>

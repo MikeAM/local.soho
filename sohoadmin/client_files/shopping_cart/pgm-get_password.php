@@ -34,6 +34,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 error_reporting(0);
 session_cache_limiter('none'); 
 session_start();	
+
+require_once("../sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
 track_vars;
 
 $THIS_DISPLAY = "";		// Make Display Variable Blank in Case of Session Memory
@@ -42,19 +44,24 @@ $THIS_DISPLAY = "";		// Make Display Variable Blank in Case of Session Memory
 ### WE WILL NEED TO KNOW THE DATABASE NAME; UN; PW; ETC TO OPERATE THE  
 ### REAL-TIME EXECUTION.  THIS IS CONFIGURED IN THE isp.conf FILE      
 #################################################################################
-
-include("pgm-cart_config.php");
+$customernumber=$_POST['customernumber'];
+$ACTION=$_POST['ACTION'];
+$find_login=$_POST['find_login'];
+$find_login = eregi_replace('[^a-zA-Z_0-9\.@]', '', stripslashes($find_login));
+include_once("pgm-cart_config.php");
 $dot_com = $this_ip;	// Assign dot_com variable to configured ip address
-
-foreach($_REQUEST as $name=>$value){
-	$value = stripslashes($value);
-	$value = htmlspecialchars($value);	// Bugzilla #13
-	${$name} = $value;
-	$_POST[$name] = $value;
-	$_GET[$name] = $value;
-	$_REQUEST[$name] = $value;
-}
-
+//
+//foreach($_REQUEST as $name=>$value){
+//	$value = stripslashes($value);
+//	$value = htmlspecialchars($value);	// Bugzilla #13
+//	${$name} = $value;
+//	$_POST[$name] = $value;
+//	$_GET[$name] = $value;
+//	$_REQUEST[$name] = $value;
+//}
+//
+//echo testArray($_POST);
+//echo testArray($_GET);
 
 #################################################################################
 ### READ DATABASED OPTIONS INTO MEMORY NOW
@@ -72,12 +79,14 @@ if ($ACTION != "PROCESS_REQ") {
 		$RETURN_MSG = "";
 
 		if ($FOUND_FLAG == 1) {
-			$RETURN_MSG .= "<BR><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]><B>".lang("Customer data successfully located.")." ".lang("You should receive an email within the next few minutes.")."</B></FONT>\n";
+			//$RETURN_MSG .= "<BR><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]><B>".lang("Customer data successfully located.")." ".lang("You should receive an email within the next few minutes.")."</B></FONT>\n";
+			$RETURN_MSG .= "<BR><FONT ><B>".lang("Customer data successfully located.")." ".lang("You should receive an email within the next few minutes.")."</B></FONT>\n";
 			$RETURN_MSG .= "<BR><BR><A HREF=\"pgm-checkout.php?customernumber=$customernumber&=SID\">".lang("Return To Checkout Login")."</a>\n";
 		}
 
 		if ($FOUND_FLAG == 0) {
-			$RETURN_MSG .= "<BR><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]><B>".lang("Failed to locate email address; please try again or login as a new customer.")."</B></FONT>\n";
+			//$RETURN_MSG .= "<BR><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]><B>".lang("Failed to locate email address; please try again or login as a new customer.")."</B></FONT>\n";
+			$RETURN_MSG .= "<BR><FONT ><B>".lang("Failed to locate email address; please try again or login as a new customer.")."</B></FONT>\n";
 			$RETURN_MSG .= "<BR><BR><A HREF=\"pgm-checkout.php?customernumber=$customernumber&=SID\">".lang("Return To Checkout Login")."</a>\n";
 		}
 
@@ -124,9 +133,10 @@ if ($ACTION != "PROCESS_REQ") {
 
 		// ----------------------------------------------------------
 
-		$THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 1px inset black;'>\n";
+		$THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 0px inset black;'>\n";
 		$THIS_DISPLAY .= "<TR>\n";
-		$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=$OPTIONS[DISPLAY_HEADERBG] WIDTH=95%><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]>\n";
+		//$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=$OPTIONS[DISPLAY_HEADERBG] WIDTH=95%><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]>\n";
+		$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text  WIDTH=95%><FONT >\n";
 		$THIS_DISPLAY .= "<B>ONLINE CUSTOMER SERVICE</B><BR>".lang("Follow the instructions below to resolve your issue quickly.")."\n";
 		$THIS_DISPLAY .= "</TD></TR></TABLE><BR>\n\n";
 
@@ -136,12 +146,14 @@ if ($ACTION != "PROCESS_REQ") {
 		$THIS_DISPLAY .= "<TR>\n";
 		$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text WIDTH=50%>\n";
 
-			$THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 1px inset black;'>\n";
+			$THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 0px inset black;'>\n";
 			$THIS_DISPLAY .= "<TR>\n";
-			$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=$OPTIONS[DISPLAY_HEADERBG] WIDTH=95%><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]>\n";
+			//$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=$OPTIONS[DISPLAY_HEADERBG] WIDTH=95%><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]>\n";
+			$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text WIDTH=95%><FONT>\n";
 			$THIS_DISPLAY .= "<B>".lang("Find Username and Password for Login")."\n";
 			$THIS_DISPLAY .= "</TD></TR>\n";
-			$THIS_DISPLAY .= "<TR><TD ALIGN=LEFT VALIGN=TOP  CLASS=text BGCOLOR=$OPTIONS[DISPLAY_HEADERBG] WIDTH=95%><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]>\n";
+			//$THIS_DISPLAY .= "<TR><TD ALIGN=LEFT VALIGN=TOP  CLASS=text BGCOLOR=$OPTIONS[DISPLAY_HEADERBG] WIDTH=95%><FONT COLOR=$OPTIONS[DISPLAY_HEADERTXT]>\n";
+			$THIS_DISPLAY .= "<TR><TD ALIGN=LEFT VALIGN=TOP  CLASS=text WIDTH=95%><FONT >\n";
 			$THIS_DISPLAY .= lang("Your username and password was displayed on the invoice of your first order with us.")." ".lang("If you have the email or a printed copy handy, it may expedite your request.")."<BR><BR>\n";
 			$THIS_DISPLAY .= lang("Otherwise, please enter your email address in the space below.")." ".lang("We will locate your username and password in our database and instantly send an email to")." \n";
 			$THIS_DISPLAY .= lang("the address that matches your input.")."  ".lang("Thank you for being a valued return customer.")."<BR><BR>\n";
@@ -158,7 +170,7 @@ if ($ACTION != "PROCESS_REQ") {
 } else {					// Try and locate user email address and email info; else err
 
 	$FOUND_FLAG = 0;
-	$find_login = eregi_replace('[^a-zA-Z0-9\.@]', '', stripslashes($find_login));
+	$find_login = eregi_replace('[^a-zA-Z_0-9\.@]', '', stripslashes($find_login));
 	$find_login = strtoupper($find_login);
 	$result = mysql_query("SELECT USERNAME, PASSWORD, BILLTO_EMAILADDR, BILLTO_FIRSTNAME, BILLTO_LASTNAME FROM cart_customers WHERE UPPER(USERNAME) = '$find_login'");
  	$find_results = mysql_num_rows($result);
@@ -183,8 +195,9 @@ if ($ACTION != "PROCESS_REQ") {
 		$EMAIL .= lang("Please DO NOT REPLY to this email.")."\n\n\n";
 
 		// Email user information now
-
-		mail("$this_customer[USERNAME]", "$SERVER_NAME customer data", "$EMAIL", "From: webmaster@$SERVER_NAME");
+		if(!SohoEmail($this_customer['USERNAME'], "noreply@".preg_replace('/^www\./i','',$_SESSION['this_ip']), $SERVER_NAME." customer data", str_replace("\n","<br/>\n", $EMAIL))){
+			mail("$this_customer[USERNAME]", "$SERVER_NAME customer data", "$EMAIL", "From: webmaster@$SERVER_NAME");
+		}
 
 		$FOUND_FLAG = 1;
 

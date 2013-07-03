@@ -5,7 +5,9 @@ session_start();
 $filenames = '';
 foreach (glob($_SESSION['doc_root'].'/images/*') as $filename) {
 	if(!is_dir($filename) && preg_match('/\.(jpg|jpeg|gif|png|tiff|bmp)$/i', $filename)){
-		$filenames .= basename($filename)."\n";
+		if ( !eregi('"', $filename) ) {
+			$filenames .= basename($filename)."\n";
+		}
 	}
 }
 $filenames = eregi_replace("\n$", '', $filenames);

@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -31,7 +31,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## copyright laws.
 ###############################################################################
 
-error_reporting(0);
+
 session_cache_limiter('none');
 session_start();
 track_vars;
@@ -43,10 +43,19 @@ $THIS_DISPLAY = "";	// Make Display Variable Blank in Case of Session Memory
 ### REAL-TIME EXECUTION.  THIS IS CONFIGURED IN THE isp.conf FILE
 #################################################################################
 
-include("pgm-cart_config.php");
+include_once("pgm-cart_config.php");
 $dot_com = $this_ip;	// Assign dot_com variable to configured ip address
 
 include_once("../sohoadmin/program/includes/shared_functions.php");
+error_reporting('341');
+
+if($_REQUEST['id']!='' && $_REQUEST['comkey']!=''){
+	include_once('../sohoadmin/client_files/cart-ok_comment.php');
+	unset($_REQUEST['comkey']);
+}
+
+
+
 
 foreach($_REQUEST as $name=>$value){
 	$value = stripslashes($value);
@@ -163,6 +172,65 @@ $THIS_DISPLAY .= "     <td class=text align=\"center\" valign=\"top\">\n";
 // -------------------------------------------------------------------------------
 $THIS_IMAGE = "";
 
+
+
+	$event_time_dd = '';
+	$find_dates = mysql_query("select PRIKEY,EVENT_DATE,EVENT_START,EVENT_END,EVENT_DETAILPAGE,custom_start,custom_end from calendar_events where EVENT_DATE >= '".date('Y-m-d')."' and EVENT_DETAILPAGE='".$PROD['PRIKEY']."' order by EVENT_DATE, EVENT_START");
+
+	if(mysql_num_rows($find_dates) > 0 && $PROD['OPTION_FORMDATA'] !=''){
+		$get_cartform_registrants = mysql_query("select EVENT_DATE from ".strtoupper(str_replace(' ','_','UDT_CART_DATA_'.$PROD['PROD_NAME'])));
+		$disable_count = 0;
+		while($regs = mysql_fetch_assoc($get_cartform_registrants)){
+			if(preg_match('/ /',$regs['EVENT_DATE'])){
+				$edate_ar = explode(' ',$regs['EVENT_DATE']);
+				$edate = $edate_ar['0'];
+			} else {
+				$edate = $regs['EVENT_DATE'];
+			}
+			
+			$regz[$edate][]=$regs['EVENT_DATE'];
+		}
+		$event_time_dd = "<select name=\"event_date\">\n";
+		$avail_dates=0;
+		
+		while($got_dates=mysql_fetch_assoc($find_dates)){		
+			++$avail_dates;
+			$start_time = $got_dates['EVENT_START'];
+			$end_time = $got_dates['EVENT_END'];
+			$times = " ".$start_time."-".$end_time;
+			$display_times = " ".DATE("g:i a", STRTOTIME($start_time)).'-'.DATE("g:i a", STRTOTIME($end_time));
+			$display_date = DATE("M dS Y", STRTOTIME($got_dates['EVENT_DATE']));
+			if($got_dates['custom_start']!=''){
+				//$start_time = $got_dates['custom_start'];
+				//$end_time = $got_dates['custom_end'];
+				$times = '';
+				$display_times = '';
+			}
+			$eventselected = ' ';
+			$inventory_left = $PROD['OPTION_INVENTORY_NUM'] - count($regz[$got_dates['EVENT_DATE']]);
+			$disabledd='';
+			$disabled_display = '';
+			if($inventory_left < 1){
+				$disable_count++;
+				$disabledd = " disabled";
+				$disabled_display = "Event Full ";
+			}
+			
+			$event_time_dd .= "<option value=\"".$got_dates['EVENT_DATE'].$times."\"".$eventselected.$disabledd.">".$disabled_display.$display_date.$display_times."</option>\n";
+			//echo testArray($got_dates);
+		}
+		$event_time_dd .= "</select>\n";
+	
+		if($avail_dates==$disable_count){
+			$PROD['OPTION_INVENTORY_NUM']=0;
+		} else {
+			$PROD['OPTION_INVENTORY_NUM']=$inventory_left;
+		}
+	}
+
+
+
+
 if (strlen($PROD['PROD_THUMBNAIL']) > 2) {
 	if ( !eregi('http://', $PROD['PROD_THUMBNAIL']) ) { // Allow for external images, v4.9.3 r36
 	   $THIS_IMAGE = "../images/".$PROD['PROD_THUMBNAIL'];
@@ -243,9 +311,6 @@ $THIS_DISPLAY .= "  </td>\n";
 $THIS_DISPLAY .= " </tr>\n";
 $THIS_DISPLAY .= "</table>\n";
 
-
-
-
 /*---------------------------------------------------------------------------------------------------------*
    _       _     _   _                         _
   /_\   __| | __| | | |_  ___   __  __ _  _ _ | |_
@@ -263,47 +328,66 @@ if ( !eregi("Y", $OPTIONS['PAYMENT_CATALOG_ONLY']) ) {       // This covers the 
 	}
 
 	$cartprefs = new userdata("cart");
-	if ( $cartprefs->get("more_information_display") == "extended" && $varprice_count > 0) {
+//	if ( $cartprefs->get("more_information_display") == "extended" && $varprice_count > 0) {
+//echo $PROD['variant_prices'][1].' '.$PROD['variant_names'][1]."<br/>";
+// 
+// echo $PROD['sub_cats'][1];
+	if ($varprice_count > 0) {
 		include('pgm-more_information_extended.php');
 	} else {
-eval(hook("pgm-more_information.php:above_moreinfo-pricing_table"));
-eval(hook("pgm-more_information.php:accordioncontainer"));
-	   $THIS_DISPLAY .= "<table width=\"100%\" valign=\"top\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" id=\"moreinfo-pricing\">\n";
-	   $THIS_DISPLAY .= " <tr>\n";
-
-	   $THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Product")."</td>\n";
-	   $THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Price")."</td>\n";
-	   $THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Qty")."</td>\n";
-	   $THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Add To Cart")."</td>\n";
-
-	   $THIS_DISPLAY .= " </tr>\n";
+		eval(hook("pgm-more_information.php:above_moreinfo-pricing_table"));
+		eval(hook("pgm-more_information.php:accordioncontainer"));
+		$THIS_DISPLAY .= "<script language=\"javascript\">\n";
+		$THIS_DISPLAY .= "function emptycheck(fcount){ \n";
+ 
+		$THIS_DISPLAY .= "	var runningcount = 0;\n";
+		$THIS_DISPLAY .= "	runningcount = parseInt(document.getElementById(\"qtyleft\").value) - parseInt(fcount.value);\n";
+		$THIS_DISPLAY .= "	if(runningcount >= 0){\n";
+		$THIS_DISPLAY .= "		document.getElementById('form'+fcount.id).submit();\n";
+		$THIS_DISPLAY .= "		document.addcart.submit();\n";
+		$THIS_DISPLAY .= "	} else {\n";
+		$THIS_DISPLAY .= "		alert('".lang("Were sorry, there are only")." '+document.getElementById(\"qtyleft\").value+' ".lang("left of this product, please enter a new amount").".');\n";
+		$THIS_DISPLAY .= "		document.getElementById(fcount).focus();\n";
+		$THIS_DISPLAY .= "	}\n";
+		$THIS_DISPLAY .= "} \n";
+		$THIS_DISPLAY .= "</script> \n";
+		
+		$THIS_DISPLAY .= "<table width=\"100%\" valign=\"top\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" id=\"moreinfo-pricing\">\n";
+		$THIS_DISPLAY .= " <tr>\n";
+		
+		$THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Product")."</td>\n";
+		$THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Price")."</td>\n";
+		$THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Qty")."</td>\n";
+		$THIS_DISPLAY .= "  <th class=\"smtext\" align=\"center\">".lang("Add To Cart")."</td>\n";
+		
+		$THIS_DISPLAY .= " </tr>\n";
 
 
 	   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	   // Start Calculation of display based on single unit price or multiple variants
 	   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-eval(hook("pgm-more_information.php:addninfocontent"));
-	   if ( $PROD['variant_prices'][1] != "" && $PROD['variant_names'][1] != "" ) {
-
-	      $PRICE_OPTIONS .= "<SELECT NAME=price CLASS=smtext>\n";
-
-	      for ( $z = 1; $z <= $PROD['num_variants']; $z++ ) {    // Loop through 6 variants and see what we have
-
-	         if ( $PROD['variant_prices'][$z] != "" ) {
-
-	            $PRICE_OPTIONS .= "     <OPTION VALUE=\"".$PROD['variant_names'][$z].";".$PROD['variant_prices'][$z]."\">".$PROD['variant_names'][$z]." - ".$dSign.$PROD['variant_prices'][$z]."</OPTION>\n";
-
-	         }
-
-	      }
-
-	      $PRICE_OPTIONS .= "</SELECT>\n";
-
-	   } else {
-
-	      $PRICE_OPTIONS .= "".$dSign."".$PROD['PROD_UNITPRICE']."\n<input type=hidden name=\"price\" value=\"".$PROD['PROD_UNITPRICE']."\">\n";   // If not variant; this is a single unitprice
-
-	   } // Finished Calculating Price Variants
+		eval(hook("pgm-more_information.php:addninfocontent"));
+		if ( $PROD['variant_prices'][1] != "" && $PROD['variant_names'][1] != "" ) {
+		
+		   $PRICE_OPTIONS .= "<SELECT NAME=price CLASS=smtext>\n";
+		
+		   for ( $z = 1; $z <= $PROD['num_variants']; $z++ ) {    // Loop through 6 variants and see what we have
+		
+		      if ( $PROD['variant_prices'][$z] != "" ) {
+		
+		         $PRICE_OPTIONS .= "     <OPTION VALUE=\"".$PROD['variant_names'][$z].";".$PROD['variant_prices'][$z]."\">".$PROD['variant_names'][$z]." - ".$dSign.$PROD['variant_prices'][$z]."</OPTION>\n";
+		
+		      }
+		
+		   }
+		
+		   $PRICE_OPTIONS .= "</SELECT>\n";
+		
+		} else {
+		
+		   $PRICE_OPTIONS .= "".$dSign."".$PROD['PROD_UNITPRICE']."\n<input type=hidden name=\"price\" value=\"".$PROD['PROD_UNITPRICE']."\">\n";   // If not variant; this is a single unitprice
+		
+		} // Finished Calculating Price Variants
 
 	   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	   // Now Let's calculate the different sub-categories or single product category
@@ -325,57 +409,65 @@ eval(hook("pgm-more_information.php:addninfocontent"));
 	         $tmp_cat = "SUB_CAT".$z;
 
 	         if ( $PROD['sub_cats'][$z] != "" ) {
-eval(hook("pgm-more_information.php:multicatbox"));
+				eval(hook("pgm-more_information.php:multicatbox"));
 	            //if ($multi_bg == "white") { $multi_bg = "#EFEFEF"; } else { $multi_bg = "white"; }
 
-	            $THIS_DISPLAY .= "\n\n<form method=\"post\" action=\"pgm-add_cart.php\">\n";
+	            $THIS_DISPLAY .= "\n\n<form name=\"addcart\" id=\"formqty".$z."\" method=\"post\" action=\"pgm-add_cart.php\">\n";
 	            $THIS_DISPLAY .= "<input type=\"hidden\" name=\"id\" value=\"".$PROD['PRIKEY']."\">\n";
+				if($_REQUEST['event']!=''){
+					$THIS_DISPLAY .= "<input type=\"hidden\" name=\"event\" value=\"".$_REQUEST['event']."\">\n";	
+				}			  
 	            $THIS_DISPLAY .= "<input type=\"hidden\" name=\"goto_checkout\" value=\"".$OPTIONS['GOTO_CHECKOUT']."\">\n";
 	            $THIS_DISPLAY .= "<input type=\"hidden\" name=\"subcat\" value=\"".$PROD['sub_cats'][$z]."\">\n";
 	            $THIS_DISPLAY .= " <tr>\n";
 	            $THIS_DISPLAY .= "  <td class=\"smtext\" align=\"left\">".$PROD['PROD_NAME']." - ".$PROD['sub_cats'][$z]."</td>\n";
 	            $THIS_DISPLAY .= "  <td class=\"smtext\" align=\"center\">".$PRICE_OPTIONS."</td>\n";
-	            $THIS_DISPLAY .= "  <td class=\"smtext\" align=\"center\"><input type=\"text\" SIZE=\"2\" class=smtext name=\"qty\" value=\"".$quantityval."\"></td>\n";
+	            $THIS_DISPLAY .= "  <td class=\"smtext\" align=\"center\"><input type=\"text\" SIZE=\"2\" class=smtext id=\"qty".$z."\" name=\"qty\" value=\"".$quantityval."\"></td>\n";
 	            if ( $PROD['OPTION_INVENTORY_NUM'] <= 0 ) {
 	               $THIS_DISPLAY .= "  <td class=\"smtext\" align=\"center\">Out of Stock</td>\n";
 	            } else {
-	               $THIS_DISPLAY .= "  <td class=\"smtext\" align=\"center\"><input TYPE=\"SUBMIT\" value=\"".lang("Add")."\" class=\"FormLt1\"></td>\n";
+	            	//$THIS_DISPLAY .= "	<input type=\"text\" name=\"inventory_avail\" id=\"inventory_avail\" value=\"".$PROD['OPTION_INVENTORY_NUM']."\">\n";
+	               //$THIS_DISPLAY .= "  <td class=\"smtext\" align=\"center\"><input TYPE=\"button\" value=\"".lang("Add")."\" class=\"FormLt1\" onclick=\"check_qnty();\"></td>\n";
+	               $THIS_DISPLAY .= "  <td class=\"smtext\" align=\"right\"><input TYPE=\"button\" value=\"".lang("Add")."\" onClick=\"emptycheck(document.getElementById('qty".$z."'));\" class=\"FormLt1\"></td>\n";
+	               
 	            }
 	            $THIS_DISPLAY .= " </tr>\n";
 
-eval(hook("pgm-more_information.php:dispmulticat"));
+				eval(hook("pgm-more_information.php:dispmulticat"));
 
 	            $THIS_DISPLAY .= "</form>\n\n";
 
 	         }
 
 	      } // End For Loop
-
-	   } else { // This is a single cat product
-
-	      $THIS_DISPLAY .= "\n\n<form method=\"post\" action=\"pgm-add_cart.php\">\n";
-	      $THIS_DISPLAY .= "<input type=\"hidden\" name=\"id\" value=\"".$PROD['PRIKEY']."\">\n";
-	      $THIS_DISPLAY .= "<input type=\"hidden\" name=\"goto_checkout\" value=\"".$OPTIONS['GOTO_CHECKOUT']."\">\n";
-	      $THIS_DISPLAY .= "<input type=\"hidden\" name=\"subcat\" value=\"\">\n";
-	      $THIS_DISPLAY .= "<tr>\n";
-	      $THIS_DISPLAY .= "<td class=smtext align=\"left\">$PROD[PROD_NAME]</td>\n";
-	      $THIS_DISPLAY .= "<td class=smtext align=\"center\">$PRICE_OPTIONS</td>\n";
-	      $THIS_DISPLAY .= "<td class=smtext align=\"center\"><input type=\"text\" size=\"2\" class=smtext name=\"qty\" value=\"".$quantityval."\"></td>\n";
-	         //testing for inventory
-	         //echo "inv--->".$PROD[OPTION_INVENTORY_NUM]."<br/>";
-	         if ($PROD['OPTION_INVENTORY_NUM'] <= 0)
-	         {
-	         $THIS_DISPLAY .= "<td class=smtext align=\"center\">".lang("Out of Stock")."</td>\n";
-	         } else {
-	         $THIS_DISPLAY .= "<td class=smtext align=\"center\"><input type=\"submit\" value=\"".lang("Add")."\" class=\"FormLt1\"></td>\n";
-	         }
-	      $THIS_DISPLAY .= "</tr>\n";
-
-eval(hook("pgm-more_information.php:dispsinglecat"));
-
-	      $THIS_DISPLAY .= "</form>\n\n";
-
-	   } // End Sub Cat Check
+			$THIS_DISPLAY .= "<input type=\"hidden\" id=\"qtyleft\" value=\"".$PROD['OPTION_INVENTORY_NUM']."\">\n";
+		} else { // This is a single cat product			
+			$THIS_DISPLAY .= "\n\n<form name=\"addcart\" id=\"formqty1\" method=\"post\" action=\"pgm-add_cart.php\">\n";
+			$THIS_DISPLAY .= "<input type=\"hidden\" name=\"id\" value=\"".$PROD['PRIKEY']."\">\n";
+			$THIS_DISPLAY .= "<input type=\"hidden\" id=\"qtyleft\" value=\"".$PROD['OPTION_INVENTORY_NUM']."\">\n";
+			$THIS_DISPLAY .= "<input type=\"hidden\" name=\"goto_checkout\" value=\"".$OPTIONS['GOTO_CHECKOUT']."\">\n";
+			if($_REQUEST['event']!=''){
+				$THIS_DISPLAY .= "<input type=\"hidden\" name=\"event\" value=\"".$_REQUEST['event']."\">\n";	
+			}
+			$THIS_DISPLAY .= "<input type=\"hidden\" name=\"subcat\" value=\"\">\n";
+			$THIS_DISPLAY .= "<tr>\n";
+			$THIS_DISPLAY .= "<td class=smtext align=\"left\">$PROD[PROD_NAME]</td>\n";
+			$THIS_DISPLAY .= "<td class=smtext align=\"center\">$PRICE_OPTIONS</td>\n";
+			$THIS_DISPLAY .= "<td class=smtext align=\"center\"><input type=\"text\" size=\"2\" class=smtext id=\"qty1\"  name=\"qty\" value=\"".$quantityval."\"></td>\n";
+			//testing for inventory
+			//echo "inv--->".$PROD[OPTION_INVENTORY_NUM]."<br/>";
+			if ($PROD['OPTION_INVENTORY_NUM'] <= 0){
+				$THIS_DISPLAY .= "<td class=smtext align=\"center\">".lang("Out of Stock")."</td>\n";
+			} else {
+				$THIS_DISPLAY .= "<td class=smtext align=\"center\"><input TYPE=\"button\" value=\"".lang("Add")."\" onClick=\"emptycheck(document.getElementById('qty1'));\" class=\"FormLt1\"></td>\n";
+			}
+			$THIS_DISPLAY .= "</tr>\n";
+			
+			eval(hook("pgm-more_information.php:dispsinglecat"));
+			
+			$THIS_DISPLAY .= "</form>\n\n";
+	
+		} // End Sub Cat Check
 
 	   // If this sku has a custom form attached, notify client that additional info
 	   // will be gathered when user "adds" product to thier shopping cart.
@@ -383,7 +475,7 @@ eval(hook("pgm-more_information.php:dispsinglecat"));
 	   if (eregi(".FORM", $PROD[OPTION_FORMDATA])) {
 
 	      $THIS_DISPLAY .= "<tr>\n";
-	      $THIS_DISPLAY .= "<td colspan=\"4\" class=\"smtext\" align=\"center\"><font color=\"maroon\">\n";
+	      $THIS_DISPLAY .= "<td colspan=\"4\" class=\"smtext\" align=\"center\">\n";
 	      $THIS_DISPLAY .= "<i>".lang("Details specific to this item will be asked when you add this product to your cart.")."\n";
 	      $THIS_DISPLAY .= "</td>\n";
 	      $THIS_DISPLAY .= "</tr>\n";
@@ -414,11 +506,13 @@ eval(hook("pgm-more_information.php:closecat"));
 	   $fullsize_maxwidth = $cartprefs->get("fullimg_maxwidth");
 
 		$THIS_DISPLAY .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" id=\"moreinfo-details\">\n";
-		$THIS_DISPLAY .= " <tr>\n";
-		$THIS_DISPLAY .= "  <td bgcolor=\"#".$OPTIONS['DISPLAY_HEADERBG']."\">\n";
-		$THIS_DISPLAY .= "   <font color=\"#".$OPTIONS['DISPLAY_HEADERTXT']."\"><b><font face=\"verdana, Arial, Helvetica, sans-serif\">".lang("More Information")."...</font></b></font>\n";
-		$THIS_DISPLAY .= "  </td>\n";
-		$THIS_DISPLAY .= " </tr>\n";
+//		$THIS_DISPLAY .= " <tr>\n";
+////		$THIS_DISPLAY .= "  <td bgcolor=\"#".$OPTIONS['DISPLAY_HEADERBG']."\">\n";
+////		$THIS_DISPLAY .= "   <font color=\"#".$OPTIONS['DISPLAY_HEADERTXT']."\"><b><font face=\"verdana, Arial, Helvetica, sans-serif\">".lang("More Information")."...</font></b></font>\n";
+//		$THIS_DISPLAY .= "  <td>\n";
+//		$THIS_DISPLAY .= "   <font><b><font>".lang("More Information")."...</font></b></font>\n";
+//		$THIS_DISPLAY .= "  </td>\n";
+//		$THIS_DISPLAY .= " </tr>\n";
 
 		$THIS_DISPLAY .= " <tr>\n";
 		$THIS_DISPLAY .= "  <td class=text>\n";
@@ -451,7 +545,7 @@ eval(hook("pgm-more_information.php:closecat"));
             $dfwidth = ""; // No width value...show full size image
          }
 
-         $THIS_DISPLAY .= "  <h3>".lang("Pictures")."</h3>\n";
+         $THIS_DISPLAY .= "  <h3 style=\"text-align:left;\">".lang("Pictures")."</h3>\n";
          $THIS_DISPLAY .= "  <div id=\"additional_images-container\">\n";
 
          # Additional img gallery?
@@ -467,7 +561,8 @@ eval(hook("pgm-more_information.php:closecat"));
             $img_url = "../images/".$PROD['PROD_FULLIMAGENAME'];
             $img_attrib = " onmouseover=\"showtrail('".$img_url."','My Image','My Image description','5.0000','16','1', 253, 1, ".maxwidth($img_url).");\" onmouseout=\"hidetrail();\"";
             $THIS_DISPLAY .= "     <div class=\"additional_images-thumb\">";
-            $THIS_DISPLAY .= "      <img src=\"".$img_url."\"".$img_attrib.">";
+		$THIS_DISPLAY .= "     <div style=\"width:".$cartprefs->get("thumb_width")."px;height:".$cartprefs->get("thumb_width")."px;position:absolute;border:0px;z-index:9999;\" ".$img_attrib."><img src=\"spacer.gif\" style=\"width:".$cartprefs->get("thumb_width")."px;height:".$cartprefs->get("thumb_width")."px;border:0px;\"></div>";            
+            $THIS_DISPLAY .= "      <img src=\"".$img_url."\">";
             $THIS_DISPLAY .= "     </div>";
 
             # Display addition image thumbnails
@@ -476,7 +571,8 @@ eval(hook("pgm-more_information.php:closecat"));
                   $img_url = "../images/".$other_images[$i];
                   $img_attrib = " onmouseover=\"showtrail('".$img_url."','My Image','My Image description','5.0000','16','1', 253, 1, ".maxwidth($img_url).");\" onmouseout=\"hidetrail();\"";
                   $THIS_DISPLAY .= "     <div class=\"additional_images-thumb\" style=\"margin: 5px;\">";
-                  $THIS_DISPLAY .= "      <img src=\"".$img_url."\"".$img_attrib.">";
+                  $THIS_DISPLAY .= "     <div style=\"width:".$cartprefs->get("thumb_width")."px;height:".$cartprefs->get("thumb_width")."px;position:absolute;border:0px;z-index:9999;\" ".$img_attrib."><img src=\"spacer.gif\" style=\"width:".$cartprefs->get("thumb_width")."px;height:".$cartprefs->get("thumb_width")."px;border:0px;\"></div>";
+                  $THIS_DISPLAY .= "      <img src=\"".$img_url."\">";
                   $THIS_DISPLAY .= "     </div>";
                }
             }
@@ -650,9 +746,10 @@ eval(hook("pgm-more_information.php:closecat"));
 
 	if ($PROD['OPTION_RECOMMENDSKU'] != "" && $PROD['OPTION_RECOMMENDSKU'] != " ") {
 
-	$THIS_DISPLAY .= "<BR><TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=2 class=text STYLE='border: inset BLACK 1px;'>\n";
+	$THIS_DISPLAY .= "<BR><TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=2 class=text STYLE='border: inset BLACK 0px;'>\n";
 	$THIS_DISPLAY .= "<TR>\n";
-	$THIS_DISPLAY .= "<TD BGCOLOR=\"#".$OPTIONS[DISPLAY_HEADERBG]."\"><FONT COLOR=\"#".$OPTIONS[DISPLAY_HEADERTXT]."\"><B><FONT FACE=\"Verdana, Arial, Helvetica, sans-serif\">".lang("If you like this, you may also like").":</FONT></B></FONT>\n";
+	//$THIS_DISPLAY .= "<TD BGCOLOR=\"#".$OPTIONS[DISPLAY_HEADERBG]."\"><FONT COLOR=\"#".$OPTIONS[DISPLAY_HEADERTXT]."\"><B><FONT FACE=\"Verdana, Arial, Helvetica, sans-serif\">".lang("If you like this, you may also like").":</FONT></B></FONT>\n";
+	$THIS_DISPLAY .= "<TD><FONT><B><FONT FACE=\"Verdana, Arial, Helvetica, sans-serif\">".lang("If you like this, you may also like").":</FONT></B></FONT>\n";
 	$THIS_DISPLAY .= "</TD>\n";
 	$THIS_DISPLAY .= "</TR>\n";
 	$THIS_DISPLAY .= "<TR>\n";
@@ -723,19 +820,19 @@ if($PROD['PROD_CATEGORY1'] != ''){
 	}
 }
 
-$FINAL_DISPLAY = "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\">\n";
+$FINAL_DISPLAY = "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\">\n";
 $FINAL_DISPLAY .= " <tr>\n";
 
 # Where should the search column be placed?
 if ( eregi("L", $OPTIONS['DISPLAY_COLPLACEMENT'] ) ) {
-	$FINAL_DISPLAY .= "  <td class=text width=\"150px\" align=\"center\" valign=\"top\">\n";
+	$FINAL_DISPLAY .= "  <td class=\"text searchcoltd\" width=\"150px\" align=\"center\" valign=\"top\">\n";
 	$FINAL_DISPLAY .= "   ".$SEARCH_COLUMN."\n";
 	$FINAL_DISPLAY .= "  </td>\n";
 	$FINAL_DISPLAY .= "  <td class=text align=\"center\" valign=\"top\">\n";
 
 	$FINAL_DISPLAY .= "<table class=text width=\"100%\" border=\"0\" cellpadding=\"0\" align=\"left\">\n";
 	$FINAL_DISPLAY .= " <tr>\n";
-	$FINAL_DISPLAY .= " <TD class=text style=\"padding:0px 0px 0px 6px;\" ALIGN=LEFT VALIGN=top>".$BROWSECAT."</td>\n";
+	$FINAL_DISPLAY .= " <TD class=\"text cartcats\" style=\"padding:0px 0px 0px 6px;\" ALIGN=LEFT VALIGN=top>".$BROWSECAT."</td>\n";
 	$FINAL_DISPLAY .= " </tr>\n";
 	$FINAL_DISPLAY .= " <tr><td VALIGN=top>\n";
 

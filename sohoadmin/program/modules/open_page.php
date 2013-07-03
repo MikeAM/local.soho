@@ -326,7 +326,7 @@ if(top.location != location){
 
 	function update_templates() {
 		loadIt();
-		ctemplate.submit();
+		document.ctemplate.submit();
 	}
 
 	function set_default_page() {
@@ -385,9 +385,11 @@ $popup .= "  <p>".lang("You may select multiple pages").".</p>\n";
 $popup .= "  <p><b>".lang("Choose page(s) to delete").":</b></p>\n";
 $popup .= "  <select name=\"killthis_page[]\" style=\"font-family: Tahoma; font-size: 8pt; visibility: visible;height: 140px;\" multiple>\n";
 $result = mysql_query("SELECT prikey, page_name, url_name, link FROM site_pages ORDER BY page_name");
+$pagez_ar=array();
 while ( $row = mysql_fetch_array($result) ) {
 	if(!preg_match('/^http:/i', $row['link'])){
 		$popup .= "  <option value=\"".$row['page_name']."::".$row['prikey']."\">".$row['page_name']."</option>\n";
+		$pagez_ar[$row['page_name']]=$row['page_name'];
 	}
 }
 $popup .= "  </select>\n";
@@ -504,13 +506,18 @@ if ( count($_SESSION['recent_pages']) > 0 ) {
    $idcounter = 1;
    foreach ( $_SESSION['recent_pages'] as $pagename=>$time ) {
       $pagename_spaces = eregi_replace("_", " ", $pagename);
-      $idname = "recentpage-".$idcounter;
-      $mouseover = "onmouseover=\"setClass('".$idname."', 'recentpage-on');\"";
-      $mouseover .= " onmouseout=\"setClass('".$idname."', 'recentpage-off');\"";
-      $THIS_DISPLAY .= "         <td id=\"recentpage-".$idcounter."\" class=\"recentpage-off\" onclick=\"edit_page('".$pagename_spaces."');\" ".$mouseover.">\n";
-      $THIS_DISPLAY .= "          ".$pagename_spaces."";
-      $THIS_DISPLAY .= "         </td>\n";
-      $idcounter++;
+      if(in_array($pagename_spaces,$pagez_ar)){
+	      $idname = "recentpage-".$idcounter;
+	      $mouseover = "onmouseover=\"setClass('".$idname."', 'recentpage-on');\"";
+	      $mouseover .= " onmouseout=\"setClass('".$idname."', 'recentpage-off');\"";
+	      
+	      $THIS_DISPLAY .= "         <td id=\"recentpage-".$idcounter."\" class=\"recentpage-off\" onclick=\"edit_page('".str_replace('&','%26',$pagename_spaces)."');\" ".$mouseover.">\n";
+	      $THIS_DISPLAY .= "          ".$pagename_spaces."";
+	      $THIS_DISPLAY .= "         </td>\n";
+	      $idcounter++;
+	} else {
+		unset($_SESSION['recent_pages'][$pagename]);
+	}
    }
    $recent_page_links = substr($recent_page_links, 0, -3);
    $THIS_DISPLAY .= $recent_page_links;
@@ -598,7 +605,7 @@ while ( $row = mysql_fetch_array($result) ) {
 	      }
 	
          $THIS_DISPLAY .= "       <td align=\"center\" valign=\"middle\">\n";
-         $THIS_DISPLAY .= "        <button type=\"button\" class=\"blueButton\" onClick=\"edit_page('$this_page_origname');\"><span><span>".lang("Edit")."</span></span></button>\n";
+         $THIS_DISPLAY .= "        <button type=\"button\" class=\"blueButton\" onClick=\"edit_page('".str_replace('&','%26',$this_page_origname)."');\"><span><span>".lang("Edit")."</span></span></button>\n";
          //$THIS_DISPLAY .= "        <input type=\"button\" ".$btn_edit." value=\" ".lang("Edit")." \" onMouseover=\"this.className='btn_editon';\" onMouseout=\"this.className='btn_edit';\" onClick=\"edit_page('$this_page_origname');\" style='width: 50px;'>\n";
          $THIS_DISPLAY .= "       </td>\n";
 	

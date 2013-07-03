@@ -30,6 +30,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 error_reporting('0');
 session_start();
 
+require_once("sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
+
 echo "<link href=\"sohoadmin/client_files/blog_display_css.css\" rel=\"stylesheet\" type=\"text/css\">\n</link>\n";
 echo "<script type=\"text/javascript\" src=\"sohoadmin/client_files/captcha/captcha.js\"></script>\n";
 echo "<script type=\"text/javascript\">\n";
@@ -217,10 +219,16 @@ if($_REQUEST['deny_comment'] != '' && is_numeric($_REQUEST['deny_comment']) && $
 	if(mysql_num_rows($findbadcommentq) == 1){
 		$findbadcomment = mysql_fetch_assoc($findbadcommentq);
 		mysql_query("update blog_comments set status='denied' where prikey='".$_REQUEST['deny_comment']."' and micro='".$_REQUEST['key']."'");
-		if($findbadcomment['ip_address'] != '' && $findbadcomment['ip_address'] != $author_ip){
-			$findbadip = mysql_query("select * from ip_bans where ip_address = '".$findbadcomment['ip_address']."' limit 1");
-			if(mysql_num_rows($findbadip) == 0){
-				mysql_query("insert into ip_bans (ip_address, time, reason) values('".$findbadcomment['ip_address']."', '".time()."', 'spam')");
+		if($findbadcomment['ip_address'] != '' && $findbadcomment['ip_address'] != $author_ip){	
+			## Make sure webmaster doesn't accidently ban their IP
+			$findgoodip = mysql_query("select ip_address from login_history where ip_address = '".$findbadcomment['ip_address']."' limit 1");
+			if(mysql_num_rows($findgoodip)==0){
+				$findbadip = mysql_query("SELECT prikey, ip_address, ban_expires FROM ip_bans where ip_address='".$findbadcomment['ip_address']."' and ( ban_expires > '".time()."' or ban_expires='') limit 1");
+				//$findbadip = mysql_query("select * from ip_bans where ip_address = '".$findbadcomment['ip_address']."' limit 1");
+				if(mysql_num_rows($findbadip) == 0){
+					$ban_expires=(time()+(3600*48));
+					mysql_query("insert into ip_bans (ip_address, time, ban_expires, reason) values('".$findbadcomment['ip_address']."', '".time()."', '".$ban_expires."', 'spam')");
+				}
 			}
 		}
 		echo "<script type=\"text/javascript\">\n";
@@ -357,7 +365,7 @@ if($_REQUEST['process'] == "blog_comment" && $is_allowed == "yes"){
 			
 			$timestamp = strtotime($PREV_COMMENT['comment_date']) + 60 ;
 //			if(mysql_num_rows($result) > 0 && $timestamp > time()){
-			if(mysql_num_rows($result) > 1 && !isset($_SESSION['PHP_AUTH_USER'])){
+			if(mysql_num_rows($result) > 2 && !isset($_SESSION['PHP_AUTH_USER'])){
 				$time_error = lang("Were sorry, but you must wait at least 24 hours before posting another comment on this article.");
 				$comment_error .= $time_error;
 			}else{
@@ -450,7 +458,7 @@ if($_REQUEST['process'] == "blog_comment" && $is_allowed == "yes"){
 					$email_content .= "Content-Type: text/html; charset=\"utf-8\"\n";
 					//$email_content .= "Content-Transfer-Encoding: quoted-printable\n";
 					//$email_content .= "Content-Transfer-Encoding: base64\n";
-					$email_content .= "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
+					$email_content = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 					$email_content .= "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
 					$email_content .= "<head>\n";
 					$email_content .= "<blog-meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n";
@@ -509,7 +517,9 @@ if($_REQUEST['process'] == "blog_comment" && $is_allowed == "yes"){
 					$email_content .= "</body>\n";
 					$email_content .= "</html>\n";
 					
-					mail("$to_email", $subjectline, "$email_content", $email_header);
+					if(!SohoEmail($to_email, "noreply@".preg_replace('/^www\./i','',$_SESSION['this_ip']), $subjectline, $email_content)){
+						mail("$to_email", $subjectline, "$email_content", $email_header);
+					}
 
 					echo "<script type=\"text/javascript\">\n";
 					echo "	alert('".$comment_result_text."');\n";
@@ -595,19 +605,19 @@ echo "<div class=\"blog-right-panel\" style=\"z-index:23;\">\n";
 echo "<ul class=\"headingrighttop\">\n";
 echo "	<li>\n";
 echo "    	<h2>Latest Articles</h2>\n";
-echo "        <ul>\n";
+echo "		<ul>\n";
 //$lastblogs = mysql_query("SELECT prikey, blog_title, blog_date FROM blog_content WHERE blog_category = '3' ORDER BY blog_date desc limit 6");
 //$lastblogs = mysql_query("SELECT prikey, blog_title, blog_date FROM blog_content WHERE blog_category = '3' ORDER BY blog_date desc limit 6");
 $lastblogs = mysql_query("SELECT prikey, blog_title, blog_date FROM blog_content WHERE ".$catKeyQry." and live='publish' ORDER BY blog_date desc limit 6");
 while($lasts = mysql_fetch_assoc($lastblogs)){	
-	echo "<li style=\"position:relative;\">";				
-	echo "<a href=\"".$pr.'.php?id='.$lasts['prikey']."&art=".$lasts['blog_title']."\" style=\"padding-right:30px;\">".$lasts['blog_title'];
-	echo "<div style=\"position:absolute; top:0px; right:-6px;\" class=\"blog-meta3\">\n";
-	echo "<p><span>".dateConvert($lasts['blog_date'], 'j')."</span>".dateConvert($lasts['blog_date'], 'M')."</p>\n";
-	echo "</div>\n";
+	echo "			<li style=\"position:relative;\">";				
+	echo "			<a href=\"".$pr.'.php?id='.$lasts['prikey']."&art=".$lasts['blog_title']."\" style=\"padding-right:30px;\">".$lasts['blog_title'];
+	echo "			<div style=\"position:absolute; top:0px; right:-6px;\" class=\"blog-meta3\">\n";
+	echo "			<p><span>".dateConvert($lasts['blog_date'], 'j')."</span>".dateConvert($lasts['blog_date'], 'M')."</p>\n";
+	echo "			</div>\n";
 	//echo  " <span style=\"color:#505050!important;\">".dateConvert($lasts['blog_date'], 'm/d/Y')."</span>";
-	echo "</a>\n";
-	echo "</li>\n";
+	echo "			</a>\n";
+	echo "			</li>\n";
 }
 echo "        </ul>\n";
 echo "    </li>\n";
@@ -620,7 +630,7 @@ if($hideauthorbox=='hidden'){
 	echo $authorSelect;
 	echo "        </ul>\n";
 	echo "    </li>\n";
-	echo "</ul>\n";
+	
 }
 
 if($BLOG_CATEGORY_NAME == 'ALL'){
@@ -630,8 +640,9 @@ if($BLOG_CATEGORY_NAME == 'ALL'){
 	echo $subjectSelect;
 	echo "        </ul>\n";
 	echo "    </li>\n";
-	echo "</ul>\n";
+	//echo "</ul>\n";
 }
+echo "</ul>\n";
 echo "</div>\n";
 
 echo "<div class=\"blog-left-panel\">\n";
@@ -676,7 +687,7 @@ if($authorid=='' && $subjectid==''){
 		//echo " / tags:  <a href=\"#\">something</a>, <a href=\"#\">like</a>, <a href=\"#\">this</a>, <a href=\"#\">and</a>, <a href=\"#\">something</a>, <a href=\"#\">like that</a>";
 	}
 	
-	echo "<p><span>".dateConvert($blogConent['blog_date'], 'j')."</span>".dateConvert($blogConent['blog_date'], 'M')."</p></div>\n";	
+	echo "<p><span>".dateConvert($blogConent['blog_date'], 'j')."</span>".dateConvert($blogConent['blog_date'], 'M')."</p>\n</div>\n";	
 	
 	echo "<div class=\"entry\">\n";	
 	echo $blogConent['blog_data']."\n";	
@@ -693,7 +704,7 @@ if($authorid=='' && $subjectid==''){
 		}
 	}	
 
-$template_header = preg_replace('/<title>[^<]+<\/title>/i', '<title>'.$blogConent['blog_title'].'</title>', $template_header);
+	$template_header = preg_replace('/<title>[^<]+<\/title>/i', '<title>'.$blogConent['blog_title'].'</title>', $template_header);
 //$template_footer = eregi_replace('iso-8859-1', 'utf-8', $template_footer);
 	
 } elseif($subjectid!=''){
@@ -782,6 +793,7 @@ if($blogConent['prikey'] > 0){
 		}
 
 		echo "</ol>\n";
+		echo "</div>\n";
 		echo "<br />\n";
 	}
 }
@@ -791,20 +803,22 @@ if($blogConent['prikey'] > 0){
 if($blogConent['allow_comments']=='yes' && $blogConent['prikey'] > 0){
 	
 	echo "<h3 class=\"comment-title\" style=\"margin-top:1px;\"><a name=\"postcomment\"></a>Post your comment:</h3>\n";
-	
-	echo "<ul class=\"post-comment\">\n";
 	echo "      <form name=\"add_blog_comment_form\" method=\"POST\" action=\"".$pr.".php?id=".$blogConent['prikey']."\">\n";
-	echo "		<input type=\"hidden\" name=\"process\" value=\"blog_comment\">\n";
-	echo "		<input type=\"hidden\" name=\"blog_key\" value=\"".$blogConent['prikey']."\">\n";
+	echo "		<ul class=\"post-comment\">\n";
+	
+
 	if(isset($_SESSION['PHP_AUTH_USER'])){
-		echo "		<li><label for=\"commentName\">Your Name:</label><br /><input style=\"width:350px;\" type=\"text\" id=\"commentName\" name=\"commentName\" class=\"commentName\" value=\"".$authorid_arraykey[$authorid_flippedemail[strtolower($_SESSION['PHP_AUTH_USER'])]]."\" /></li>\n";
-		echo "		<li><label for=\"commentEmail\">Your Email: <i>(for spam prevention, this will not be displayed)</i></label><br /><input style=\"width:350px;\" type=\"text\" id=\"commentEmail\" name=\"commentEmail\" class=\"commentEmail\" value=\"".strtolower($_SESSION['PHP_AUTH_USER'])."\"/></li>\n";	
+		echo "		<li><label for=\"commentName\">Your Name:</label><input style=\"width:350px;\" type=\"text\" id=\"commentName\" name=\"commentName\" class=\"commentName\" value=\"".$authorid_arraykey[$authorid_flippedemail[strtolower($_SESSION['PHP_AUTH_USER'])]]."\" /></li>\n";
+		echo "		<li><label for=\"commentEmail\">Your Email: <i>(for spam prevention, this will not be displayed)</i></label><input style=\"width:350px;\" type=\"text\" id=\"commentEmail\" name=\"commentEmail\" class=\"commentEmail\" value=\"".strtolower($_SESSION['PHP_AUTH_USER'])."\"/></li>\n";	
 	} else {
-		echo "		<li><label for=\"commentName\">Your Name:</label><br /><input style=\"width:350px;\" type=\"text\" id=\"commentName\" name=\"commentName\" class=\"commentName\" /></li>\n";
-		echo "		<li><label for=\"commentEmail\">Your Email: <i>(for spam prevention, this will not be displayed)</i></label><br /><input style=\"width:350px;\" type=\"text\" id=\"commentEmail\" name=\"commentEmail\" class=\"commentEmail\" /></li>\n";		
+		echo "		<li><label for=\"commentName\">Your Name:</label><input style=\"width:350px;\" type=\"text\" id=\"commentName\" name=\"commentName\" class=\"commentName\" /></li>\n";
+		echo "		<li><label for=\"commentEmail\">Your Email: <i>(for spam prevention, this will not be displayed)</i></label><input style=\"width:350px;\" type=\"text\" id=\"commentEmail\" name=\"commentEmail\" class=\"commentEmail\" /></li>\n";		
 	}
 
-	echo "		<li class=\"msg\"><label for=\"commentMessage\">Your Message:</label><br/><textarea style=\"height:120px; width:510px;\" id=\"commentMessage\" name=\"commentMessage\" class=\"commentMessage\"></textarea></li>  \n";
+	echo "		<li class=\"msg\"><label for=\"commentMessage\">Your Message:</label><textarea style=\"height:120px; width:510px;\" id=\"commentMessage\" name=\"commentMessage\" class=\"commentMessage\"></textarea>\n";
+	echo "		<input type=\"hidden\" name=\"process\" value=\"blog_comment\">\n";
+	echo "		<input type=\"hidden\" name=\"blog_key\" value=\"".$blogConent['prikey']."\">\n";
+	echo "		</li>  \n";
 	
 	if($blog_comment_settings->get("captcha") == "yes"){
 	
@@ -820,33 +834,39 @@ if($blogConent['allow_comments']=='yes' && $blogConent['prikey'] > 0){
 		$synckey = strtoupper($synckey);
 
 		$key .= "</div>\n";	
-		echo "<input name=\"capval_".$blogConent['prikey']."\" id=\"capval_".$blogConent['prikey']."\" type=\"hidden\" value=\"".md5($synckey)."\">\n";
+		
 		echo "<li style=\"padding-top:20px;\">\n";
+		echo "<input name=\"capval_".$blogConent['prikey']."\" id=\"capval_".$blogConent['prikey']."\" type=\"hidden\" value=\"".md5($synckey)."\">\n";
 		echo $key;
-		echo "<label for=\"cap_".$blogConent['prikey']."\">Please&nbsp;enter&nbsp;the&nbsp;phrase&nbsp;as&nbsp;it&nbsp;is&nbsp;shown&nbsp;in&nbsp;the&nbsp;box&nbsp;above:</label><br/>\n";	
+		echo "<label for=\"cap_".$blogConent['prikey']."\">Please&nbsp;enter&nbsp;the&nbsp;phrase&nbsp;as&nbsp;it&nbsp;is&nbsp;shown&nbsp;in&nbsp;the&nbsp;box&nbsp;above:</label>\n";	
 		echo "<input name=\"cap_".$blogConent['prikey']."\" id=\"cap_".$blogConent['prikey']."\" type=\"text\" size=\"6\" maxlength=\"6\" style=\"width:116px; text-align:left; font-size:18px;\">\n";
 		echo "</li>\n";
 		
 		$_SESSION['form_verification_blog'][$blogConent['prikey']] = md5($synckey);
 		
 		echo "		<li>\n";
-		echo "		<input type=\"button\" value=\"go\" onclick=\"chk_n_send_captcha('".$blogConent['prikey']."')\"  class=\"commentGo\">\n";
+		echo "		<input type=\"button\" value=\"SUBMIT\" onclick=\"chk_n_send_captcha('".$blogConent['prikey']."')\"  class=\"\">\n";
 		echo "		</li>\n";
 	} else {		
 		echo "		<li>\n";		
-		echo "		<input type=\"button\" value=\"go\" onclick=\"chk_n_send();\"  class=\"commentGo\">\n";	
+		echo "		<input type=\"button\" value=\"SUBMIT\" onclick=\"chk_n_send();\"  class=\"\">\n";	
 		echo "		</li>\n";
 	}
 	
-	echo "	</form>\n";
-	echo "</ul>\n";
 	
+	echo "</ul>\n";
+	echo "	</form>\n";
+	
+}
+
+if($authorid=='' && $subjectid==''){
 	echo "</div>\n";
 }
-echo "</div>\n";
 //echo "<div class=\"post\">\n";
-echo "</div>\n";
 
+// Removed this div on Aug 26 2012
+
+//echo "</div></div></div>\n";
 if(strlen($comment_error) > 1){	
 	echo "<script type=\"text/javascript\">\n";	
 	echo "	alert('".addslashes($comment_error)."');\n";	
@@ -855,5 +875,5 @@ if(strlen($comment_error) > 1){
 	echo "	document.getElementById('commentMessage').value='".$blog_comments."';\n";		
 	echo "</script>\n";
 }
-
-?> 
+echo "</div>\n";
+?>

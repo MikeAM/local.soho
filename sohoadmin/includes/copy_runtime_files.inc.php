@@ -16,16 +16,16 @@ chdir(str_replace(basename(__FILE__), '', __FILE__));
 require_once('../program/includes/product_gui.php');
 chdir($curdir);
 
-$rr = fopen('client_files/base_files/robots.txt','r');
-$robots_txt = fread($rr,filesize('client_files/base_files/robots.txt'));
-fclose($rr);
-if(!preg_match('/Sitemap\:/i', $robots_txt)){
-	$rr = fopen('client_files/base_files/robots.txt','w');
-	$robots_txt.="\n".'Sitemap: http://'.$_SESSION['this_ip'].'/sitemap.xml.php';
-	fwrite($rr,$robots_txt);
-	fclose($rr);
-}
-
+//$rr = fopen('client_files/base_files/robots.txt','r');
+//$robots_txt = fread($rr,filesize('client_files/base_files/robots.txt'));
+//fclose($rr);
+//if(!preg_match('/Sitemap\:/i', $robots_txt)){
+//	$rr = fopen('client_files/base_files/robots.txt','w');
+//	$robots_txt.="\n".'Sitemap: http://'.$_SESSION['this_ip'].'/sitemap.xml.php';
+//	fwrite($rr,$robots_txt);
+//	fclose($rr);
+//}
+unlink('client_files/base_files/robots.txt');
 
 
 # Preserve original working dir and force "sohoadmin" working dir
@@ -50,6 +50,25 @@ foreach(glob('client_files/base_files/*.*') as $cfile){
 		//echo $cfile;
 	}
 }
+//$rbs=fopen('../robots.txt','r');
+//$robots=fread($rbs,filesize('../robots.txt'));
+//fclose($rbs);
+if(file_exists('client_files/robots.txt') && !file_exists('../robots.txt')){
+	@copy('client_files/robots.txt', "../robots.txt");
+}
+
+$rbs=fopen('../robots.txt','r');
+$robots=fread($rbs,filesize('../robots.txt'));
+fclose($rbs);
+
+if(preg_match('/#thisip#/',$robots) || preg_match('/ultra\.soholaunch\.com/',$robots)){
+	$robots=str_replace('#thisip#',$_SESSION['this_ip'],$robots);
+	$robots=str_replace('ultra.soholaunch.com',$_SESSION['this_ip'],$robots);	
+	$rbs=fopen('../robots.txt','w');
+	fwrite($rbs,$robots);
+	fclose($rbs);
+}
+
 
 ##################################################
 ### COPY INITIAL IMAGES TO IMAGES FOLDER	     ###

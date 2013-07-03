@@ -61,7 +61,7 @@ $MONTHS[12] = "December";
 <HTML>
 <HEAD>
 <TITLE>Top Referal</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<?php echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UT"."F-8\">\n"; ?>
 <LINK REL="stylesheet" HREF="../shared/soholaunch.css" TYPE="TEXT/CSS">
 <script language="JavaScript">
 <!--
@@ -75,7 +75,7 @@ function MM_callJS(jsStr) { //v2.0
 </script>
 </HEAD>
 
-<BODY BGCOLOR="#EFEFEF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
 
 	<?php
 
@@ -84,12 +84,12 @@ function MM_callJS(jsStr) { //v2.0
 	// ------------------------------------------------------------------------------------------
 
 	echo "<H5><FONT FACE=VERDANA><U>".$lang["REFERER SITES"]."</U></FONT></H5>\n";
-
-	$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_refer group by Month UNION SELECT Month, Year, Real_Date FROM stats_refer_archive group by Month ORDER BY Real_Date DESC");
-
+	$used=array();
+	//$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_refer group by Real_Date UNION SELECT Month, Year, Real_Date FROM stats_refer_archive group by Month ORDER BY Real_Date DESC");
+	$result = mysql_query("SELECT Refer, Month, Year, Real_Date FROM stats_refer group by Real_Date UNION SELECT Refer, Month, Year, Real_Date FROM stats_refer_archive group by Real_Date ORDER BY Real_Date DESC");
 	while($ALL_MONTHS = mysql_fetch_array($result)) {
-
-
+		if(!in_array($ALL_MONTHS['Month'].$ALL_MONTHS['Year'], $used)){
+			$used[]=$ALL_MONTHS['Month'].$ALL_MONTHS['Year'];
 
 			$db_result = mysql_query("SELECT * FROM stats_refer WHERE (Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]') AND ( Refer <> '(Internal)' AND Refer <> '(Direct)') UNION SELECT * FROM stats_refer_archive WHERE (Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]') AND ( Refer <> '(Internal)' AND Refer <> '(Direct)') ORDER BY Hits DESC");
 			
@@ -100,7 +100,7 @@ function MM_callJS(jsStr) { //v2.0
 				$pgHITS[$a] = $row[Hits];
 				$a++;
 			}
-
+		
 			echo "<DIV CLASS=text><B><U>$ALL_MONTHS[Month] $ALL_MONTHS[Year]</U></B></DIV>\n";
 
 			echo "<TABLE WIDTH=100% BORDER=0 CELLSPACING=1 CELLPADDING=5 style='border: 1px solid black; background: #708090;' ALIGN=LEFT>
@@ -124,6 +124,8 @@ function MM_callJS(jsStr) { //v2.0
 
 			echo "</TABLE><BR CLEAR=ALL><BR>\n";
 
+	
+		}
 	} // End While
 
 	?>

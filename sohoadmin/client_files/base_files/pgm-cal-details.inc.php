@@ -32,10 +32,26 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## expressly forbidden and in violation of Domestic and International
 ## copyright laws.
 ###############################################################################
-	error_reporting(0);
+	error_reporting('341');
 	include_once("sohoadmin/client_files/pgm-site_config.php");
 	include_once("sohoadmin/program/includes/shared_functions.php");
-
+	$DETAIL_SHOW_MONTH=$_REQUEST['DETAIL_SHOW_MONTH'];
+	error_reporting('341');
+	$DISPLAY_SEARCH_CALENDAR = $_REQUEST['DISPLAY_SEARCH_CALENDAR'];
+	$PUBLIC_SUBMIT_EVENT=$_REQUEST['PUBLIC_SUBMIT_EVENT'];
+	$pr=$_REQUEST['pr'];
+	$dType=$_REQUEST['dType'];
+	$DETAIL_SEARCH_KEYWORDS = $_REQUEST['DETAIL_SEARCH_KEYWORDS'];
+	
+	if($_REQUEST['SEL_MONTH'] != ''){
+		$SEL_MONTH = $_REQUEST['SEL_MONTH'];
+	}
+	if($_REQUEST['SEL_YEAR'] != ''){
+		$SEL_YEAR = $_REQUEST['SEL_YEAR'];
+	}
+	if($_REQUEST['CHANGE_CAT'] != ''){
+		$CHANGE_CAT = $_REQUEST['CHANGE_CAT'];
+	}
 	$calpref = new userdata("calendar");
 	
 	if(!preg_match('/^[a-z0-9]{1,}$/i', $id) && $id!=""){
@@ -47,6 +63,10 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 	$myresult = mysql_query("SELECT * FROM calendar_events WHERE PRIKEY = '$id'");
 	$DATA = mysql_fetch_array($myresult);
+
+
+
+
 
 
 	// Configure Displayable Date and Time Settings
@@ -79,37 +99,40 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 </HEAD>
 
 <BODY BGCOLOR="#EFEFEF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0">
-<TABLE WIDTH="99%" BORDER="0" ALIGN="CENTER" CELLSPACING="0" CELLPADDING="5" CLASS=text STYLE='border: 1px solid black;'>
+<TABLE WIDTH="99%" BORDER="0" ALIGN="CENTER" CELLSPACING="0" CELLPADDING="5" CLASS=text STYLE='margin:5px;border: 1px solid black;'>
   <TR>
     <TD ALIGN=LEFT VALIGN=MIDDLE BGCOLOR=<? echo $DISPLAY[BACKGROUND_COLOR]; ?>><FONT COLOR=<? echo $DISPLAY[TEXT_COLOR]; ?>>Event:</FONT>
-	</TD><TD ALIGN=RIGHT VALIGN=MIDDLE BGCOLOR=<? echo $DISPLAY[BACKGROUND_COLOR]; ?>><INPUT TYPE="BUTTON" NAME="Button" CLASS="FormLt1" VALUE=" <? echo $lang["Print Details"]; ?> " onclick="javascript: window.print();">&nbsp;&nbsp;<INPUT TYPE="BUTTON" NAME="Button" CLASS="FormLt1" VALUE="<? echo $lang["Close Window"]; ?>" onclick="javascript: self.close();">
+	</TD><TD ALIGN=RIGHT VALIGN=MIDDLE <?php echo " style=\"color:#000;;\""; ?> BGCOLOR=<? echo $DISPLAY[BACKGROUND_COLOR]; ?>><INPUT TYPE="BUTTON" NAME="Button" CLASS="FormLt1" VALUE=" <? echo $lang["Print Details"]; ?> " onclick="javascript: window.print();">&nbsp;&nbsp;<INPUT TYPE="BUTTON" NAME="Button" CLASS="FormLt1" VALUE="<? echo lang("Close"); ?>" onClick="document.getElementById('event_details_div').style.display='none';">
 	</TD>
   </TR>
-  <TR><TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP BGCOLOR="WHITE"><B><FONT SIZE=3 FACE=VERDANA><? echo $display_title; ?></FONT></B></TD></TR>
+  <TR><TD COLSPAN=2 ALIGN=LEFT VALIGN=TOP <?php echo " style=\"color:#000;;\""; ?> BGCOLOR="WHITE"><B><FONT SIZE=3 FACE=VERDANA><? echo $display_title; ?></FONT></B></TD></TR>
   <TR>
-    <TD WIDTH="50%" BGCOLOR="WHITE"><B><U><? echo lang("Event Date"); ?></U>:</B> <? echo $display_date; ?></TD>
-    <TD BGCOLOR="WHITE"><B><U><? echo lang("Event Time"); ?></U>:</B> <? echo $start_time; ?></TD>
+    <TD WIDTH="50%" BGCOLOR="WHITE" <?php echo " style=\"color:#000;;\""; ?> ><B><U><? echo lang("Event Date"); ?></U>:</B> <? echo $display_date; ?></TD>
+    <TD BGCOLOR="WHITE" <?php echo " style=\"color:#000;\""; ?>><B><U><? echo lang("Event Time"); ?></U>:</B> <? echo $start_time; ?></TD>
   </TR>
   </TABLE>
 
-<?
+<?php
 	if ($DATA[EVENT_DETAILS] != "") {
 
 		echo "<BR><TABLE WIDTH=99% BORDER=0 ALIGN=CENTER CELLSPACING=0 CELLPADDING=5 CLASS=text STYLE='border: 1px solid black;'>\n";
 		echo "<TR>\n";
 		echo "<TD BGCOLOR=$DISPLAY[BACKGROUND_COLOR]><FONT COLOR=$DISPLAY[TEXT_COLOR]>".lang("Event Details").":</FONT></TD>\n";
 		echo "</TR>\n";
-		echo "</TABLE> \n";
-
+		
 		# Event detail text
-		echo "<div class=text style='padding: 10px;'>\n";
+		echo "<tr><td colspan=2 style=\"padding: 0px;\"><div class=text style='background-color:#FFFFFF; color:#000; padding: 10px;'>\n";
 		# Preserve line breaks?
 		if ( $calpref->get("linebreaks") == "yes" ) {
 		   echo " ".nl2br($DATA['EVENT_DETAILS'])."\n";
 		} else {
 		   echo " ".$DATA['EVENT_DETAILS']."\n";
 		}
-		echo "</DIV>\n";
+		echo "</DIV></td></tr>\n";
+		
+		echo "</TABLE> \n";
+
+
 
 	}
 
@@ -187,7 +210,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 	} // End if Detail Page Exists
 
 ?>
-
+<INPUT TYPE="BUTTON" NAME="Button" CLASS="FormLt1" VALUE="<? echo lang("Close"); ?>" onClick="document.getElementById('event_details_div').style.display='none';">
 
 </BODY>
 </HTML>

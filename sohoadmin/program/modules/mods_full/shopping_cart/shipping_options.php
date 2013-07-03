@@ -33,6 +33,28 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 session_start();
 require_once("../../../includes/product_gui.php");
+$offline_notice = "Please note that applicable shipping charges are not included in the total shown below. ";
+$offline_notice .= "Your final invoice, including shipping costs, will be emailed to you shortly after you complete your purchase. ";
+$offline_notice .= "Once you have approved the final total, your order will be processed immediately.";
+$check_table = mysql_query("select * from cart_shipping_opts");
+if(mysql_num_rows($check_table) == 0){
+	mysql_query("drop table cart_shipping_opts");
+	create_table('cart_shipping_opts');
+	$qry = "INSERT INTO cart_shipping_opts (SHIP_METHOD, ST_GTHAN1, NOTICE, order_type)";
+	$qry_vals_local = " VALUES('Standard', '0.01', '".$offline_notice."', 'local')";
+	$qry_vals_intl = " VALUES('Standard', '0.01', '".$offline_notice."', 'intl')";
+	mysql_query($qry.$qry_vals_local);
+	mysql_query($qry.$qry_vals_intl);
+}
+
+if(!table_exists('cart_shipping_opts')){
+	create_table('cart_shipping_opts');
+	$qry = "INSERT INTO cart_shipping_opts (SHIP_METHOD, ST_GTHAN1, NOTICE, order_type)";
+	$qry_vals_local = " VALUES('Standard', '0.01', '".$offline_notice."', 'local')";
+	$qry_vals_intl = " VALUES('Standard', '0.01', '".$offline_notice."', 'intl')";
+	mysql_query($qry.$qry_vals_local);
+	mysql_query($qry.$qry_vals_intl);
+}
 
 error_reporting(0);	// Turn on so that SQL error does not appear.  This is normal because if the dbtable has
 				// not been created on first run, an error will show while trying to read settings data

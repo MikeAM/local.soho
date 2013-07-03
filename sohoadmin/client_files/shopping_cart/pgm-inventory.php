@@ -53,23 +53,31 @@ $line_items = $line_items - 2;	// Subtract 2 because (a)we start count at 0 (b) 
 
 
 for ($z=0;$z<=$line_items;$z++) {
+	$getformq = mysql_query("select PRIKEY,OPTION_FORMDISPLAY,OPTION_FORMDATA from cart_products where PRIKEY='".$tmp_keyid[$z]."' limit 1");
+	$getformar=mysql_fetch_assoc($getformq);
+	
+	$find_dates = mysql_query("select PRIKEY,EVENT_DATE,EVENT_START,EVENT_END,EVENT_DETAILPAGE,custom_start,custom_end from calendar_events where EVENT_DATE >= '".date('Y-m-d')."' and EVENT_DETAILPAGE='".$tmp_keyid[$z]."' order by EVENT_DATE, EVENT_START");
+	if(mysql_num_rows($find_dates) > 0 && $getformar['OPTION_FORMDATA'] !=''){
+		 // Do nothing if this is an event registration product
 
-	$result = mysql_query("SELECT OPTION_INVENTORY_NUM, OPTION_DISPLAY  FROM cart_products WHERE PRIKEY = '$tmp_keyid[$z]'");
-	$inv = mysql_fetch_array($result);
-
-	if ($inv[OPTION_INVENTORY_NUM] != "") {
-			$new_inv_num = $inv[OPTION_INVENTORY_NUM] - $tmp_qty[$z];
-			$new_display_setting = $inv[OPTION_DISPLAY];
+	} else {
+		$result = mysql_query("SELECT OPTION_INVENTORY_NUM, OPTION_DISPLAY  FROM cart_products WHERE PRIKEY = '$tmp_keyid[$z]'");
+		$inv = mysql_fetch_array($result);
+	
+		if ($inv[OPTION_INVENTORY_NUM] != "") {
+				$new_inv_num = $inv[OPTION_INVENTORY_NUM] - $tmp_qty[$z];
+				$new_display_setting = $inv[OPTION_DISPLAY];
+		}
+	
+	// Un-comment this to make products auto-set to "do not display" once their inventory runs out
+	// Removed by customer request for v4.9 r33...seems like it'd more desireable for everyone this way --- better to show as "out of stock" than not show it at all
+	// May have to add this back as a configureable option if enough people make the case for it
+	//	if ($new_inv_num <= 0) {
+	//			$new_display_setting = "N";
+	//	}
+		
+		mysql_query("UPDATE cart_products SET OPTION_INVENTORY_NUM = '$new_inv_num', OPTION_DISPLAY = '$new_display_setting' WHERE PRIKEY = '$tmp_keyid[$z]'");
 	}
-
-// Un-comment this to make products auto-set to "do not display" once their inventory runs out
-// Removed by customer request for v4.9 r33...seems like it'd more desireable for everyone this way --- better to show as "out of stock" than not show it at all
-// May have to add this back as a configureable option if enough people make the case for it
-//	if ($new_inv_num <= 0) {
-//			$new_display_setting = "N";
-//	}
-
-	mysql_query("UPDATE cart_products SET OPTION_INVENTORY_NUM = '$new_inv_num', OPTION_DISPLAY = '$new_display_setting' WHERE PRIKEY = '$tmp_keyid[$z]'");
 
 }
 

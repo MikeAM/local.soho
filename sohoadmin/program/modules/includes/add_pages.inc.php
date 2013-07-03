@@ -80,7 +80,7 @@ function sterilize($sterile_var) {
 	$tmp = str_replace('', '', $tmp);
 	$tmp = str_replace('/', '', $tmp);
 	$tmp = str_replace('\\', '', $tmp);
-	$tmp = str_replace('&', "&amp;", $tmp);
+	//$tmp = str_replace('&', "%26", $tmp);
 	$tmp = str_replace('=', '', $tmp);
 	$tmp = str_replace('"', '', $tmp);
 	$tmp = str_replace('\'', '', $tmp);
@@ -94,7 +94,7 @@ function sterilize($sterile_var) {
 $string = implode("~~~", $_POST);
 $string = stripslashes($string);
 $string = eregi_replace("'", "", $string);
-$string = str_replace("&", "and", $string);
+//$string = str_replace("&", "and", $string);
 $string = str_replace("#", "", $string);
 $string = str_replace("\"", "", $string);
 $string = str_replace("/", "", $string);
@@ -132,8 +132,10 @@ for ($d=1;$d<=$c;$d++) {
 	$link = md5($tmpName);
 
 	if ( $addPage[$d] != "php.ini" && $addPage[$d] != "php" && !eregi(";$addPage[$d];", $t_chk) ) {    // DO NOT REMOVE -- THIS IS FOR SECURITY
+		$pagefile = sterilize($addPage[$d]);
+		//$pagefile = urlencode($pagefile);
+		$pagefile = str_replace(' ', '_', $pagefile);
 
-		$pagefile = str_replace(' ', '_', $addPage[$d]);
 
 		$searchpage = eregi_replace('_', ' ', $pagefile);
 		$searchqry = mysql_query("select prikey, page_name, url_name, from search_contents where page_name='".$searchpage."'");
@@ -154,12 +156,13 @@ for ($d=1;$d<=$c;$d++) {
 		$indexphpurl .= '	$pagefile = $_SERVER[\'SCRIPT_FILENAME\'];'."\n";
 		$indexphpurl .= '}'."\n";
 		
-		$indexphpurl .= 'if(function_exists(\'url_get_encoding\')){'."\n";
-		
-		$indexphpurl .= '	if(url_get_encoding(\'http://\'.$_SESSION[\'this_ip\'].\'/sohoadmin/config/isp.conf.php\') != \'UTF-8\' && function_exists(\'utf8_decode\')){'."\n";
-		$indexphpurl .= '		$pagefile = utf8_decode($pagefile);'."\n";
-		$indexphpurl .= '	}'."\n";
-		$indexphpurl .= '}'."\n";
+//		$indexphpurl .= 'if(function_exists(\'url_get_encoding\')){
+//	if(strtoupper(url_get_encoding(\'http://\'.$_SESSION[\'this_ip\'].\'/sohoadmin/config/isp.conf.php\')) != \'UTF-8\' && function_exists(\'utf8_decode\')){
+//		if(file_exists(\'sohoadmin/tmp_content/\'.str_replace(\'.php\',\'.con\',utf8_decode(basename($pagefile))))){
+//			$pagefile = utf8_decode($pagefile);
+//		}
+//	}
+//}'."\n";
 		
 		$indexphpurl .= '$pagefile = preg_replace(\'/\.php$/i\', \'\', basename($pagefile));'."\n";
 		
@@ -266,6 +269,7 @@ for ($d=1;$d<=$c;$d++) {
 
    if ( !in_array($addPage[$d], $errors) ) {
       $addPage[$d] = sterilize($addPage[$d]);
+      
       $db_page_name[$d] = eregi_replace("_", " ", $addPage[$d]);
       
       //$pageName = htmlentities($db_page_name[$d], ENT_QUOTES);

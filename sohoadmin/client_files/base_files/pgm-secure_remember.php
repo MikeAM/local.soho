@@ -36,15 +36,21 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 error_reporting(0);
 session_cache_limiter('none'); 
 session_start();
+
 track_vars;
 include_once("sohoadmin/client_files/pgm-site_config.php");
 include_once("sohoadmin/program/includes/shared_functions.php");
+require_once("sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
+$customernumber=$_POST['customernumber'];
+$ACTION=$_POST['ACTION'];
+$find_login=$_POST['find_login'];
+$find_login=preg_replace("/['\"<> \*%]/i",'',$find_login);
 $pr = "Recover your password";
-reset($HTTP_POST_VARS);
-while (list($name, $value) = each($HTTP_POST_VARS)) {
-		$value = htmlspecialchars($value);	// Bugzilla #13
-		${$name} = $value;
-}
+//reset($HTTP_POST_VARS);
+//while (list($name, $value) = each($HTTP_POST_VARS)) {
+//		$value = htmlspecialchars($value);	// Bugzilla #13
+//		${$name} = $value;
+//}
 
 ##########################################################################
 ### WE WILL NEED TO KNOW THE DATABASE NAME; UN; PW; ETC TO OPERATE THE ###
@@ -72,7 +78,7 @@ if ($ACTION == "PROCESS_REQ") {
 	$find_login = strtoupper($find_login);
 	$find_login = chop($find_login);		// Format email address for proper search
 
-	$result = mysql_query("SELECT USERNAME, PASSWORD, OWNER_NAME FROM sec_users WHERE UPPER(OWNER_EMAIL) = '$find_login'");
+	$result = mysql_query("SELECT USERNAME, PASSWORD, OWNER_NAME, OWNER_EMAIL FROM sec_users WHERE UPPER(OWNER_EMAIL) = '$find_login'");
  	$find_results = mysql_num_rows($result);
 
 	if ($find_results > 0) {	// We found customer... Yea Come-on!
@@ -94,14 +100,17 @@ if ($ACTION == "PROCESS_REQ") {
 
 		$find_login = strtolower($find_login);
 
-		mail("$find_login", "$SERVER_NAME Login Data", "$EMAIL", "From: webmaster@$SERVER_NAME");
+		if(!SohoEmail($find_login, preg_replace('/^www\./i','',$_SESSION['this_ip']), $SERVER_NAME." Login Data", str_replace("\n","<br/>\n", $EMAIL))){
+			mail("$find_login", "$SERVER_NAME Login Data", "$EMAIL", "From: webmaster@$SERVER_NAME");
+		}
 
 		$FOUND_FLAG = 1;
 
 	}
 
 	if ($FOUND_FLAG == 1) {
-		$RETURN_MSG .= "<BR><FONT COLOR=DARKBLUE><B>".lang("Customer data found successfully").". ".lang("You should receive")."<BR />".lang("an email within the next few minutes").".</B></FONT>\n";
+		//$RETURN_MSG .= "<BR><FONT COLOR=DARKBLUE><B>".lang("Customer data found successfully").". ".lang("You should receive")."<BR />".lang("an email within the next few minutes").".</B></FONT>\n";
+		$RETURN_MSG .= "<BR><B>".lang("Customer data found successfully").". ".lang("You should receive")."<BR />".lang("an email within the next few minutes").".</B>\n";
 		$RETURN_MSG .= "<BR><BR><A HREF=\"pgm-secure_login.php?customernumber=$customernumber&=SID\">".lang("Go To Login")."</a>\n";
 	}
 
@@ -119,17 +128,20 @@ include_once('sohoadmin/client_files/pgm-realtime_builder.php');
 
 		$contentarea .= "<FORM METHOD=POST ACTION=\"pgm-secure_remember.php\">\n\n";
 
-		$contentarea .= "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=450 CLASS=text>\n";
+		$contentarea .= "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0  CLASS=text>\n";
 		$contentarea .= "<TR>\n";
 		$contentarea .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text WIDTH=50%>\n";
 
-			$contentarea .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 1px inset black;'>\n";
+			//$contentarea .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 1px inset black;'>\n";
+			$contentarea .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 0px;'>\n";
 			$contentarea .= "<TR>\n";
-			$contentarea .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=#EFEFEF WIDTH=95%><FONT COLOR=BLACK>\n";
+//////			$contentarea .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=#EFEFEF WIDTH=95% ><FONT COLOR=BLACK>\n";
+			$contentarea .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text WIDTH=95%>\n";
 			$contentarea .= "<B>".lang("Forgotten Login")."\n";
 			
 			$contentarea .= "</TD></TR>\n";
-			$contentarea .= "<TR><TD ALIGN=LEFT VALIGN=TOP BGCOLOR=WHITE CLASS=text>\n";
+//			$contentarea .= "<TR><TD ALIGN=LEFT VALIGN=TOP BGCOLOR=WHITE CLASS=text>\n";
+			$contentarea .= "<TR><TD ALIGN=LEFT VALIGN=TOP CLASS=text>\n";
 			$contentarea .= lang("Please enter your email address in the space below and we will locate your username and password in our database.  Once located, we will instantly send an email to")." \n";
 			$contentarea .= lang("the address that matches your input.  Thank you.")."<BR><BR>\n";
 			$contentarea .= "<INPUT TYPE=HIDDEN NAME=customernumber VALUE=\"$customernumber\"><INPUT TYPE=HIDDEN NAME=\"ACTION\" VALUE=\"PROCESS_REQ\">\n";

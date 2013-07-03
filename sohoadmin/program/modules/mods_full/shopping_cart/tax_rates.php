@@ -98,7 +98,7 @@ if ($ACTION == "add_state") {
 
 	$tablename = "cart_tax";
 
-	$result = mysql_list_tables("$db_name");
+	$result = soho_list_tables();
 	$i = 0;
 	$match = 0;
 	while ($i < mysql_num_rows ($result)) {
@@ -208,7 +208,7 @@ if ($ACTION == "add_state") {
 
 	$tablename = "cart_vat";
 
-	$result = mysql_list_tables("$db_name");
+	$result = soho_list_tables();
 	$i = 0;
 	$match = 0;
 	while ($i < mysql_num_rows ($result)) {
@@ -258,7 +258,7 @@ if ($ACTION == "add_state") {
 
 $match = 0;
 $tablename = "cart_tax";
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 while ($i < mysql_num_rows ($result)) {
 	$tb_names[$i] = mysql_tablename ($result, $i);
@@ -317,7 +317,7 @@ if ($charge_vat == "no") {
 
 $match = 0;
 $tablename = "cart_vat";
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 while ($i < mysql_num_rows ($result)) {
 	$tb_names[$i] = mysql_tablename ($result, $i);

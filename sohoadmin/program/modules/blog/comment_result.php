@@ -45,7 +45,12 @@ if($_REQUEST['process'] == "comment"){
    if(!mysql_query($BLOG_QRY)){
       echo "Error updating comment!";
    }else{
-      echo "Comment ".$_REQUEST['do'];
+   	if($_REQUEST['do']=='denied'){
+   		//echo "Comment ".$_REQUEST['do'];	
+   		echo "<span style=\"color: red;\">Comment denied</span>";
+   	} else {
+   		echo "Comment ".$_REQUEST['do'];	
+   	}      
    }
 }
 
@@ -54,7 +59,7 @@ if($_REQUEST['process'] == "delete"){
    if(!mysql_query("DELETE FROM blog_comments WHERE prikey = '".$_REQUEST['comment']."'")){
       echo mysql_error();
    }else{
-      echo "Comment deleted";
+      echo "<span style=\"color: red;\">Comment deleted</span>";
    }
 }
 

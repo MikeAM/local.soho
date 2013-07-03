@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-include("../../../../includes/product_gui.php");
+require_once("../../../../includes/product_gui.php");
 
 set_time_limit(0);
 ini_set("max_input_time", "600");

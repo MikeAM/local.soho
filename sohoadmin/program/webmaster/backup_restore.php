@@ -592,7 +592,8 @@ $tmpjs .= "}\n\n"; // End backup status update function
 /// Show 'pop-up' progress div and disable main module layer
 #(----------------------------------------------------------------------------)
 $tmpjs .= "function backupnow() {\n";
-$tmpjs .= "   backingup.style.display = 'block';\n";
+# $tmpjs .= "   backingup.style.display = 'block';\n";
+$tmpjs .= "   document.getElementById('backingup').style.display = 'block';\n";
 $tmpjs .= "   document.mkbak.submit();\n";
 $tmpjs .= "}\n";
 $tmpjs .= "function upimp() {\n";

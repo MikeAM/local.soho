@@ -1,9 +1,10 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
+
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 session_start();
-error_reporting(E_PARSE);
+
 
 $curdir = getcwd();
 chdir(str_replace(basename(__FILE__), '', __FILE__));
@@ -17,11 +18,23 @@ $filename = $_SESSION['docroot_path']."/sohoadmin/program/modules/site_templates
 //echo $filename; exit;
 
 # Combine html from all included template html files into one big searchable container var ($THIS_HTML)
-$THIS_HTML = file_get_contents($filename."/index.html");
-$THIS_HTML .= file_get_contents($filename."/home.html");
-$THIS_HTML .= file_get_contents($filename."/cart.html");
-$THIS_HTML .= file_get_contents($filename."/news.html");
-
+$templatefils_ar=array('index.html','home.html','cart.html','news.html','index.php','home.php','cart.php','news.php');
+$THIS_HTML = '';
+foreach($templatefils_ar as $tfileinc){
+	if(file_exists($filename.'/'.$tfileinc)){
+		if(array_pop(explode('.',basename($tfileinc))) == 'php'){
+			$curdirr = getcwd();
+			ob_start();
+			chdir($filename);
+			include($tfileinc);
+			$THIS_HTML .= ob_get_contents();
+			ob_end_clean();
+			chdir($curdirr);
+		} else {
+			$THIS_HTML .= file_get_contents($filename."/".$tfileinc);
+		}
+	}	
+}
 
 if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT']) ){
 	echo "<table width=\"350\" cellspacing=\"0\" cellpadding=\"6\" border=\"0\" class=\"feature_sub\">\n";
@@ -39,7 +52,7 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT']) ){
       Each template in our library has different features. Below is a list of features for the selected template.
       </td>
     </tr>
-  <?
+  <?php
   	$is_soho = 0;
 	if(eregi("#CONTENT#", $THIS_HTML)){
 		$is_soho = 1;
@@ -47,18 +60,19 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT']) ){
 		echo "  	<td valign=\"middle\" align=\"left\" class=\"text\"><b>Content Area</b> - Add content by going to <a href=\"open_page.php\">Edit Pages</a></td>\n";
 		echo "	</tr>\n";
 	}
-	if(eregi("#VMENU#", $THIS_HTML) || eregi("#VMAINS#", $THIS_HTML) || eregi("#VSUBS#", $THIS_HTML)){
+	if(eregi("#VMENU#", $THIS_HTML) || eregi("#VMAINS#", $THIS_HTML) || eregi("#VSUBS#", $THIS_HTML) ||  eregi("#VFLYOUTMENU#", $THIS_HTML)){
 		$is_soho = 1;
 		echo "	<tr>\n";
 		echo "  	<td valign=\"middle\" align=\"left\" class=\"text\"><b>Vertical menu</b> - Edit the menu layout in <a href=\"auto_menu_system.php\">Menu Navigation</a></td>\n";
 		echo "	</tr>\n";
 	}
-	if(eregi("#HMENU#", $THIS_HTML) || eregi("#HMAINS#", $THIS_HTML) || eregi("#HSUBS#", $THIS_HTML)){
+	if(eregi("#HMENU#", $THIS_HTML) || eregi("#HMAINS#", $THIS_HTML) || eregi("#HSUBS#", $THIS_HTML) ||  eregi("#FLYOUTMENU#", $THIS_HTML)){
 		$is_soho = 1;
 		echo "	<tr>\n";
 		echo "  	<td valign=\"middle\" align=\"left\" class=\"text\"><b>Horizontal menu system</b> - Edit the menu layout in <a href=\"auto_menu_system.php\">Menu Navigation</a></td>\n";
 		echo "	</tr>\n";
 	}
+	
 	if(eregi("#TMENU#", $THIS_HTML)){
 		$is_soho = 1;
 		echo "	<tr>\n";
@@ -83,11 +97,24 @@ if ( eregi("MSIE", $_SERVER['HTTP_USER_AGENT']) ){
 		echo "  	<td valign=\"middle\" align=\"left\" class=\"text\"><b>Logo image</b> - Edit via <a href=\"javascript:showid('tab2-content');hideid('tab1-content');\">".lang("Template Settings")."</a> tab.</td>\n";
 		echo "	</tr>\n";
 	}
+	if(eregi("#BIZ-PHONE#", $THIS_HTML)){
+		$is_soho = 1;
+		echo "	<tr>\n";
+		echo "  	<td valign=\"middle\" align=\"left\" class=\"text\"><b>Phone Number</b> - Edit via <a href=\"javascript:showid('tab2-content');hideid('tab1-content');\">".lang("Template Settings")."</a> tab.</td>\n";
+		echo "	</tr>\n";
+	}
 	if(eregi("#SLOGAN#", $THIS_HTML)){
 		$is_soho = 1;
 		echo "	<tr>\n";
 		echo "  	<td valign=\"middle\" align=\"left\" class=\"text\"><b>Slogan Text</b> - Edit slogan on the <a href=\"javascript:showid('tab2-content');hideid('tab1-content');\">".lang("Template Settings")."</a> tab.</td>\n";
 		echo "	</tr>\n";
+	}
+	if(preg_match("/#BOX[0-9]+#/i", $THIS_HTML)){
+		$is_soho = 1;
+		echo "   <tr>\n";
+		//echo "   <td valign=\"middle\" align=\"left\" class=\"text\"><b>".lang("Template Sidebar")."<font color=\"#f7941d\" size=\"1\"><sup><i>".lang("NEW!")."</i></sup></font></b></td>\n";
+		echo "   <td valign=\"middle\" align=\"left\" class=\"text\"><b>".lang("Template Sidebar")."<font color=\"#f7941d\" size=\"1\"><sup><i>".lang("NEW!")."</i></sup></font></b> - Edit the Sidebar in the Page Editor</td>\n";
+		echo "   </tr>\n";
 	}
 ################################################
 ##TEMPORARILY DISABLE BLOG FEATURES#############

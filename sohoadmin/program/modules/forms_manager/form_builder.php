@@ -41,9 +41,9 @@ session_start();
 error_reporting(E_PARSE);
 
 # Primary interface include
-include($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 
-include("form_dbcheck_inc.php"); // Checks for/Creates 'forms_' tables (also includes some shared functions)
+include_once("form_dbcheck_inc.php"); // Checks for/Creates 'forms_' tables (also includes some shared functions)
 include("form_manage-class.php"); // The real workhorse of this module
 include("form_field-class.php"); // The real workhorse of this module
 

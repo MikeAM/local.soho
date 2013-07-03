@@ -40,6 +40,7 @@ $MOD_TITLE = "Meta Tag Data";
 
 
 if ($action == "savemeta") {
+//	echo testArray($_POST);
 
 	$filename = "$cgi_bin/meta.conf";
 
@@ -61,6 +62,19 @@ if ($action == "savemeta") {
 	fwrite($file, "splash_bg=$splash_bg\n");
 
 	fclose($file);
+	
+	# Now the pages...
+	$pageidArr = array_map('strip_tags', $_POST['page_ids']);
+	if ( count($_POST['page_ids']) > 1 ) {
+		foreach ( $pageidArr as $key=>$val ) {
+			$title = $_POST['page_'.$val.'_title'];
+			$desc = $_POST['page_'.$val.'_desc'];
+			if ( $title != '' || $desc != '' ) {
+				$qry = "update site_pages set title = '".$title."', description = '".strip_tags($desc)."' WHERE prikey = '".$val."'";
+				mysql_query($qry);
+			}
+		}
+	}
 
 //	header("Location: webmaster.php?=SID");
 //	exit;
@@ -152,6 +166,8 @@ SV2_showHideLayers('editCartMenu?header','','hide');
 //-->
 </script>
 
+<link rel="stylesheet" href="meta_data.css"/>
+
 <style type="text/css">
 legend {
    font-weight: bold;
@@ -159,7 +175,7 @@ legend {
 }
 </style>
 
-<?
+<?php
 
 ####################################################################
 ### FOR VISUAL CONSISTANCY; WE USE AN HTML TEMPLATE BUILDER FILE
@@ -175,11 +191,11 @@ legend {
 ### ABOVE FOR PROPER FUNCTIONALITY WITHIN THE APPLICAITON.
 ####################################################################
 
-$THIS_DISPLAY = "";
 
+$THIS_DISPLAY = '';
 # Webmaster nav button row
 include("webmaster_nav_buttons.inc.php");
-
+$THIS_DISPLAY .= "<div style=\"clear:left;text-align:left;width:885px;\">";
 $THIS_DISPLAY .= "<fieldset>\n";
 $THIS_DISPLAY .= " <legend>".lang("Default meta tag data for search engines")."</legend>\n";
 $THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=5 CELLSPACING=0 CLASS=text WIDTH=100%>\n";
@@ -203,30 +219,16 @@ $THIS_DISPLAY .= '				  <form name="meta_data" method=post action="meta_data.php
                                         <input style="width: 300px;" class=text type="text" name="site_description" size="35" value="'.$site_description.'">
                                         </FONT></td>
                                     </tr>
-                                    <tr>
-                                      <td><font style="font-family: Arial; font-size: 9pt;">
-                                       <U>'.lang("Web Site Keywords").'</U>:</font><br>
-                                        <font style="font-family: Arial; font-size: 8pt;">
-                                        ('.lang("This is a Meta Tag that some search engines use to search your site with.").'
-                                        '.lang("Please enter each keyword separated by a comma.").'
-                                        '.lang("There is no need to use line feeds or carriage returns in the field.").')</font><br>
-                                        <textarea name="site_keywords" class=text cols="30" rows="8" style="width: 300px;">'.$site_keywords.'</textarea>
-                                      </td>
-  									  <td align=center valign=middle class=text>
-
-									  <font color=red>[ '.lang("Note: Individual Meta Tag Data can be edited from Page Properties while editing the page.").' ]</font><BR><BR><BR>
-
-
-									  <button type="button" class="greenButton" onClick="document.meta_data.submit();"><span><span>'.lang("Save Meta Tag Data").'</span></span></button></td>
-                                          </tr>
                                         </table>
 
-                                </form>
 						';
 
 
 		$THIS_DISPLAY .= "</TD></TR></TABLE>\n";
 $THIS_DISPLAY .= "</fieldset>\n";
+
+
+
 echo $THIS_DISPLAY;
 
 
@@ -251,10 +253,59 @@ if ( $_GET['replace_homelinks'] != "" ) { $webmasterpref->set("replace_homelinks
  </select>
 </fieldset>
 
+
+<?php
+# Meta tags for each page
+#==========================================================================
+?>
+<fieldset>
+ <legend>Per-Page Meta Tags</legend>
+ <ol class="form-fields meta">
+ 	
+ 	<li class="example">
+ 		<label>Example:</label>
+      <fieldset>
+         <input type="text" class="field-meta-title" disabled="disabled" value="True Facts About Sloths | ZeFrank.com">
+         <textarea class="field-meta-desc" placeholder="Description..." disabled="disabled">Legendary internet comedian Ze Frank narrates this mini-documentary about Sloths.</textarea>
+      </fieldset>
+ 	</li> 	
+ 	
+<?php
+if ( !$pageresult = mysql_query("select prikey, page_name, title, description from site_pages where page_name not like 'cartid:%' order by page_name") ) {
+	echo '<strong>No pages found.</strong> Please create some pages then come back here, and you will be able to set their titles and descriptions.';
+} else {
+	$n = 1;
+	while ( $pageArr = mysql_fetch_array($pageresult) ) {
+		$specialclass = (($pageArr['title'] != '' && $pageArr['description'] != '') ? '' : 'warning');
+		$placeholder_title = ($n == 1 ? $placeholder = 'Title...' : $placeholder = '');
+		$placeholder_desc = ($n == 1 ? $placeholder = 'Description...' : $placeholder = '');
+		$field_prefix = 'page_'.$pageArr['prikey'];
+?>
+ 	<li class="<?php echo $specialclass; ?>">
+ 		<label><?php echo $pageArr['page_name']; ?>:</label>
+      <fieldset>
+      	<input type="hidden" name="page_ids[]" value="<?php echo $pageArr['prikey']; ?>"/>
+         <input type="text" name="<?php echo $field_prefix.'_title'; ?>" class="field-meta-title" <?php echo $placeholder; ?> value="<?php echo $pageArr['title']; ?>">
+         <textarea class="field-meta-desc" name="<?php echo $field_prefix.'_desc'; ?>" <?php echo $placeholder; ?>><?php echo $pageArr['description']; ?></textarea>
+      </fieldset>
+ 	</li> 
+<?php
+	}
+}
+?> 	
+ </ol>
+ 
+ <p class="center">
+ 	<button type="button" class="greenButton" onClick="document.meta_data.submit();"><span><span><?php echo lang("Save Meta Tag Data"); ?></span></span></button>
+ </p>
+</fieldset>
+
+</form>
+
 <script type="text/javascript">
 document.getElementById('replace_homelinks').value = '<?php echo $webmasterpref->get("replace_homelinks"); ?>';
 </script>
-
+</div>
 <?php
 
 ####################################################################

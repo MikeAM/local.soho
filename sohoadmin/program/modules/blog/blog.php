@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '' || $_REQUEST['_SESSION'] != '') { exit; }
 
 #=====================================================================================
@@ -13,21 +13,36 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 # module and keep it's look consistent with the rest of the product
 #=====================================================================================
 
-error_reporting(E_PARSE);
 session_start();
+
 
 # Include core files
 require_once("../../includes/product_gui.php");
 
+if(!mysql_query("select blog_category,blog_title,blog_data,blog_date,blog_tags,blog_author,timestamp,live,allow_comments from blog_content limit 1")){
+	if($tstqry=mysql_query("select * from blog_content limit 1")){
+		if(mysql_num_rows($tstqry) == 0){
+			mysql_query("drop table blog_content");
+			create_table("blog_content");
+		}
+	}
+	//echo mysql_error();	
+}
 
-include_once('blog-styles.php');
 
+create_table("blog_content");
+create_table("blog_category");
+create_table("blog_comments");
 # So you can write straight HTML without having to build every line into a container var (i.e. $disHTML .= "another line of html")
 ob_start();
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"../tiny_mce/tiny_mce.js\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"../tiny_mce/plugins/media/js/embed.js\"></script>\n";
+//echo "<script type=\"text/javascript\" src=\"../tiny_mce/plugins/media/js/embed.js\"></script>\n";
+include_once('blog-styles.php');
 ?>
 
 <style type="text/css">
-<!--
+
 .unnamed1 {
 	padding-top: 30px;
 }
@@ -36,11 +51,9 @@ ob_start();
 	font-size: 8pt;
 	font-family: Arial;
 }
--->
+
 </style>
 <?php
-echo "<script type=\"text/javascript\" src=\"../tiny_mce/plugins/media/js/embed.js\"></script>\n";
-echo "<script language=\"javascript\" type=\"text/javascript\" src=\"../tiny_mce/tiny_mce.js\"></script>\n";
 
 include_once('tinyInc.php');
 
@@ -57,24 +70,26 @@ if ($_POST['todo'] != ""){
 		$postTitle = $_POST['postTitle'];
 		$postBody = $_POST['tiny_editor'];
 		$postTags = $_POST['postTags'];
+		$postTags=str_replace('comma, separated, keywords','',$postTags);
 		$postStatus = $_POST['status'];
 		$postAuthor = $_POST['sel_author'];
 		$allow_comments = $_POST['allow_comments'];
 		$postPkg = array("id"=>$id, "del_cat" => $postCat, "postTitle" => $postTitle, "postBody" => $postBody, "postTags" => $postTags, "blog_author"=>$postAuthor, "live"=>$postStatus, "allow_comments"=>$allow_comments);
 		$edit_post = $blog->updateEntry($postPkg);
-		$report = "Article Saved!";
+		$reportz = "Article Saved!";
 
 	} else {
 		$postCat = $_POST['del_subj'];
 		$postTitle = $_POST['postTitle'];
 		$postBody = $_POST['tiny_editor'];
 		$postTags = $_POST['postTags'];
+		$postTags=str_replace('comma, separated, keywords','',$postTags);
 		$postStatus = $_POST['status'];
 		$postAuthor = $_POST['sel_author'];
 		$allow_comments = $_POST['allow_comments'];
 		$postPkg = array("del_cat" => $postCat, "postTitle" => $postTitle, "postBody" => $postBody, "postTags" => $postTags, "blog_author"=>$postAuthor, "live"=>$postStatus, "allow_comments"=>$allow_comments);
 		$edit_post = $blog->saveEntry($postPkg);
-		$report = "Article Saved!";
+		$reportz = "Article Saved!";
 		$_REQUEST['edit_post'] = $edit_post;
 	}
 }
@@ -82,7 +97,6 @@ if ($_POST['todo'] != ""){
 					
 
 	<script language="javascript" type="text/javascript">
-		
 		function validTitle()
 		{
 			if ($('#postTitle').val() == '' || $('#postTitle').val() == 'Blog Title')
@@ -155,6 +169,9 @@ if ($_POST['todo'] != ""){
 		$( function(){
 			$( 'input[type="text"]' ).each( function(){
 				//$(this).attr( 'title', $(this).val() )
+				$(this).css({'color':'#222'});
+				$(this).css({'background-color':'#FFFFFF'});
+				$(this).css({'font-style':'normal'});
 				$(this).focus( function(){
 					if ( $(this).val() == $(this).attr('title') ) {
 						$(this).val( '' );
@@ -176,7 +193,7 @@ if ($_POST['todo'] != ""){
 	</script>
 <?php
 echo "<div id=\"main\">\n";
-echo "<span style=\"color:green;font-weight:bold;font-size:14px;\">".$report."</span>\n";
+echo "<span style=\"color:green;font-weight:bold;font-size:14px;\">".$reportz."</span>\n";
 echo "		<div id=\"newPost\">\n";
 if($_REQUEST['edit_post']!=''){
 	echo "<form name=\"newPostForm\" id=\"newPostForm\" action=\"blog.php?edit_post=".$_REQUEST['edit_post']."\" method=\"post\" style=\"display:inline;\">\n";
@@ -211,45 +228,73 @@ if(isset($thisContent)){
 	$tinyContent = "";
 }
 
-	echo "<div id=\"tiny_editor_container\" style=\"border: 0px solid green; z-index:1000; display: block;\">\n";
+	$selecteddisplay1 = ' '; $selecteddisplay2 = ' '; $selectedallow_comments1 = ' '; $selectedallow_comments2 = ' ';
+	if($_REQUEST['edit_post']!=''){
+		if(strtolower($getPost['live'])=='publish'){
+			$selecteddisplay1 = ' selected selected="selected"';
+		} else {
+			$selecteddisplay2 = ' selected selected="selected"';
+		}
+		if(strtolower($getPost['allow_comments'])=='yes'){
+			$selectedallow_comments1 = ' selected selected="selected"';
+		} else {
+			$selectedallow_comments2 = ' selected selected="selected"';
+		}
+
+
+	//	echo testArray($getPost);
+	}
+
+	echo "<div id=\"tiny_editor_container\" style=\"height:100%border: 0px solid green; z-index:1000; display: block;\">\n";
 	echo "	<!--- Editor Textarea -->\n";
-	echo "	<textarea id=\"tiny_editor\" name=\"tiny_editor\" rows=\"15\" cols=\"80\" style=\"height: 400px;width: 100%; border: 1px dotted red;\">".$tinyContent."</textarea>\n";
+	echo "	<textarea id=\"tiny_editor\" name=\"tiny_editor\" style=\"position:relative;min-height:500px;width: 100%; border: 1px dotted red;\">".$tinyContent."</textarea>\n";
 	echo "	<!--- Cancel / Done buttons -->\n";
 	//echo "<!---<div id=\"saveIt\" style=\"position:absolute; bottom: 1px; right: 15px; z-index:1000; display:block;\">-->\n";
 	//echo "	<div id=\"saveIt\" style=\"position:relative;bottom: 1px; margin: 0 auto; text-align: center; z-index:1002; display:block;\">\n";
-	echo "		<span style=\"float:right;margin-right:10px;\"><button onClick=\"tinyMCE.execInstanceCommand('tiny_editor','mceCodeEditor',false);\" type=\"button\" id=\"html_view\" class=\"grayButton\"><span><span>HTML View</span></span></button></span>\n";
+//	echo "		<span style=\"float:right;margin-right:12px;margin-top:5px;\"><button onClick=\"tinyMCE.execInstanceCommand('tiny_editor','mceCodeEditor',false);\" type=\"button\" id=\"html_view\" class=\"grayButton\"><span><span>HTML View</span></span></button></span>\n";
 	//echo "	</div>\n";
 	echo "</div>\n";
 	
 	$myIds = $blog->getCatIds();
 	
 		
-	echo "<div style=\"padding:0 0 0 5px;\">\n";
-	
+	echo "<div style=\"padding:0 0 0 5px;\">\n";	
 	echo "<table cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;\">\n";
 	echo "<tr><td colspan=\"2\" class=\"blogtables\">\n";
+
+	echo "		<span style=\"float:right;margin-right:12px;margin-top:5px;\"><button onClick=\"tinyMCE.execInstanceCommand('tiny_editor','mceCodeEditor',false);\" type=\"button\" id=\"html_view\" class=\"grayButton\"><span><span>HTML View</span></span></button></span>\n";
 	
-	echo "<p class=\"pform\" style=\"padding-top:0px;\">\n";
-	echo "						<b>Tags:</b> <input id=\"postTags\" style=\"width:500px;font-weight:normal;padding:1px;\" type=\"text\" name=\"postTags\" value=\"comma, separated, keywords\" title=\"comma, seperated, keywords\" />\n";
-	echo "</p>\n";
-	
-	echo "</td><td>&nbsp;</td>\n</tr>\n";
-	echo "<tr><td class=\"blogtables\">\n";
-	
-	echo "<p class=\"pform\">\n";
+	echo "<div class=\"pform\">\n";
 	$coolCatList = "<b>Category:</b> <select onBlur=\"validCategory();\" id=\"del_subj\" name=\"del_subj\">\n";
 	$coolCatList .= "<option value=\"\">Select A Category ...</option>\n";
 	for ($i = 0; $i < count($myIds); $i++){
-		$coolCatList .= "<option value=\"".$myIds[$i]['prikey']."\">".$myIds[$i]['category_name']."</option>\n";
+		$blog_cat_sel = ' ';
+		if($getPost['blog_category']==$myIds[$i]['prikey']){
+			$blog_cat_sel = ' selected selected="selected"';
+		}
+		$coolCatList .= "<option value=\"".$myIds[$i]['prikey']."\" ".$blog_cat_sel.">".$myIds[$i]['category_name']."</option>\n";
 	}
 	$coolCatList .= "</select>\n";
 	echo $coolCatList;
 	
-	echo "</p>\n";
+	echo "</div>\n";
 	
 	
-	echo "</td><td class=\"blogtables\">\n";
-	echo "<p class=\"pform\">\n";
+	$blog_tags = 'comma, separated, keywords';
+	$blog_tags2 = $blog_tags;
+	if($getPost['blog_tags']!=''){
+		$blog_tags = htmlspecialchars($getPost['blog_tags']);
+		$blog_tags2 = '';
+	}
+	echo "<div class=\"pform\" >\n";
+	echo "						<b>Tags:</b> <input id=\"postTags\" style=\"width:370px;font-weight:normal;padding:1px;\" type=\"text\" name=\"postTags\" value=\"".$blog_tags."\" title=\"".$blog_tags2."\" />\n";
+	echo "</div>\n";
+	
+//	echo "</td><td>&nbsp;</td>\n</tr>\n";
+//	echo "<tr><td class=\"blogtables\">\n";
+	
+//	echo "</td><td class=\"blogtables\">\n";
+	echo "<div style=\"clear:both;\" class=\"pform\">\n";
 	$getwebmaster = mysql_query("select * from login where First_Name='WEBMASTER' limit 1");
 	$getwebmaster_ar = mysql_fetch_assoc($getwebmaster);
 	$author_array[$getwebmaster_ar['PriKey']]=array('name'=>$getwebmaster_ar['Last_Name'],'email'=>$getwebmaster_ar['Email']);
@@ -260,41 +305,46 @@ if(isset($thisContent)){
 	}
 
 	
-	echo "							<b>Author:</b> <select style=\"width:200px;\" id=\"sel_author\" name=\"sel_author\">\n";
-	echo "							<option value=\"".$_SESSION['CUR_USER_KEY']."\">".$author_array[$_SESSION['CUR_USER_KEY']]['name']."</option>\n";
+	echo "							<b>Author:</b> <select style=\"\" id=\"sel_author\" name=\"sel_author\">\n";
+	$curblogauthorsel=' ';
+	if($getPost['blog_author']==$_SESSION['CUR_USER_KEY']){ $curblogauthorsel=' selected selected="selected"'; }
+	echo "							<option value=\"".$_SESSION['CUR_USER_KEY']."\" ".$curblogauthorsel.">".$author_array[$_SESSION['CUR_USER_KEY']]['name']."</option>\n";
 	if($_SESSION['CUR_USER_ACCESS']=='WEBMASTER' && count($author_array) > 1){		
 		foreach($author_array as $auth_ar=>$auth_ar_v){
 			if($auth_ar != $_SESSION['CUR_USER_KEY']){
-				echo "							<option value=\"".$auth_ar."\">".$auth_ar_v['name']."</option>\n";
+				$curblogauthorsel=' ';
+				if($getPost['blog_author']==$auth_ar){ $curblogauthorsel=' selected selected="selected"'; }
+				echo "							<option value=\"".$auth_ar."\" ".$curblogauthorsel.">".$auth_ar_v['name']."</option>\n";
 			}
 		}
 	}
 	echo "							</select>\n";
-	echo "</p>\n";
-	echo "</td><td>&nbsp;</td>\n</tr>\n";
-	echo "<tr><td class=\"blogtables\">\n";
-	echo "<p class=\"pform\">\n";
+	echo "</div>\n";
+//	echo "</td><td>&nbsp;</td>\n</tr>\n";
+//	echo "<tr><td class=\"blogtables\">\n";
+	echo "<div class=\"pform\">\n";
 	
 	echo "							<b>Visitor Comments:</b> <select style=\"width:75px;\" id=\"allow_comments\" name=\"allow_comments\">\n";
-	echo "							<option value=\"yes\">Allowed</option>\n";
-	echo "							<option value=\"no\">Disabled</option>\n";
+	echo "							<option value=\"yes\"".$selectedallow_comments1.">Allowed</option>\n";
+	echo "							<option value=\"no\"".$selectedallow_comments2.">Disabled</option>\n";
 	echo "							</select>\n";
 	
 	
-	echo "</p>\n";
-	echo "</td>\n";
-	echo "<td class=\"blogtables\">\n";
-	echo "<p class=\"pform\">\n";
-	
+	echo "</div>\n";
+//	echo "</td>\n";
+//	echo "<td class=\"blogtables\">\n";
+	echo "<div class=\"pform\">\n";
+
 	echo "							<b>Display:</b> <select style=\"width:75px;\" id=\"status\" name=\"status\">\n";
-	echo "							<option value=\"hide\">Hide</option>\n";
-	echo "							<option value=\"publish\">Publish</option>\n";
+	echo "							<option value=\"hide\"".$selecteddisplay2.">Hide</option>\n";
+	echo "							<option value=\"publish\"".$selecteddisplay1.">Publish</option>\n";
 	echo "							</select>\n";	
 	
-	echo "</p>\n";
-	echo "</td>\n";
-	echo "<td style=\"width:30%;\">\n";
-	echo "						<div style=\"margin-right:10px;float:right;text-align:right;\"><button class=\"greenButton\" onClick=\"postBlog();\" type=\"button\" value=\"Save\" /><span><span>&nbsp;&nbsp;Save&nbsp;Entry&nbsp;&nbsp;</span></span></button> </div>\n";	
+	echo "</div>\n";
+//	echo "</td>\n";
+//	echo "<td style=\"width:30%;\">\n";
+//	echo "						<div style=\"height:30px;margin-right:10px;float:right;text-align:right;\"><button class=\"greenButton\" onClick=\"postBlog();\" type=\"button\" value=\"Save\" /><span><span>&nbsp;&nbsp;Save&nbsp;Entry&nbsp;&nbsp;</span></span></button> </div>\n";	
+echo "		<span style=\"margin-right:10px;float:right;text-align:right;\"><button class=\"greenButton\" onClick=\"postBlog();\" type=\"button\" value=\"Save\" /><span><span>&nbsp;&nbsp;Save&nbsp;Entry&nbsp;&nbsp;</span></span></button> </span>\n";	
 	echo "</td>\n</tr>\n";
 	
 	
@@ -314,11 +364,12 @@ if(isset($thisContent)){
 
 
 if($_REQUEST['edit_post']!=''){
+
 	echo "<script language=\"javascript\" type=\"text/javascript\">\n";
 	echo '$(\'document\').ready(function(){'."\n";
 	echo '	$(\'#del_subj\').val(\''.$getPost['blog_category'].'\');'."\n";
-	echo '	$(\'#postTitle\').val(\''.$getPost['blog_title'].'\');'."\n";
-	echo '	$(\'#postTags\').val(\''.$getPost['blog_tags'].'\');'."\n";
+	echo '	$(\'#postTitle\').val(\''.str_replace("'",'\\\'',$getPost['blog_title']).'\');'."\n";
+	echo '	$(\'#postTags\').val(\''.str_replace("'",'\\\'',$getPost['blog_tags']).'\');'."\n";
 	echo '	$(\'#status\').val(\''.$getPost['live'].'\');'."\n";
 	echo '	$(\'#sel_author\').val(\''.$getPost['blog_author'].'\');'."\n";
 	echo '	$(\'#allow_comments\').val(\''.$getPost['allow_comments'].'\');'."\n";
@@ -329,7 +380,6 @@ if($_REQUEST['edit_post']!=''){
 	echo '});'."\n";
 	echo "</script>\n";	
 }
-
 
 # Grab module html into container var
 $module_html = ob_get_contents();

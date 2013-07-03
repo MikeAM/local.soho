@@ -52,7 +52,7 @@ $ERROR = "NO";
 
 $match = 0;		
 $tablename = "cart_customers";
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0; 
 while ($i < mysql_num_rows ($result)) { 
 	$tb_names[$i] = mysql_tablename ($result, $i); 
@@ -106,33 +106,28 @@ if ($match != 1) {
 		// Register "Remember Me" data into memory now
 		// ----------------------------------------------------------------------
 
-		if (!session_is_registered("BFIRSTNAME")) { session_register("BFIRSTNAME"); }
-		if (!session_is_registered("BLASTNAME")) { session_register("BLASTNAME"); }
-		if (!session_is_registered("BCOMPANY")) { session_register("BCOMPANY"); }
-		if (!session_is_registered("BADDRESS1")) { session_register("BADDRESS1"); }
-		if (!session_is_registered("BADDRESS2")) { session_register("BADDRESS2"); }
-		if (!session_is_registered("BCITY")) { session_register("BCITY"); }
-		if (!session_is_registered("BSTATE")) { session_register("BSTATE"); }
-		if (!session_is_registered("BCOUNTRY")) { session_register("BCOUNTRY"); }
-		if (!session_is_registered("BZIPCODE")) { session_register("BZIPCODE"); }
-		if (!session_is_registered("BEMAILADDRESS")) { session_register("BEMAILADDRESS"); }
-
-		if (!session_is_registered("BPHONE")) { session_register("BPHONE"); }
-
-
-		if (!session_is_registered("SFIRSTNAME")) { session_register("SFIRSTNAME"); }
-		if (!session_is_registered("SLASTNAME")) { session_register("SLASTNAME"); }
-		if (!session_is_registered("SCOMPANY")) { session_register("SCOMPANY"); }
-		if (!session_is_registered("SADDRESS1")) { session_register("SADDRESS1"); }
-		if (!session_is_registered("SADDRESS2")) { session_register("SADDRESS2"); }
-		if (!session_is_registered("SCITY")) { session_register("SCITY"); }
-		if (!session_is_registered("SSTATE")) { session_register("SSTATE"); }
-		if (!session_is_registered("SCOUNTRY")) { session_register("SCOUNTRY"); }
-		if (!session_is_registered("SZIPCODE")) { session_register("SZIPCODE"); }
-
-		if (!session_is_registered("SPHONE")) { session_register("SPHONE"); }
-
-		if (!session_is_registered("REPEATCUSTOMER")) { session_register("REPEATCUSTOMER"); }
+		if($BFIRSTNAME==''){ $_SESSION['BFIRSTNAME']=$BFIRSTNAME; }
+		if($BLASTNAME==''){ $_SESSION['BLASTNAME']=$BLASTNAME; }
+		if($BCOMPANY==''){ $_SESSION['BCOMPANY']=$BCOMPANY; }
+		if($BADDRESS1==''){ $_SESSION['BADDRESS1']=$BADDRESS1; }
+		if($BADDRESS2==''){ $_SESSION['']=$BADDRESS2; }
+		if($BCITY==''){ $_SESSION['BCITY']=$BCITY; }
+		if($BSTATE==''){ $_SESSION['BSTATE']=$BSTATE; }
+		if($BCOUNTRY==''){ $_SESSION['BCOUNTRY']=$BCOUNTRY; }
+		if($BZIPCODE==''){ $_SESSION['BZIPCODE']=$BZIPCODE; }
+		if($BEMAILADDRESS==''){ $_SESSION['BEMAILADDRESS']=$BEMAILADDRESS; }
+		if($BPHONE==''){ $_SESSION['BPHONE']=$BPHONE; }
+		if($SFIRSTNAME==''){ $_SESSION['SFIRSTNAME']=$SFIRSTNAME; }
+		if($SLASTNAME==''){ $_SESSION['SLASTNAME']=$SLASTNAME; }
+		if($SCOMPANY==''){ $_SESSION['SCOMPANY']=$SCOMPANY; }
+		if($SADDRESS1==''){ $_SESSION['SADDRESS1']=$SADDRESS1; }
+		if($SADDRESS2==''){ $_SESSION['SADDRESS2']=$SADDRESS2; }
+		if($SCITY==''){ $_SESSION['SCITY']=$SCITY; }
+		if($SSTATE==''){ $_SESSION['SSTATE']=$SSTATE; }
+		if($SCOUNTRY==''){ $_SESSION['SCOUNTRY']=$SCOUNTRY; }
+		if($SZIPCODE==''){ $_SESSION['SZIPCODE']=$SZIPCODE; }
+		if($SPHONE==''){ $_SESSION['SPHONE']=$SPHONE; }
+		if($REPEATCUSTOMER==''){ $_SESSION['REPEATCUSTOMER']=$REPEATCUSTOMER; }
 		$REPEATCUSTOMER = "YES";
 
 	} else {

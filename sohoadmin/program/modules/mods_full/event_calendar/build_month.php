@@ -57,7 +57,7 @@ function add_new(m,d,y) {
 	padding: 0;
 	margin: 0;
 	border-left: 1px solid #A2ADBC;
-	font: normal 12px/20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+	font: normal 11px/12px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	color: #4D565F;
 	text-align: center;
 	background-color: #fff;
@@ -75,8 +75,7 @@ function add_new(m,d,y) {
 .calendar td {
 	border-right: 1px solid #A2ADBC;
 	border-bottom: 1px solid #A2ADBC;
-	width: 20px;
-	height: 20px;
+
 	/*text-align: center;*/
 }
 
@@ -119,7 +118,11 @@ function add_new(m,d,y) {
    list-style-type: none;
    clear: both;
    padding: 0;
-   margin: 0;
+   margin: 0 0 2px 0;
+   font-size:10px;
+   letter-spacing:-.5px;
+   min-width: 120px;
+   max-width: 200px;
    /*border: 1px dotted red;*/
 }
 
@@ -134,11 +137,19 @@ function add_new(m,d,y) {
 ul{
    padding:0;
    margin:0;
+   font-size:10px;
+}
+
+.caltd {  
+	font-size:10px;
+   min-width: 120px;
+   max-width: 200px;
+   height: 100px; 
 }
 
 </style>
 
-<?
+<?php
 
 ########################################################################
 ### HOW MANY DAYS ARE IN THE "SELECTED MONTH"
@@ -146,14 +157,49 @@ ul{
 
 $NUM_DAYS_IN_MONTH = date("t", mktime(0,0,0,$SEL_MONTH,1,$SEL_YEAR));
 $START_DOW = date("l", mktime(0,0,0,$SEL_MONTH,1,$SEL_YEAR));			// What day of week does month start on?
+$top_month = date("F", mktime(0,0,0,$SEL_MONTH,1,$SEL_YEAR));
+$top_year = date("Y", mktime(0,0,0,$SEL_MONTH,1,$SEL_YEAR));
+if($SEL_MONTH == 12 || $SEL_MONTH == 01){
+	if($SEL_MONTH == 12){
+		$last_month = date("F", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));
+		$last_year = date("Y", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));	
+		$next_month = date("F", mktime(0,0,0,01,1,($SEL_YEAR+1)));
+		$next_year = date("Y", mktime(0,0,0,01,1,($SEL_YEAR+1)));
+	} else {
+		$last_month = date("F", mktime(0,0,0,12,1,($SEL_YEAR-1)));
+		$last_year = date("Y", mktime(0,0,0,12,1,($SEL_YEAR-1)));
+		$next_month = date("F", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+		$next_year = date("Y", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+	}
+} else {
+	$last_month = date("F", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));
+	$last_year = date("Y", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));
+	$next_month = date("F", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+	$next_year = date("Y", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+}
+
+$last_month_val = date('m',strtotime($last_month." ".$last_year));
+$next_month_val = date('m',strtotime($next_month." ".$next_year));
+
+
+
+
 
 if ($SEL_MONTH == date("m")) { $HIGHLIGHT = "on"; $HIGHLIGHT_DAY = date("j"); }
 
 ########################################################################
 ### BUILD CALENDAR DISPLAY
 ########################################################################
+	echo " <table width=\"780px\"<tr>\n";
+	echo "  <td colspan=3 style='border-bottom: 0px inset black;text-align:left;'><a style=\"font-size:15px;text-decoration:none;bottom-border:0px;\" href=\"javascript:void(0);\" onClick=\"changedate('".$last_month_val."','".$last_year."');\">&lt;&lt;&nbsp;".$last_month."&nbsp;".$last_year."</a></td>\n";
+	echo "  <td colspan=\"2\" align=\"center\" valign=\"top\" style=\"font-weight:bold;font-size:18px;text-align:center;padding:0px;\">\n";
+	echo "   ".lang($top_month)." ".$top_year."\n";
+	echo "  </td>\n";
+	echo "  <td colspan=2 style='border-bottom: 0px inset black;text-align:right;'><a style=\"font-size:15px;text-decoration:none;bottom-border:0px;\" href=\"javascript:void(0);\" onClick=\"changedate('".$next_month_val."','".$next_year."');\">".$next_month."&nbsp;".$next_year."&nbsp;&gt;&gt;</a></td>\n";
+	echo " </tr></table>\n";
 
-echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\">\n";
+
+echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\" >\n";
 
 	// -----------------------------------------------------------------
 	// Row for display of days of the week
@@ -184,7 +230,7 @@ echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\">\n";
 		
 			if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = "OLDLACE"; } else { $BGCOLOR = "WHITE"; } 
 		
-			echo "\n<td align=left valign=top bgcolor=\"".$BGCOLOR."\" class=text style=\"height: 100px; width: 110px;\">\n";
+			echo "\n<td align=left valign=top bgcolor=\"".$BGCOLOR."\" class=\"text caltd\">\n";
 			echo "<div class=\"day_num\">".$display_day."</div>\n";
 			echo "<div class=\"add_event_btn\" onclick=\"add_new('".$SEL_MONTH."','".$display_day."','".$SEL_YEAR."');\" onmouseover=\"this.className='add_event_btn_over'\" onmouseout=\"this.className='add_event_btn'\" >".$lang["Add Event"]."</div>";
 
@@ -192,7 +238,7 @@ echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\">\n";
 			// Display Events for this date
 			// ========================================================================
          
-         $foundit = 0;
+         		$foundit = 0;
 			for ($z=0;$z<=$NUM_EVENTS;$z++) {
 			
 				$tmp = split("-", $DB_EVENT_DATE[$z]);
@@ -200,17 +246,45 @@ echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\">\n";
 			
 				if ($look_for == $display_day) {	// Event found for this day of month
 				   
-   			   if($foundit == 0){
-   			      $foundit = 1;
-   			      echo "<ul>\n";
-   			   }
+					if($foundit == 0){
+	   			      	$foundit = 1;
+	   			      	echo "<ul>\n";
+					} else {
+	   			   		     echo "<hr noshade size=1 width=\"50%\" align=center> \n";
+	   				}
 				
 					if ($DB_RECUR_MASTER[$z] == "Y") {
-						echo "\n<LI class=\"event_item\"><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=m&=SID\">$DB_EVENT_TITLE[$z]</a> <font color=green>[M]</FONT></LI>\n";
+						echo "\n<LI class=\"event_item\" ><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=m&=SID\">$DB_EVENT_TITLE[$z]</a>&nbsp;<font color=green>[M]</FONT>\n";
 					} else {
 						// Link to # found in recur_master field
-						echo "\n<LI class=\"event_item\"><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=r&=SID\">$DB_EVENT_TITLE[$z]</a> <font color=red>[R]</FONT></LI>\n";
+						echo "\n<LI class=\"event_item\" ><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=r&=SID\">$DB_EVENT_TITLE[$z]</a>&nbsp;<font color=red>[R]</FONT>\n";
 					}
+					
+					 
+						if(preg_match('/^[0-9]+/',$DB_EVENT_PAGE[$z])){
+							$pp=mysql_query("select PROD_NAME,OPTION_INVENTORY_NUM from cart_products where PRIKEY='".$DB_EVENT_PAGE[$z]."'");
+							$PROD=mysql_fetch_assoc($pp);
+							$dbtablename=strtoupper(str_replace(' ','_','UDT_CART_DATA_'.sterilize_char($PROD['PROD_NAME'])));
+							if(strlen($dbtablename) > 64){
+								$dbtablename=substr($dbtablename,0,64);
+							}
+							if(table_exists($dbtablename)){
+								$find_regss=mysql_query("select PRIKEY,EVENT_DATE from ".$dbtablename." where EVENT_DATE='".$DB_EVENT_DATE[$z]." ".$DB_EVENT_START[$z]."-".$DB_EVENT_END[$z]."'");
+								$signupmax="/".$PROD['OPTION_INVENTORY_NUM'];
+								//if($PROD['OPTION_INVENTORY_NUM']==50000){
+									$signupmax=" signup";
+								//}
+								if(mysql_num_rows($find_regss) > 0){
+									$dblink='database_manager/enter_edit_data.php?mt='.$dbtablename.'&TBL_SEARCH_FOR='.$DB_EVENT_DATE[$z]."+".$DB_EVENT_START[$z]."-".$DB_EVENT_END[$z].'&searchin=EVENT_DATE';
+									echo "<span style=\"font-size: 0.8em;\">(<a  style=\"font-size: 0.8em;\" href=\"".$dblink."\">".mysql_num_rows($find_regss).$signupmax."</a>)</span>";
+								} else {
+									echo "<span style=\"font-size: 0.8em;\">(".(mysql_num_rows($find_regss)+0).$signupmax.")</span>";	
+								}
+								
+							}
+						}
+						
+						echo "</LI>\n";
 				
 				} // End Found Event
 				
@@ -254,7 +328,7 @@ echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\">\n";
 			
 				if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = "OLDLACE"; } else { $BGCOLOR = "WHITE"; } 
 		
-				echo "\n<td align=left valign=top bgcolor=".$BGCOLOR." class=text style=\"height: 100px; width: 110px;\">\n";
+				echo "\n<td align=left valign=top bgcolor=".$BGCOLOR." class=\"text caltd\">\n";
 				echo "<div class=\"day_num\">".$display_day."</div>\n";
 				echo "<div class=\"add_event_btn\" onclick=\"add_new('$SEL_MONTH','$display_day','$SEL_YEAR');\" onmouseover=\"this.className='add_event_btn_over'\" onmouseout=\"this.className='add_event_btn'\" >".$lang["Add Event"]."</div>";
 				
@@ -262,7 +336,7 @@ echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\">\n";
 				// Display Events for this date
 				// ========================================================================
             
-            $foundit = 0;
+           			 $foundit = 0;
 				for ($z=0;$z<=$NUM_EVENTS;$z++) {
 
 				
@@ -270,18 +344,44 @@ echo "<table class=\"calendar\" cellpadding=\"0\" cellspacing=\"0\">\n";
 					$look_for = $tmp[2];
 				
 					if ($look_for == $display_day) {	// Event found for this day of month
-      			   if($foundit == 0){
-      			      $foundit = 1;
-      			      echo "<ul>\n";
-      			   }
+						if($foundit == 0){
+		   			      	$foundit = 1;
+		   			      	echo "<ul>\n";
+						} else {
+		   			   		     echo "<hr noshade size=1 width=\"50%\" align=center> \n";
+		   				}
 					
-   					if ($DB_RECUR_MASTER[$z] == "Y") {
-   						echo "\n<LI class=\"event_item\"><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=m&=SID\">$DB_EVENT_TITLE[$z]</a> <font color=green>[M]</FONT></LI>\n";
-   					} else {
-   						// Link to # found in recur_master field
-   						echo "\n<LI class=\"event_item\"><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=r&=SID\">$DB_EVENT_TITLE[$z]</a> <font color=red>[R]</FONT></LI>\n";
-   					}
-					
+	   					if ($DB_RECUR_MASTER[$z] == "Y") {
+	   						echo "\n<LI class=\"event_item\" ><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=m&=SID\">$DB_EVENT_TITLE[$z]</a>&nbsp;<font color=green>[M]</FONT>\n";
+	   					} else {
+	   						// Link to # found in recur_master field
+	   						echo "\n<LI class=\"event_item\" ><a href=\"event_calendar/edit_event.php?id=$DB_EVENT_PRIKEY[$z]&type=r&=SID\">$DB_EVENT_TITLE[$z]</a>&nbsp;<font color=red>[R]</FONT>\n";
+	   					}
+						
+						if(preg_match('/^[0-9]+/',$DB_EVENT_PAGE[$z])){
+							$pp=mysql_query("select PROD_NAME,OPTION_INVENTORY_NUM from cart_products where PRIKEY='".$DB_EVENT_PAGE[$z]."'");
+							$PROD=mysql_fetch_assoc($pp);
+							$dbtablename=strtoupper(str_replace(' ','_','UDT_CART_DATA_'.sterilize_char($PROD['PROD_NAME'])));
+							if(strlen($dbtablename) > 64){
+								$dbtablename=substr($dbtablename,0,64);
+							}
+							if(table_exists($dbtablename)){
+								$find_regss=mysql_query("select PRIKEY,EVENT_DATE from ".$dbtablename." where EVENT_DATE='".$DB_EVENT_DATE[$z]." ".$DB_EVENT_START[$z]."-".$DB_EVENT_END[$z]."'");
+								$signupmax="/".$PROD['OPTION_INVENTORY_NUM'];
+								//if($PROD['OPTION_INVENTORY_NUM']==50000){
+									$signupmax=" signup";
+								//}
+								if(mysql_num_rows($find_regss) > 0){
+									$dblink='database_manager/enter_edit_data.php?mt='.$dbtablename.'&TBL_SEARCH_FOR='.$DB_EVENT_DATE[$z]."+".$DB_EVENT_START[$z]."-".$DB_EVENT_END[$z].'&searchin=EVENT_DATE';
+									echo "<span>(<a  style=\"font-size: 0.8em;\" href=\"".$dblink."\">".mysql_num_rows($find_regss).$signupmax."</a>)</span>";
+								} else {
+									echo "<span style=\"font-size: 0.8em;\">(".(mysql_num_rows($find_regss)+0).$signupmax.")</span>";	
+								}
+								
+							}
+						}
+						
+						echo "</LI>\n";
 					} // End Found Event
 				
 				} // End Event Loop

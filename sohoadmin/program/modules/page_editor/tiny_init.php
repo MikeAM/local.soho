@@ -1,4 +1,13 @@
 <?php
+error_reporting(E_PARSE);
+if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
+
+session_start();
+$curdir = getcwd();
+chdir(str_replace(basename(__FILE__), '', __FILE__));
+require_once("../../includes/product_gui.php");
+chdir($curdir);
+
 if (function_exists('curl_init')) {
 	$spellchecker = ',spellchecker';
 } else {
@@ -10,6 +19,7 @@ $spellchecker = '';
 
 //	if(eregi("contentz", $cap_display)){
 
+$globalprefObj = new userdata('global');
 $cfonts = new userdata("customfonts");
 if($cfonts->get("fontfams") == "") {
 	$customfonts = "Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sand;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings,zapf dingbats";
@@ -25,13 +35,7 @@ foreach($cfonts as $fvals){
 $finalfonts = eregi_replace(';$', '', $finalfonts);
 //content_css : "../../../../sohoadmin/program/modules/tiny_mce/custom-css.php?cust_temp= echo base64_encode($CUR_TEMPLATE); &style="+ Base64.encode(stylem) +"&tags="+ Base64.encode(tagtypes) +"&ids="+ Base64.encode(csid) +"&classes="+ Base64.encode(classes) +"&pr= echo base64_encode($_GET['currentPage']); ", 
 
-
-
 $rel_path = "../../../../";
-if(eregi('blog', $_SERVER['PHP_SELF'])){
-   $rel_path = "../../../";
-}
-//echo "alert('(".$_SERVER['PHP_SELF'].")(".$rel_path.")');\n";
 
 ?>
 
@@ -43,44 +47,82 @@ function urlConverterCallback(strUrl, node, on_save) {
 //FOR TESTING ADD devkit TO PLUGINS
 
    var current_editing_area = '';
+<?php
+if ( !is_object($tinymce_prefs) ) {
+	$tinymce_prefs = new userdata('global');
+}
+$tinymode = $tinymce_prefs->get('tinymode');
+if($tinymode==''){
+	$tinymce_prefs->set('tinymode', 'basic');
+	$tinymode = $tinymce_prefs->get('tinymode');
+}
 
+if($thisPage=='' && $_GET['currentPage']!=''){
+	$thisPage = $_GET['currentPage'];
+}
+?>
+ var innerstuffs = GetInnerSize();
+// alert(innerstuffs[1]);
+// document.getElementById('tiny_editor_container').style.height = innerstuffs[1]+"px";
+// alert(innerstuffs[0]+' '+innerstuffs[1]);
    tinyMCE.init({
-   	mode : "none",
-   	theme : "advanced",
-   	plugins : "Uploadfile,inlinepopups,style,table,advhr,advimage,advlink,emotions,insertdatetime,preview,spellchecker,Addfontz,media,searchreplace,print,contextmenu,paste,visualchars,xhtmlxtras<?php echo $spellchecker; ?>",
-   	theme_advanced_disable: "help,cleanup,code,styleselect",
-   	theme_advanced_buttons1 : "bold,italic,underline,strikethrough,separator,forecolor,backcolor,styleselect,|,fontselect,fontsizeselect,formatselect,styleselect",
-   	//theme_advanced_buttons1_add : ",separator,fontselect,separator,Addfontz,separator,fontsizeselect",
-   	//theme_advanced_buttons2_add : "separator,forecolor,backcolor",
-   	//theme_advanced_buttons2_add_before: "tablecontrols,separator,cut,copy,paste,pastetext,pasteword,separator",
-   	//theme_advanced_buttons2_add_before: "tablecontrols,separator"
-	//theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
-
-   	theme_advanced_buttons2 : "justifyleft,justifycenter,justifyright,justifyfull,|,outdent,indent,|,bullist,numlist,|,sub,sup,charmap,|,link,unlink,anchor,image,|,iespell,spellchecker,|,media,Uploadfile",
-//   	theme_advanced_buttons3_add : "tablecontrols",
-          theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid", 	
-   	theme_advanced_toolbar_location : "top",
-   	theme_advanced_toolbar_align : "center",
-   	theme_advanced_path_location : "bottom",
-   	content_css : "<?php echo $rel_path; ?>sohoadmin/program/modules/tiny_mce/custom-css.php?pr=<?php echo base64_encode($thisPage); ?>", 
-      plugin_insertdate_dateFormat : "%Y-%m-%d",
-      plugin_insertdate_timeFormat : "%H:%M:%S",
-      paste_strip_class_attributes : "mso",
-      verify_html : false,
+	mode : "none",
+	theme : "advanced",
+	plugins : "pdw,Uploadfile,inlinepopups,style,table,advhr,advimage,advlink,emotions,insertdatetime,spellchecker,Addfontz,media,searchreplace,print,paste,visualchars,xhtmlxtras<?php echo $spellchecker; ?>",
+	//theme_advanced_disable: "help,cleanup,code,styleselect,contextmenu",
+	theme_advanced_disable: "contextmenu",
+   	theme_advanced_buttons1 : "bold,italic,underline,strikethrough,separator,forecolor,backcolor,removeformat,|,fontselect,fontsizeselect,formatselect,styleselect,styleprops",	//styleselect,
+	theme_advanced_buttons1_add : "|,tablecontrols,visualaid",
+	theme_advanced_buttons2 : "pdw_toggle,|,justifyleft,justifycenter,justifyright,justifyfull,|,outdent,indent,|,bullist,numlist,|,link,unlink,anchor,|,spellchecker,|,image,media,Uploadfile,|,sub,sup,charmap,hr",
+	theme_advanced_buttons2_add : "|,cut,copy,pastetext,pasteword,|,search,undo,redo",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_toolbar_align : "left",
+   	//theme_advanced_path_location : "bottom",
+	// theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+	theme_advanced_statusbar_location : "bottom",
+<?php
+	if ( $globalprefObj->get('styleToggle') != 'no' ) {
+?>
+	content_css : "sohoadmin/program/modules/tiny_mce/custom-css.php?pr=<?php echo base64_encode($thisPage).'&randm='.time(); ?>", 
+<?php
+}
+?>
+	plugin_insertdate_dateFormat : "%Y-%m-%d",
+	plugin_insertdate_timeFormat : "%H:%M:%S",
+	paste_strip_class_attributes : "mso",
+	verify_html : true, //This option enables or disables the element cleanup functionality. If you set this option to false, all element cleanup will be skipped but other cleanup functionality such as URL conversion will still be executed.
    	convert_urls : false,
    	relative_urls : true,
    	spellchecker_languages : "+English=en,Swedish=sv",
    	urlconvertor_callback: "urlConverterCallback",
    	document_base_url : "http://<?php echo $this_ip; ?>/",
    	theme_advanced_resize_horizontal : false,
-   	theme_advanced_resizing : false,
+   	theme_advanced_resizing : true,
+   	theme_advanced_source_editor_wrap : true,
    	nonbreaking_force_tab : true,
-   	apply_source_formatting : false,
+   	apply_source_formatting : false, //With this option set to true, line break characters are placed after and before some tags (defined in the options "indent_before" and "indent_after"). With this option set to false, the line breaks are stripped from the HTML source.
    	theme_advanced_fonts : "<?php echo $finalfonts; ?>",
    	trim_span_elements : false,
    	verify_css_classes : true,
+   	cleanup : true,
+	paste_text_use_dialog : true,
 	force_p_newlines : true,
-   	visual : true,
+	convert_newlines_to_brs : false,
+	forced_root_block : "",
+	//body_class : "entry",
+   	visual : true, // If true, this shows borders for tables with a border set to 0
+   	theme_advanced_resizing_max_height : Math.round(innerstuffs[1]-52),
+	theme_advanced_source_editor_height : Math.round(innerstuffs[1]-8),
+	theme_advanced_source_editor_width : Math.round(innerstuffs[0]-10),
+	
+<?php
+if($tinymode=='advanced'){
+	echo "	pdw_toggle_on : 0,\n";	
+} else {
+	echo "	pdw_toggle_on : 1,\n";	
+}
+?>
+	pdw_toggle_toolbars : "2",
    	valid_elements : "@[id|class|style|title|dir<ltr?rtl|lang|xml::lang|onclick|ondblclick|"
 + "onmousedown|onmouseup|onmouseover|onmousemove|onmouseout|onkeypress|"
 + "onkeydown|onkeyup],a[rel|rev|charset|hreflang|tabindex|accesskey|type|"
@@ -102,15 +144,15 @@ function urlConverterCallback(strUrl, node, on_save) {
 + "kbd,label[for],legend,noscript,optgroup[label|disabled],option[disabled|label|selected|value],"
 + "q[cite],samp,select[disabled|multiple|name|size],small,"
 + "textarea[cols|rows|disabled|name|readonly],tt,var,big",
+
    	media_use_script : false,
+   	media_strict : false,
    	setupcontent_callback : "pullHTML",
-   	theme_advanced_blockformats : "address,p,pre,h1,h2,h3,h4,h5,h6",
-   	
+   	theme_advanced_blockformats : "p,h1,h2,h3,h4,h5,h6,pre,address",
    	external_image_list_url : "sohoadmin/program/modules/tiny_mce/imagelist.php",
    	media_external_list_url : "sohoadmin/program/modules/tiny_mce/medialist.php",
    	external_link_list_url : "sohoadmin/program/modules/tiny_mce/linklist.php",
    	external_link_list_media : "sohoadmin/program/modules/tiny_mce/linklistmedia.php"
-   	
    });
    
    // updates tiny's font dropdown

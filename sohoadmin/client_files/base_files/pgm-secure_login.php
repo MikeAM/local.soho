@@ -48,20 +48,29 @@ if ( $_GET['todo'] == "logout" ) {
       header("location: ".$backtourl); exit;
    }
 }
-
-foreach ( $_REQUEST as $name=>$value ) {
-		$value = htmlspecialchars($value);	// Bugzilla #13
-		${$name} = $value;
-}
+include_once("sohoadmin/client_files/pgm-site_config.php");
+$dot_com = $this_ip;
+include_once("sohoadmin/program/includes/shared_functions.php");
+$notice=$_REQUEST['notice'];
+$pa=$_REQUEST['pa'];
+$sc=$_POST['sc'];
+$PROCESS=$_POST['PROCESS'];
+$SOHO_AUTH=$_POST['SOHO_AUTH'];
+$SOHO_PW=$_POST['SOHO_PW'];
+//echo testArray($_POST);
+//exit;
+//
+//foreach ( $_REQUEST as $name=>$value ) {
+//		$value = htmlspecialchars($value);	// Bugzilla #13
+//		${$name} = $value;
+//}
 
 #########################################################################
 ### WE WILL NEED TO KNOW THE DATABASE NAME; UN; PW; ETC TO OPERATE THE ###
 ### REAL-TIME EXECUTION.  THIS IS CONFIGURED IN THE isp.conf FILE      ###
 ##########################################################################
 
-include_once("sohoadmin/client_files/pgm-site_config.php");
-$dot_com = $this_ip;
-include_once("sohoadmin/program/includes/shared_functions.php");
+
 #########################################################
 ### MAKE pageRequest VAR AND pr VAR MATCH			###
 #########################################################
@@ -127,8 +136,7 @@ if ( $_POST['PROCESS'] == "AUTHENTICATE" ) {
 		for ($x=0;$x<=$numberFields;$x++) {
 			$field_name = mysql_field_name($result, $x);
 			if ($field_name != "PRIKEY") {
-				${$field_name} = $user_data[$field_name];
-				if (!session_is_registered("$field_name")) { session_register("$field_name"); }
+				${$field_name} = $user_data[$field_name];				
 				$_SESSION[$field_name] = $user_data[$field_name];
 			}
 
@@ -177,13 +185,13 @@ if ( $_POST['PROCESS'] == "AUTHENTICATE" ) {
 			} else {
             # User expired, clear session data
 				$auth = 0;
-				if (session_is_registered("BPASSWORD")) { session_unregister("BPASSWORD"); }
-				if (session_is_registered("REPEATCUSTOMER")) { session_unregister("REPEATCUSTOMER"); }
-				if (session_is_registered("SOHO_AUTH")) { session_unregister("SOHO_AUTH"); }
-				if (session_is_registered("SOHO_PW")) { session_unregister("SOHO_PW"); }
-				if (session_is_registered("GROUPS")) { session_unregister("GROUPS"); }
-				if (session_is_registered("USERNAME")) { session_unregister("USERNAME"); }
-				if (session_is_registered("PASSWORD")) { session_unregister("PASSWORD"); }
+				$_SESSION['BPASSWORD'] = $BPASSWORD;
+				$_SESSION['REPEATCUSTOMER'] = $REPEATCUSTOMER;
+				$_SESSION['SOHO_AUTH'] = $SOHO_AUTH;
+				$_SESSION['SOHO_PW'] = $SOHO_PW;
+				$_SESSION['GROUPS'] = $GROUPS;
+				$_SESSION['USERNAME'] = $USERNAME;
+				$_SESSION['PASSWORD'] = $PASSWORD;
 
 				$GROUPS = ""; 		// Clear out any access that may have been registered for sure
 				$SOHO_AUTH = "";
@@ -236,47 +244,43 @@ if ( $_POST['PROCESS'] == "AUTHENTICATE" ) {
 		// Register "Remember Me" data into memory now
 		// ----------------------------------------------------------------------
 
-		if (!session_is_registered("BFIRSTNAME")) { session_register("BFIRSTNAME"); }
-		if (!session_is_registered("BLASTNAME")) { session_register("BLASTNAME"); }
-		if (!session_is_registered("BCOMPANY")) { session_register("BCOMPANY"); }
-		if (!session_is_registered("BADDRESS1")) { session_register("BADDRESS1"); }
-		if (!session_is_registered("BADDRESS2")) { session_register("BADDRESS2"); }
-		if (!session_is_registered("BCITY")) { session_register("BCITY"); }
-		if (!session_is_registered("BSTATE")) { session_register("BSTATE"); }
-		if (!session_is_registered("BCOUNTRY")) { session_register("BCOUNTRY"); }
-		if (!session_is_registered("BZIPCODE")) { session_register("BZIPCODE"); }
-		if (!session_is_registered("BPHONE")) { session_register("BPHONE"); }
-		if (!session_is_registered("BEMAILADDRESS")) { session_register("BEMAILADDRESS"); }
-
-		if (!session_is_registered("BPHONE_COUNTRYCODE")) { session_register("BPHONE_COUNTRYCODE"); }
-		if (!session_is_registered("BPHONE_AREACODE")) { session_register("BPHONE_AREACODE"); }
-		if (!session_is_registered("BPHONE_PREFIX")) { session_register("BPHONE_PREFIX"); }
-		if (!session_is_registered("BPHONE_SUFFIX")) { session_register("BPHONE_SUFFIX"); }
-
-
-		if (!session_is_registered("SFIRSTNAME")) { session_register("SFIRSTNAME"); }
-		if (!session_is_registered("SLASTNAME")) { session_register("SLASTNAME"); }
-		if (!session_is_registered("SCOMPANY")) { session_register("SCOMPANY"); }
-		if (!session_is_registered("SADDRESS1")) { session_register("SADDRESS1"); }
-		if (!session_is_registered("SADDRESS2")) { session_register("SADDRESS2"); }
-		if (!session_is_registered("SCITY")) { session_register("SCITY"); }
-		if (!session_is_registered("SSTATE")) { session_register("SSTATE"); }
-		if (!session_is_registered("SCOUNTRY")) { session_register("SCOUNTRY"); }
-		if (!session_is_registered("SZIPCODE")) { session_register("SZIPCODE"); }
-		if (!session_is_registered("SPHONE")) { session_register("SPHONE"); }
-
-		if (!session_is_registered("SPHONE_COUNTRYCODE")) { session_register("SPHONE_COUNTRYCODE"); }
-		if (!session_is_registered("SPHONE_AREACODE")) { session_register("SPHONE_AREACODE"); }
-		if (!session_is_registered("SPHONE_PREFIX")) { session_register("SPHONE_PREFIX"); }
-		if (!session_is_registered("SPHONE_SUFFIX")) { session_register("SPHONE_SUFFIX"); }
+		$_SESSION['BFIRSTNAME']=$BFIRSTNAME;
+		$_SESSION['BLASTNAME']=$BLASTNAME;
+		$_SESSION['BCOMPANY']=$BCOMPANY;
+		$_SESSION['BADDRESS1']=$BADDRESS1;
+		$_SESSION['BADDRESS2']=$BADDRESS2;
+		$_SESSION['BCITY']=$BCITY;
+		$_SESSION['BSTATE']=$BSTATE;
+		$_SESSION['BCOUNTRY']=$BCOUNTRY;
+		$_SESSION['BZIPCODE']=$BZIPCODE;
+		$_SESSION['BPHONE']=$BPHONE;
+		$_SESSION['BEMAILADDRESS']=$BEMAILADDRESS;
+		$_SESSION['BPHONE_COUNTRYCODE']=$BPHONE_COUNTRYCODE;
+		$_SESSION['BPHONE_AREACODE']=$BPHONE_AREACODE;
+		$_SESSION['BPHONE_PREFIX']=$BPHONE_PREFIX;
+		$_SESSION['BPHONE_SUFFIX']=$BPHONE_SUFFIX;
+		$_SESSION['SFIRSTNAME']=$SFIRSTNAME;
+		$_SESSION['SLASTNAME']=$SLASTNAME;
+		$_SESSION['SCOMPANY']=$SCOMPANY;
+		$_SESSION['SADDRESS1']=$SADDRESS1;
+		$_SESSION['SADDRESS2']=$SADDRESS2;
+		$_SESSION['SCITY']=$SCITY;
+		$_SESSION['SSTATE']=$SSTATE;
+		$_SESSION['SCOUNTRY']=$SCOUNTRY;
+		$_SESSION['SZIPCODE']=$SZIPCODE;
+		$_SESSION['SPHONE']=$SPHONE;
+		$_SESSION['SPHONE_COUNTRYCODE']=$SPHONE_COUNTRYCODE;
+		$_SESSION['SPHONE_AREACODE']=$SPHONE_AREACODE;
+		$_SESSION['SPHONE_PREFIX']=$SPHONE_PREFIX;
+		$_SESSION['SPHONE_SUFFIX']=$SPHONE_SUFFIX;
+		$_SESSION['OWNER_NAME']=$OWNER_NAME;
+		$_SESSION['GROUPS']=$GROUPS;
 
 		if ( !isset($_SESSION['REPEATCUSTOMER']) ) { $_SESSION['REPEATCUSTOMER'] = $REPEATCUSTOMER; }
 		$REPEATCUSTOMER = "YES";
 
 		// Now let's place variables into the sessions that "recognize" user "like" a sec login client
 
-		if (!session_is_registered("OWNER_NAME")) { session_register("OWNER_NAME"); }
-		if (!session_is_registered("GROUPS")) { session_register("GROUPS"); }
 		$OWNER_NAME = $BFIRSTNAME . " " . $BLASTNAME;
 		$GROUPS = "";		// This user does not have any 'private' sku or page access
 
@@ -348,19 +352,25 @@ if (!isset($SOHO_AUTH) || !isset($SOHO_PW) || !isset($GROUPS) || $notice = "noac
    	$contentarea .= "<INPUT TYPE=HIDDEN NAME=pa VALUE=\"".strip_tags($pa)."\">\n";
    	$contentarea .= "<INPUT TYPE=HIDDEN NAME=sc VALUE=\"".strip_tags($sc)."\">\n";
 
-   	$contentarea .= "<table id=\"login_box\" width=\"300\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" align=\"center\" class=\"border\" bgcolor=\"#FFFFFF\">\n";
+   	//$contentarea .= "<table id=\"login_box\" width=\"300\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" align=\"center\" class=\"border\" bgcolor=\"#FFFFFF\">\n";
+   	$contentarea .= "<table id=\"login_box\" width=\"300\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" align=\"center\" class=\"border\">\n";
    	$contentarea .= " <tr>\n";
-   	$contentarea .= "  <td class=text bgcolor=#999999><font color=\"#FFFFFF\" face=Verdana><b>".lang("Please Login")."\n";
+   	//$contentarea .= "  <td class=text bgcolor=#999999><font color=\"#FFFFFF\" face=Verdana><b>".lang("Please Login")."\n";
+   	$contentarea .= "  <td class=text><font face=Verdana><b>".lang("Please Login")."\n";
    	$contentarea .= "  </b></font></td>";
    	$contentarea .= " </tr>\n";
    	$contentarea .= " <tr align=\"center\" valign=\"top\">\n";
-   	$contentarea .= "  <td bgcolor=#EFEFEF>\n";
-   	$contentarea .= "   <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=txt bgcolor=#EFEFEF>\n";
+   	//$contentarea .= "  <td bgcolor=#EFEFEF>\n";
+   	$contentarea .= "  <td>\n";
+   	//$contentarea .= "   <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=txt bgcolor=#EFEFEF>\n";
+   	$contentarea .= "   <table align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=txt>\n";
    	$contentarea .= "    <tr>\n";
-   	$contentarea .= "     <td valign=\"top\" align=left class=text><font color=black>".lang("Username").":</font><br>\n";
+   	//$contentarea .= "     <td valign=\"top\" align=left class=text><font color=black>".lang("Username").":</font><br>\n";
+   	$contentarea .= "     <td valign=\"top\" align=left class=text>".lang("Username").":<br>\n";
    	$contentarea .= "      <input type=\"text\" value=\"".$cook_user."\" name=\"SOHO_AUTH\" class=text style='width: 250px';>\n";
    	$contentarea .= "      <br>\n";
-   	$contentarea .= "      <Font color=black>".lang("Password").":</font><br>\n";
+   	//$contentarea .= "      <Font color=black>".lang("Password").":</font><br>\n";
+   	$contentarea .= "      ".lang("Password").":<br>\n";
    	$contentarea .= "      <input type=\"password\" value=\"".$cook_pw."\" name=\"SOHO_PW\" class=text style='width: 250px';>\n";
    	$contentarea .= "      <br><br>\n";
    	$contentarea .= "      <input type=\"checkbox\" name=\"remember\"> ".lang("Remember me")."!\n";

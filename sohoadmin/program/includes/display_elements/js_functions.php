@@ -1,4 +1,5 @@
 <?php
+header("content-type: text/javascript");
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 

@@ -226,7 +226,7 @@ if ($STEP_NUM == "2") {
 	// Get all current user defined tables
 	// ------------------------------------------------------------
 
-	$result = mysql_list_tables("$db_name");
+	$result = soho_list_tables();
 	$i = 0;
 	$CURRENT_TABLES = "     <OPTION VALUE=\"\" STYLE='COLOR: darkblue;'>Current UDT Tables...</OPTION>\n";
 	while ($i < mysql_num_rows ($result)) {

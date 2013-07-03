@@ -57,7 +57,28 @@ function no_recur() {
 function edit_recur(a,t) {
 	window.location = "edit_event.php?id="+a+"&type="+t+"&<?=SID?>";
 }
+function addevensub(){
+	var formgo = 1;
+	if(document.getElementById('EVENT_TITLE').value.length < 3){
+		alert('Please enter a Title');
+		formgo = 0;
+	}
+	if(formgo == 1){
+		document.updateform.submit();
+	}
+}
 
+function delevensub(){
+	var formgo = 1;
+	document.getElementById('DELETEEVENTNOW').value = '1';	
+	document.updateform.submit();
+}
+
+function sText(){
+	if((document.getElementById('START_TIME').selectedIndex+1) >= document.getElementById('END_TIME').selectedIndex && document.getElementById('END_TIME').selectedIndex!= 0){
+		document.getElementById('END_TIME').selectedIndex=eval(document.getElementById('START_TIME').selectedIndex+2);
+	}
+}
 </SCRIPT>
 
 <?php
@@ -76,6 +97,7 @@ function edit_recur(a,t) {
 	}
 
 
+
 ?>
 
 <FORM NAME="updateform" METHOD=POST ACTION="edit_event.php">
@@ -83,13 +105,13 @@ function edit_recur(a,t) {
 <INPUT TYPE=HIDDEN NAME="ID" VALUE="<? echo $DATA[PRIKEY]; ?>">
 <INPUT TYPE=HIDDEN NAME="EVENT_DATE" VALUE="<? echo $DATA[EVENT_DATE]; ?>">
 
-<TABLE WIDTH="700" BORDER="0" ALIGN="CENTER" CELLPADDING="5" CELLSPACING="0" CLASS=text STYLE='border: 1px inset black;'>
+<TABLE  BORDER="0" ALIGN="left" CELLPADDING="5" CELLSPACING="0" CLASS=text STYLE='min-width:700px;border: 1px inset black;'>
   <TR>
     <TD WIDTH="50%" ALIGN="LEFT" VALIGN="TOP" BGCOLOR="#708090"><FONT COLOR="#FFFFFF"><B><? echo $lang["Apply To"]; ?></B>:</FONT>
 	  <SELECT NAME="APLLY_SAVE_ACTION" CLASS=text style='width: 250px; background: #EFEFEF;'>
         <OPTION VALUE="A" SELECTED><? echo $lang["THIS INDIVIDUAL EVENT ONLY"]; ?></OPTION>
 
-		<?
+		<?php
 
 		if ($recur_exist_flag > 0) {
 			echo "<OPTION VALUE=\"B\" SELECTED>".$lang["ALL OCCURRENCES OF THIS EVENT"]."</OPTION>\n";
@@ -99,15 +121,18 @@ function edit_recur(a,t) {
 
       </SELECT></TD>
     <TD WIDTH="50%" ALIGN=RIGHT BGCOLOR="#708090">
-	  <INPUT TYPE="SUBMIT" NAME="DELETEEVENTNOW" VALUE=" Delete Event " CLASS="FormLt1" STYLE='background: maroon; border: 1px solid black; color: white;'>
+	  <INPUT TYPE="hidden" NAME="DELETEEVENTNOW" id="DELETEEVENTNOW" VALUE="">
+	  <button onClick="delevensub();" TYPE="button" class="redButton"><span><span><?php echo lang("Delete Event"); ?></span></span></button>
+	  
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	  <INPUT TYPE="SUBMIT" VALUE=" Save Changes " CLASS="FormLt1" STYLE='background: darkgreen; border: 1px solid black; color: white;'>
+	  
+	<button onClick="addevensub();" TYPE="button" class="greenButton"><span><span><?php echo lang("Save Event"); ?></span></span></button>
 	 </TD>
   </TR>
   <TR ALIGN="RIGHT">
     <TD WIDTH="50%" ALIGN="LEFT" BGCOLOR="#EFEFEF"><? echo lang("Event Date"); ?>: <B><? echo $this_date; ?></B>
       &nbsp;&nbsp;</TD>     <TD WIDTH="50%" BGCOLOR="#EFEFEF"> <? echo lang("Start Time"); ?>:
-      <SELECT ID="START_TIME" NAME="START_TIME" CLASS="text" STYLE='width: 75px;'>
+      <SELECT ID="START_TIME" NAME="START_TIME" onChange="sText();" CLASS="text" STYLE='width: 95px;'>
 		<OPTION VALUE="" SELECTED>N/A</OPTION>
 
 		<?
@@ -127,7 +152,7 @@ function edit_recur(a,t) {
             return " selected";
          }
       }
-
+		$clock_flag = "am";
 		for ($z=1;$z<=24;$z++) {
 
 			$v = $z;
@@ -144,11 +169,11 @@ function edit_recur(a,t) {
 			if($DATA['EVENT_START'] == $v2.':00:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
 			echo "<OPTION VALUE=\"$v2:00\" STYLE='background: #EFEFEF; color: black;' $SEL>$d</OPTION>\n";
 			if($DATA['EVENT_START'] == $v2.':15:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
-			echo "<OPTION VALUE=\"$v2:15\" STYLE='color: #999999;'>$v:15 $clock_flag</OPTION>\n";
+			echo "<OPTION VALUE=\"$v2:15\" STYLE='color: #999999;' $SEL>$v:15 $clock_flag</OPTION>\n";
 			if($DATA['EVENT_START'] == $v2.':30:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
-			echo "<OPTION VALUE=\"$v2:30\" STYLE='color: #999999;'>$v:30 $clock_flag</OPTION>\n";
+			echo "<OPTION VALUE=\"$v2:30\" STYLE='color: #999999;' $SEL>$v:30 $clock_flag</OPTION>\n";
 			if($DATA['EVENT_START'] == $v2.':45:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
-			echo "<OPTION VALUE=\"$v2:45\" STYLE='color: #999999;'>$v:45 $clock_flag</OPTION>\n";
+			echo "<OPTION VALUE=\"$v2:45\" STYLE='color: #999999;' $SEL>$v:45 $clock_flag</OPTION>\n";
 			
 			
 
@@ -158,7 +183,8 @@ function edit_recur(a,t) {
 		?>
 
       </SELECT><? echo lang("End Time"); ?>:
-      <SELECT ID="END_TIME" NAME="END_TIME" CLASS="text" STYLE='width: 75px;'>
+      <SELECT ID="END_TIME" NAME="END_TIME" CLASS="text" STYLE='width: 95px;'>
+	  <OPTION VALUE="[none]">[none]</OPTION>
        <option value="" <?php echo isetm(""); ?>>N/A</option>
 
 		<?
@@ -178,11 +204,11 @@ function edit_recur(a,t) {
 			if($DATA['EVENT_END'] == $v2.':00:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
 			echo "<OPTION VALUE=\"$v2:00\" STYLE='background: #EFEFEF; color: black;' $SEL>$d</OPTION>\n";
 			if($DATA['EVENT_END'] == $v2.':15:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
-			echo "<OPTION VALUE=\"$v2:15\" STYLE='color: #999999;'>$v:15 $clock_flag</OPTION>\n";
+			echo "<OPTION VALUE=\"$v2:15\" STYLE='color: #999999;' $SEL>$v:15 $clock_flag</OPTION>\n";
 			if($DATA['EVENT_END'] == $v2.':30:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
-			echo "<OPTION VALUE=\"$v2:30\" STYLE='color: #999999;'>$v:30 $clock_flag</OPTION>\n";
+			echo "<OPTION VALUE=\"$v2:30\" STYLE='color: #999999;' $SEL>$v:30 $clock_flag</OPTION>\n";
 			if($DATA['EVENT_END'] == $v2.':45:00'){ $SEL = ' SELECTED'; } else { $SEL = ''; }
-			echo "<OPTION VALUE=\"$v2:45\" STYLE='color: #999999;'>$v:45 $clock_flag</OPTION>\n";
+			echo "<OPTION VALUE=\"$v2:45\" STYLE='color: #999999;' $SEL>$v:45 $clock_flag</OPTION>\n";
 
 		}
 
@@ -190,13 +216,54 @@ function edit_recur(a,t) {
       </SELECT> </TD>
   </TR>
   <TR BGCOLOR="#EFEFEF">
-    <TD COLSPAN="2"><? echo lang("Event Title"); ?>:<BR> <INPUT TYPE="text" NAME="EVENT_TITLE" CLASS="text" STYLE='width: 100%;' VALUE="<? echo $DATA[EVENT_TITLE]; ?>">
+    <TD COLSPAN="2"><? echo lang("Event Title"); ?>:<BR> <INPUT TYPE="text" NAME="EVENT_TITLE" id="EVENT_TITLE" CLASS="text" STYLE='width: 98%;' VALUE="<?php echo $DATA[EVENT_TITLE]; ?>">
     </TD>
   </TR>
+  
   <TR BGCOLOR="#EFEFEF">
-    <TD><? echo lang("Event Details (Description)"); ?>:<BR> <TEXTAREA NAME="EVENT_DETAILS" CLASS="text" STYLE="width: 100%; HEIGHT: 115px;" WRAP=VIRTUAL><? echo $DATA[EVENT_DETAILS]; ?></TEXTAREA>
+    <TD COLSPAN="2">
+      <?php echo lang('Link to Page or Product'); ?><BR> <SELECT onchange="document.getElementById('EVENT_CARTPAGE').selectedIndex=0;toggText();" NAME="EVENT_DETAILPAGE" CLASS="text" ID="EVENT_DETAILPAGE" STYLE='min-width: 140px; max-width:20%;'>
+        <OPTION VALUE="" SELECTED>Select Page</OPTION>
+		<?php
+$pagesel= ' ';
+		// Removed reliance upon "type" pages in V4.6 (Still works for upgrades)
+		$result = mysql_query("SELECT page_name, url_name, link FROM site_pages ORDER BY page_name");
+		while ($row = mysql_fetch_array($result)) {
+			if(!preg_match('/^(http)(s)?:/i', $row['link'])){
+				if(!is_numeric($DATA['EVENT_DETAILPAGE']) && $DATA['EVENT_DETAILPAGE']!='' && $DATA['EVENT_DETAILPAGE']==$row['page_name']){
+					$pagesel=' SELECTED';
+				} else {
+					$pagesel=' ';
+				}
+				echo "<OPTION VALUE=\"$row[page_name]\" ".$pagesel.">$row[page_name]</OPTION>\n";
+			}
+		}
+
+		?>
+      </SELECT>
+<?php
+echo " OR ";
+echo "<SELECT onchange=\"document.getElementById('EVENT_DETAILPAGE').selectedIndex=0;toggText();\" NAME=\"EVENT_CARTPAGE\" CLASS=\"text\" ID=\"EVENT_CARTPAGE\" STYLE='min-width: 140px; max-width:80%;'>\n";
+echo "        <OPTION VALUE=\"\" SELECTED>Select Cart Item</OPTION>\n";
+		// Removed reliance upon "type" pages in V4.6 (Still works for upgrades)
+		$results = mysql_query("SELECT PRIKEY,PROD_SKU,PROD_NAME FROM cart_products ORDER BY PROD_SKU, PROD_NAME");
+		while ($cart = mysql_fetch_array($results)) {
+			if(is_numeric($DATA['EVENT_DETAILPAGE']) && $DATA['EVENT_DETAILPAGE']!='' && $DATA['EVENT_DETAILPAGE']==$cart['PRIKEY']){
+				$pagesel=' SELECTED';
+			} else {
+				$pagesel=' ';
+			}			
+			echo "<OPTION VALUE=\"".$cart['PRIKEY']."\" ".$pagesel.">".$cart['PROD_SKU'].' - '.$cart['PROD_NAME']."</OPTION>\n";
+		}
+echo "      </SELECT>\n";
+?>
+<br/><p style="margin:10px 20px 0px 20px;">- OR -</p>
+</td></tr>
+  
+  <TR BGCOLOR="#EFEFEF">
+    <TD><? echo lang("Event Details (Description)"); ?>:<BR> <TEXTAREA NAME="EVENT_DETAILS" id="EVENT_DETAILS" CLASS="text" STYLE="width: 100%; HEIGHT: 115px;" WRAP=VIRTUAL><? echo $DATA[EVENT_DETAILS]; ?></TEXTAREA>
     </TD>
-    <TD ALIGN="LEFT" VALIGN="TOP"><? echo lang("Event Category"); ?>:<BR> <SELECT NAME="EVENT_CATEGORY" CLASS="text" STYLE='width: 200px;'>
+    <TD ALIGN="LEFT" VALIGN="TOP"><? echo lang("Event Category"); ?>:<BR> <SELECT NAME="EVENT_CATEGORY" id="EVENT_CATEGORY" CLASS="text" STYLE='width: 200px;'>
         <OPTION VALUE="ALL" SELECTED><? echo lang("All"); ?></OPTION>
         <?
 
@@ -230,28 +297,11 @@ function edit_recur(a,t) {
 
 		?>
       </SELECT>
-      <BR>
-      <BR>
-      <? echo lang("Detail Page:"); ?>:<BR> <SELECT NAME="EVENT_DETAILPAGE" CLASS="text" ID="EVENT_DETAILPAGE" STYLE='width: 200px;'>
-        <OPTION VALUE="" SELECTED>N/A</OPTION>
-		<?
-
-		// V4.6 Mod - No reliance upon page_type
-		$resulta = mysql_query("SELECT page_name, url_name, link FROM site_pages ORDER BY page_name");
-		while ($row = mysql_fetch_array($resulta)) {
-			if(!preg_match('/^http:/i', $row['link'])){
-			   if ( $row['page_name'] == $DATA['EVENT_DETAILPAGE'] ) {
-			      $sel = " selected";
-			   } else {
-			      $sel = "";
-			   }
-				echo "<OPTION VALUE=\"$row[page_name]\"".$sel.">$row[page_name]</OPTION>\n";
-			}
-		}
-
-		?>
-      </SELECT> </TD>
-  </TR>
+<?php
+      
+echo "      </TD>\n";
+echo "  </TR>\n";
+  ?>
   <TR>
     <TD BGCOLOR="#EFEFEF" COLSPAN=2>
      <? echo lang("When saving or changing this event, email a notice to the following email addresses"); ?>:
@@ -437,7 +487,3 @@ function edit_recur(a,t) {
 
 </TABLE>
 </FORM>
-
-
-
-

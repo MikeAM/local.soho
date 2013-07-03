@@ -1,13 +1,11 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
 ##############################################################################
 ## Soholaunch(R) Site Management Tool
-## Version 4.9
 ##
-## Author: 			Mike Johnston [mike.johnston@soholaunch.com]
 ## Homepage:	 	http://www.soholaunch.com
 ## Bug Reports: 	http://bugz.soholaunch.com
 ## Release Notes:	http://wiki.soholaunch.com
@@ -15,7 +13,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 ######################################################################################
 ## COPYRIGHT NOTICE
-## Copyright 1999-2007 Soholaunch.com, Inc. and Mike Johnston All Rights Reserved.
+## Copyright 1999-2012 Soholaunch.com, Inc.
 ##
 ## This script may be used and modified in accordance to the license
 ## agreement attached (license.txt) except where expressly noted within
@@ -41,17 +39,18 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ### BECAUSE THE VARIABLES WILL CONFLICT WITH EACH OTHER!
 ###
 
-error_reporting(0);
 session_start();
 
-# Used mainly by client-side display elements when building url paths for absolute links
-if ( !function_exists("isHttps") ) {
-	function isHttps() {
-	   if ( $_SERVER['https'] == "on" || $_SERVER['HTTPS'] == "on" ) {
-	      return "https://";
-	   } else {
-	      return "http://";
-	   }
+
+
+if(!function_exists('httpvar')){
+	function httpvar(){
+		global $_SERVER;
+		$httpvar='http://';
+		if(strtolower($_SERVER['HTTPS']) == 'on'){
+			$httpvar='https://';
+		}
+		return $httpvar;
 	}
 }
 
@@ -151,10 +150,14 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	   $lang_include = "sohoadmin/language/$language";
 	}
 
-	include ($lang_include);
+	include_once($lang_include);
 
-	session_register("lang");
-	session_register("language");
+	$_SESSION['language'] = $language;
+	foreach($lang as $lvar=>$lval){
+		$_SESSION['lang'][$lvar]=$lval;
+	}
+
+	
 
 	$_SESSION['getSpec'] = $getSpec;
 
@@ -243,7 +246,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	### DEFINE BASE STYLESHEET FOR ALL PAGES GENERATED TO UTILIZE. THIS
 	### CAN BE MODIFIED FOR TEMPLATES TO USE AS WELL ON A SITE BY SITE BASIS
 	########################################################################
-
+ 
 
 	$stylesheet = "\n\n<link rel=\"stylesheet\" href=\"runtime.css\" type=\"text/css\">\n";
 
@@ -348,21 +351,28 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	// making the word processor work properly in the page editor)
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	$pageRequest = urldecode($pageRequest);
-	$pageRequest = utf8_encode($pageRequest);
+	$pageRequest = fixEncoding($pageRequest);
 	$filename = "$cgi_bin/$pageRequest.con";
 
-	if (!file_exists("$filename")) {	//
+	# Check for db conent and .con file
+	$chkPageName = eregi_replace("_", " ", $pageRequest);
+	$qry = "SELECT prikey FROM site_pages WHERE page_name = '$chkPageName' AND content != ''";
+	$dbcontent_check_result = mysql_query($qry);
+	$dbcontent_check = mysql_num_rows($dbcontent_check_result);
+	
+	if ( !file_exists("$filename") && $dbcontent_check < 1 ) {	//
 	   # .con file not found - This page must have been called by the PriKey
 		//$result = mysql_query("SELECT * FROM site_pages WHERE link = '$pageRequest'");
-		$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages WHERE link = '$pageRequest'");
+		$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template, content FROM site_pages WHERE link = '$pageRequest'");
 		
 		$tmp = mysql_num_rows($result); // In case underscore is used when actually creating a page
 		if ($tmp <= 0) {
 			$newSqlQuery = $pageRequest;
-			$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages WHERE page_name = '$newSqlQuery'");
+			$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template, content FROM site_pages WHERE page_name = '$newSqlQuery'");
 		}
 
 		while ($row = mysql_fetch_array ($result)) {
+			$uniqueid=$row['prikey'];
 			$pageRequest = $row['page_name'];
 			$security_code = $row['username'];	// Does this page require Authentication?
 			$page_template = $row['password'];
@@ -374,7 +384,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 			$page_keywords = $tmppkw[0];
 			$page_temp = $row['template'];
 			$thisFreshPage = $row['link'];
-			
+			$page_content = $row['content'];
 		}
 
 		$pageRequest = eregi_replace(" ", "_", $pageRequest);
@@ -382,16 +392,16 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	} else {
 	   # .con file found - Normal page request
 		$thisPage = eregi_replace("_", " ", $pageRequest);
-		$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages WHERE page_name = '$thisPage'");
+		$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template, content FROM site_pages WHERE page_name = '$thisPage'");
 		$tmp = mysql_num_rows($result);	// In case underscore is used when actually creating a page
 
 		if ($tmp <= 0) {
 			$newSqlQuery = $pageRequest;
-			$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages WHERE page_name = '$newSqlQuery'");
+			$result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template, content FROM site_pages WHERE page_name = '$newSqlQuery'");
 		}
 
 		while ($row = mysql_fetch_array ($result)) {
-
+			$uniqueid=$row['prikey'];
 			$pageRequest = $row['page_name'];
 			$security_code = $row['username'];	// Does this page require Authentication?
 			$page_template = $row['password'];
@@ -403,7 +413,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 			$page_keywords = $tmppkw[0];
 			$page_temp = $row['template'];
 			$thisFreshPage = $row['link'];
-
+			$page_content = $row['content'];
 		}
 
 		$pageRequest = eregi_replace(" ", "_", $pageRequest);
@@ -419,30 +429,31 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 
 	// STEP 4: Determine if this page has been created by the user yet
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	if (!file_exists("$filename")) {	// Page content does not exist
-
-		$error = 404;
-		$content_line = "";
-		$numlines = 0;
-
-		// **********************************************************************
-		// At this point, we have found this page to not be present
-		// at all or "yet", so we do an under construction display for content.
-		// **********************************************************************
-
-		$errordisplay = "";
-	//	$errordisplay .= "\n<img src=\"sohoadmin/client_files/under_construction.gif\" width=\"273\" height=\"74\" border=\"0\">\n"; // Commented-out by request in v4.9 r32
-
-	} else {					// Page does exist; get the content HTML
-
-		$file = fopen("$filename", "r");
+	if ( $page_content != '' ) {
+		
+		$body = stripslashes($page_content);
+		$content_line = split("\n", $body); // We have just placed the content HTML into the $content_line Array.
+		$numlines = count($content_line);   // $numlines is now equal to the number of lines in the content HTML
+		
+	} else {
+		if (!file_exists("$filename")) {	// Page content does not exist
+			$error = 404;
+			$content_line = "";
+			$numlines = 0;
+			// **********************************************************************
+			// At this point, we have found this page to not be present
+			// at all or "yet", so we do an under construction display for content.
+			// **********************************************************************
+			$errordisplay = "";
+		//	$errordisplay .= "\n<img src=\"sohoadmin/client_files/under_construction.gif\" width=\"273\" height=\"74\" border=\"0\">\n"; // Commented-out by request in v4.9 r32
+	
+		} else {					// Page does exist; get the content HTML
+			$file = fopen("$filename", "r");
 			$body = fread($file,filesize($filename));
-		fclose($file);
-
-		$content_line = split("\n", $body);	// We have just placed the content HTML into the $content_line Array.
-		$numlines = count($content_line);	// $numlines is now equal to the number of lines in the content HTML
-
+			fclose($file);	
+			$content_line = split("\n", $body);	// We have just placed the content HTML into the $content_line Array.
+			$numlines = count($content_line);	// $numlines is now equal to the number of lines in the content HTML
+		}
 	}
 
 
@@ -517,7 +528,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	## END MOBILE BROWSER DETECTION ###
 	###################################
 	# Pull base template if no page-specific definition
-	if ( $page_temp != "" ) {
+	if ( $page_temp != "" && (file_exists('sohoadmin/program/modules/site_templates/pages/'.$page_temp.'/index.html') || file_exists('sohoadmin/program/modules/site_templates/pages/'.$page_temp.'/index.php'))) {
 
 	   # Pull page-specific template, as stored in site_pages table
 	   $filename = $page_temp;
@@ -525,7 +536,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	   $what_template = $page_temp;
 
 	} else {
-
+		$page_temp='';
 	   # Pull base site template from config file
 	   //$baseT = "sohoadmin/tmp_content/template.conf";
 	   # MM 2004-08-01: Create and select default template if none specified (fixes blank screen problem)
@@ -576,62 +587,94 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 		//echo "Template directory: [".$template_dir."]";
 		$CustomFlag = 0;
 
+		if($nft == 'blank_template'){
+			$nft = '../../../../../sohoadmin/includes/blank_template';
+		} elseif ($nft != "" && (file_exists($template_dir.$nft.'/index.html')|| file_exists($template_dir.$nft.'/index.php'))) {
+			$filename = $nft;
+		} else {
+			$nft='';	
+		}
+
 	   # Stick entire path to template folder in one var (vs. doing $template_dir.$filename over and over)
 	   $template_path = $template_dir.$filename;
-	   $template_path_full_url = isHttps().$_SESSION['docroot_url']."/".str_replace($_SESSION['docroot_path'], "", $template_path);
-	   $template_folder = $filename;
+	   $template_path_full_url = httpvar().$_SESSION['docroot_url']."/".str_replace($_SESSION['docroot_path'], "", $template_path);
+	   
+		if(!is_dir($template_dir."/".$filename)){
+			$filename = $default_template;	
+		}
+		$template_folder = $filename;
 
 		// Allow unique Home Page and News Article template files -- MM v4.7 RC1 & RC4, respectively
-		// =========================================================================================
-		$hpTemp = $template_dir.$filename."/home.html";
-		$nwTemp = $template_dir.$filename."/news.html";
+		// =========================================================================================		
+		$hpTemp = $template_dir.$filename."/home.php";
+		if(!file_exists($hpTemp)){
+			$hpTemp = $template_dir.$filename."/home.html";
+		}		
+		$nwTemp = $template_dir.$filename."/news.php";
+		if(!file_exists($nwTemp)){
+			$nwTemp = $template_dir.$filename."/news.html";
+		}
 
 		if ( $pr == "" && $_GET['mailpage'] != "" ) { $pr = $_GET['mailpage']; }
 
 		if ( file_exists($hpTemp) && ($pr == "" || $pr == startpage()) && ($nShow == "" && $bShow == "") ) {
 			$promoFile = "home";
-		   $layout_file = "home.html";
+			//$layout_file = "home.html";
+			$layout_file = basename($hpTemp);
 
 		} elseif ( file_exists($nwTemp) && ($nShow != "" || $bShow != "") ) {
 			$promoFile = "news";
-	      $layout_file = "news.html";
+	      	//$layout_file = "news.html";
+	      	$layout_file = basename($nwTemp);
 
 		} else {
-			$promoFile = "index";
-	      $layout_file = "index.html";
+			if(file_exists($template_dir.$filename."/index.php")){
+				$promoFile = "index";
+				$layout_file = "index.php";
+			} else {
+				$promoFile = "index";
+				$layout_file = "index.html";
+			}
 		}
 
 		$template = $filename."/".$layout_file;
-
+ 
 		// Let individual templates use their own stylesheet -- MM v4.7 RC1
 		// =======================================================================
-		if ($nft != "") {
-			if($nft == 'blank_template'){
-				$nft = '../../../../../sohoadmin/includes/blank_template';
-			}
-			$filename = $nft;
-		}
+//		if ($nft != "") {
+//			if($nft == 'blank_template'){
+//				$nft = '../../../../../sohoadmin/includes/blank_template';
+//			}
+//			$filename = $nft;
+//		}
+		$customstylesheet = '';
 		$cStyle = $template_dir.$filename."/custom.css";
-		if ( file_exists($cStyle) ) { $stylesheet = "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$cStyle."\" />\n"; }
+		if ( file_exists($cStyle) ) { $stylesheet=''; $customstylesheet = "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$cStyle."\" />\n"; }
 
 		# Allow for a separte home.css for the start (home) page
 		$home_css = $template_dir.$filename."/home.css";
 		if ( file_exists($home_css) && ($pr == "" || $pr == startpage()) && ($nShow == "" || $bShow == "") ) {
-		   $stylesheet = "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$home_css."\" />\n";
+			$stylesheet=''; $customstylesheet = "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$home_css."\" />\n";
 		}
 
 		# news.css
 		$news_css = $template_dir.$filename."/news.css";
 		if ( file_exists($news_css) && ($_REQUEST['nShow'] != "" || $_REQUEST['bShow'] != "") ) {
-		   $stylesheet = "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$news_css."\" />\n";
+			$stylesheet=''; $customstylesheet = "<link rel=\"stylesheet\" type=\"text/css\" href=\"".$news_css."\" />\n";
 		}
 
 	   //$stylesheet .= "<link href=\"sohoadmin/program/includes/display_elements/window/default.css\" rel=\"stylesheet\" type=\"text/css\" />\n";
 	   //$stylesheet .= "<link href=\"sohoadmin/program/includes/display_elements/window/onscreen_edit.css\" rel=\"stylesheet\" type=\"text/css\" />\n";
-
+		
 
 		// Let individual templates use their own pgm-auto_menu.php -- MM v4.7 RC4
 		// ==============================================================================
+		
+		$fMenu = $template_dir.$filename."/pgm-flyout_menu.php";
+		$customfly = 'no';
+		if ( file_exists($fMenu) ) { $flyoutmenu = $fMenu; $customfly='yes'; } else { $flyoutmenu = "sohoadmin/client_files/pgm-flyout_menu.php"; } // Use normal auto_menu if no custom one is found
+
+		
 		$cMenu = $template_dir.$filename."/pgm-auto_menu.php";
 		$custommenu = 'no';
 		if ( file_exists($cMenu) ) { $automenu = $cMenu; $custommenu='yes'; } else { $automenu = "sohoadmin/client_files/pgm-auto_menu.php"; } // Use normal auto_menu if no custom one is found
@@ -672,7 +715,11 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 
 	// Newsletter Force Template (Generate Newsletter HTML Code)
 	if ($nft != "") {
-		$filename = "sohoadmin/program/modules/site_templates/pages/".$nft."/index.html";
+		$filename = "sohoadmin/program/modules/site_templates/pages/".$nft."/index.php";
+		if(!file_exists($filename)){
+			$filename = "sohoadmin/program/modules/site_templates/pages/".$nft."/index.html";
+		}
+		
 		$template_dir = "sohoadmin/program/modules/site_templates/pages/";
 		$daTemp = $nft;
 		$single_template_change = 1;
@@ -680,21 +727,77 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 
 	// Read actual template HTML into memory
 	//echo "this template (".$filename.")<br>";
-	$file = fopen("$filename", "r");
+	
+	if(array_pop(explode('.',basename($filename))) == 'php'){
+		$curdirr = getcwd();
+		ob_start();
+		chdir(str_replace(basename($filename),'',$filename));
+		include(basename($filename));
+		$tbody = ob_get_contents();
+		ob_end_clean();
+		chdir($curdirr);
+ 
+	} else {
+		$file = fopen("$filename", "r");
 		$tbody = fread($file,filesize($filename));
-	fclose($file);
+		fclose($file);
+	}
 
+	if(preg_match('/#VFLYOUTMENU#/i',$tbody)){
+		$vflyoutmenu=1;
+	}
+
+	if(preg_match('/(bootstrap|bootstrap-min)\.css/i',$tbody)){
+		$stylesheet = "<link href=\"sohoadmin/client_files/bootstrap-inc.css\" rel=\"stylesheet\" type=\"text/css\" />\n".$stylesheet;
+	} elseif(preg_match('/foundation\.css/i',$tbody)) {
+		$stylesheet = "<link href=\"sohoadmin/client_files/foundation-inc.css\" rel=\"stylesheet\" type=\"text/css\" />\n".$stylesheet;
+	} else {
+		if(preg_match('/#VFLYOUTMENU#/i',$tbody)){
+			$stylesheet = "<link href=\"sohoadmin/client_files/flyoutmenu-vert.css\" rel=\"stylesheet\" type=\"text/css\" />\n".$stylesheet;
+		}
+	
+		if(preg_match('/#FLYOUTMENU#/i',$tbody)){
+			$stylesheet = "<link href=\"sohoadmin/client_files/flyoutmenu.css\" rel=\"stylesheet\" type=\"text/css\" />\n".$stylesheet;
+		}
+	}
+	$stylesheet = "<link href=\"sohoadmin/client_files/default_styles.css\" rel=\"stylesheet\" type=\"text/css\" />\n".$stylesheet;
 	//echo "This is the template!(<br>".$tbody."<br>)";
 	//echo "<textarea name=\"textarea\" style=\" width: 600; height: 500;\">".$tbody."</textarea><br><br>\n";
 
 	// Make Content Area splitable by process routine later in pgm
 	$tbody = eregi_replace("#CONTENT#", "\n#CONTENT#\n", $tbody);
+	
+	// #### Template BOXES
+	if(substr_count($tbody, '#BOX')>0){
+		$getdefaultboxes=mysql_query("select sidebar_default.box_number, sidebar_default.pageid, sidebar_boxes.pageid, sidebar_boxes.box_number, sidebar_boxes.boxcontent from sidebar_default inner join sidebar_boxes on sidebar_boxes.pageid=sidebar_default.pageid where sidebar_default.box_number!=''");
+		while($gdef_boxes_ar=mysql_fetch_assoc($getdefaultboxes)){
+			$def_boxez[$gdef_boxes_ar['box_number']]=$gdef_boxes_ar['boxcontent'];
+			${'box'.$gdef_boxes_ar['box_number']}=$gdef_boxes_ar['boxcontent'];
+		}
+		$find_sidebar_mixesq=mysql_query("select pageid, box_number, copy_box, boxcontent from sidebar_boxes where boxcontent!=''");
+		$find_sidebar_mix_ar = array();
+		while($find_sidebar_mixes=mysql_fetch_assoc($find_sidebar_mixesq)){
+			$find_sidebar_mix_ar[$find_sidebar_mixes['pageid'].'~~'.$find_sidebar_mixes['box_number']]=$find_sidebar_mixes['boxcontent'];
+		}
+		//$def_boxez
+		$getboxesq=mysql_query("select * from sidebar_boxes where pageid='".$uniqueid."'");
+		while($getboxes_ar = mysql_fetch_assoc($getboxesq)){
+			$boxnum='box'.$getboxes_ar['box_number'];
+			${$boxnum}=$getboxes_ar['boxcontent'];
+			if($getboxes_ar['copy_box']!=''){
+				${$boxnum}=$find_sidebar_mix_ar[$getboxes_ar['copy_box']];
+			}
+		}
+	}
 	$template_line = split("\n", $tbody);
 	$numtlines = count($template_line);
+
+	//if ( eregi("#BOX1#", $template_line[$xedusvar]) ) {
 
 	// Kill body properties in case we re-write for calendar's, etc.
 
 	for ($xedusvar=0;$xedusvar<=$numtlines;$xedusvar++) {
+		
 		if (eregi("<body", $template_line[$xedusvar])) {
 			$bodytag = eregi("<body(.*)>", $template_line[$xedusvar], $out);
 			$bodytag = "<body " . $out[1] . ">";
@@ -824,7 +927,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	// ***************************************************************************************
 
 	eval(hook("pgm-realtime_builder.php:before-pound-var-replacements"));
-	
+
 	##############################################################################
 	### DEFINE USE OF AUTO-MENU SYSTEM // IF NOT USING, DISREGARD, ELSE INCLUDE
 	### THE MENU CREATION ROUTINE AND BUILD DYNAMIC MENU SYSTEM.  THIS IS AN
@@ -838,6 +941,553 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 	/// ------------------------------------------MM
 	### Added checks for new template variables to menu check loop
 	##############################################################################
+	if(!function_exists('pageEditorContent')){
+		function pageEditorContent($pgcontent){
+			global $_SESSION;
+			global $_GET;
+			global $_REQUEST;
+			global $_POST;
+			global $shopping_style_include;
+			global $pr;
+			global $doc_root;
+			global $docroot_path;
+			global $template_folder;
+			$globalprefObj = new userdata('global');
+			
+
+			
+			if (eregi("<!-- ##PHPDATE## -->", $pgcontent)) {
+				$today = date("F j, Y");
+				$pgcontent = eregi_replace("<!-- ##PHPDATE## -->", '<span class="date-stamp">'.$today.'</span>', $pgcontent);
+			}
+		
+			if (eregi("#DATE#", $pgcontent)) {
+				$today = date("F j, Y");
+				$pgcontent = eregi_replace("#DATE#", "$today", $pgcontent);
+			}
+		
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR HIT COUNTER CALCULATION AND DISPLAY
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			if (eregi("##COUNTER##", $pgcontent)) {
+				$global_hit_count = $globalprefObj->get('global_hit_count');
+		
+//				# pull from file
+//				$filename = $_SESSION['docroot_path']."/sohoadmin/filebin/hitcounter.txt";
+//				if ( file_exists($filename) ) {
+//					if (file_exists("$filename")) {
+//						$file = fopen("$filename", "r");
+//						$hitcount = fread($file,filesize($filename));
+//						fclose($file);
+//						$hitcount = eregi_replace("\n", "", $hitcount);
+//						$hitcount = chop($hitcount);
+//						$hitcount = ltrim($hitcount);
+//						$hitcount = rtrim($hitcount);
+//					} else {
+//						$hitcount = "1";
+//					}
+//				}
+				if($global_hit_count!=''){
+					$hitcount = "1";
+				}
+				if ( $hitcount > $global_hit_count ) {
+					$globalprefObj->set('global_hit_count', $hitcount);
+					$global_hit_count = $globalprefObj->get('global_hit_count');
+					if ( $global_hit_count == $hitcount ) {
+						//@unlink($filename);
+					}
+				}
+				$hitcount = $global_hit_count;
+					
+				# Build Graphical representation of counter number for display
+				$hit_count_graphic = "";
+				$tmp = strlen($hitcount);	// Get number of digits in number
+				for ($hc_cnt=0;$hc_cnt<=$tmp;$hc_cnt++) {
+					$hc_number = substr($hitcount, $hc_cnt, 1);
+					if ($hc_number != "") { $hit_count_graphic .= "<IMG SRC=\"sohoadmin/program/modules/page_editor/client/".$hc_number.".gif\" width=15 height=20 border=0 align=absmiddle vspace=0 hspace=0 border=0>"; }
+				}
+		
+				$pgcontent = "<TABLE BORDER=0 CELLPADDING=2 CELLSPACING=0 ALIGN=CENTER><TR><TD ALIGN=CENTER VALIGN=MIDDLE>\n";
+				$pgcontent .= "$hit_count_graphic\n";
+				$pgcontent .= "</TD></TR></TABLE>\n";
+		
+				# Now incriment the hit counter
+				$hitcount++;
+//				if ( file_exists($filename) ) {
+//					$file = fopen("$filename", "w");
+//					fwrite($file, "$hitcount\n");
+//					fclose($file);
+//				}
+				$globalprefObj->set('global_hit_count', $hitcount);
+			}
+
+			if (eregi("##NEWSFEED-facebook", $pgcontent)) {
+
+				$this_mod = str_replace("<!-- ##NEWSFEED-facebook;", "", $pgcontent);
+				$this_mod = str_replace("## -->", "", $this_mod);
+				$fb_options=explode('~',str_replace(' ','',str_replace('	','',$this_mod)));
+				//fb_post_limit fb_show_follow_us fb_hide_author fb_include_pictures
+				$fb_facebookid=$fb_options['0'];
+				$fb_post_limit = $fb_options['1'];
+				$fb_show_follow_us = $fb_options['2'];
+				$fb_hide_author = $fb_options['3'];
+				$fb_include_pictures = $fb_options['4'];
+						//echo $fb_facebookid.$fb_facebookid.$fb_facebookid."<br/>".$fb_options['3'].$fb_options['3'].$fb_options['3'];
+				ob_start();
+					include('sohoadmin/client_files/facebook_wall_feed.php');
+					$pgcontent = ob_get_contents();
+				ob_end_clean();
+			}
+			
+			if (eregi("##NEWSFEED-twitter", $pgcontent)) {
+				$this_mod = str_replace("<!-- ##NEWSFEED-twitter;", "", $pgcontent);
+				$this_mod = str_replace("## -->", "", $this_mod);
+				$tw_options=explode('~',str_replace(' ','',str_replace('	','',$this_mod)));
+				$twitter_id=$tw_options['0'];
+				$tw_post_limit = $tw_options['1'];
+				$tw_show_follow_us = $tw_options['2'];
+				ob_start();
+					include('sohoadmin/client_files/twitter_wall_feed.php');
+					$pgcontent = ob_get_contents();
+				ob_end_clean();
+			}
+			
+			if (eregi("##NEWSFEED-blog", $pgcontent)) {
+				$this_modz = str_replace("<!-- ##NEWSFEED-blog;", "", $pgcontent);
+				$this_modz = str_replace("## -->", "", $this_modz);
+				
+				$sohoblog_options=explode('~',str_replace(' ','',str_replace('	','',$this_modz)));
+				//echo testArray($sohoblog_options); 
+				$sohoblog_cat=$sohoblog_options['0'];
+				
+				$sohoblog_post_limit = $sohoblog_options['1'];
+				$sohoblog_show_timestamp = $sohoblog_options['2'];
+				$sohoblog_show_readmore = $sohoblog_options['3'];
+				$sohoblog_show_author = $sohoblog_options['4'];
+				ob_start();
+					include('sohoadmin/client_files/blog_wall_feed.php');
+					$pgcontent = ob_get_contents();
+				ob_end_clean();
+			}
+		
+		
+		
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR REALTIME CALENDAR MODULE
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			if (eregi("##CALENDAR", $pgcontent)) {
+		
+				$this_mod = str_replace("<!-- ##", "", $pgcontent);
+				$this_mod = str_replace("## -->", "", $this_mod);
+		
+				if (eregi(";", $this_mod)) {
+					$tmp = split(";", $this_mod);
+					$this_mod = $tmp[0];
+					$CHANGE_CAT = $tmp[1];
+				}
+		
+				$this_mod = ltrim($this_mod);
+				$this_mod = str_replace("\n",'',str_replace(' ','',rtrim($this_mod)));
+				$this_mod = str_replace('<!--ENDCALENDARMODULEINSERT-->','',$this_mod);
+				$this_mod = str_replace('<!--CALENDARMODULEINSERT-->','',$this_mod);
+		
+				if ($this_mod == "CALENDAR-WEEKLY-VIEW") {
+					$filename = "sohoadmin/client_files/pgm-cal-weekview.php";
+				}
+		
+				if ($this_mod == "CALENDAR-ONEMONTH-VIEW") {
+					$filename = "sohoadmin/client_files/pgm-cal-monthview.php";
+				}
+		
+				if ($this_mod == "CALENDAR-SYSTEM") {
+					$filename = "sohoadmin/client_files/pgm-cal-system.php";
+				}
+		
+				if ($this_mod == "CALENDAR-SINGLE_CAT_SYSTEM") {
+					$hide_drop_down = 1;
+					$filename = "sohoadmin/client_files/pgm-cal-system.php";
+				}
+		
+				ob_start();
+					include("$filename");
+					$pgcontent = ob_get_contents();
+				ob_end_clean();
+		
+			}
+		
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// Translate all submit buttons into proper style class
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			$pgcontent = eregi_replace("input type=submit", "input type=submit class=FormLt1", $pgcontent);
+			$pgcontent = eregi_replace("input type=\"submit\"", "input type=submit class=FormLt1", $pgcontent);
+		
+		
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR SINGLE PRODUCT SKU PROMOTION (REAL-TIME UPDATE) Bugzilla #21
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			if (eregi("<!--##SINGLESKU;", $pgcontent)) {
+				$tmp = eregi("<!--##SINGLESKU;(.*)##-->", $pgcontent, $out);
+				$sku_number = $out[1];
+		
+				include("sohoadmin/client_files/pgm-single_sku.php");	// Added 2003-09-09				
+				$pgcontent = $SINGLE_SKU_PROMO_HTML;
+		
+			} // End Sku Promotion
+		
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR PHOTO ALBUM
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			if (eregi("##PHOTO;", $pgcontent)) {
+		
+				$temp = eregi("<!-- ##PHOTO;(.*)## -->", $pgcontent, $out);
+				$THIS_ID = $out[1];
+		
+				$filename = "sohoadmin/client_files/pgm-photo_album.php";
+		 
+		
+				ob_start();
+				include("$filename");
+				$output = ob_get_contents();
+				ob_end_clean();
+		
+				$pgcontent = "\n\n<!-- ~~~~~~~ PHOTO ALBUM OUTPUT ~~~~~~ -->\n\n" . $output . "\n\n<!-- ~~~~~~~~~~~~ END PHOTO ALBUM OUTPUT ~~~~~~~~~~~~ -->\n\n";
+			}
+			if (eregi("##SLIDER;", $pgcontent)) {
+				
+				$temp = eregi("<!-- ##SLIDER;(.*)## -->", $pgcontent, $out);
+				$THIS_ID = $out[1];
+		
+				$filename = "sohoadmin/client_files/pgm-photo_slider.php";
+		 
+		
+				ob_start();
+				include("$filename");
+				$output = ob_get_contents();
+				ob_end_clean();
+		
+				$pgcontent = "\n\n<!-- ~~~~~~~ PHOTO SLIDER OUTPUT ~~~~~~ -->\n\n" . $output . "\n\n<!-- ~~~~~~~~~~~~ END PHOTO SLIDER OUTPUT ~~~~~~~~~~~~ -->\n\n";
+			}
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR PHP INCLUDE SCRIPT
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			if (eregi("##MIKEINC;", $pgcontent)) {
+		
+				$temp = eregi("<!-- ##MIKEINC;(.*)## -->", $pgcontent, $out);
+				$INCLUDE_FILE = $out[1];
+		
+				// For testing
+				// echo "<font style=\"font-family: arial; font-size: 11px; color: #d70000;\">This file: <b>$INCLUDE_FILE</b></font>\n"; // TAKE THIS LINE OUT BEFORE WRAPPING!!!
+		
+				$filename = "media/$INCLUDE_FILE";
+		
+				// Inserted for V5.  Makes it easier to add new objects to object bar in editor
+				if (eregi("pgm-", $INCLUDE_FILE)) { $filename = "$INCLUDE_FILE"; }
+		
+				ob_start();
+				include("$filename");
+				$output = ob_get_contents();
+				ob_end_clean();
+		
+				$pgcontent = "\n\n<!-- ~~~~~~~ CUSTOM PHP OUTPUT ~~~~~~ -->\n\n" . $output . "\n\n<!-- ~~~~~~~~~~~~ END CUSTOM PHP OUTPUT ~~~~~~~~~~~~ -->\n\n";
+			}
+		
+		
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR REAL-TIME FAQ READER
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			if (eregi("##FAQ", $pgcontent)) {
+				$tmp = eregi("<!-- ##FAQ;(.*)## -->", $pgcontent, $out);
+				$FAQ_CATEGORY_NAME = $out[1];
+		
+				$filename = 'sohoadmin/client_files/pgm-faq_display.php';
+				ob_start();
+					include("$filename");
+					$pgcontent = ob_get_contents();
+				ob_end_clean();
+		
+			} // End Blog Display
+
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR VIDEOS
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			if ( eregi("##video", $pgcontent)) {
+				$tmp = preg_match("/##video;([\!\w\d\s:\/\?=.-]+)[;]?([\d]+)?[;]?([\d]+)?/i", $pgcontent, $out);
+				$video_filename = $out[1];
+				$video_width = $out[2];
+				$video_height = $out[3];
+				
+				if ( $video_filename != '' ) {
+					ob_start();
+						include('sohoadmin/client_files/pgm-video.php');
+						$pgcontent .= ob_get_contents();
+					ob_end_clean();
+				}
+			}
+					
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR AUDIO
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			if ( eregi("##audio", $pgcontent)) {
+				$tmp = preg_match("/##audio;([\!\w\d\s:\/\?=.-]+)[;]?([\d]+)?[;]?([\d]+)?/i", $pgcontent, $out);
+				$audio_filename = $out[1];
+				
+				if ( $audio_filename != '' ) {
+					ob_start();
+						include('sohoadmin/client_files/pgm-audio.php');
+						$pgcontent .= ob_get_contents();
+					ob_end_clean();
+				}
+			}
+			
+
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// INSERT CODE FOR REAL-TIME BLOG READER
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			if ( eregi("##BLOG", $pgcontent)) {
+				$tmp = eregi("<!-- ##BLOG;(.*)## -->", $pgcontent, $out);
+				$BLOG_CATEGORY_NAME = $out[1];
+				
+				$filename = $blog_display_file;
+				ob_start();
+					include('sohoadmin/client_files/pgm-blog_display.php');
+					$pgcontent = ob_get_contents();
+				ob_end_clean();
+		
+			} 
+			
+		
+			if(eregi("##SOC_", $pgcontent) ) {
+				if(eregi("##SOC_SHOWCOUNT##", $pgcontent)){
+					$show_social_counter = 1;
+					$pgcontent = str_replace('##SOC_SHOWCOUNT##', '', $pgcontent);	
+				} else {
+					$show_social_counter = 0;
+				}
+				if($show_social_counter == 1){
+					$pgcontent = str_replace('##SOC_FACEBOOK##', "&nbsp;"."<iframe src=\"http://www.facebook.com/plugins/like.php?href=http%3A%2F%2F".$this_ip."%2F".$pr.".php&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21\" scrolling=\"no\" frameborder=\"0\" style=\"display:inline;border:none; overflow:hidden; width:90px; height:21px;\" allowTransparency=\"true\"></iframe>"."&nbsp;\n", $pgcontent);	
+				} else {
+					$pgcontent = str_replace('##SOC_FACEBOOK##', "&nbsp;".'<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2F'.$this_ip.'%2F'.$pr.'.php&amp;send=false&amp;layout=button_count&amp;width=46&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21" scrolling="no" frameborder="0" style="display:inline;border:none; overflow:hidden; width:46px; height:21px;" allowTransparency="true"></iframe>'."&nbsp;\n", $pgcontent);	
+				}
+				if ( eregi("##SOC_TWITTER", $pgcontent) ) {
+				if($twitinc == ''){	   					
+//						$template_header = preg_replace('/\<\/head>/i', '<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>'."\n</head>", $template_header);
+						$twitinc = 1;
+					}
+					if($show_social_counter == 1){
+						$pgcontent = str_replace('##SOC_TWITTER##', "&nbsp;<a style=\"display:inline;\" href=\"http://twitter.com/share\" class=\"twitter-share-button\">Tweet</a>&nbsp;", $pgcontent);
+					} else {
+						$pgcontent = str_replace('##SOC_TWITTER##', "&nbsp;<a style=\"display:inline;\" href=\"http://twitter.com/share\" data-count=\"none\" class=\"twitter-share-button\">Tweet</a>&nbsp;", $pgcontent);	
+					}
+				}
+				if ( eregi("##SOC_GOOGLE", $pgcontent) ) {
+					if($googinc == ''){
+//						$template_header = preg_replace('/\<\/head>/i', '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>'."\n</head>", $template_header);
+						$googinc = 1;
+					}
+					if($show_social_counter == 1){
+						$pgcontent = str_replace('##SOC_GOOGLE##', "&nbsp;<g:plusone size=\"medium\" ></g:plusone>&nbsp;\n", $pgcontent);	
+					} else {
+						$pgcontent = str_replace('##SOC_GOOGLE##', "&nbsp;<g:plusone size=\"medium\" count=\"false\"></g:plusone>&nbsp;\n", $pgcontent);		
+					}
+				}
+				if($stumbleinc == ''){
+					$stumbleinc = 1;
+					if($show_social_counter == 1){
+						$pgcontent = str_replace('##SOC_STUMBLE##', "\n&nbsp;".'<script src="http://www.stumbleupon.com/hostedbadge.php?s=4"></script>'."&nbsp;\n", $pgcontent);	
+					} else {
+						$pgcontent = str_replace('##SOC_STUMBLE##', "\n&nbsp;".'<script src="http://www.stumbleupon.com/hostedbadge.php?s=2"></script>'."&nbsp;\n", $pgcontent);	
+					}	   					
+		
+				}
+				
+			} // End Social Media Display
+		
+			# SitePal
+			//include($_SESSION['docroot_path']."/sohoadmin/program/modules/sitepal/page_editor/realtime_builder-html_display.php");
+		 
+		
+		       /*---------------------------------------------------------------------------------------------------------*
+		        ___
+		       | __|___  _ _  _ __
+		       | _|/ _ \| '_|| '  \
+		       |_| \___/|_|  |_|_|_|
+		
+		       # Pull web form html and add hidden fields
+		       /*---------------------------------------------------------------------------------------------------------*/
+		       if ( eregi("##CONTACTFORM", $pgcontent) ) {
+		    		$tmp = eregi("<!-- ##CONTACTFORM;(.*)## -->", $pgcontent, $out);
+		    		$ctemp = $out[1];
+		    		$mtemp = split(";", $ctemp);
+		
+		    		$send_to = $mtemp[0];
+		    		$database_file = $mtemp[1];
+		    		$formfile = $mtemp[2];
+		
+		          # Rebuild path to get around missing backslash issue (i.e., from $formfile path) on Windows servers causing form to not appear
+		          if ( eregi("WIN|IIS", $_SERVER['SERVER_SOFTWARE']) ) {
+		             $badpath = stripslashes($_SESSION['docroot_path']);
+		             $formfile = eregi_replace($badpath, $_SESSION['docroot_path']."/", $formfile);
+		          }
+		 
+		    		// =====================================================
+		    		// === COMPENSATE FOR NEW "UNHIDDEN" DATA
+		    		// =====================================================
+		    		$rFrom = $mtemp[3];
+		    		$rSubject = $mtemp[4];
+		    		$rFile = $mtemp[5];
+		    		$rClose = $mtemp[6];
+		    		$rPageGo = $mtemp[7];
+		    		// =====================================================
+		
+		    		$pgcontent = "\n\n<!-- \n\n";
+		    		$pgcontent .= "###########################################################\n";
+		    		$pgcontent .= "### ADD FORM NOW\n";
+		    		$pgcontent .= "###########################################################\n\n";
+		    		$pgcontent .= "--> \n\n<DIV ALIGN=CENTER>\n\n";
+		
+		    		$filename = $formfile;	// Modified for IIS and Version 4.5
+		
+		    		$file = fopen($filename, "r");
+				$thisCode = fread($file,filesize($filename));
+		    		fclose($file);
+		
+		    		$formlines = split("\n", $thisCode);
+		    		$nFLines = count($formlines);
+		
+		    		$startup = 0;
+		
+		    		# Generate unique token (Mantis 414)
+		    		$unique_token = md5(time());
+		
+		    		for ($j=0;$j<=$nFLines;$j++) {
+		
+		    			$formlines[$j] = ltrim($formlines[$j]);  // Make form spacing even on final HTML output
+		    			$formlines[$j] = rtrim($formlines[$j]);  // Make form spacing even on final HTML output
+		
+		    			if (eregi("<form ", $formlines[$j])) {
+		    				$startup = 1;
+		    				$formlines[$j] .= "\n\n          <input type=hidden name=EMAILTO value=\"$send_to\">\n";
+		    				$formlines[$j] .= "          <input type=hidden name=PAGEREQUEST value=\"".$pr."\">\n";
+		    				$formlines[$j] .= "          <input type=hidden name=DATABASE value=\"$database_file\">\n";
+		
+		    				if ($rClose == "yes") {
+		    					$formlines[$j] .= "          <input type=hidden name=SELFCLOSE value=\"yes\">\n";
+		    				}
+		
+		    				$formlines[$j] .= "          <input type=hidden name=PAGEGO value=\"$rPageGo\">\n";
+		    				$formlines[$j] .= "          <input type=hidden name=RESPONSEFROM value=\"$rFrom\">\n";
+		    				$formlines[$j] .= "          <input type=hidden name=SUBJECTLINE value=\"$rSubject\">\n";
+		    				$formlines[$j] .= "          <input type=hidden name=RESPONSEFILE value=\"$rFile\">\n";
+		    				$formlines[$j] .= "          <input type=hidden name=CUST_FILENAME value=\"$filename\">\n\n";
+		    				$formlines[$j] .= "          <input type=hidden name=\"UNIQUETOKEN\" value=\"".$unique_token."\">\n\n";
+		
+		    			}
+		
+		    			$formlines[$j] = "          " . $formlines[$j];	// final HTML output is indented 10 spaces for looks
+		
+		    			// *****************************************************************************************
+		    			// For legacy code, forms where submitted to "email.php3" -- now for open source release,
+		    			// all client side runtime scripts have been renamed for clarity when viewing via FTP, etc.
+		    			// So, let's make sure that the legacy forms will conform to the new naming conventions.
+		    			// ******************************************************************************************
+		    			$formlines[$j] = str_replace("email.php3", "pgm-form_submit.php", $formlines[$j]);
+		
+		    			if ($startup == 1) {
+		    				$pgcontent .= $formlines[$j]."\n";
+		    			}
+		
+		    			if (eregi("</form>", $formlines[$j])) {
+		    				$startup = 0;
+		    			}
+		
+		    		}
+		
+		    		$pgcontent .= "\n\n</DIV>\n\n\n";
+		
+		          # Mantis 412
+		          $pgcontent .= "<!---#UNIQUETOKEN~~".$unique_token."~~#--->\n\n";
+		
+		    		$pgcontent .= "<!--- end form ---> \n\n";
+		       } // End if eregi(CONTACTFORM)
+		
+
+			$sohocontent_pre=$sohocontent;
+			$content_line_pre=$content_line;
+			$sohocontent='0';
+			unset($content_line);
+			$content_line[$sohocontent]=$pgcontent;
+			eval(hook("rtb_contentloop", basename(__FILE__)));
+			$pgcontent = $content_line[$sohocontent];
+			$sohocontent=$sohocontent_pre;
+			$content_line=$content_line_pre;	
+		
+			if (eregi("##SUPERSEARCH", $pgcontent)) {
+			 # Get scene number
+			 $tmp = eregi("<!-- ##SUPERSEARCH## -->", $pgcontent, $out);
+			 ob_start();
+			 include("sohoadmin/program/modules/super_search/search_box_include.php");
+			 $pgcontent = ob_get_contents();
+			 ob_end_clean();
+			
+			
+			}
+			
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+				// INSERT CODE FOR SECURE LOGIN FEATURE
+				// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			
+			 if ( $_GET['logout'] == 'yes' ) {
+			  $ownerArr = array('OWNER_EMAIL', 'OWNER_NAME', 'GROUPS', 'MD5CODE');
+			  foreach ( $ownerArr as $key ) {
+			   $_SESSION[$key] = NULL;
+			   unset(${$key});
+			   ${$key} = "";
+			  }
+			 }
+			
+			if (eregi("<!-- ##SECURELOGIN;", $pgcontent)) {
+				$tmp = eregi("<!-- ##SECURELOGIN;(.*)## -->", $pgcontent, $out);
+				$BUTTON_NAME = $out[1];
+				
+				if ($OWNER_EMAIL != "" && $OWNER_NAME != "") {
+					$pgcontent = "\n\n<!-- Secure Authentication Login -->\n\n<div align=center>\n";
+					$pgcontent .= "<form method=\"post\" action=\"pgm-secure_manage.php\">\n";
+					$pgcontent .= "<div >\n";
+					$pgcontent .= "<input type=submit value=\"".lang("Manage Account")."\" STYLE=\"cursor: hand; font-family: Arial; font-size: 8pt;\"><BR>\n";
+					$pgcontent .= "<font size=1 >&nbsp;<BR><B>".lang("Welcome")." ".$OWNER_NAME."!</font><br>\n";
+					$pgcontent .= "<a href=\"$REDIRECT_PAGE\">".lang("Member Area")."</a>\n";
+					$pgcontent .= "<p style=\"text-align: right;\"><a href=\"".$_SERVER['PHP_SELF']."?pr=".$pr."&logout=yes\">".lang("Log-out")."</a></p>\n";
+					$pgcontent .= "</div>\n</form>\n</div>\n\n\n";
+				} else {
+					$pgcontent = "\n\n<!-- Secure Authentication Login -->\n\n<div align=center>\n";
+					$pgcontent .= "<form method=\"post\" action=\"pgm-secure_login.php\">\n";
+					$pgcontent .= "<div>\n";
+					$pgcontent .= "<input type=submit value=\"$BUTTON_NAME\" STYLE=\"cursor: hand; font-family: Arial; font-size: 8pt;\"><BR>\n";
+					$pgcontent .= "<font size=1>&nbsp;<BR>".lang("Forget your password?")." <a href=\"pgm-secure_remember.php\">".lang("Click Here")."</a>\n";
+					$pgcontent .= "</div>\n</form>\n</div>\n\n\n";
+				}
+		
+			}
+		
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			// Add the current loop through the content_line array to the "$pagecontent" var
+			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		
+			return $pgcontent."\n";
+			
+		}
+	}
+
+
+
 
 	// STEP 1: What variable features is this template utilizing?
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -850,6 +1500,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 		// Check for menu variables
 		// ---------------------------------
 		if (eregi("#HMENU#", $template_line[$menu_chk])) { $auto_menu_on = "yes"; }
+		if (eregi("#(FLYOUTMENU|VFLYOUTMENU)#", $template_line[$menu_chk])) { $flyout_menu_on = "yes"; }
 		if (eregi("#VMENU#", $template_line[$menu_chk])) { $auto_menu_on = "yes"; }
 		if (eregi("#TMENU#", $template_line[$menu_chk])) { $auto_menu_on = "yes"; }
 		if (eregi("#HMAINS#", $template_line[$menu_chk])) { $auto_menu_on = "yes"; }
@@ -863,7 +1514,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 
 		// Check for promo and news variables
 		// -------------------------------------
-		if (eregi("#BOX1#", $template_line[$menu_chk])) { $boxCheck .= "box1;"; }
+		if (eregi("#BOX1#", $template_line[$menu_chk])) {  $boxCheck .= "box1;"; }
 		if (eregi("#BOX2#", $template_line[$menu_chk])) { $boxCheck .= "box2;"; }
 		if (eregi("#BOX3#", $template_line[$menu_chk])) { $boxCheck .= "box3;"; }
 		if (eregi("#BOX4#", $template_line[$menu_chk])) { $boxCheck .= "box4;"; }
@@ -898,11 +1549,16 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 
 	if ($auto_menu_on == "yes") { include("$automenu"); } // Include auto-menu script to build menu vars
 	
+	if ($flyout_menu_on == "yes") { include("$flyoutmenu"); } // Include auto-menu script to build menu vars
+
+	
 
 #############
 ## New Cart Category Display
 $cartcats_q = mysql_query("select keyfield, category from cart_category where level='1'");
 while($cartcatz = mysql_fetch_assoc($cartcats_q)){
+	
+	$flyoutmenu = str_replace('cartid:'.$cartcatz['keyfield'].':', $cartcatz['category'], $flyoutmenu);
 	
 	$vmainz = str_replace('cartid:'.$cartcatz['keyfield'].':', $cartcatz['category'], $vmainz);
 	$hmainz = str_replace('cartid:'.$cartcatz['keyfield'].':', $cartcatz['category'], $hmainz);
@@ -915,6 +1571,7 @@ while($cartcatz = mysql_fetch_assoc($cartcats_q)){
 
 }
 
+$flyoutmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $flyoutmenu);
 $vmainz = str_replace('http://shopping/start.php', 'shopping/start.php', $vmainz);
 $hmainz = str_replace('http://shopping/start.php', 'shopping/start.php', $hmainz);
 $main_buttons = str_replace('http://shopping/start.php', 'shopping/start.php', $main_buttons);
@@ -926,15 +1583,17 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 #############
 	
 	// Check S.E.O. friend page links option
-	if($custommenu == 'yes') {
+	
+	if($custommenu == 'yes' || $customfly=='yes') {
 		$seol = new userdata("seolink");
-		if($seol->get("pref") == "yes") {
+		//if($seol->get("pref") == "yes") {
 			$pageq = mysql_query('SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages order by page_name DESC');
 			while($page_names_ar = mysql_fetch_assoc($pageq)){
 				if( !eregi("http://", $page_names_ar['link']) && !eregi("https://", $page_names_ar['link']) && !eregi("mailto", $page_names_ar['link'])){
 					$this_page_name = str_replace(' ', '_', $page_names_ar['page_name']);
 					$this_page_name_repl = urlencode($this_page_name);
 		
+					$flyoutmenu = str_replace('index.php?pr='.$this_page_name, $this_page_name_repl.'.php', $flyoutmenu);
 					$vmainz = str_replace('index.php?pr='.$this_page_name, $this_page_name_repl.'.php', $vmainz);
 					$hmainz = str_replace('index.php?pr='.$this_page_name, $this_page_name_repl.'.php', $hmainz);
 					$main_buttons = str_replace('index.php?pr='.$this_page_name, $this_page_name_repl.'.php', $main_buttons);
@@ -949,9 +1608,9 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 			
 				}
 			}
-		}
+		//}
 	}
-	if ($boxCheck != "" || $nShow != "" || $bShow != "" ) { include("$prnewsbox"); } // Include promo and newsbox script to build vars
+//	if ($boxCheck != "" || $nShow != "" || $bShow != "" ) { include("$prnewsbox"); } // Include promo and newsbox script to build vars
 
 
 	#######################################################################################
@@ -979,8 +1638,6 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 	for ($xedusvar=0;$xedusvar<=$numtlines;$xedusvar++) {
 
 	   eval(hook("pgm-realtime_builder.php:template_loop"));
-
-
 		/// #supersearch# - Insert searchbox for Site Search plugin
 		###------------------------------------------------------------------------------------###
 		if (eregi("#supersearch#", $template_line[$xedusvar])) {
@@ -1114,8 +1771,13 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 		}
 	   
 
-		if (eregi("<head", $template_line[$xedusvar])) {
+		if(preg_match("/<head/i", $template_line[$xedusvar])) {
 			$template_line[$xedusvar] = $template_line[$xedusvar]."\n" . $title_tag_line. $metatag . $stylesheet . "\n" . $javascript . "\n";
+		}
+
+		if (preg_match("/<\/head/i", $template_line[$xedusvar])) {
+			//$template_line[$xedusvar] = $template_line[$xedusvar]."\n" . $title_tag_line. $metatag . $stylesheet . "\n" . $javascript . "\n";
+			$template_line[$xedusvar] = $customstylesheet . "\n" . $template_line[$xedusvar];
 		}
 
 
@@ -1181,6 +1843,13 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 			}
 			$tmenu = eregi_replace("\|  ]", "]", $tmenu);
 			$template_line[$xedusvar] = eregi_replace("#TMENU#", $tmenu, $template_line[$xedusvar]);
+		}
+
+
+		/// JQUERY include jquery
+		###------------------------------------------------------------------------------------###
+		if (eregi("#JQUERY#", $template_line[$xedusvar])) {
+			$template_line[$xedusvar] = eregi_replace("#JQUERY#", "<script src='sohoadmin/client_files/jquery.min.js'></script>", $template_line[$xedusvar]);
 		}
 
 
@@ -1255,6 +1924,15 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 			$template_line[$xedusvar] = eregi_replace("#CUSTOMINC3#", $customincC, $template_line[$xedusvar]);
 		}
 
+
+		/// #FLYOUTMENU# - Place horizontal sub menu in tamplate
+		###------------------------------------------------------------------------------------###
+		if (eregi("#(FLYOUTMENU|VFLYOUTMENU)#", $template_line[$xedusvar])) {
+			$flyout_menu = $flyoutmenu;
+			$flyout_menu = "\n\n<!-- START AUTO MENU SYSTEM -->\n\n" . $flyout_menu . "\n\n<!-- END AUTO MENU SYSTEM -->\n\n";
+			$template_line[$xedusvar] = eregi_replace("#(FLYOUTMENU|VFLYOUTMENU)#", $flyout_menu, $template_line[$xedusvar]);
+		}
+		
 
 		/// #VMENU# - Place Vertical Button Menu into Template
 		###------------------------------------------------------------------------------------###
@@ -1483,20 +2161,7 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 		}
 
 
-		/// #BIZ-AAAAAAA# - Pull company info data from site_specs table
-		###------------------------------------------------------------------------------------###
-		if (eregi("#BIZ-([0-9a-zA-Z]{1,20})#", $template_line[$xedusvar], $bizVar)) {
-		   $rep_field = "df_".$bizVar[1];
-		   $rep_field = strtolower($rep_field);
 
-			if ( $getSpec[$rep_field] != "" ) {
-			   $pound_bizvar = $getSpec[$rep_field];
-			} else {
-			   $pound_bizvar = "&nbsp;";
-			}
-
-			$template_line[$xedusvar] = eregi_replace($bizVar[0], $pound_bizvar, $template_line[$xedusvar]);
-		}
 
 	   // Reg expression above doesn't catch these BIZ vars. (refine for later versions)
 
@@ -1561,12 +2226,27 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 		}
 
 		// #BIZ-DOMAIN#
-		if ( eregi("#BIZ-DOMAIN#", $template_line[$xedusvar]) ) {
-			if ( $getSpec[df_domain] != "" ) { $pound_dom = $getSpec[df_domain]; } else { $pound_dom = "&nbsp;";	}
-			$template_line[$xedusvar] = eregi_replace("#BIZ-DOMAIN#", $pound_dom, $template_line[$xedusvar]);
+		if ( preg_match("/#BIZ-DOMAIN#/i", $template_line[$xedusvar]) ) {
+		
+			if ( $getSpec[df_domain] != "" ) { $pound_dom = $getSpec[df_domain]; } else { $pound_dom = $_SESSION['this_ip'];	}
+			$template_line[$xedusvar] = eregi_replace("#BIZ-DOMAIN#", $_SESSION['this_ip'], $template_line[$xedusvar]);
 		}
 
+		/// #BIZ-AAAAAAA# - Pull company info data from site_specs table
+		###------------------------------------------------------------------------------------###
+		if (eregi("#BIZ-([0-9a-zA-Z]{1,20})#", $template_line[$xedusvar], $bizVar)) {
+		   $rep_field = "df_".$bizVar[1];
+		   $rep_field = strtolower($rep_field);
 
+			if ( $getSpec[$rep_field] != "" ) {
+			   $pound_bizvar = $getSpec[$rep_field];
+			   
+			} else {
+			   $pound_bizvar = "&nbsp;";
+			}
+
+			$template_line[$xedusvar] = eregi_replace($bizVar[0], $pound_bizvar, $template_line[$xedusvar]);
+		}
 
 		/// #AUTODATESTAMP# - Place Automatic Date Stamp into Template
 		###------------------------------------------------------------------------------------###
@@ -1575,7 +2255,7 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 			$template_line[$xedusvar] = eregi_replace("#AUTODATESTAMP#", $tmp, $template_line[$xedusvar]);
 		}
 
-
+		$hasbox=0;
 		/// #NEWSBOX#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#NEWSBOX#", $template_line[$xedusvar]) ) {
@@ -1642,48 +2322,56 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 		/// #BOX1#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX1#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX1#", $box1, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box1."</TEXTAREA>\n";
 		}
 		/// #BOX2#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX2#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX2#", $box2, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box2."</TEXTAREA>\n";
 		}
 		/// #BOX3#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX3#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX3#", $box3, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box3."</TEXTAREA>\n";
 		}
 		/// #BOX4#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX4#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX4#", $box4, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box4."</TEXTAREA>\n";
 		}
 		/// #BOX5#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX5#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX5#", $box5, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box5."</TEXTAREA>\n";
 		}
 		/// #BOX6#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX6#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX6#", $box6, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box6."</TEXTAREA>\n";
 		}
 		/// #BOX7#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX7#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX7#", $box7, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box7."</TEXTAREA>\n";
 		}
 		/// #BOX8#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#BOX8#", $template_line[$xedusvar]) ) {
+			$hasbox=1;
 			$template_line[$xedusvar] = eregi_replace("#BOX8#", $box8, $template_line[$xedusvar]);
 			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box8."</TEXTAREA>\n";
 		}
@@ -1691,6 +2379,7 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 		/// #PROMOHDR1#
 		###------------------------------------------------------------------------------------###
 		if ( eregi("#PROMOHDR1#", $template_line[$xedusvar]) ) {
+			
 			$template_line[$xedusvar] = eregi_replace("#PROMOHDR1#", $promohdr1, $template_line[$xedusvar]);
 		}
 		/// #PROMOTXT1#
@@ -1743,6 +2432,14 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 			$template_line[$xedusvar] = eregi_replace("#PROMOTXT5#", $promotxt5, $template_line[$xedusvar]);
 		}
 
+		if ( eregi("#SIDEBAR#", $template_line[$xedusvar]) ) {
+			ob_start();
+			include('media/widget-display.inc');
+			$widget_content = ob_get_contents();
+			ob_end_clean();
+			$template_line[$xedusvar] = eregi_replace("#SIDEBAR#", $widget_content, $template_line[$xedusvar]);
+			//echo "<TEXTAREA STYLE='width: 612; height: 225;'>".$box1."</TEXTAREA>\n";
+		}
 
 		/// SWF IE-Compatibility issue (Mantis #73)
 		###xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx###
@@ -1757,7 +2454,7 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 	### FOR FINAL OUTPUT.
 	##############################################################################################
 	
-		if($_GET['id']!='' && $_GET['id']>0 && strlen($_GET['art']) > 0 && $_GET['art']!='' && $BLOG_CATEGORY_NAME==''&&$_GET['pr']==''&&eregi("#CONTENT#", $template_line[$xedusvar])){
+		if((($_GET['id']!='' && $_GET['id']>0 && strlen($_GET['art']) > 0 && $_GET['art']!='' && $BLOG_CATEGORY_NAME=='')||($_GET['subject']>0 && $_GET['subject']!='') || ($_GET['author']>0 && $_GET['author']!='')) && eregi("#CONTENT#", $template_line[$xedusvar])){
 
   			$BLOG_CATEGORY_NAME = 'ALL';
   			$filename = $blog_display_file;
@@ -1768,10 +2465,15 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
   			$template_line[$xedusvar]=str_replace("#CONTENT#", ob_get_contents(), $template_line[$xedusvar]);
   			ob_end_clean();
 		}
-		if ( eregi("#CONTENT#", $template_line[$xedusvar]) ) {
-
+		if ( eregi("#CONTENT#", $template_line[$xedusvar]) || $hasbox==1) {
+//			$sohocontent=$xedusvar;
+//			$switchvar=0;
+//			echo 'sohocontent='.$sohocontent."<br/>";
+//			echo 'hasbox='.$hasbox."<br/>";
+//			echo 'module active='.$switchvar."<br/>";
 			$switchvar = 1;	// The Content Variable indicates the switch from header to footer
-
+//$module_active='yes';
+//$pagecontent = $template_line[$xedusvar]
 
 			// ***************************************************************************************
 			// In case of troubleshooting needs, lets place some HTML comment code to indicate where
@@ -1799,14 +2501,14 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 			// to offer up another #CONTENT# var to the module script.
 			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-			if ($module_active == "yes") {
-
+				if ($module_active == "yes") {
+	
 				if ( $nShow != "" || $bShow != "") {
-	   		   // Newsbox link - show article
-	   		   $pagecontent .= $disArticle;
-	   		} else {
-	   		   $pagecontent .= "\n\n#CONTENT#\n\n";
-	   		}
+		   		   // Newsbox link - show article
+		   		   $pagecontent .= $disArticle;
+		   		} else {
+		   		   $pagecontent .= "\n\n#CONTENT#\n\n";
+		   		}
 
 			} else {
 
@@ -1814,452 +2516,43 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 	   		## START ACTUAL "INNER LOOP" THROUGH CONTENT LINES WITHIN THE $xedusvar LOOP
 	   		##############################################################################################
 
-	   		for ($sohocontent=0;$sohocontent<=$numlines;$sohocontent++) {
-
-	//            # Register unique validator token for custom form display (Mantis 412)
-	//   			if (eregi("<!---#UNIQUETOKEN", $content_line[$sohocontent])) {
-	//   			   //echo "Original line: <textarea style=\"width: 450px; height: 100px; font: 10px verdana;\">".$content_line[$sohocontent]."</textarea><br>\n";
-	//   			   $form_token = eregi_replace("<!---#UNIQUETOKEN~~", "", $content_line[$sohocontent]);
-	//   			   $form_token = eregi_replace("~~#-->", "", $form_token);
-	//   			   $_SESSION['UNIQUE_TOKEN'] = $form_token;
-	//   				$content_line[$sohocontent] = "";
-	//   			}
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR AUTOMATIC DATE STAMP
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			if (eregi("<!-- ##PHPDATE## -->", $content_line[$sohocontent])) {
-	   				$today = date("F j, Y");
-	   				$content_line[$sohocontent] = eregi_replace("<!-- ##PHPDATE## -->", "<font face=Verdana, Arial, Helvetica size=2><B>$today</B></font>", $content_line[$sohocontent]);
-	   			}
-
-	   			if (eregi("#DATE#", $content_line[$sohocontent])) {
-	   				$today = date("F j, Y");
-	   				$content_line[$sohocontent] = eregi_replace("#DATE#", "$today", $content_line[$sohocontent]);
-	   			}
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR HIT COUNTER CALCULATION AND DISPLAY
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			if (eregi("##COUNTER##", $content_line[$sohocontent])) {
-	   				$global_hit_count = $globalprefObj->get('global_hit_count');
-
-	   				# pull from file
-	   				$filename = $_SESSION['docroot_path']."/sohoadmin/filebin/hitcounter.txt";
-	   				if ( file_exists($filename) ) {
-		   				if (file_exists("$filename")) {
-		   					$file = fopen("$filename", "r");
-		   					$hitcount = fread($file,filesize($filename));
-		   					fclose($file);
-		   					$hitcount = eregi_replace("\n", "", $hitcount);
-		   					$hitcount = chop($hitcount);
-		   					$hitcount = ltrim($hitcount);
-		   					$hitcount = rtrim($hitcount);
-		   				} else {
-		   					$hitcount = "1";
-		   				}
-		   			}
-		   			
-		   			if ( $hitcount > $global_hit_count ) {
-		   				$globalprefObj->set('global_hit_count', $hitcount);
-		   				$global_hit_count = $globalprefObj->get('global_hit_count');
-		   				if ( $global_hit_count == $hitcount ) {
-		   					@unlink($filename);
-		   				}
-		   			}
-		   			$hitcount = $global_hit_count;
-		   				
-	   				# Build Graphical representation of counter number for display
-	   				$hit_count_graphic = "";
-	   				$tmp = strlen($hitcount);	// Get number of digits in number
-	   				for ($hc_cnt=0;$hc_cnt<=$tmp;$hc_cnt++) {
-	   					$hc_number = substr($hitcount, $hc_cnt, 1);
-	   					if ($hc_number != "") { $hit_count_graphic .= "<IMG SRC=\"sohoadmin/program/modules/page_editor/client/".$hc_number.".gif\" width=15 height=20 border=0 align=absmiddle vspace=0 hspace=0 border=0>"; }
-	   				}
-
-	   				$content_line[$sohocontent] = "<TABLE BORDER=0 CELLPADDING=2 CELLSPACING=0 ALIGN=CENTER><TR><TD ALIGN=CENTER VALIGN=MIDDLE>\n";
-	   				$content_line[$sohocontent] .= "$hit_count_graphic\n";
-	   				$content_line[$sohocontent] .= "</TD></TR></TABLE>\n";
-
-	   				# Now incriment the hit counter
-	   				$hitcount++;
-	   				if ( file_exists($filename) ) {
-		   				$file = fopen("$filename", "w");
-		   				fwrite($file, "$hitcount\n");
-		   				fclose($file);
-		   			}
-		   			$globalprefObj->set('global_hit_count', $hitcount);
-	   			}
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR REALTIME CALENDAR MODULE
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	   			if (eregi("##CALENDAR", $content_line[$sohocontent])) {
-
-	   				$this_mod = str_replace("<!-- ##", "", $content_line[$sohocontent]);
-	   				$this_mod = str_replace("## -->", "", $this_mod);
-
-	   				if (eregi(";", $this_mod)) {
-	   					$tmp = split(";", $this_mod);
-	   					$this_mod = $tmp[0];
-	   					$CHANGE_CAT = $tmp[1];
-	   				}
-
-	   				$this_mod = ltrim($this_mod);
-	   				$this_mod = rtrim($this_mod);
-
-	   				if ($this_mod == "CALENDAR-WEEKLY-VIEW") {
-	   					$filename = "sohoadmin/client_files/pgm-cal-weekview.php";
-	   				}
-
-	   				if ($this_mod == "CALENDAR-ONEMONTH-VIEW") {
-	   					$filename = "sohoadmin/client_files/pgm-cal-monthview.php";
-	   				}
-
-	   				if ($this_mod == "CALENDAR-SYSTEM") {
-	   					$filename = "sohoadmin/client_files/pgm-cal-system.php";
-	   				}
-
-	   				if ($this_mod == "CALENDAR-SINGLE_CAT_SYSTEM") {
-	   					$hide_drop_down = 1;
-	   					$filename = "sohoadmin/client_files/pgm-cal-system.php";
-	   				}
-
-	   				ob_start();
-	   					include("$filename");
-	   					$content_line[$sohocontent] = ob_get_contents();
-	   				ob_end_clean();
-
-	   			}
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// Translate all submit buttons into proper style class
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	   			$content_line[$sohocontent] = eregi_replace("input type=submit", "input type=submit class=FormLt1", $content_line[$sohocontent]);
-	   			$content_line[$sohocontent] = eregi_replace("input type=\"submit\"", "input type=submit class=FormLt1", $content_line[$sohocontent]);
-
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR SINGLE PRODUCT SKU PROMOTION (REAL-TIME UPDATE) Bugzilla #21
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	   			if (eregi("<!--##SINGLESKU;", $content_line[$sohocontent])) {
-	   				$tmp = eregi("<!--##SINGLESKU;(.*)##-->", $content_line[$sohocontent], $out);
-	   				$sku_number = $out[1];
-
-	   				include("sohoadmin/client_files/pgm-single_sku.php");	// Added 2003-09-09
-
-	   				$content_line[$sohocontent] = $SINGLE_SKU_PROMO_HTML;
-
-	   			} // End Sku Promotion
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR PHOTO ALBUM
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	   			if (eregi("##PHOTO;", $content_line[$sohocontent])) {
-
-	   				$temp = eregi("<!-- ##PHOTO;(.*)## -->", $content_line[$sohocontent], $out);
-	   				$THIS_ID = $out[1];
-
-	   				$filename = "sohoadmin/client_files/pgm-photo_album.php";
-					//$pagecontent = str_replace('<td align="center" valign="top"', '<td align="left" valign="top"', $pagecontent);
-					
-					
-	   				ob_start();
-	   				include("$filename");
-	   				$output = ob_get_contents();
-	   				ob_end_clean();
-
-	   				$content_line[$sohocontent] = "\n\n<!-- ~~~~~~~ PHOTO ALBUM OUTPUT ~~~~~~ -->\n\n" . $output . "\n\n<!-- ~~~~~~~~~~~~ END PHOTO ALBUM OUTPUT ~~~~~~~~~~~~ -->\n\n";
-	   			}
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR PHP INCLUDE SCRIPT
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	   			if (eregi("##MIKEINC;", $content_line[$sohocontent])) {
-
-	   				$temp = eregi("<!-- ##MIKEINC;(.*)## -->", $content_line[$sohocontent], $out);
-	   				$INCLUDE_FILE = $out[1];
-
-	   				// For testing
-	   				// echo "<font style=\"font-family: arial; font-size: 11px; color: #d70000;\">This file: <b>$INCLUDE_FILE</b></font>\n"; // TAKE THIS LINE OUT BEFORE WRAPPING!!!
-
-	   				$filename = "media/$INCLUDE_FILE";
-
-	   				// Inserted for V5.  Makes it easier to add new objects to object bar in editor
-	   				if (eregi("pgm-", $INCLUDE_FILE)) { $filename = "$INCLUDE_FILE"; }
-
-	   				ob_start();
-	   				include("$filename");
-	   				$output = ob_get_contents();
-	   				ob_end_clean();
-
-	   				$content_line[$sohocontent] = "\n\n<!-- ~~~~~~~ CUSTOM PHP OUTPUT ~~~~~~ -->\n\n" . $output . "\n\n<!-- ~~~~~~~~~~~~ END CUSTOM PHP OUTPUT ~~~~~~~~~~~~ -->\n\n";
-	   			}
-
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR REAL-TIME FAQ READER
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	   			if (eregi("##FAQ", $content_line[$sohocontent])) {
-	   				$tmp = eregi("<!-- ##FAQ;(.*)## -->", $content_line[$sohocontent], $out);
-	   				$FAQ_CATEGORY_NAME = $out[1];
-
-	   				$filename = $faq_display_file;
-	   				ob_start();
-	   					include("$filename");
-	   					$content_line[$sohocontent] = ob_get_contents();
-	   				ob_end_clean();
-
-	   			} // End Blog Display
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR REAL-TIME BLOG READER
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-	   			if ( eregi("##BLOG", $content_line[$sohocontent])) {
-	   				$tmp = eregi("<!-- ##BLOG;(.*)## -->", $content_line[$sohocontent], $out);
-	   				$BLOG_CATEGORY_NAME = $out[1];
-
-	   				$filename = $blog_display_file;
-	   				ob_start();
-	   					include("$filename");
-	   					$content_line[$sohocontent] = ob_get_contents();
-	   				ob_end_clean();
-
-	   			} 
-
-	   			if(eregi("##SOC_", $content_line[$sohocontent]) ) {
-	   				if(eregi("##SOC_SHOWCOUNT##", $content_line[$sohocontent])){
-	   					$show_social_counter = 1;
-	   					$content_line[$sohocontent] = str_replace('##SOC_SHOWCOUNT##', '', $content_line[$sohocontent]);	
-	   				} else {
-	   					$show_social_counter = 0;
-	   				}
-	   				if($show_social_counter == 1){
-	   					$content_line[$sohocontent] = str_replace('##SOC_FACEBOOK##', "&nbsp;"."<iframe src=\"http://www.facebook.com/plugins/like.php?href=http%3A%2F%2F".$this_ip."%2F".$pr.".php&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; width:90px; height:21px;\" allowTransparency=\"true\"></iframe>"."&nbsp;\n", $content_line[$sohocontent]);	
-	   				} else {
-	   					$content_line[$sohocontent] = str_replace('##SOC_FACEBOOK##', "&nbsp;".'<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2F'.$this_ip.'%2F'.$pr.'.php&amp;send=false&amp;layout=button_count&amp;width=46&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:46px; height:21px;" allowTransparency="true"></iframe>'."&nbsp;\n", $content_line[$sohocontent]);	
-	   				}
-	   				if ( eregi("##SOC_TWITTER", $content_line[$sohocontent]) ) {
-						if($twitinc == ''){	   					
-		   					$template_header = preg_replace('/\<\/head>/i', '<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>'."\n</head>", $template_header);
-		   					$twitinc = 1;
-		   				}
-		   				if($show_social_counter == 1){
-		   					$content_line[$sohocontent] = str_replace('##SOC_TWITTER##', "&nbsp;<a href=\"http://twitter.com/share\" class=\"twitter-share-button\">Tweet</a>&nbsp;", $content_line[$sohocontent]);
-		   				} else {
-		   					$content_line[$sohocontent] = str_replace('##SOC_TWITTER##', "&nbsp;<a href=\"http://twitter.com/share\" data-count=\"none\" class=\"twitter-share-button\">Tweet</a>&nbsp;", $content_line[$sohocontent]);	
-		   				}
-	   				}
-	   				if ( eregi("##SOC_GOOGLE", $content_line[$sohocontent]) ) {
-	   					if($googinc == ''){
-	   						$template_header = preg_replace('/\<\/head>/i', '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>'."\n</head>", $template_header);
-	   						$googinc = 1;
-	   					}
-	   					if($show_social_counter == 1){
-	   						$content_line[$sohocontent] = str_replace('##SOC_GOOGLE##', "&nbsp;<g:plusone size=\"medium\" ></g:plusone>&nbsp;\n", $content_line[$sohocontent]);	
-	   					} else {
-	   						$content_line[$sohocontent] = str_replace('##SOC_GOOGLE##', "&nbsp;<g:plusone size=\"medium\" count=\"false\"></g:plusone>&nbsp;\n", $content_line[$sohocontent]);		
-	   					}
-	   				}
-	   				if($stumbleinc == ''){
-	   					$stumbleinc = 1;
-	   					if($show_social_counter == 1){
-	   						$content_line[$sohocontent] = str_replace('##SOC_STUMBLE##', "\n&nbsp;".'<script src="http://www.stumbleupon.com/hostedbadge.php?s=4"></script>'."&nbsp;\n", $content_line[$sohocontent]);	
-	   					} else {
-	   						$content_line[$sohocontent] = str_replace('##SOC_STUMBLE##', "\n&nbsp;".'<script src="http://www.stumbleupon.com/hostedbadge.php?s=2"></script>'."&nbsp;\n", $content_line[$sohocontent]);	
-	   					}	   					
-
-	   				}
-	   				
-	   			} // End Social Media Display
-
-	   			# SitePal
-	   			include($_SESSION['docroot_path']."/sohoadmin/program/modules/sitepal/page_editor/realtime_builder-html_display.php");
-
-
-	            /*---------------------------------------------------------------------------------------------------------*
-	             ___
-	            | __|___  _ _  _ __
-	            | _|/ _ \| '_|| '  \
-	            |_| \___/|_|  |_|_|_|
-
-	            # Pull web form html and add hidden fields
-	            /*---------------------------------------------------------------------------------------------------------*/
-	            if ( eregi("##CONTACTFORM", $content_line[$sohocontent]) ) {
-	         		$tmp = eregi("<!-- ##CONTACTFORM;(.*)## -->", $content_line[$sohocontent], $out);
-	         		$ctemp = $out[1];
-	         		$mtemp = split(";", $ctemp);
-
-	         		$send_to = $mtemp[0];
-	         		$database_file = $mtemp[1];
-	         		$formfile = $mtemp[2];
-
-	               # Rebuild path to get around missing backslash issue (i.e., from $formfile path) on Windows servers causing form to not appear
-	               if ( eregi("WIN|IIS", $_SERVER['SERVER_SOFTWARE']) ) {
-	                  $badpath = stripslashes($_SESSION['docroot_path']);
-	                  $formfile = eregi_replace($badpath, $_SESSION['docroot_path']."/", $formfile);
-	               }
-	//               $formfile = "media/".basename($formfile);
-
-	         		// =====================================================
-	         		// === COMPENSATE FOR NEW "UNHIDDEN" DATA
-	         		// =====================================================
-	         		$rFrom = $mtemp[3];
-	         		$rSubject = $mtemp[4];
-	         		$rFile = $mtemp[5];
-	         		$rClose = $mtemp[6];
-	         		$rPageGo = $mtemp[7];
-	         		// =====================================================
-
-	         		$content_line[$sohocontent] = "\n\n<!-- \n\n";
-	         		$content_line[$sohocontent] .= "###########################################################\n";
-	         		$content_line[$sohocontent] .= "### ADD FORM NOW\n";
-	         		$content_line[$sohocontent] .= "###########################################################\n\n";
-	         		$content_line[$sohocontent] .= "--> \n\n<DIV ALIGN=CENTER>\n\n";
-
-	         		$filename = $formfile;	// Modified for IIS and Version 4.5
-
-	         		$file = fopen($filename, "r");
-	         	   $thisCode = fread($file,filesize($filename));
-	         		fclose($file);
-
-	         		$formlines = split("\n", $thisCode);
-	         		$nFLines = count($formlines);
-
-	         		$startup = 0;
-
-	         		# Generate unique token (Mantis 414)
-	         		$unique_token = md5(time());
-
-	         		for ($j=0;$j<=$nFLines;$j++) {
-
-	         			$formlines[$j] = ltrim($formlines[$j]);  // Make form spacing even on final HTML output
-	         			$formlines[$j] = rtrim($formlines[$j]);  // Make form spacing even on final HTML output
-
-	         			if (eregi("<form ", $formlines[$j])) {
-	         				$startup = 1;
-	         				$formlines[$j] .= "\n\n          <input type=hidden name=EMAILTO value=\"$send_to\">\n";
-	         				$formlines[$j] .= "          <input type=hidden name=PAGEREQUEST value=\"".$pr."\">\n";
-	         				$formlines[$j] .= "          <input type=hidden name=DATABASE value=\"$database_file\">\n";
-
-	         				if ($rClose == "yes") {
-	         					$formlines[$j] .= "          <input type=hidden name=SELFCLOSE value=\"yes\">\n";
-	         				}
-
-	         				$formlines[$j] .= "          <input type=hidden name=PAGEGO value=\"$rPageGo\">\n";
-	         				$formlines[$j] .= "          <input type=hidden name=RESPONSEFROM value=\"$rFrom\">\n";
-	         				$formlines[$j] .= "          <input type=hidden name=SUBJECTLINE value=\"$rSubject\">\n";
-	         				$formlines[$j] .= "          <input type=hidden name=RESPONSEFILE value=\"$rFile\">\n";
-	         				$formlines[$j] .= "          <input type=hidden name=CUST_FILENAME value=\"$filename\">\n\n";
-	         				$formlines[$j] .= "          <input type=hidden name=\"UNIQUETOKEN\" value=\"".$unique_token."\">\n\n";
-
-	         			}
-
-	         			$formlines[$j] = "          " . $formlines[$j];	// final HTML output is indented 10 spaces for looks
-
-	         			// *****************************************************************************************
-	         			// For legacy code, forms where submitted to "email.php3" -- now for open source release,
-	         			// all client side runtime scripts have been renamed for clarity when viewing via FTP, etc.
-	         			// So, let's make sure that the legacy forms will conform to the new naming conventions.
-	         			// ******************************************************************************************
-	         			$formlines[$j] = str_replace("email.php3", "pgm-form_submit.php", $formlines[$j]);
-
-	         			if ($startup == 1) {
-	         				$content_line[$sohocontent] .= $formlines[$j]."\n";
-	         			}
-
-	         			if (eregi("</form>", $formlines[$j])) {
-	         				$startup = 0;
-	         			}
-
-	         		}
-
-	         		$content_line[$sohocontent] .= "\n\n</DIV>\n\n\n";
-
-	               # Mantis 412
-	               $content_line[$sohocontent] .= "<!---#UNIQUETOKEN~~".$unique_token."~~#--->\n\n";
-
-	         		$content_line[$sohocontent] .= "<!--- end form ---> \n\n";
-	            } // End if eregi(CONTACTFORM)
-
-	   			eval(hook("rtb_contentloop", basename(__FILE__)));
-
-
-				if (eregi("##SUPERSEARCH", $content_line[$sohocontent])) {
-				   # Get scene number
-				   $tmp = eregi("<!-- ##SUPERSEARCH## -->", $content_line[$sohocontent], $out);
-				   ob_start();
-				   include("sohoadmin/program/modules/super_search/search_box_include.php");
-				   $content_line[$sohocontent] = ob_get_contents();
-				   ob_end_clean();
-				
-				
+			if($hasbox==1){
+			 //// replace box content
+			 
+			 //echo "add search and replacement lines for sidebox for the sohocontentloop";
+			 
+			$linecount = explode("\n",$template_line[$xedusvar]);
+		
+				if(count($linecount) > 1){
+					$newcontent = '';
+					foreach($linecount as $varvar=>$valval){
+							$newcontent .=  pageEditorContent($valval);
+					}
+					$template_line[$xedusvar] = $newcontent;
+					//print_r($linecount); exit;	
+				} else {
+					$template_line[$xedusvar] = pageEditorContent($template_line[$xedusvar]);
 				}
+			
+			 
+			 
+			} else {
+				
+				for ($sohocontent=0;$sohocontent<=$numlines;$sohocontent++) {
+					$pagecontent .= pageEditorContent($content_line[$sohocontent]);	
+				}
+			
+				##############################################################################################
+				### END OF $sohocontent LOOP
+				##############################################################################################
+			
+			
+			}
 
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// INSERT CODE FOR SECURE LOGIN FEATURE
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-				   if ( $_GET['logout'] == 'yes' ) {
-					   $ownerArr = array('OWNER_EMAIL', 'OWNER_NAME', 'GROUPS', 'MD5CODE');
-					   foreach ( $ownerArr as $key ) {
-						   $_SESSION[$key] = NULL;
-						   unset(${$key});
-						   ${$key} = "";
-					   }
-				   }
-	   			
-	   			if (eregi("<!-- ##SECURELOGIN;", $content_line[$sohocontent])) {
-	   				$tmp = eregi("<!-- ##SECURELOGIN;(.*)## -->", $content_line[$sohocontent], $out);
-	   				$BUTTON_NAME = $out[1];
 
-	   				if ($OWNER_EMAIL != "" && $OWNER_NAME != "") {
 
-	   					$content_line[$sohocontent] = "\n\n<!-- Secure Authentication Login -->\n\n<div align=center>\n";
-	   					$content_line[$sohocontent] .= "\n\n\n\n\n<!---$this_ip-->\n\n\n\n\n";
-	   					$content_line[$sohocontent] .= "<form method=\"post\" action=\"pgm-secure_manage.php\">\n";
-	   					$content_line[$sohocontent] .= "<table border=0 cellpadding=5 cellspacing=0 class=border width=199><tr><td align=center valign=top bgcolor=\"#EFEFEF\">\n";
-	   					$content_line[$sohocontent] .= "<input type=submit value=\"".lang("Manage Account")."\" STYLE=\"cursor: hand; font-family: Arial; font-size: 8pt;\"><BR>\n";
-	   					$content_line[$sohocontent] .= "<font size=1 face=Arial, Helvetica>&nbsp;<BR><B>".lang("Welcome")." ".$OWNER_NAME."!<br>\n";
-	   					$content_line[$sohocontent] .= "<a href=\"$REDIRECT_PAGE\">".lang("Member Area")."</a>\n";
-	   					$content_line[$sohocontent] .= "<p style=\"text-align: right;\"><a href=\"".$_SERVER['PHP_SELF']."?pr=".$pr."&logout=yes\">".lang("Log-out")."</a></p>\n";
-	   					$content_line[$sohocontent] .= "</td></tr></table>\n</form>\n</div>\n\n\n";
-
-	   				} else {
-
-	   					$content_line[$sohocontent] = "\n\n<!-- Secure Authentication Login -->\n\n<div align=center>\n";
-	   					$content_line[$sohocontent] .= "\n\n\n\n\n<!---$this_ip-->\n\n\n\n\n";
-	   					$content_line[$sohocontent] .= "<form method=\"post\" action=\"pgm-secure_login.php\">\n";
-	   					$content_line[$sohocontent] .= "<table border=0 cellpadding=5 cellspacing=0 class=border width=199><tr><td align=center valign=top bgcolor=\"#EFEFEF\">\n";
-	   					$content_line[$sohocontent] .= "<input type=submit value=\"$BUTTON_NAME\" STYLE=\"cursor: hand; font-family: Arial; font-size: 8pt;\"><BR>\n";
-	   					$content_line[$sohocontent] .= "<font size=1 face=Arial, Helvetica>&nbsp;<BR>".lang("Forget your password?")." <a href=\"pgm-secure_remember.php\">".lang("Click Here")."</a>\n";
-	   					$content_line[$sohocontent] .= "</td></tr></table>\n</form>\n</div>\n\n\n";
-
-	   				}
-
-	   			}
-
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	   			// Add the current loop through the content_line array to the "$pagecontent" var
-	   			// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	   			$pagecontent .= $content_line[$sohocontent] . "\n";
-
-	   		} // END LOOP
-	   			
-			##############################################################################################
-			### END OF $sohocontent LOOP
-			##############################################################################################
-
-		   } // END MODULE-ACTIVE = YES IF STATEMENT
+			} // END MODULE-ACTIVE = YES IF STATEMENT
 
 			if($globalprefObj->get('goog_trans_website')=='on'){
 				$pagecontent .= display_google_translate();
@@ -2355,23 +2648,24 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 			###end check status
 			####################
 
-
-			//adsense
-			$asense = new userdata("asense");
-
-			if($asense->get("id") != "HIDE" && $asense->get("id") != "") {
-				$adsense = $asense->get("id");
-				$adsense = base64_decode($adsense);
-				$pagecontent .= $adsense;
+			if(1==2){
+			//adsense turn off for now
+				$asense = new userdata("asense");
+	
+				if($asense->get("id") != "HIDE" && $asense->get("id") != "") {
+					$adsense = $asense->get("id");
+					$adsense = base64_decode($adsense);
+					$pagecontent .= $adsense;
+				}
+				//end addsense
 			}
-			//end addsense
 
 			eval(hook("pgm-realtime_builder:add-to-page-content", basename(__FILE__)));
 			$template_line[$xedusvar] = eregi_replace("#CONTENT#", $pagecontent, $template_line[$xedusvar]);
 
 		} // End if eregi(#CONTENT#) in this LINE
 
-
+	
 	##############################################################################################
 	### WE HAVE NOW COMPLETED THE "IF '#CONTENT#'" VARIABLE STATEMENT WHILE LOOPING THROUGH
 	### THE TEMPLATE HTML CODE.  NOW, LETES MAKE SURE THAT WE ARE PASSING PROPER SESSION ID'S
@@ -2382,7 +2676,6 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 		// ------------------------------------------------------------------------
 		// Add current interpreted line data to header or footer vars respectively
 		// ------------------------------------------------------------------------
-
 		if ($switchvar == 1) {
 			$template_footer .= $template_line[$xedusvar] . "\n";
 		} else {
@@ -2434,8 +2727,10 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 	$template_footer = eregi_replace("#template_path#", $template_path_from_root, $template_footer);
 
 	# Pound var name TBD
-	$template_path_from_docroot = "sohoadmin/program/modules/site_templates/pages/".$template_folder;
-
+	$relative_template_path_from_docroot = "sohoadmin/program/modules/site_templates/pages/".$template_folder;
+	$template_path_from_docroot = $relative_template_path_from_docroot;
+	$template_header = str_replace("#relative_template_path#", $relative_template_path_from_docroot, $template_header);
+	$template_footer = str_replace("#relative_template_path#", $relative_template_path_from_docroot, $template_footer);
 
 	/*---------------------------------------------------------------------------------------------------------*
 	                        _
@@ -2468,16 +2763,47 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 	   while ( $getImg = mysql_fetch_assoc($userimg_rez)){
 	   	
 		 if($getImg['user_image'] == 'sohoadmin/program/spacer.gif'){
-	      	$template_header = str_replace($template_path_from_docroot."/".$getImg['orig_image'], "".$getImg['user_image'], $template_header);
-	      	$template_footer = str_replace($template_path_from_docroot."/".$getImg['orig_image'], "".$getImg['user_image'], $template_footer);
+	      	$template_header = str_replace($relative_template_path_from_docroot."/".$getImg['orig_image'], "".$getImg['user_image'], $template_header);
+	      	$template_footer = str_replace($relative_template_path_from_docroot."/".$getImg['orig_image'], "".$getImg['user_image'], $template_footer);
 		} else {
-	      	$template_header = str_replace($template_path_from_docroot."/".$getImg['orig_image'], "images/".$getImg['user_image'], $template_header);
-	      	$template_footer = str_replace($template_path_from_docroot."/".$getImg['orig_image'], "images/".$getImg['user_image'], $template_footer);
+	      	$template_header = str_replace($relative_template_path_from_docroot."/".$getImg['orig_image'], "images/".$getImg['user_image'], $template_header);
+	      	$template_footer = str_replace($relative_template_path_from_docroot."/".$getImg['orig_image'], "images/".$getImg['user_image'], $template_footer);
 		}
 
 	   }
 	}
 
+
+
+		if(preg_match('/twitter-share-button/i',$template_footer)){
+			$template_header = preg_replace('/\<\/head>/i', '<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>'."\n</head>", $template_header);
+		}
+		if(preg_match('/\:plusone/i',$template_footer)){
+			$template_header = preg_replace('/\<\/head>/i', '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>'."\n</head>", $template_header);
+		}
+
+
+
+		if(preg_match('/(?i)msie [0-9]{1,2}/i',$_SERVER['HTTP_USER_AGENT'])){
+			if(!preg_match('/X-UA-Compatible/i',$template_header)){
+				//$template_header=preg_replace('/\<\/head/i', "<meta content=\"IE=8\" http-equiv=\"X-UA-Compatible\" />\n".'</head',$template_header);
+				//$template_header=preg_replace('/\<\/head/i', "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7, IE=9\" />\n".'</head',$template_header);
+				$template_header=preg_replace('/\<\/head/i', "<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\" />\n".'</head',$template_header);
+
+				
+			}
+		}
+		
+		
+		if($buttoncsstest==''){
+			if($_SESSION['CUR_USER']!=''&&$_SESSION['PHP_AUTH_USER']!=''){
+				$template_header=preg_replace('/\<\/title\>/i', "</title>\n<link href=\"sohoadmin/client_files/ultra-custom-button.css.php?rant=".time()."&hex=".$_GET['hex']."&hex2=".$_GET['hex2']."\" rel=\"stylesheet\" type=\"text/css\" />\n",$template_header);
+				//$template_header=preg_replace('/\<\/head/i', "<link href=\"sohoadmin/client_files/ultra-custom-button.css.php?rant=".time()."&hex=".$_GET['hex']."&hex2=".$_GET['hex2']."\" rel=\"stylesheet\" type=\"text/css\" />\n".'</head',$template_header);
+			} else {
+				//$template_header=preg_replace('/\<\/head/i', "<link href=\"sohoadmin/client_files/ultra-custom-button.css.php?rant=".time()."\" rel=\"stylesheet\" type=\"text/css\" />\n".'</head',$template_header);
+				$template_header=preg_replace('/\<\/title\>/i', "</title>\n<link href=\"sohoadmin/client_files/ultra-custom-button.css.php?rant=".time()."\" rel=\"stylesheet\" type=\"text/css\" />\n",$template_header);
+			}
+		}
 
 	# plugin-[whatever]# (v4.9.2 r15)
 	# Strip out any remaining plugin- tags.
@@ -2501,8 +2827,9 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 
 	$template_header = eregi_replace("SOHOLINK=", "href=", $template_header);
 	$template_footer = eregi_replace("SOHOLINK=", "href=", $template_footer);
-	
-	$template_header = preg_replace("/(\n){2}/", "\n", $template_header);
+
+	$template_header = preg_replace('/(\n){2}/', "\n", $template_header);
+
 	$template_footer = preg_replace("/(\n){2}/", "\n", $template_footer);
 
 	if(eregi("name=\"required_fields\"", $template_footer) && eregi('action="pgm-form_submit\.php">', $template_footer)){
@@ -2624,7 +2951,14 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 		$jscript .= "	return returnval; \n";
 		$jscript .= "}\n";
 		$jscript .= "</script>\n";
-		$template_footer = eregi_replace('action="pgm-form_submit\.php">', 'onSubmit="return camcheckrequired(this)" action="pgm-form_submit.php" accept-charset="utf-8">', $jscript.$template_footer);
+		$template_footer = preg_replace('/action="pgm-form_submit\.php">/', 'onSubmit="return camcheckrequired(this)" action="pgm-form_submit.php" accept-charset="utf-8">', $jscript.$template_footer);
+	}
+
+
+	if($shopping_style_include == 1){
+		$template_header = preg_replace('/<\/title>/i','</title>'."\n<link rel=\"stylesheet\" type=\"text/css\" href=\"shopping/pgm-shopping_css.inc.php\">", $template_header);
+		
+		//include_once("sohoadmin/client_files/shopping_cart/pgm-shopping_css.inc.php"); // Defines $module_css
 	}
 
 	# Allow templates to replace things in the fully-compiled content right before it gets displayed
@@ -2633,13 +2967,13 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 	}
 	
 	
+	
 	if ( $globalprefObj->get('utf8') == 'on' ) {
 		$template_header = str_replace('iso-8859-1', 'utf-8', $template_header);
 		$template_footer = str_replace('iso-8859-1', 'utf-8', $template_footer);
 	}
 	
-	# Add stuff to final html
-	eval(hook("pgm-realtime_builder.php:add-to-final-html"));
+
 	
 	$formpref = new userdata('forms');
 	if($formpref->get('include-captcha') != 'off'){
@@ -2648,7 +2982,7 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 				include_once("sohoadmin/client_files/captcha/captcha.php");
 				$captcha = ob_get_contents();
 			ob_end_clean();
-			if(eregi('pgm-form_submit.php', $template_footer)){
+			if(preg_match('/pgm-form_submit\.php/i', $template_footer)){
 				if(!eregi('<input id="userform-submit_btn"', $template_footer)) {
 					if(eregi('<input class="FormLt1"', $template_footer)){
 						$template_footer = eregi_replace('<input class="FormLt1"', $captcha."\n <input id=\"userform-submit_btn\" onclick=\"return zulucrypt();\"", $template_footer);	
@@ -2659,7 +2993,21 @@ $sub_textmenu = str_replace('http://shopping/start.php', 'shopping/start.php', $
 					$template_footer = eregi_replace('<input id="userform-submit_btn"', $captcha."\n <input id=\"userform-submit_btn\" onclick=\"return zulucrypt();\"", $template_footer);
 				}
 			}
+			if(preg_match('/pgm-form_submit\.php/i', $template_footer) && !preg_match('/captcha-functions\.js/i',$template_header)){
+				$formjavascriptntags = "	<META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\" />\n";
+				$formjavascriptntags .= "	<script type=\"text/javascript\" src=\"sohoadmin/client_files/captcha/captcha-functions.js\"></script>\n";
+				if(preg_match('/<\/head>/i',$template_header)){
+					$template_header = preg_replace('/<\/head>/i',$formjavascriptntags."</head>", $template_header);
+				} else {
+					$template_header = $template_header.$formjavascriptntags;
+				}
+			}
 		}
+	
 	}
+
+	
+	# Add stuff to final html
+	eval(hook("pgm-realtime_builder.php:add-to-final-html"));
 }
 ?>

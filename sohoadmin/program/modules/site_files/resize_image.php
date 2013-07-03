@@ -5,9 +5,7 @@ ini_set("memory_limit", "-1");
 
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
-## Version 4.5
 ##      
-## Author: 			Mike Johnston [mike.johnston@soholaunch.com]                 
 ## Homepage:	 	http://www.soholaunch.com
 ## Bug Reports: 	http://bugzilla.soholaunch.com
 ## Release Notes:	sohoadmin/build.dat.php
@@ -15,8 +13,7 @@ ini_set("memory_limit", "-1");
 
 ##############################################################################
 ## COPYRIGHT NOTICE                                                     
-## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston 
-## Copyright 2003-2007 Soholaunch.com, Inc.
+## Copyright 1999-2013 Soholaunch.com, Inc.
 ## All Rights Reserved.  
 ##                                                                        
 ## This script may be used and modified in accordance to the license      
@@ -33,6 +30,10 @@ ini_set("memory_limit", "-1");
 
 session_start();
 require_once('../../includes/product_gui.php');
+
+if($_GET['img'] != ''){
+	$_GET['img'] = urldecode($_GET['img']);
+}
 
 if($_POST['action']=='resize'){
 	
@@ -53,7 +54,7 @@ if($_POST['action']=='resize'){
 
 		
 		if(smart_resize_image($_SESSION['doc_root'].'/images/'.$_POST['img'], $_POST['new_width'], $_POST['new_height'], $propor, $_POST['newname'], false, $rotate, $new_x, $new_y,$_POST['sel_w'],$_POST['sel_h'])){
-			$success= lang('Resized').' '.basename($_POST['newname']).'.';
+			$success= lang('Resized').' '.urlencode(basename($_POST['newname'])).'.';
 		}
 	}
 	header("Location: ../site_files.php?success=$success&=SID");
@@ -75,7 +76,7 @@ if($_POST['action']=='resize'){
 	if($rotate == '360'){ $rotate = 0; }
 	$new_x = $_POST['new_x'];
 	$new_y = $_POST['new_y'];
-	$resizestring = 'preview_resize.php?1='.$_POST['img'].'&2='.$_POST['new_width'].'&3='.$_POST['new_height'].'&4=false&5=browser&6=false&7='.$rotate.'&8='.$new_x.'&9='.$new_y.'&10='.$_POST['sel_w'].'&11='.$_POST['sel_h'];
+	$resizestring = 'preview_resize.php?1='.urlencode($_POST['img']).'&2='.$_POST['new_width'].'&3='.$_POST['new_height'].'&4=false&5=browser&6=false&7='.$rotate.'&8='.$new_x.'&9='.$new_y.'&10='.$_POST['sel_w'].'&11='.$_POST['sel_h'];
 
 
 	echo "<img style=\"width:".$_POST['new_width']."px; height:".$_POST['height']."px; align:left;\" src=\"".$resizestring."\">\n";
@@ -94,7 +95,7 @@ if($_POST['action']=='resize'){
 	
 	echo "	<div style=\"padding-top:10px;\">\n";
 	echo "		<span class=\"button-wrapper\">\n";
-	echo "		<button style=\"width: 105px;\" class=\"blueButton\" type=\"button\" onClick=\"document.location='resize_image.php?img=".$img."';\"><span><span>".lang('Cancel')."</span></span></button>\n";
+	echo "		<button style=\"width: 105px;\" class=\"blueButton\" type=\"button\" onClick=\"document.location='resize_image.php?img=".urlencode($img)."';\"><span><span>".lang('Cancel')."</span></span></button>\n";
 	echo "		</span>\n";
 	echo "		&nbsp;&nbsp;&nbsp;&nbsp;\n";
 	echo "		<span class=\"button-wrapper\" >\n";
@@ -128,9 +129,14 @@ if($_POST['action']=='resize'){
 	echo "</head>\n";
 	echo "<body>\n";
 	
-	if($_REQUEST['img'] != ''){
+	
+	if($_POST['img'] != ''){
 		//echo $img = $_SESSION['doc_root'].'/images/'.basename($_REQUEST['img']);
-		$img = basename($_REQUEST['img']);
+		$img = basename($_POST['img']);
+		$imgpath = '../../../../images/'.basename($img);
+	} elseif($_GET['img'] != ''){
+		//echo $img = $_SESSION['doc_root'].'/images/'.basename($_REQUEST['img']);
+		$img = basename(urldecode($_GET['img']));
 		$imgpath = '../../../../images/'.basename($img);
 	}
 	$size_ar = getimagesize($imgpath);
@@ -148,7 +154,7 @@ if($_POST['action']=='resize'){
 	echo "		bgColor: 'transparent',\n";
 	echo "		enableRotation:true,\n";
 	echo "		enableZoom:true,\n";
-	echo "		zoomSteps:1,\n";
+	echo "		zoomSteps:0.5,\n";
 	echo "		rotationSteps:90,\n";
 	echo "		expose:{\n";
 	echo "			slidersOrientation:'vertical',\n";
@@ -186,8 +192,7 @@ if($_POST['action']=='resize'){
 	echo "</script>\n";
 	
 	echo "<div style=\"padding:22px 10px 10px 10px;\" class=\"Post-inner\">\n";
-	
-	echo "	<form style=\"display:inline;\" name=\"resizethis\" action=\"#\" method=\"POST\">\n";
+	echo "	<form style=\"display:inline;\" name=\"resizethis\" action=\"resize_image.php\" method=\"POST\">\n";
 	echo "	<input name=\"action\" type=\"hidden\" value=\"preview\">\n";
 	echo "	<input id=\"img\" name=\"img\" type=\"hidden\" value=\"".$img."\">\n";
 	
@@ -270,7 +275,7 @@ echo "			<img src=\"../spacer.gif\" style=\"float:left;width:1px; height:276px;\
 	
 	$module->meta_title = lang("Edit Image: ".$img);
 	$module->add_breadcrumb_link(lang("File Manager"), "program/modules/site_files.php");
-	$module->add_breadcrumb_link(lang("Edit Image"), "program/modules/site_files/resize_image.php?img=".$img);
+	$module->add_breadcrumb_link(lang("Edit Image"), "program/modules/site_files/resize_image.php?img=".urlencode($img));
 	$module->icon_img = "skins/".$_SESSION['skin']."/icons/full_size/file_manager-enabled.gif";
 	$module->heading_text = $heading_text;	
 	$module->description_text = $instructions;

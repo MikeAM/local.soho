@@ -11468,8 +11468,8 @@ THE SOFTWARE.
 	                        getData('image').h = zoomInPx_height;
 	                        $('#new_width').val(zoomInPx_width);
 	                        $('#new_height').val(zoomInPx_height);
-	                        $('#display_width').html(zoomInPx_width);
-	                        $('#display_height').html(zoomInPx_height);
+	                        $('#display_width').html(Math.round(zoomInPx_width));
+	                        $('#display_height').html(Math.round(zoomInPx_height));
 
 	                     calculateFactor();
 	                     calculateTranslationAndRotation();
@@ -11674,22 +11674,22 @@ THE SOFTWARE.
 			
 			$('#sel_w').val(getData('selector').w);
 			$('#sel_h').val(getData('selector').h);
-			$('#display_width').html(getData('selector').w);
-			$('#display_height').html(getData('selector').h);
+			$('#display_width').html(Math.round(getData('selector').w));
+			$('#display_height').html(Math.round(getData('selector').h));
 			
 			
 
 			
 			if(new_xval < 0){ 
-				var setxto = getData('selector').w - parseFloat(new_xval*-1);
+				var setxto = (getData('selector').w - parseFloat(new_xval*-1)).toFixed(0);
 				$('#sel_w').val(setxto);
-				$('#display_width').html(setxto);
+				$('#display_width').html(Math.round(setxto));
 				new_xval = 0;
 			}
 			if(new_yval < 0){
-				var setyto = getData('selector').h - parseFloat(new_yval*-1);
+				var setyto = (getData('selector').h - parseFloat(new_yval*-1)).toFixed(0);
 				$('#sel_h').val(setyto);
-				$('#display_height').html(setyto);
+				$('#display_height').html(Math.round(setyto));
 				new_yval = 0; 
 			}
 			
@@ -11698,15 +11698,15 @@ THE SOFTWARE.
 
 			var newooX = (document.getElementById('new_x').value*1) + (getData('selector').w *1) - (getData('image').w*1);
 			if(newooX > 0){
-				setxto = ((document.getElementById('sel_w').value*1) - newooX * 1).toFixed();
+				setxto = ((document.getElementById('sel_w').value*1) - newooX * 1).toFixed(0);
 				$('#sel_w').val(setxto);
-				$('#display_width').html(setxto);
+				$('#display_width').html(Math.round(setxto));
 			}
 			var newooY = (document.getElementById('new_y').value*1) + (getData('selector').h *1) - (getData('image').h*1);
 			if(newooY > 0){
-				setyto = ((document.getElementById('sel_h').value*1) - newooY * 1).toFixed();
+				setyto = ((document.getElementById('sel_h').value*1) - newooY * 1).toFixed(0);
 				$('#sel_h').val(setyto);
-				$('#display_height').html(setyto);
+				$('#display_height').html(Math.round(setyto));
 			}
                 
                 $selector.append(_infoView);

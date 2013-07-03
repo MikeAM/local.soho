@@ -28,7 +28,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 session_start();
-include_once("../includes/product_gui.php");
+
+require_once("../../includes/product_gui.php");
 ?>
 
 <html>
@@ -61,7 +62,7 @@ body {
 # Read passed form file and display
 if ( $_GET['formfile'] != "" ) {
    $formHTML = file_get_contents($_GET['formfile']);
-	$formHTML = eregi_replace("pgm-form_submit.php", "preview_form.php", $formHTML);
+	$formHTML = str_replace("pgm-form_submit.php", "preview_form.php", $formHTML);
 	echo $formHTML;
 
 } else {

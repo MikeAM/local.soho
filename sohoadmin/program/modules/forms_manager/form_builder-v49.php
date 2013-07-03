@@ -39,7 +39,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 session_start();
 error_reporting(E_PARSE);
-include($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 
 # Primary interface include
 $product_gui = $_SESSION['docroot_path']."/sohoadmin/program/includes/product_gui.php";

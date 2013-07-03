@@ -203,7 +203,7 @@ echo "          </tr>\n";
 if($disable_createpage!=''){
 	echo "          <tr>\n";
 	echo "           <td colspan=\"6\" align=\"center\" style=\"color:#CC0000;font-size:13px;\">\n";
-	echo "		  You have created created ".($_SESSION['page_limit']-$pagelimit)." pages.\n";
+	echo "		  You have created  ".($_SESSION['page_limit']-$pagelimit)." pages.\n";
 	echo "		  To create more than ".$_SESSION['page_limit']." pages you must upgrade to the full version.\n";
 	
 	echo "           </td>\n";

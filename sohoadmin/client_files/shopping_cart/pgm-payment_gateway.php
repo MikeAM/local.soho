@@ -31,9 +31,11 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## copyright laws.
 ###############################################################################
 
-error_reporting(E_PARSE);
+error_reporting('341');
 session_cache_limiter('none');
 session_start();
+include_once("pgm-cart_config.php");
+error_reporting('341');
 
 if ( $_SESSION['ORDER_NUMBER'] == '' && $_SESSION['final_display_reload'] != '' && $_REQUEST['PAY_TYPE'] == "CHECK" ) {
 	echo $_SESSION['final_display_reload'];
@@ -68,8 +70,7 @@ unset($lang, $getSpec);
 ### WE WILL NEED TO KNOW THE DATABASE NAME; UN; PW; ETC TO OPERATE THE
 ### REAL-TIME EXECUTION.  THIS IS CONFIGURED IN THE isp.conf FILE
 ##########################################################################
-include_once("pgm-cart_config.php");
-error_reporting(E_PARSE);
+
 function makePaystationSessionID($min=8,$max=8){
 
   # seed the random number generator - straight from PHP manual
@@ -189,6 +190,7 @@ $result = mysql_query("SELECT * FROM cart_worldpay");
 $getWorld = mysql_fetch_array($result);
 
 $dType = $OPTIONS['PAYMENT_CURRENCY_TYPE'];
+$dSign = $OPTIONS['PAYMENT_CURRENCY_SIGN'];
 $wpHideCurr = $getWorld['WP_LATER2'];
 $wpTest = $getWorld['WP_LATER3'];
 
@@ -217,20 +219,20 @@ $wpTest = $getWorld['WP_LATER3'];
 	echo "</font>\n";
    */
 
-	include ("$lang_include");
-error_reporting(E_PARSE);
+	include_once("$lang_include");
+	error_reporting(E_PARSE);
 	/* More lang testing vars
 	echo "<font color=\"#2C79EC\">billy = (<b>".$billy."</b>)</font><br><br>\n";
 	echo "<font color=\"#ff0000\">lang[\"Pending\"] = (<b>".$lang["Pending"]."</b>)</font><br><br>\n";
 	echo "<font color=\"#ff0000\">lang[\"Connecting To PayPal\"] = (<b>".$lang["Connecting To PayPal"]."</b>)</font>\n";
    */
 
-	session_register("lang");
-	session_register("language");
-	session_register("getSpec");
-
+	$_SESSION['getSpec'] = $getSpec;
+	$_SESSION['language'] = $language;
+	foreach($lang as $lvar=>$lval){
+		$_SESSION['lang'][$lvar]=$lval;
+	}
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 
 ##########################################################################
@@ -664,15 +666,10 @@ if ( $exist_flag < 1 ) {
 
 	$ORDER_NUMBER = mysql_insert_id();
 
-	session_register("ORDER_NUMBER");
-	$ORDER_NUMBER = $ORDER_NUMBER;
-
 	$_SESSION['ORDER_NUMBER'] = $ORDER_NUMBER;
 	$_SESSION['ORDER_TIME'] = $ORDER_TIME;
 	$_SESSION['ORDER_DATE'] = $ORDER_DATE;
 
-	if (!session_is_registered("ORDER_TIME")) { session_register("ORDER_TIME"); }
-	if (!session_is_registered("ORDER_DATE")) { session_register("ORDER_DATE"); }
 
    // Commmented out because: Wait until order is complete
 	//include("pgm-email_notify.php");
@@ -727,7 +724,7 @@ eval(hook("pgm-payment_gateway.php:plugin_paytypes"));
 $nochex = new userdata("nochex");
 $nochex_id = $nochex->get("acctid");
 
-if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE == "CUSTOM_INC" || $PAY_TYPE == "WORLDPAY" || $PAY_TYPE == "PAYPAL" || $PAY_TYPE == "VERISIGN" || $PAY_TYPE == "EWAYATEWAY" || $PAY_TYPE == 'EWAY_UK_NZ' || $PAY_TYPE == "PAYPRO" || $PAY_TYPE == "PAYSTATION" ) {		// This is either a "gateway include", VeriSign, PayPal, or WorldPay
+if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='PAYPALPRO' || $PAY_TYPE=='nochex' || $PAY_TYPE == "CUSTOM_INC" || $PAY_TYPE == "WORLDPAY" || $PAY_TYPE == "PAYPAL" || $PAY_TYPE == "VERISIGN" || $PAY_TYPE == "EWAYATEWAY" || $PAY_TYPE == 'EWAY_UK_NZ' || $PAY_TYPE == "PAYPRO" || $PAY_TYPE == "PAYSTATION" ) {		// This is either a "gateway include", VeriSign, PayPal, or WorldPay
 
 	// ---------------------------------------------------------
 	// FRIST CHECK TO SEE IF THIS UTILIZES A CUSTOM PHP INC FILE
@@ -847,8 +844,8 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 			<input type="hidden" name="ZIPTOSHIP" value="' . $SZIPCODE . '">
 			<input type="hidden" name="EMAIL" value="' . $BEMAILADDRESS . '">
 
-         <input type="hidden" name="COUNTRY" value="' . $BCOUNTRY . '">
-         <input type="hidden" name="COUNTRYTOSHIP" value="' . $SCOUNTRY . '">
+         			<input type="hidden" name="COUNTRY" value="' . $BCOUNTRY . '">
+         		<input type="hidden" name="COUNTRYTOSHIP" value="' . $SCOUNTRY . '">
 
 			<input type="hidden" name="SHOWCONFIRM" value="False">
 
@@ -890,6 +887,57 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 			exit;
 
 	} // End Verisign Process
+	
+	
+	# Custom for PayPal Pro
+	if ( strlen($cartpref->get('paypalpro_username')) > 3 && strlen($cartpref->get('paypalpro_password')) > 3 && $PAY_TYPE == "PAYPALPRO" ) {
+	   /*--------------------------------------------------------------------------------------------------------*
+	
+	    PayPal Pro
+	
+	   /*---------------------------------------------------------------------------------------------------------*/
+	
+	   ######################################################################################
+	   // Show Checkout Steps at top
+	   ######################################################################################
+	   $THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"4\" cellspacing=\"0\" width=\"100%\" class=\"shopping-selfcontained_box\" id=\"checkout-steps\">\n";
+	   $THIS_DISPLAY .= " <tr>\n";
+	   $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
+	   $THIS_DISPLAY .= "   <b>".lang("Step")." 1:<br/>".lang("Customer Sign-in")."</b>\n";
+	   $THIS_DISPLAY .= "  </td>\n";
+	   $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
+	   $THIS_DISPLAY .= lang("Step")." 2:<br/>".lang("Billing & Shipping")."<br/>".lang("Information")."\n";
+	   $THIS_DISPLAY .= "  </td>\n";
+	   $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
+	   $THIS_DISPLAY .= lang("Step")." 3:<br/>".lang("Shipping Options")."\n";
+	   $THIS_DISPLAY .= "  </td>\n";
+	   $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
+	   $THIS_DISPLAY .= lang("Step")." 4:<br/>".lang("Verify Order Details")."<br/>\n";
+	   $THIS_DISPLAY .= "  </td>\n";
+	   # Current step
+	   $THIS_DISPLAY .= "  <th align=\"center\" valign=\"top\">\n";
+	   $THIS_DISPLAY .= lang("Step")." 5:<br/>".lang("Make Payment")."\n";
+	   $THIS_DISPLAY .= "  </th>\n";
+	   $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
+	   $THIS_DISPLAY .= lang("Step")." 6:<br/>".lang("Print Final")."<br/>".lang("Invoice")."\n";
+	   $THIS_DISPLAY .= "  </td>\n";
+	   $THIS_DISPLAY .= " </tr>\n";
+	   $THIS_DISPLAY .= "</table>\n";
+	
+	   $THIS_DISPLAY .= "<br>\n";
+	
+	
+	   ######################################################################################
+	   // Show Credit Card Processing Form
+	   ######################################################################################
+	   ob_start();
+	      include('../sohoadmin/client_files/shopping_cart/prod_paypalpro_card.php');
+	      $THIS_DISPLAY .= ob_get_contents();
+	   ob_end_clean();
+	
+	
+	} // End paypal pro verification	
+	
 
    if ( strlen($EWAY['EWAY_ID']) > 3 && $GATEWAY_ERR != 1 && $PAY_TYPE == "EWAYATEWAY" ) {
 
@@ -1187,7 +1235,7 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
                    __/ |
                   |___/
    	/*----------------------------------------------------------------------------*/
-   	if ( $cartpref->get("paypal_testmode") == 'on' && ($cartpref->get("sandbox-ip") == $_SERVER['REMOTE_ADDR'] || $cartpref->get("sandbox-ip") == '') ) {
+   	if ( $_SESSION['CUR_USER'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $cartpref->get('admin-testmode-status') == 'on' ) {
    		$testmodeBool = true;
    	} else {
    		$testmodeBool = false;
@@ -1204,7 +1252,6 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 			// ----------------------------------------------------------
 
 			mysql_query("UPDATE cart_invoice SET PAY_METHOD = 'PayPal', TRANSACTION_STATUS = 'Sent' WHERE ORDER_NUMBER = '$ORDER_NUMBER'");
-
 
 			$THIS_DISPLAY = "<HTML>\n";
 			$THIS_DISPLAY .= "<HEAD>\n";
@@ -1232,7 +1279,7 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 
          // PayPal Configuration
          if ( $testmodeBool ) {
-				$THIS_DISPLAY .= "<input type=\"hidden\" name=\"business\" value=\"".$cartpref->get("sandbox-email")."\">\n";
+				$THIS_DISPLAY .= "<input type=\"hidden\" name=\"business\" value=\"".$cartpref->get("pp-sandbox-email")."\">\n";
 			} else {
 				$THIS_DISPLAY .= "<input type=\"hidden\" name=\"business\" value=\"".$PAYPAL['PAYPAL_EMAIL']."\">\n";
 			}
@@ -1243,8 +1290,8 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 			if ($OPTIONS['PAYMENT_SSL'] != ''){
 				$return_urlStr = $OPTIONS['PAYMENT_SSL'];
 			} else {
-				if($_SERVER['SERVER_NAME']!=''){
-					$return_urlStr = $prefixStr."://".$_SERVER['SERVER_NAME'];
+				if($_SESSION['this_ip']!=''){
+					$return_urlStr = $prefixStr."://".$_SESSION['this_ip'];
 				} else {
 					$return_urlStr = $prefixStr."://".$_SESSION['docroot_url'];
 				}
@@ -1275,7 +1322,18 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 			$THIS_DISPLAY .= "<input type=\"hidden\" name=\"cs\" value=\"\">\n";
 
          // Product Information
-			$THIS_DISPLAY .= "<input type=\"hidden\" name=\"item_name\" value=\"$BFIRSTNAME $BLASTNAME's Order [Invoice #: $ORDER_NUMBER]\">\n";
+			# Create a nicely-formatted list of products for description field
+		   $pp_desc_string = '';
+		   $product_nameArr = explode(';', $_SESSION['CART_PRODNAME']);
+		   $product_qtyArr = explode(';', $_SESSION['CART_QTY']);
+		   $pCount = count($product_nameArr);
+		   for ( $p = 0; $p < $pCount; $p++ ) {
+		      if ( $product_qtyArr[$p] > 0 ) {
+		         $pp_desc_string .= '('.$product_qtyArr[$p].') '.$product_nameArr[$p].' | ';
+		      }
+		   }
+		   $pp_desc_string = rtrim($pp_desc_string, ' |'); // trim trailing |	         
+			$THIS_DISPLAY .= "<input type=\"hidden\" name=\"item_name\" value=\"".$pp_desc_string."\">\n";
 			$THIS_DISPLAY .= "<input type=\"hidden\" name=\"amount\" value=\"$ORDER_TOTAL\">\n";
 
          // Shipping and Misc Information
@@ -1391,6 +1449,7 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 		$THIS_DISPLAY .= "<script language=\"javascript\">window.setTimeout('nochexgateway()', 300);</script>\n";
 		
 		echo $THIS_DISPLAY;
+		
 		exit;
 	}
 
@@ -1512,9 +1571,9 @@ if ( in_array($PAY_TYPE, $plugin_paytypes) || $PAY_TYPE=='nochex' || $PAY_TYPE =
 
 	} // End WorldPay(TM) verification
 
-	$THIS_DISPLAY .= "<div align=left class=text><h2><font color=red>CHECKOUT SETUP CC ERROR:</font></h2><font color=darkblue>".lang("The checkout system is configured to utilize online credit card processing, however, there is no VeriSign")."<SUP>TM</SUP> ".lang("information setup nor is there a")." \n";
-	$THIS_DISPLAY .= lang("custom gateway specified.  One of the other must be setup through 'Payment Options' to use the online credit card checkout system.")."<BR><BR><U>HINT</U>:<BR><BR>".lang("If you do not know what these things mean, login to the admin system, select 'Payment Options' in the Shopping Cart module")." \n";
-	$THIS_DISPLAY .= lang("and select 'Offline Processing' then save your settings.")."  ".lang("This should resolve your issue immediately.")."<BR><BR>(".$getWorld['WP_INSTALL_ID'].")</DIV>\n\n";
+//	$THIS_DISPLAY .= "<div align=left class=text><h2><font color=red>CHECKOUT SETUP CC ERROR:</font></h2><font color=darkblue>".lang("The checkout system is configured to utilize online credit card processing, however, there is no VeriSign")."<SUP>TM</SUP> ".lang("information setup nor is there a")." \n";
+//	$THIS_DISPLAY .= lang("custom gateway specified.  One of the other must be setup through 'Payment Options' to use the online credit card checkout system.")."<BR><BR><U>HINT</U>:<BR><BR>".lang("If you do not know what these things mean, login to the admin system, select 'Payment Options' in the Shopping Cart module")." \n";
+//	$THIS_DISPLAY .= lang("and select 'Offline Processing' then save your settings.")."  ".lang("This should resolve your issue immediately.")."<BR><BR>(".$getWorld['WP_INSTALL_ID'].")</DIV>\n\n";
 
 	if (strlen($PAYSTATION['PAYSTATION_ID']) > 3 && $GATEWAY_ERR != 1 && $PAY_TYPE == "PAYSTATION") {
 
@@ -1750,8 +1809,10 @@ if ( strlen($getInnov['IG_USER']) > 3 && strlen($getInnov['IG_PASS']) > 3 && $GA
    ######################################################################################
    // Show Credit Card Processing Form
    ######################################################################################
+   
+   
    ob_start();
-      include("prod_innov_card.php");
+      include_once("prod_innov_card.php");
       $THIS_DISPLAY .= ob_get_contents();
    ob_end_clean();
 
@@ -1904,7 +1965,7 @@ if ( $PAY_TYPE == "transactium" || $_GET['todo'] == 'transactium_error' || $_GET
 
 
 //internetsecure
-if ( strlen($IS_acctid) > 3 && strlen($IS_acctkey) > 3 && $GATEWAY_ERR != 1 && $PAY_TYPE == "internetsecure" ) {
+if (strlen($IS_acctkey) > 3 && $GATEWAY_ERR != 1 && $PAY_TYPE == "internetsecure" ) {
 
    /*---------------------------------------------------------------------------------------------------------*/
 

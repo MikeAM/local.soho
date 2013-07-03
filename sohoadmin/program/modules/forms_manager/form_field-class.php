@@ -5,6 +5,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 session_start();
 error_reporting(E_PARSE);
+require_once("../../includes/product_gui.php");
 //echo "This is: ".$_SERVER['SCRIPT_NAME']."<br>"; exit;
 /*=============================================================================================*
               _      _            ______     _  _  _      ______  _        _      _ 

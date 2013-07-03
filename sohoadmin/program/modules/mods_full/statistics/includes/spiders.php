@@ -74,7 +74,7 @@ $MONTHS[12] = "December";
 <HTML>
 <HEAD>
 <TITLE>Web Crawler Statistics</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<?php echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UT"."F-8\">\n"; ?>
 <LINK REL="stylesheet" HREF="../shared/soholaunch.css" TYPE="TEXT/CSS">
 <script language="JavaScript">
 <!--
@@ -88,7 +88,7 @@ function MM_callJS(jsStr) { //v2.0
 </script>
 </HEAD>
 
-<BODY BGCOLOR="#EFEFEF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
 
 	<?php
 
@@ -97,11 +97,11 @@ function MM_callJS(jsStr) { //v2.0
 	// ------------------------------------------------------------------------------------------
 
 	echo "<H5><FONT FACE=VERDANA><U>".$lang["BROWSER AND OPERATING SYSTEMS USED"]."</U></FONT></H5>\n";
-
-	$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_browser GROUP BY Month UNION SELECT Month, Year, Real_Date FROM stats_browser_archive GROUP BY Month ORDER BY Real_Date DESC");
-
+	$used=array();
+	$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_browser GROUP BY Real_Date UNION SELECT Month, Year, Real_Date FROM stats_browser_archive GROUP BY Real_Date ORDER BY Real_Date DESC");	
 	while($ALL_MONTHS = mysql_fetch_array($result)) {
-
+		if(!in_array($ALL_MONTHS['Month'].$ALL_MONTHS['Year'], $used)){
+			$used[]=$ALL_MONTHS['Month'].$ALL_MONTHS['Year'];
 			####################################################################
 			#### START CALCULATION FOR BROWSERS USED TO ACCESS SITE 	     ###
 			####################################################################
@@ -452,6 +452,8 @@ function MM_callJS(jsStr) { //v2.0
 //
 //		  echo "</TABLE><BR CLEAR=ALL><BR><BR>\n\n";
 
+	
+		}
 	} // End Monthly While Loop
 
 ?>

@@ -59,7 +59,7 @@
 <!-- BEGIN PRODUCT DISPLAY  -->
 <!-- #################################################################### -->
 
-<FORM NAME="<? echo $FORM_NAME; ?>">
+<FORM NAME="<?php echo $FORM_NAME; ?>">
 
   <!-- Main Table Width 98% so we dont run close to the search column and look
        like hell. -->
@@ -72,8 +72,7 @@ echo "  <tr> \n";
 echo "   <td> \n";
 echo "    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n";
 echo "     <tr>\n";
-?>
-<?php
+
 
 			// -------------------------------------------------------------------------------
 			// If a thumbnail is present, use it, otherwise, scale the fullimage to a width
@@ -135,9 +134,7 @@ echo "     <tr>\n";
 			// If the imagename listed in the database is not there, dont show an image
 			// -------------------------------------------------------------------------------
 
-//			if (!file_exists($TEST_IMAGE) || $THIS_IMAGE == "../images/") {
-//				$THIS_IMAGE = "\"../spacer.gif\"";
-//			}
+
 
 			// -------------------------------------------------------------------------------
 			// Define the "text" within the button below the image only if NOT catalog only
@@ -165,13 +162,18 @@ echo "     <tr>\n";
          echo '<TD ALIGN="CENTER" VALIGN="TOP" WIDTH="150">';
 
          # Compiling for email to friend?
+         
+		if (!file_exists($THIS_IMAGE) || $THIS_IMAGE == "../images/") {
+			$THIS_IMAGE = "../spacer.gif";
+		}
+         
          if ( basename($_SERVER['PHP_SELF']) == "pgm-email_friend.php" ) {
             # YES - Absolute link on image and button ($link_to_sku defined in parent file)
-            echo "<a href=\"".$link_to_sku."\"><img src=\"".$THIS_IMAGE."\"".$WH."vspace=\"2\" hspace=\"5\" alt=\"".$PROD['PROD_NAME']."\" border=\"0\"></a><br/>";
+            echo "<a href=\"".$link_to_sku."\"><img src=\"".$THIS_IMAGE."\" ".$WH." vspace=\"2\" hspace=\"5\" alt=\"".$PROD['PROD_NAME']."\" border=\"0\"></a><br/>";
             echo "[ <a href=\"".$link_to_sku."\">Buy Now</a> ]";
          } else {
             # NO - Standard javascript action on image and button
-            echo "<A HREF=\"#\" onclick=\"userbutton('".$PROD['PRIKEY']."');\"><img src=\"".$THIS_IMAGE."\"".$WH."VSPACE=\"2\" HSPACE=\"5\" ALT=\"".$PROD[PROD_NAME]."\" BORDER=\"0\"></A><BR>";
+            echo "<A HREF=\"#\" onclick=\"userbutton('".$PROD['PRIKEY']."');\"><img src=\"".$THIS_IMAGE."\" ".$WH." VSPACE=\"2\" HSPACE=\"5\" ALT=\"".$PROD[PROD_NAME]."\" BORDER=\"0\"></A><BR>";
             echo "<INPUT TYPE=\"BUTTON\" VALUE=\"".$button_value."\" class=\"text\" style=\"cursor: hand;\" onclick=\"userbutton('".$PROD[PRIKEY]."');\">";
          }
 
@@ -270,7 +272,7 @@ echo "     <tr>\n";
                 <TR>
                   <TD ALIGN="CENTER" VALIGN="MIDDLE">
 
-				<?
+				<?php
 
 					// ----------------------------------------------------------------
 					// Only display the more information link if there is a product
@@ -279,7 +281,7 @@ echo "     <tr>\n";
 					// if this option has been turned on (Turned On by Default)
 					// ----------------------------------------------------------------
 
-					if ( ($PROD[OPTION_DETAILPAGE] != "" || $cartpref->get('more-info-link') == 'on') && $cartpref->get('more-info-link') != 'off' ) {
+					if ( ($PROD[OPTION_DETAILPAGE] != "" || $cartpref->get('more-info-link')=='default' || $cartpref->get('more-info-link') == 'on') && $cartpref->get('more-info-link') != 'off' &&  ($OPTIONS['DISPLAY_USERBUTTON'] == "" || $OPTIONS['DISPLAY_USERBUTTON'] != "More Information")) {
 						echo "[ <A HREF=\"pgm-more_information.php?id=$PROD[PRIKEY]&=SID#MOREINFO\">".lang("More Information")."</A> ] \n";
 					}
 
@@ -301,7 +303,7 @@ echo "     <tr>\n";
                 <TR>
                   <TD ALIGN="CENTER" VALIGN="MIDDLE">
 
-			<?
+			<?php
 
 				// ----------------------------------------------------------------------
 				// If the "User Defined" button contains a text label, then display it
@@ -321,7 +323,7 @@ echo "     <tr>\n";
               </TABLE>
 
 
-		<?
+		<?php
 
 			// -------------------------------------------------------------------------------------
 			// If other skus have been recommended (You have the option to relate other skus with
@@ -329,7 +331,7 @@ echo "     <tr>\n";
 			// information page and actually show the thumnail images as well (but not here)
 			// -------------------------------------------------------------------------------------
 
-			if ($PROD[OPTION_RECOMMENDSKU] != "") {
+			if (str_replace(' ','',$PROD[OPTION_RECOMMENDSKU]) != "") {
 
 				$other_skus = split(",", $PROD[OPTION_RECOMMENDSKU]);
 				$other_skus_count = count($other_skus);
@@ -406,7 +408,7 @@ echo "     <tr>\n";
     <TR>
       <TD>
 
-	<?
+	<?php
 
 		// ------------------------------------------------------------
 		// Only display the "Catalog Ref Number" if one is available
@@ -422,10 +424,10 @@ echo "     <tr>\n";
 
         <TABLE WIDTH="100%" BORDER="0" CELLSPACING="0" CELLPADDING="2" CLASS=text>
           <TR>
-            <TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH="50%"><FONT SIZE="1"><? echo "$THIS_CAT_NO"; ?>&nbsp;&nbsp;&nbsp;&nbsp;<U>Sku</U>: <? echo strtoupper($PROD[PROD_SKU]); ?>
+            <TD ALIGN="LEFT" VALIGN="MIDDLE" WIDTH="50%"><FONT SIZE="1"><?php echo "$THIS_CAT_NO"; ?>&nbsp;&nbsp;&nbsp;&nbsp;<U>Sku</U>: <?php echo strtoupper($PROD[PROD_SKU]); ?>
               </FONT></TD>
 
-		<?
+		<?php
 
 			// ----------------------------------------------------------------------
 			// Get the proper Category Name since the keyfield number is databased
@@ -438,7 +440,13 @@ echo "     <tr>\n";
 		?>
 
             <TD ALIGN="RIGHT" VALIGN="MIDDLE" WIDTH="50%">
-		<FONT SIZE="1"><? echo lang("Browse Category"); ?>: <A HREF="<? echo "start.php?browse=1&cat=".$PROD['PROD_CATEGORY1']."&=SID"; ?>"><? echo $this_category['category']; ?></A></FONT></TD>
+            <?php
+
+			if($this_category['category']!=''){
+		  		echo "<FONT SIZE=\"1\">".lang("Browse Category").": <A HREF=\"start.php?browse=1&cat=".$PROD['PROD_CATEGORY1']."&=SID\">".$this_category['category']."</A></FONT>\n";
+			}
+		  ?>
+		  </TD>
           </TR>
         </TABLE>
       </TD>

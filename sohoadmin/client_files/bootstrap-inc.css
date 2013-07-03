@@ -1,0 +1,51 @@
+@charset "utf-8";
+
+.sohorow {
+	/*width:auto;*/
+	margin-left:0;
+}
+
+ ul.nav li.dropdown:hover ul.dropdown-menu{
+    display: block;    
+}
+
+a.menu:after, .dropdown-toggle:after {
+    content: none;
+}
+
+.navbar .nav > li > a {
+	display:inline-block!important;
+}
+
+.navbar .nav > li > a.dropdown-toggle {
+	padding-left:0px;
+}
+
+.navbar .nav > li.has-flyout > a {
+	padding-right:6px;
+}
+
+/*
+.pull-right {
+display:list-item!important;
+float:none!important;
+}
+*/
+
+.sidebar-nav li {
+	display:list-item!important;
+	float:none!important;
+}
+
+
+.sidebar-nav ul .pull-right a.dropdown-toggle, .sidebar-nav ul .pull-right a.main {
+	display:inline!important;
+ 
+}
+
+.dropdown-menu .sub-flyout {
+	display:list-item!important;
+}
+.dropdown-menu .sub-flyout a {
+	display:block!important;
+}

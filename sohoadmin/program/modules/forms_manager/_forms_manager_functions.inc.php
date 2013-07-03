@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -27,7 +27,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 #===============================================================================================
 # Forms Manager Module v2.0 - Shared PHP functions for forms manager scripts
 #===============================================================================================
-
+require_once("../../includes/product_gui.php");
 # Returns nothing or an asterisk depending on whether passed field id is a required field
 function asterisk($field_id) {
    if ( $_SESSION['form_fields'][$field_id]['required'] == "yes" ) {

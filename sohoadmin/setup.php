@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -38,7 +38,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 //
 //
 
-error_reporting(E_PARSE);
 //if(count($_POST) > 0){
 //	include('program/includes/shared_functions.php');
 //	echo testArray($_POST);
@@ -55,7 +54,6 @@ if (file_exists("config/isp.conf.php") && $STEP == "" ) {
 	echo "</script> \n";
 	exit;
 }
-error_reporting(E_ERROR || E_PARSE);
 /*-----------------------------------------------------------*/
 
 // Make "v" inactive by default (link to 'killer v' function if soho domain
@@ -74,7 +72,7 @@ $OS = strtoupper(PHP_OS);
    |  /  \ \___) (___| (____/\| (____/\| (____/\| ) \ \__    \   /
    |_/    \/\_______/(_______/(_______/(_______/|/   \__/     \_/
 /*---------------------------------------------------------------------------------*/
-if ( eregi(".soholaunch.com",$_SERVER['SERVER_NAME']) ) {
+if ( preg_match("/\.soholaunch\.com/i",$_SERVER['SERVER_NAME']) ) {
 
    $kv = "<a href=\"http://$SERVER_NAME/sohoadmin/setup.php?killconf=yes\">v</a>";
 
@@ -110,9 +108,9 @@ if ( eregi(".soholaunch.com",$_SERVER['SERVER_NAME']) ) {
 
 
 
-      	if (eregi("WIN", $OS) && isset($windir)) {
+      	if (preg_match("/WIN/i", $OS) && isset($windir)) {
       		$WINDIR = $windir;
-      		if ( !session_is_registered("WINDIR") ) { session_register("WINDIR"); }
+      		$_SESSION['WINDIR'] = $windir;      		
       	}
 
       } // End If File Open
@@ -120,7 +118,7 @@ if ( eregi(".soholaunch.com",$_SERVER['SERVER_NAME']) ) {
 
       $link = mysql_connect("$db_server", "$db_un","$db_pw") || die("Could not connect to database '$db_name' ($db_server). Your database server may be down or your database setup may be wrong.");
       $sel = mysql_select_db("$db_name");
-      $result = mysql_list_tables("$db_name");
+      $result = mysql_query('show tables from '.$db_name);
 
       ## DROP THESE TABLES
       ##XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

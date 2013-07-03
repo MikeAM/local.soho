@@ -87,8 +87,7 @@ if ($file = fopen("$filename", "r")) {
 			$value = rtrim($value);
 
 			${$variable} = $value;
-			session_register("$variable");
-			//$_SESSION[$variable] = $value;
+			$_SESSION[$variable] = $value;
 		}
 	}
 
@@ -114,7 +113,7 @@ if ($file = fopen("$filename", "r")) {
 
 	if (eregi("IIS", $SERVER_SOFTWARE) && isset($windir)) {
 		$WINDIR = $windir;
-		if ( !session_is_registered("WINDIR") ) { session_register("WINDIR"); }
+		$_SESSION['WINDIR']=$WINDIR;
 	}
 
 } else {
@@ -151,8 +150,7 @@ if ($file = fopen("$filename", "r")) {
 			$value = rtrim($value);
 
 			${$variable} = $value;
-			session_register("$variable");
-			//$_SESSION[$variable] = $value;
+			$_SESSION[$variable] = $value;
 		}
 	}
 

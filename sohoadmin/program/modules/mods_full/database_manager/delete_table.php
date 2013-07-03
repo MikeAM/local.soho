@@ -44,7 +44,7 @@ require_once("../../../includes/product_gui.php");
 ### TO POPULATE "CURRENT" TABLE DROP DOWN BOX
 #######################################################
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 $CURRENT_TABLES = "     <OPTION VALUE=\"\">Choose Table to Delete...</OPTION>\n";
 while ($i < mysql_num_rows ($result)) {
@@ -83,8 +83,7 @@ if ($ACTION == "2") {
 
 ob_start();
 ?>
-<SCRIPT language="JavaScript">
-<!--
+<script type="text/javascript"> 
 function SV2_findObj(n, d) { //v3.0
   var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
@@ -117,11 +116,13 @@ function cancel_delete() {
 }
 
 function confirm_delete() {
-   disOne = document.getElementById('DELETE_TABLE').selectedIndex;
-	var table_name = eval("document.getElementById('DELETE_TABLE').options["+disOne+"].value");
+   var disOne = document.getElementById('DELETE_TABLEname').selectedIndex;
+	//var table_name = eval("document.getElementById('DELETE_TABLEname').options["+disOne+"].value");
+	var table_name = document.getElementById('DELETE_TABLEname').selectedIndex;;
 	//var table_name = DELFORM.DELETE_TABLE.options.value;
 	if (table_name != "") {
-		<? echo "var tiny = window.confirm('!! ".lang("WARNING")." !!\\n\\n".lang("YOU ARE ABOUT TO DELETE THE TABLE")."\\n\"'+table_name+'\" ".lang("AND LOSE ALL RECORD DATA")."\\n".lang("CONTAINED INSIDE OF IT.")."\\n\\n ".lang("Are you sure you wish to do this now")."?');"; ?>
+		<?php echo "var tiny = window.confirm('!! ".lang("WARNING")." !!\\n\\n".lang("YOU ARE ABOUT TO DELETE THE TABLE")."\\n\"'+table_name+'\" ".lang("AND LOSE ALL RECORD DATA")."\\n".lang("CONTAINED INSIDE OF IT.")."\\n\\n ".lang("Are you sure you wish to do this now")."?');"; ?>
+		
 		if (tiny != false) {
 		   //alert('ok');
 			document.DELFORM.submit();
@@ -129,12 +130,12 @@ function confirm_delete() {
 		   //alert('ok2');
 		}
 	} else {
-		<? echo "alert('".lang("You did not select a table to delete.")."');"; ?>
+		<?php echo "alert('".lang("You did not select a table to delete.")."');\n"; ?>
 	}
+	
+	
 }
-
-//-->
-</SCRIPT>
+</script>
 <?
 
 IF ($ACTION == "") {
@@ -148,7 +149,8 @@ IF ($ACTION == "") {
 	$THIS_DISPLAY .= lang("NOTE").": <U>".lang("THIS PROCESS CAN NOT BE REVERSED ONCE COMPLETED.")."</U><BR><BR>".lang("ALL DATA WILL BE LOST WHEN THIS TABLE IS DELETED.")." \n";
 	$THIS_DISPLAY .= lang("YOU WILL HAVE ONE CHANCE TO CONFIRM, BUT ONCE YOU 'OK' THE CONFIRMATION, THE TABLE WILL BE DELETED")."!\n\n";
 	$THIS_DISPLAY .= "<BR><BR>\n";
-	$THIS_DISPLAY .= "<DIV ALIGN=CENTER>".lang("Delete Table").": <SELECT name=\"DELETE_TABLE\" id=\"DELETE_TABLE\" CLASS=text STYLE='width: 275px';>$CURRENT_TABLES</SELECT><BR></FONT></DIV>\n";
+	$THIS_DISPLAY .= "<DIV ALIGN=CENTER>".lang("Delete Table").": <SELECT name=\"DELETE_TABLE\" id=\"DELETE_TABLEname\" CLASS=text STYLE='width: 275px;'>"."\n";
+	$THIS_DISPLAY .= $CURRENT_TABLES."\n</SELECT><BR></FONT></DIV>\n";
 	$THIS_DISPLAY .= "</TD></TR></TABLE>\n";
 
 	$THIS_DISPLAY .= "<span class=\"dgray\">".lang("Note: The light gray table names are system tables. Do not delete these unless you know what you're doing.")."</span>\n";

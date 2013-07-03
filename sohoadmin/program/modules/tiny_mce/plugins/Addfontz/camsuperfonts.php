@@ -9,7 +9,7 @@ error_reporting(E_PARSE);
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>{$lang_Addfontz_title}</title>
+	<title>Add Custom Fonts</title>
 	<script language="javascript" type="text/javascript" src="../../tiny_mce_popup.js"></script>
 	<script language="javascript" type="text/javascript" src="jscripts/functions.js"></script>
 	<base target="_self" />

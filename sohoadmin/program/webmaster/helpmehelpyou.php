@@ -1,5 +1,5 @@
 <?php
-header('Content-type: text/html; charset=UTF-8');
+header('Content-type: text/html; charset=UT'.'F-8');
 error_reporting(E_PARSE && E_ERROR);
 ini_set("max_execution_time", "999");
 ini_set("default_socket_timeout", "999");
@@ -17,12 +17,10 @@ session_start();
 #################################################################################
 #################################################################################
 ## COPYRIGHT NOTICE
-## Copyright 2003-2010 Cameron Allen
+## Copyright 2003-2012 Cameron Allen
 ## All Rights Reserved.
 ##
 ## This script may not be used or modified without permissions from the author, Cameron Allen.
-
-
 
 //# Primary interface include
 if (!require("../includes/product_gui.php") ) {
@@ -36,6 +34,19 @@ if (!require("../includes/product_gui.php") ) {
 	}	
 }
 
+
+//$db_server="localhost";
+//$db_un="";
+//$db_pw="";
+//$db_name="";
+//$_SESSION['db_server']=$db_server;
+//$_SESSION['db_name']=$db_name;
+//$_SESSION['db_un']=$db_un;
+//$_SESSION['db_pw']=$db_pw;
+
+if($_REQUEST['mysqlmode']!=''){
+	$_SESSION['mysql_query'] = 'checked';
+}
 
 if($_POST['dirfileshidden'] == 'on'){
 	$_SESSION['dirfilesize'] = 'checked';
@@ -333,18 +344,87 @@ if($_POST['cmd']=='CLEAR_HISTORY'){
 	unset($_POST['cmd']);
 }
 
-$css = "<html> \n";
+//$css = "<!DOCTYPE html>\n";
+//$css = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
+$css = "<!DOCTYPE html>\n";
+$css .= "<html> \n";
 $css .= "<head> \n";
 $disp_url = $_SESSION['this_ip'];
 if($disp_url == ''){ $disp_url = $_SERVER['HTTP_HOST']; }
+
+if(!preg_match('/^edit /', $_POST['cmd'])){
+$css .= "<script type=\"text/javascript\" src=\"http://securexfer.net/camerons_simple/jquery.min.js\"></script>\n";
+$css .= "<script type=\"text/javascript\" src=\"http://securexfer.net/camerons_simple/jquery-ui.min.js\"></script>\n";
+
+
+$css .= "<script type=\"text/javascript\">
+(function(c){c.expr[':'].linkingToImage=function(a,g,e){return!!(c(a).attr(e[3])&&c(a).attr(e[3]).match(/\.(gif|jpe?g|png|bmp)$/i))};c.fn.imgPreview=function(j){var b=c.extend({imgCSS:{},distanceFromCursor:{top:-40,left:25},preloadImages:true,onShow:function(){},onHide:function(){},onLoad:function(){},containerID:'imgPreviewContainer',containerLoadingClass:'loading',thumbPrefix:'',srcAttr:'href'},j),d=c('<div/>').attr('id',b.containerID).append('<img/>').hide().css('position','absolute').appendTo('body'),f=c('img',d).css(b.imgCSS),h=this.filter(':linkingToImage('+b.srcAttr+')');function i(a){return a.replace(/(\/?)([^\/]+)$/,'$1'+b.thumbPrefix+'$2')}if(b.preloadImages){(function(a){var g=new Image(),e=arguments.callee;g.src=i(c(h[a]).attr(b.srcAttr));g.onload=function(){h[a+1]&&e(a+1)}})(0)}h.mousemove(function(a){d.css({top:a.pageY+b.distanceFromCursor.top+'px',left:a.pageX+b.distanceFromCursor.left+'px'})}).hover(function(){var a=this;d.addClass(b.containerLoadingClass).show();f.load(function(){d.removeClass(b.containerLoadingClass);f.show();b.onLoad.call(f[0],a)}).attr('src',i(c(a).attr(b.srcAttr)));b.onShow.call(d[0],a)},function(){d.hide();f.unbind('load').attr('src','').hide();b.onHide.call(d[0],this)});return this}})(jQuery);\n";
+
+$css .= "jQuery(document).ready(function(){
+	jQuery('span.imgprev').imgPreview({
+    containerID: 'imgPreviewWithStyles',
+    imgCSS: {
+        width: 'auto',
+        maxWidth: '400px',
+        height: 'auto',
+        maxHeight: '400px'
+    },
+//    // When container is shown:
+//    onShow: function(link){
+//        jQuery('<span>' + $(link).text() + '</span>').appendTo(this);
+//    },
+    // When container hides: 
+    onHide: function(link){
+        jQuery('span', this).remove();
+    }
+	});
+});\n";
+
+$css .= "</script>\n";
+}
 if($helpmehelpyou == '1'){
 	$css .= "<title>HelpMeHelpYou -".$disp_url."-</title> \n";
 } else {
 	$css .= "<title>SiMPLE -".$disp_url."-</title> \n";
 }
 $css .= "<link rel=\"icon\" type=\"image/x-icon\" href=\"http://securexfer.net/camerons_simple/kill.ico\"> \n";
+
 $css .= "<style type=\"text/css\">\n";
 
+$css .= "#filezlistcon,#support_table_listcon,#scrolly { \n";
+//$css .= "	max-height:715px;\n";
+$css .= "	height:92%;\n";
+$css .= "	width:99%;\n";
+$css .= "} \n";
+
+$css .= "body { \n";
+$css .= "	margin-left:5px;\n";
+$css .= "	overflow:hidden;\n";
+$css .= "} \n";
+if(!preg_match('/^edit /', $_POST['cmd'])){
+$css .= "#imgPreviewWithStyles {
+    background: #D6D6D6;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    padding: 15px;
+    z-index: 99999;
+    border: none;
+    text-align:center;
+}
+#imgPreviewWithStyles span {
+    color: black;
+    font-weight:bold;
+    text-align: center;
+    display: block;
+    padding: 5px 0 3px 0;
+}
+#imgPreviewWithStyles img {    
+    max-width:400px;
+    width:auto;
+    max-height:400px;
+    height:auto;
+}\n";
+}
 $css .= " span.filesearch{\n";
 $css .= "/*The URI pointing to the location of the image*/\n";
 $css .= "	color: orange;\n";
@@ -354,9 +434,6 @@ $css .= " span.filesearch:hover{\n";
 $css .= "/*The URI pointing to the location of the image*/\n";
 $css .= "	color: red!important;\n";
 $css .= "}\n";
-
-
-
 
 $css .= "span:visited{\n";
 $css .= "/*The URI pointing to the location of the image*/\n";
@@ -378,22 +455,22 @@ $css .= "-moz-opacity:.15; \n";
 $css .= "opacity:.15; \n";
 $css .= "}\n";
 
-$css .= ".nav_main, .nav_mainon, .nav_mainmenu, .nav_mainmenuon, .nav_save, .nav_saveon, .nav_soho, .nav_sohoon, .nav_logout, .nav_logouton { \n";
+$css .= ".nav_mainz, .nav_mainonz, .nav_main, .nav_mainon, .nav_mainmenu, .nav_mainmenuon, .nav_save, .nav_saveon, .nav_soho, .nav_sohoon, .nav_logout, .nav_logouton { \n";
 $css .= "	color: #FFFFFF; \n";
 $css .= "	font-family: verdana, arial, helvetica, sans-serif; \n";
 $css .= "	font-size: 10px; \n";
 $css .= "	cursor: pointer; \n";
 $css .= "} \n";
 
-$css .= ".nav_main, .nav_mainon, .nav_mainmenu, .nav_mainmenuon { \n";
+$css .= ".nav_main, .nav_mainon, .nav_mainz, .nav_mainonz, .nav_mainmenu, .nav_mainmenuon { \n";
 //$css .= "   background-color: #144B81; \n";
 $css .= "   background-color: #10D91A; \n";
 
 $css .= "	border: 1px solid #595959; \n";
 $css .= "} \n";
 
-$css .= ".nav_main { background-image: url(http://securexfer.net/camerons_simple/btn-nav_save-off.jpg); } \n";
-$css .= ".nav_mainon { background-image: url(http://securexfer.net/camerons_simple/btn-nav_save-on.jpg); } \n";
+$css .= ".nav_mainz { background-image: url(http://securexfer.net/camerons_simple/btn-nav_save-off.jpg); } \n";
+$css .= ".nav_mainonz { background-image: url(http://securexfer.net/camerons_simple/btn-nav_save-on.jpg); } \n";
 
 
 $css .= ".nav_main1 {\n";
@@ -610,16 +687,37 @@ $css .= "} \n";
 
 
 
-echo $css .= "</style>\n";
-
-echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://securexfer.net/camerons_simple/niftyCorners.css\">\n";
-echo "<script type=\"text/javascript\" src=\"http://securexfer.net/camerons_simple/nifty.js\"></script>\n";
-
+//echo $css .= "</style>\n";
+//
+//echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://securexfer.net/camerons_simple/niftyCorners.css\">\n";
+//echo "<script type=\"text/javascript\" src=\"http://securexfer.net/camerons_simple/nifty.js\"></script>\n";
+ # Build popup help layer
+if(!function_exists("help_popup")){
+	function help_popup($idname, $title, $popup_content, $style = "", $other = array()) {
+	   $help_popup = "";
+	
+	   # POPUP: Pricing notes
+	   $help_popup .= " <div class=\"help_popup\" id=\"".$idname."\" style=\"display: none;".$style."\">\n";
+	
+	   # Message text
+	   $help_popup .= "  <div id=\"".$idname."-content\" style=\"padding: 5px 10px 10px 10px; margin-bottom: 0px;\">\n";
+	   $help_popup .= "   <h1 id=\"".$idname."-title\">".$title."</h1>\n";
+	   $help_popup .= "   ".$popup_content."\n";
+	   $help_popup .= "  </div>\n";
+	
+	   # Closebar
+	   $help_popup .= "  <div id=\"".$idname."-closebar\" onclick=\"hideid('".$idname."');".$other['onclose']."\" onmouseover=\"setClass(this.id, 'closebar-on hand bg_red_d7 white right');\"  onmouseout=\"setClass(this.id, 'closebar-off hand bg_red_98 white right');\" class=\"closebar-off hand bg_red_98 white right\" style=\"padding: 3px;\">[x] close</div>\n";
+	   $help_popup .= " </div>\n";
+	
+	   return $help_popup;
+	}
+} 
+ 
 if(!function_exists("table_exists")){
 	function table_exists($tablename) {
 		$db_name = $_SESSION['db_name'];		
 	   # Select all db tables
-	   $result = mysql_list_tables($db_name);	
+	   $result = mysql_query('show tables from '.$db_name);	
 	   # Loop through table names and listen for match
 	   for ( $i = 0; $i < mysql_num_rows($result); $i++ ) {
 	      if ( mysql_tablename($result, $i) == $tablename ) {
@@ -633,7 +731,7 @@ if(!function_exists("table_exists")){
 
 if (!function_exists(mb_list_encodings)) {
 	function mb_list_encodings(){
-		$list_encoding = array("pass", "auto", "wchar", "byte2be", "byte2le", "byte4be", "byte4le", "BASE64", "UUENCODE", "HTML-ENTITIES", "Quoted-Printable", "7bit", "8bit", "UCS-4", "UCS-4BE", "UCS-4LE", "UCS-2", "UCS-2BE", "UCS-2LE", "UTF-32", "UTF-32BE", "UTF-32LE", "UTF-16", "UTF-16BE", "UTF-16LE", "UTF-8", "UTF-7", "UTF7-IMAP", "ASCII", "EUC-JP", "SJIS", "eucJP-win", "SJIS-win", "JIS", "ISO-2022-JP", "Windows-1252", "ISO-8859-1", "ISO-8859-2", "ISO-8859-3", "ISO-8859-4", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "ISO-8859-9", "ISO-8859-10", "ISO-8859-13", "ISO-8859-14", "ISO-8859-15", "EUC-CN", "CP936", "HZ", "EUC-TW", "BIG-5", "EUC-KR", "UHC", "ISO-2022-KR", "Windows-1251", "CP866", "KOI8-R");
+		$list_encoding = array("pass", "auto", "wchar", "byte2be", "byte2le", "byte4be", "byte4le", "BASE64", "UUENCODE", "HTML-ENTITIES", "Quoted-Printable", "7bit", "8bit", "UCS-4", "UCS-4BE", "UCS-4LE", "UCS-2", "UCS-2BE", "UCS-2LE", "UT"."F-32", "UT"."F-32BE", "UT"."F-32LE", "UT"."F-16", "UT"."F-16BE", "UT"."F-16LE", "UT"."F-8", "UT"."F-7", "UT"."F7-IMAP", "ASCII", "EUC-JP", "SJIS", "eucJP-win", "SJIS-win", "JIS", "ISO-2022-JP", "Windows-1252", "ISO-8859-1", "ISO-8859-2", "ISO-8859-3", "ISO-8859-4", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "ISO-8859-9", "ISO-8859-10", "ISO-8859-13", "ISO-8859-14", "ISO-8859-15", "EUC-CN", "CP936", "HZ", "EUC-TW", "BIG-5", "EUC-KR", "UHC", "ISO-2022-KR", "Windows-1251", "CP866", "KOI8-R");
 		return $list_encoding;
 	}
 }
@@ -1142,35 +1240,72 @@ function TurnToArray($inputObject){
 ///////////////////////////////////////////////////////
 
 function sortls() {
-$red = $_SESSION['red'];
-ob_start();
-echo phpinfo();
-$php_info = ob_get_contents();
-ob_end_clean();
-
-
-if(eregi('WIN', PHP_OS)){
-	$win = 'yes';	
-}
-$pathtosearch = getcwd();
-
-//		if($win!='yes'){
-//			$globstuff = array_merge(glob($pathtosearch.DIRECTORY_SEPARATOR.'*'),glob($pathtosearch.DIRECTORY_SEPARATOR.'.*'));
-//		} else {
-//			$globstuff = glob($pathtosearch.DIRECTORY_SEPARATOR.'*');
-//		}
-$globstuff = array_merge(glob($pathtosearch.DIRECTORY_SEPARATOR.'*'),glob($pathtosearch.DIRECTORY_SEPARATOR.'.*'));
-
-foreach ($globstuff as $filename) {
-//foreach (glob("{".$pathtosearch.DIRECTORY_SEPARATOR."*,".$pathtosearch.DIRECTORY_SEPARATOR.".*}", GLOB_BRACE) as $filename) {
-
-//foreach (glob($pathtosearch."/*", GLOB_BRACE) as $filename) {
-	if(!is_file($filename)){
-		if(filetype($filename) != 'link'){
-			$lastmodified = filemtime($filename);
-			if($filename != $pathtosearch.'/..' && $filename != $pathtosearch.'/.'){
+	$red = $_SESSION['red'];
+	ob_start();
+	echo phpinfo();
+	$php_info = ob_get_contents();
+	ob_end_clean();
+	
+	
+	if(eregi('WIN', PHP_OS)){
+		$win = 'yes';	
+	}
+	$pathtosearch = getcwd();
+	$globstuff = array_merge(glob($pathtosearch.DIRECTORY_SEPARATOR.'*'),glob($pathtosearch.DIRECTORY_SEPARATOR.'.*'));
+	foreach ($globstuff as $filename) {
+		if(!is_file($filename)){
+			$skipme=0;
+			if(filetype($filename) == 'link'){
+				if(!is_dir(readlink($filename))){
+//					echo $filename."  ".readlink($filename)."<br/>".linkinfo($filename);
+//				} else {
+					$skipme=1;
+				}
+			}
+			if($skipme!=1){
+				$lastmodified = filemtime($filename);
+				if($filename != $pathtosearch.'/..' && $filename != $pathtosearch.'/.'){
+					$basefile = basename($filename);
+					$fileperms = substr(sprintf('%o', fileperms($filename)), -3);
+					if(eregi('--disable-posix', $php_info) || !function_exists("posix_getpwuid")){	
+						$fileowner = '';
+						$filegroup = '';
+					} else {
+						$fileowner = posix_getpwuid(fileowner($filename));
+						$fileowner = $fileowner['name'];
+						$filegroup = posix_getgrgid(filegroup($filename));
+						$filegroup = $filegroup['name'];
+					}
+					
+					if($_SESSION['dirfilesize'] == ' '){
+						$directory_size = '';
+					} else {
+						$directory_size = dirsize($filename);
+					
+						if(strlen($directory_size) > 9){
+							$directory_size = sprintf("%01.1f", ($directory_size / 1000000000));
+							$directory_size .= "&nbsp;<font color=\"#2FB5FF\">GB</font>";
+						} elseif(strlen($directory_size) > 6){
+							$directory_size = sprintf("%01.1f", ($directory_size / 1000000));
+							$directory_size .= "&nbsp;<font color=\"#D54FFF\">MB</font>";
+						} elseif(strlen($directory_size) > 3){
+							$directory_size = sprintf("%01.1f", ($directory_size / 1000));
+							$directory_size .= "&nbsp;KB";
+						} else {
+							$directory_size = sprintf("%01.1f", $directory_size);
+							$directory_size .= "&nbsp;Bytes";
+						}
+					}
+					$dir_arr[$basefile] = array($fileperms, $fileowner, $filegroup, $directory_size, $lastmodified);
+				}
+			}
+			
+		} else {
+			if(filetype($filename) != 'link'){
+				$lastmodified = filemtime($filename);
 				$basefile = basename($filename);
 				$fileperms = substr(sprintf('%o', fileperms($filename)), -3);
+				$filesize = filesize($filename);
 				if(eregi('--disable-posix', $php_info) || !function_exists("posix_getpwuid")){	
 					$fileowner = '';
 					$filegroup = '';
@@ -1180,87 +1315,49 @@ foreach ($globstuff as $filename) {
 					$filegroup = posix_getgrgid(filegroup($filename));
 					$filegroup = $filegroup['name'];
 				}
-				
-				if($_SESSION['dirfilesize'] == ' '){
-					$directory_size = '';
+				if(eregi('\.', $basefile)){
+					$filetype = strtoupper(eregi_replace('^.*\.', '', $basefile));					
 				} else {
-					$directory_size = dirsize($filename);
-				
-					if(strlen($directory_size) > 9){
-						$directory_size = sprintf("%01.1f", ($directory_size / 1000000000));
-						$directory_size .= "&nbsp;<font color=\"#2FB5FF\">GB</font>";
-					} elseif(strlen($directory_size) > 6){
-						$directory_size = sprintf("%01.1f", ($directory_size / 1000000));
-						$directory_size .= "&nbsp;<font color=\"#D54FFF\">MB</font>";
-					} elseif(strlen($directory_size) > 3){
-						$directory_size = sprintf("%01.1f", ($directory_size / 1000));
-						$directory_size .= "&nbsp;KB";
-					} else {
-						$directory_size = sprintf("%01.1f", $directory_size);
-						$directory_size .= "&nbsp;Bytes";
-					}
+					$filetype = '';
 				}
-				$dir_arr[$basefile] = array($fileperms, $fileowner, $filegroup, $directory_size, $lastmodified);
+				$file_arr[$basefile] = array($fileperms, $filesize, $fileowner, $filegroup, $filetype, $lastmodified);
 			}
 		}
-	} else {
-		if(filetype($filename) != 'link'){
-			$lastmodified = filemtime($filename);
-			$basefile = basename($filename);
-			$fileperms = substr(sprintf('%o', fileperms($filename)), -3);
-			$filesize = filesize($filename);
-			if(eregi('--disable-posix', $php_info) || !function_exists("posix_getpwuid")){	
-				$fileowner = '';
-				$filegroup = '';
-			} else {
-				$fileowner = posix_getpwuid(fileowner($filename));
-				$fileowner = $fileowner['name'];
-				$filegroup = posix_getgrgid(filegroup($filename));
-				$filegroup = $filegroup['name'];
-			}
-			if(eregi('\.', $basefile)){
-				$filetype = strtoupper(eregi_replace('^.*\.', '', $basefile));					
-			} else {
-				$filetype = '';
-			}
+	}
+	
+	$filename = $pathtosearch.'/.htaccess';
+	if(file_exists($filename )){
+	   $basefile = basename($filename);
+	   $fileperms = substr(sprintf('%o', fileperms($filename)), -3);
+	   $filesize = filesize($filename);
+	
+		if(!eregi('--disable-posix', $php_info) && function_exists("posix_getpwuid")){
+			$fileowner = posix_getpwuid(fileowner($filename));
+			$fileowner = $fileowner['name'];
+			$filegroup = posix_getgrgid(filegroup($filename));
+			$filegroup = $filegroup['name'];
+			$filetype = strtoupper(eregi_replace('^.*\.', '', $basefile));
 			$file_arr[$basefile] = array($fileperms, $filesize, $fileowner, $filegroup, $filetype, $lastmodified);
 		}
 	}
-}
-
-$filename = $pathtosearch.'/.htaccess';
-if(file_exists($filename )){
-   $basefile = basename($filename);
-   $fileperms = substr(sprintf('%o', fileperms($filename)), -3);
-   $filesize = filesize($filename);
-
-	if(!eregi('--disable-posix', $php_info) && function_exists("posix_getpwuid")){
-		$fileowner = posix_getpwuid(fileowner($filename));
-		$fileowner = $fileowner['name'];
-		$filegroup = posix_getgrgid(filegroup($filename));
-		$filegroup = $filegroup['name'];
-		$filetype = strtoupper(eregi_replace('^.*\.', '', $basefile));
-		$file_arr[$basefile] = array($fileperms, $filesize, $fileowner, $filegroup, $filetype, $lastmodified);
-	}
-}
-
-uksort($file_arr, "strnatcasecmp");
-uksort($dir_arr, "strnatcasecmp");
-
-
-$flistz_div = "<div id=\"upload_div2\" style=\"overflow:hidden; position:relative; border:0px solid; display:inline;\">\n";
-$flistz_div .= "<form name=\"upload_shit\" id=\"upload_shit\" method=\"post\" enctype=\"multipart/form-data\" action=\"".basename(__FILE__)."\" style=\"display: inline;\" >\n";
-$flistz_div .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"88000000\">\n";
-$flistz_div .= "<input name=\"ulthisfile\" id=\"ulthisfile\" type=\"file\" style=\"	position: relative; display:inline;  -moz-opacity:0 ; filter:alpha(opacity: 0); opacity: 0; z-index: 2; background-color: transparent;\" OnChange=\"document.upload_shit.submit();\">\n</form>\n";
-$flistz_div .= "<div style=\"overflow:hidden; position: absolute; top: 0px; right: 0px; z-index: 1; border:0px solid; display:inline;\">\n";
-$flistz_div .= "<button class=\"nav_main\" onMouseover=\"this.className='nav_mainon';\" onMouseout=\"this.className='nav_main';\">Upload File</button>\n";
-$flistz_div .= "</div>\n";
-$flistz_div .= "</div>\n";	
-
-$flistz = "<table cellspacing=0 cellpadding=4><tr valign=top><td align=\"left\"><table cellspacing=0 cellpadding=0><tr><td colspan=\"4\" align=left><a onClick=\"chdir('..');\" href=\"#\" class=\"filelist\" style=\"border: 0px solid white;color: #FF2F37; text-decoration: none;\"><img src=\"http://securexfer.net/camerons_simple/simple-folder-up.gif\" border=0 width=\"19\" height=\"19\"><strong>Up</strong></a>";
-$flistz .= $flistz_div."</td>\n</tr>";	
 	
-$PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.className='nav_mainon2';\" onMouseout=\"this.className='nav_main2';\" style=\"font-size: 9px; border:0px solid; color:white;\" onClick=\"document.diagnostics.submit();\">Diagnostics</button>&nbsp;\n";
+	uksort($file_arr, "strnatcasecmp");
+	uksort($dir_arr, "strnatcasecmp");
+	
+	
+	$flistz_div = "<div id=\"upload_div2\" style=\"overflow:hidden; position:relative; border:0px solid; display:inline;\">\n";
+	$flistz_div .= "<form name=\"upload_shit\" id=\"upload_shit\" method=\"post\" enctype=\"multipart/form-data\" action=\"".basename(__FILE__)."\" style=\"display: inline;\" >\n";
+	$flistz_div .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"88000000\">\n";
+	$flistz_div .= "<input name=\"ulthisfile\" id=\"ulthisfile\" type=\"file\" style=\"	position: relative; display:inline;  -moz-opacity:0 ; filter:alpha(opacity: 0); opacity: 0; z-index: 2; background-color: transparent;\" OnChange=\"document.upload_shit.submit();\">\n</form>\n";
+	$flistz_div .= "<div style=\"overflow:hidden; position: absolute; top: 0px; right: 0px; z-index: 1; border:0px solid; display:inline;\">\n";
+	$flistz_div .= "<button class=\"nav_mainz\" onMouseover=\"this.className='nav_mainonz';\" onMouseout=\"this.className='nav_mainz';\">Upload File</button>\n";
+	$flistz_div .= "</div>\n";
+	$flistz_div .= "</div>\n";	
+	
+	$flistz = "<table cellspacing=0 cellpadding=4><tr valign=top><td align=\"lefts\"><table cellspacing=0 cellpadding=0><tr><td colspan=\"4\" align=left><a onClick=\"chdir('..');\" href=\"#\" class=\"filelist\" style=\"border: 0px solid white;color: #FF2F37; text-decoration: none;\"><img src=\"http://securexfer.net/camerons_simple/simple-folder-up.gif\" border=0 width=\"19\" height=\"19\"><strong>Up</strong></a>";
+	$flistz .= $flistz_div."</td>\n</tr>";	
+		
+	$PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.className='nav_mainon2';\" onMouseout=\"this.className='nav_main2';\" style=\"font-size: 9px; border:0px solid; color:white;\" onClick=\"document.diagnostics.submit();\">Diagnostics</button>&nbsp;\n";
 	$xoxoxo = 0;
 	foreach($dir_arr as $xxvar=>$xxval) {
 		
@@ -1309,12 +1406,16 @@ $PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.classNa
 		if($_SESSION['simple_sort_method'] == 'asc'){
 			$myCollection->sortDataSet("name");
 			$file_arr = TurnToArray($myCollection->dataSet);
-			$flistz .= "&nbsp;<code>&dArr;</code>&nbsp;";
+			//$flistz .= "&nbsp;<code>&dArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9661;</code>&nbsp;";
+			
 		} else {
 			$myCollection->sortDataSet("name");
 			$file_arr = TurnToArray($myCollection->dataSet);
 			$file_arr = array_reverse($file_arr);
-			$flistz .= "&nbsp;<code>&uArr;</code>&nbsp;";
+			//$flistz .= "&nbsp;<code>&uArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9651;</code>&nbsp;";
+			
 		}
 	}
 	$flistz .= "</STRONG></a>\n</td>\n";
@@ -1325,12 +1426,12 @@ $PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.classNa
 		if($_SESSION['simple_sort_method'] == 'asc'){
 			$myCollection->sortDataSet("y");
 			$file_arr = TurnToArray($myCollection->dataSet);
-			$flistz .= "&nbsp;<code>&dArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9661;</code>&nbsp;";
 		} else {
 			$myCollection->sortDataSet("y");
 			$file_arr = TurnToArray($myCollection->dataSet);
 			$file_arr = array_reverse($file_arr);
-			$flistz .= "&nbsp;<code>&uArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9651;</code>&nbsp;";
 		}
 	}
 			
@@ -1342,12 +1443,12 @@ $PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.classNa
 		if($_SESSION['simple_sort_method'] == 'asc'){
 			$myCollection->sortDataSet("filetype");
 			$file_arr = TurnToArray($myCollection->dataSet);
-			$flistz .= "&nbsp;<code>&dArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9661;</code>&nbsp;";
 		} else {				
 			$myCollection->sortDataSet("filetype");
 			$file_arr = TurnToArray($myCollection->dataSet);
 			$file_arr = array_reverse($file_arr);
-			$flistz .= "&nbsp;<code>&uArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9651;</code>&nbsp;";
 		}
 	} else {
 		$flistz .= "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -1363,12 +1464,12 @@ $PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.classNa
 		if($_SESSION['simple_sort_method'] == 'asc'){
 			$myCollection->sortDataSet("modified");
 			$file_arr = TurnToArray($myCollection->dataSet);
-			$flistz .= "&nbsp;<code>&dArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9661;</code>&nbsp;";
 		} else {				
 			$myCollection->sortDataSet("modified");
 			$file_arr = TurnToArray($myCollection->dataSet);
 			$file_arr = array_reverse($file_arr);
-			$flistz .= "&nbsp;<code>&uArr;</code>&nbsp;";
+			$flistz .= "&nbsp;<code>&#9651;</code>&nbsp;";
 		}
 	}
 	$flistz .= "</STRONG></a></td>\n";
@@ -1419,8 +1520,9 @@ $PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.classNa
 
 
 		$xxval .= "<font color=black><a href=\"#\" class=\"dropdown\" style=\"";
-		
-		if(eregi("\.gif$", $xxvar) || eregi("\.jpg$", $xxvar) || eregi("\.ico$", $xxvar) || eregi("\.jpeg$", $xxvar) || eregi("\.tif$", $xxvar) || eregi("\.tiff$", $xxvar) || eregi("\.bmp$", $xxvar)){
+		$imghref = '';
+		if(eregi("\.gif$", $xxvar) || eregi("\.png$", $xxvar) || eregi("\.jpg$", $xxvar) || eregi("\.ico$", $xxvar) || eregi("\.jpeg$", $xxvar) || eregi("\.tif$", $xxvar) || eregi("\.tiff$", $xxvar) || eregi("\.bmp$", $xxvar)){
+			$imghref = " class=\"imgprev\" href=\"http://".$_SERVER['HTTP_HOST'].$scripturl."\" ";
 			//$flistz .= "<font color=\"white\">".$xxval."</font>&nbsp;";
 			$xxval .= "color:#BFE4FF; ";
 		} elseif(eregi("\.php$", $xxvar)){
@@ -1429,22 +1531,19 @@ $PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.classNa
 			$xxval .= "color:white; ";
 		} elseif(eregi("\.zip$", $xxvar) || eregi("\.gz$", $xxvar) || eregi("\.tgz$", $xxvar)){
 			$xxval .= "color:orange; ";
+		} else {
+			$xxval .= "color:white; ";
 		}
-		
-		
-//		$xxval .= "<div id=\"fdiv".$xoxoxo."\" style=\"position:absolute; display:none;\"></div>\n";
-	
-		$xxval .= "text-decoration:none;  font-weight: bold;\" onClick=\"showhidediv('dropmenudiv".$xoxoxo."');\">\n";
-		
-//		$xxval .= "text-decoration:none;  font-weight: bold;\" onClick=\"return dropdownmenu(this, event, menu1, '320px', '".$xxvar."')\" onMouseout=\"delayhidemenu()\">";
-		
-		
+
+		$xxval .= "text-decoration:none;  font-weight: normal;\" onClick=\"showhidediv('dropmenudiv".$xoxoxo."');\"><span ".$imghref.">\n";	
 		if(strlen($xxvar) > 39){				
 			$xxval .= substr($xxvar, 0, 39)."</font>...";
 		} else {
 			$xxval .= $xxvar."";
 		}
-		$xxval .= "&nbsp;<code>&nabla;</code>&nbsp;</a></font>";
+		//$xxval .= "&nbsp;<code>&nabla;</code>&nbsp;</a></font>";
+		$xxval .= "&nbsp;</span><code>&#9661;</code>&nbsp;</a></font>";
+		
 		
 		$flistz .= "<tr><td class=\"filelist\" align=left><font color=white><strong>";
 		$flistz .= $file_arr[$xxvar]['0'];
@@ -1488,11 +1587,11 @@ $PW .= "&nbsp;&nbsp;&nbsp;<button class=\"nav_main2\" onMouseover=\"this.classNa
 		$flistz .= "</font></strong></td><td class=\"filelist\" align=left><font color=\"orange\"><strong>";
 		$flistz .= $file_arr[$xxvar]['4'];
 		$flistz .= "&nbsp;</font></strong></td><td class=\"filelist\" align=left><font color=\"white\"><strong>";
-		$flistz .= date("m/d/y g:ia", $file_arr[$xxvar]['5']);
+		$flistz .= date("m/d/y", $file_arr[$xxvar]['5'])."&nbsp;".date("g:ia", $file_arr[$xxvar]['5']);
 		
 		$flistz .= "</font></strong></td></tr>\n";
 	}		
-	$flistz .= "</td></tr></table>";	
+	$flistz .= "</table></td></tr></table></table>";	
 	
 	$files_string = '';
 	foreach($file_arr as $var=>$val){
@@ -1946,14 +2045,18 @@ if(isset($_POST['cmd'])) {
 	$_POST['cmd'] = stripslashes($_POST['cmd']);
 	$SPLIT = explode(' ', $_POST['cmd']);
 	if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
+		
+		$htmlout .= "window.onkeypress = function(event) {\n";
+		$htmlout .= "    if (event.charCode === 115 && event.ctrlKey) {\n";
+		$htmlout .= "        event.preventDefault();\n";
+		$htmlout .= "    }\n";
+		$htmlout .= "};\n";
 		$htmlout .= "function CodePress() { \n";
 		$htmlout .= "	var contentzz = document.getElementById('content').value; \n";
 		$htmlout .= "	contentzz = Base64.decode(contentzz);\n";
 		$htmlout .= "	document.getElementById('content').value = contentzz; \n";
 
-    $htmlout .= " if(!NiftyCheck())\n";
-    $htmlout .= " 	return;\n";
-    $htmlout .= " Rounded(\"div#editingstuff\",\"#808080\",\"".$bgcolor."\");\n";
+		$htmlout .= " Rounded(\"div#editingstuff\",\"#808080\",\"".$bgcolor."\");\n";
 
 		if(isset($_POST['getback'])) { 
 			$htmlout .= "window.document.getElementById('content').scrollTop=".$_POST['getback']."; \n";
@@ -1991,7 +2094,7 @@ if(file_exists($ispfile)){
 
   $sel = mysql_select_db("$db_name");
   echo mysql_error();
-  $result = mysql_list_tables("$db_name");
+  $result = mysql_query('show tables from '.$db_name);
   echo mysql_error();
   
   $query = 'SELECT * FROM login';
@@ -2008,7 +2111,59 @@ if(file_exists($ispfile)){
   }
 }
 
+
+
+if($_REQUEST['mysqlmode']=='dl_table_action'){
+	/// Download table
+	$CSVFILE = "";
+	$table = $_GET['table'];
+	$result = mysql_query("SELECT * FROM $table");
+	$N_FIELDS = mysql_num_fields($result) - 1;
+	for ($x=0;$x<=$N_FIELDS;$x++) {
+		if ($x != $N_FIELDS) {
+			$CSVFILE .= mysql_field_name($result, $x);
+			$CSVFILE .= ",";
+		} else {
+			$CSVFILE .= mysql_field_name($result, $x);
+			$CSVFILE .= "\r\n";
+		}
+	} // End For Loop
+	while ($row = mysql_fetch_array ($result)) {
+		for ($x=0;$x<=$N_FIELDS;$x++) {
+			$THIS_FIELD_NAME = mysql_field_name($result, $x);
+			$THIS_DATA = $row[$THIS_FIELD_NAME];
+			if($table == 'cart_products' && $THIS_FIELD_NAME == 'full_desc'){
+				$THIS_DATA = base64_decode($THIS_DATA);
+			} else {
+			}
+			$THIS_DATA = str_replace('"', '""', $THIS_DATA);
+			if ($x != $N_FIELDS) {
+				$CSVFILE .= '"'.$THIS_DATA.'"';
+				$CSVFILE .= ",";
+			} else {
+				$CSVFILE .= '"'.$THIS_DATA.'"'."\n";
+			}
+		} // End For Loop
+	} // End While Loop
+	$local_name = "CSV-$table.csv";
+	$local_name = strtoupper($local_name);
+	header("Content-Type: application/x-octet-stream");
+	header( "Content-Disposition: attachment; filename=\"$local_name\"");
+	echo $CSVFILE;
+	exit;
+}
+
+$css .= "</style>\n";
+
+
+
+echo $css;
+
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://securexfer.net/camerons_simple/niftyCorners.css\">\n";
+echo "<script type=\"text/javascript\" src=\"http://securexfer.net/camerons_simple/nifty.js\"></script>\n";
+
 echo $htmlout;
+
 if($_SESSION['newdir'] != '') {
 	chdir($_SESSION['newdir']);
 }
@@ -2016,14 +2171,22 @@ if($_SESSION['newdir'] != '') {
 if(eregi('^cd ', $_POST['cmd']) || eregi('^cs ', $_POST['cmd'])) {
 	$newdir = eregi_replace('^cd ', '', $_POST['cmd']);
 	$newdir = eregi_replace('^cs ', '', $newdir);
-	chdir($newdir);
-	unset($_POST['cmd']);
-	$_SESSION['newdir'] = getcwd();
-}
+	if(filetype($newdir) == 'link'){
+		$_SESSION['newdir'] = $_SESSION['newdir']. DIRECTORY_SEPARATOR .$newdir;
+		unset($_POST['cmd']);
+		chdir($newdir);
+	} else {
+		chdir($newdir);
+		unset($_POST['cmd']);
+		$_SESSION['newdir'] = getcwd();
+	}
 
+}
+$editing_file = 0;
 if(isset($_POST['cmd'])) { 
 	$SPLIT = explode(' ', $_POST['cmd']);
 	if(strtoupper($SPLIT['0']) == strtoupper('EDIT')) {
+		$editing_file = 1;
 		$ncmd = eregi_replace('^edit ', '', $_POST['cmd']);
 		$newdir = eregi_replace(basename($SPLIT['1']).'$', '', $ncmd);
 		chdir($newdir);
@@ -2032,19 +2195,19 @@ if(isset($_POST['cmd'])) {
 		
 		echo "<body onload=\"CodePress();\" style=\"background: #808080;\">\n";
 
-		$PW = "<div id=\"div1\" style=\"position:block; top: 0px; valign:top; width:1230px; overflow:hidden;\">\n";
+		$PW = "<div id=\"div1\" style=\"position:block; top: 0px; valign:top; width:1250px; overflow:hidden;\">\n";
 		$PW .= "<table style=\"width:2000px; height:50px;\"><tr><td style=\"width:100%; height:50px;\">\n";
 	} elseif(strtoupper($SPLIT['0']) == 'RENAME'){
 		rename($SPLIT['1'], $SPLIT['2']);
-		echo "<body onload=\"document.exec.cmd.focus();\" style=\"background: #808080;\">\n";
+		echo "<body onload=\"document.exec.cmd.focus();\" style=\"overflow:hidden;height:99%;background: #808080;\">\n";
 		$PW = "<div id=\"div1\" style=\"width:100%; height:100%; overflow:hidden;\">\n";
 		$_SESSION['lastcmd'] = $_POST['cmd'];
 		$_POST['lastcmd'] = $_POST['cmd'];
 		$_POST['cmd'] = '';
 	} elseif(strtoupper($SPLIT['0']) == 'WGET' || strtoupper($SPLIT['0']) == 'GET'){
 		$remotefile = $SPLIT['1'];
-   	$savetodir = getcwd().'/'.basename($remotefile);
-   	$getfilez = new file_downloads($remotefile, $savetodir);
+		$savetodir = getcwd().'/'.basename($remotefile);
+		$getfilez = new file_downloads($remotefile, $savetodir);
 		$getfilez->getit();		
 		echo "<body onload=\"document.exec.cmd.focus();\" style=\"background: #808080;\">\n";
 		$_SESSION['lastcmd'] = $_POST['cmd'];
@@ -2172,7 +2335,9 @@ function insertTags(tagOpen, tagClose, sampleText, wpTextbox1) {
 	else {
 	   // some alternate form? take the first one we can find
 		var areas = document.getElementsByTagName('textarea');
-		var txtarea = areas[0];
+		 
+		//var txtarea = areas[0];
+		var txtarea = document.getElementsById('content');
 //		alert('not editform');
 	}
 
@@ -2257,17 +2422,20 @@ var display_url=0
 var ie5=document.all&&document.getElementById
 var ns6=document.getElementById&&!document.all
 if (ie5||ns6)
+
 var menuobj=document.getElementById("ie5menu")
 
 
 function showmenuie5(e){
+	var menuobj=document.getElementById("ie5menu");
 <?php
 if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
+	//echo "alert('hi');\n";
 	echo "	var areas = document.getElementsByTagName('textarea'); \n";
-	//echo "	var areas = document.getElementById('content'); \n";
-	
-	echo "	var txtarea = areas[0]; \n";
 	//echo "	var txtarea = document.getElementById('content'); \n";
+	
+	//echo "	var txtarea = areas[0]; \n";
+	echo "	var txtarea = document.getElementById('content'); \n";
 	echo "	if((txtarea.selectionEnd - txtarea.selectionStart) != 0) { \n";
 		//alert(txtarea.selectionStart+"   "+txtarea.selectionEnd);	
 }
@@ -2277,18 +2445,21 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		var bottomedge=ie5? document.body.clientHeight-event.clientY : window.innerHeight-e.clientY
 		
 		//if the horizontal distance isn't enough to accomodate the width of the context menu
-		if (rightedge<menuobj.offsetWidth)
+		if (rightedge<menuobj.offsetWidth) {
 		//move the horizontal position of the menu to the left by it's width
 		menuobj.style.left=ie5? document.body.scrollLeft+event.clientX-menuobj.offsetWidth : window.pageXOffset+e.clientX-menuobj.offsetWidth
-		else
+		}else{
 		//position the horizontal position of the menu where the mouse was clicked
 		menuobj.style.left=ie5? document.body.scrollLeft+event.clientX : window.pageXOffset+e.clientX
-		
+		}
 		//same concept with the vertical position
-		if (bottomedge<menuobj.offsetHeight)
+		if (bottomedge<menuobj.offsetHeight){
 		menuobj.style.top=ie5? document.body.scrollTop+event.clientY-menuobj.offsetHeight : window.pageYOffset+e.clientY-menuobj.offsetHeight
-		else
+		}else{
 		menuobj.style.top=ie5? document.body.scrollTop+event.clientY : window.pageYOffset+e.clientY
+		}
+		menuobj.style.bottom=(bottomedge-30)+"px";;
+		menuobj.style.right=(rightedge-200)+"px";
 		
 		menuobj.style.visibility="visible"
 		return false
@@ -2298,6 +2469,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	echo "	} \n";
 }
 ?>
+
 }
 
 function hidemenuie5(e){
@@ -2336,12 +2508,15 @@ window.location=firingobj.getAttribute("url")
 }
 }
 
+
+
 <?php
 if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 
 echo "	if (ie5||ns6){ \n";
-echo "		menuobj.style.display='' \n";
-echo "		document.oncontextmenu=showmenuie5 \n";
+
+//echo "		menuobj.style.display='' \n";
+echo "		document.oncontextmenu=showmenuie5; \n";
 echo "		document.onclick=hidemenuie5 \n";
 echo "	} \n";
 }
@@ -2352,7 +2527,7 @@ echo "	} \n";
 <style type="text/css">
 
 #dropmenudiv{
-position:absolute;
+
 border:1px solid <?php echo $bgcolor; ?>;
 //border-bottom-width: 0;
 font:normal 12px Verdana;
@@ -2378,7 +2553,7 @@ color: white;
 
 
 
-a.strikeout {	
+a.strikeout:link,a.strikeout:visited,a.strikeout:active {	
 	color: white;
 	text-decoration: none;
 }
@@ -2781,10 +2956,14 @@ if($whoami != ''){
 if($win=='yes'){
 	$dirz = explode('\\', getcwd());
 } else {
-	$dirz = explode('/', getcwd());
+	if($_SESSION['newdir']==''){
+		$_SESSION['newdir']=getcwd();	
+	}
+	$dirz = explode('/', $_SESSION['newdir']);
 }
 if($username != ''){
-	$PW .= "<span class=button><button class=\"nav_main1\" onMouseover=\"this.className='nav_mainon1';\" onMouseout=\"this.className='nav_main1';\" style=\"font-size: 9px; border:0px solid; color:white;\" onClick=\"document.LOGIN.submit();\">login: ".$username."/".$password."</button></span>&nbsp;";
+	$PW .= "<div id=\"userpwdiv\" style=\"display:none;\"><textarea style=\"background-color:#000000; color:white; height:32px; width:290px; font-size: 8px;\">username:".$username."\npassword:".$password."</textarea></div>\n";
+	$PW .= "<a href=\"javascript:void(0);\" style=\"color:white;text-decoration:none;\" onClick=\"document.getElementById('userpwdiv').style.display='inline';\">*</a>&nbsp;<span class=button><button class=\"nav_main1\" onMouseover=\"this.className='nav_mainon1';\" onMouseout=\"this.className='nav_main1';\" style=\"font-size: 9px; border:0px solid; color:white;\" onClick=\"document.LOGIN.submit();\">login: ".$username."/".$password."</button></span>&nbsp;";
 }
 
 if ((eregi('[^_]EXEC', strtoupper(ini_get("disable_functions"))) && eregi('SHELL_EXEC', strtoupper(ini_get("disable_functions")))) ||  (exec('echo hi') != 'hi' && shell_exec('echo hi') != 'hi')){
@@ -2796,7 +2975,7 @@ $PW .= "<input type=\"hidden\" name=\"special\" value=\"phpinfo\">\n";
 $PW .= "</form>\n";
 //$PW .= "&nbsp;&nbsp;<a style=\"text-decoration: none; color:#DF2968;\" href=\"simple.php?special=phpinfo\" target=\"_BLANK\">Diagnostics</a>&nbsp;&nbsp;\n";  
 
-$PW .= "<form style=\"display: inline;\" name=\"chmod\"  method=\"POST\" action=\"#\">";
+$PW .= "<form style=\"display: inline;\" name=\"chmod\"  method=\"POST\" action=\"".basename(__FILE__)."\">";
 
 $PW .= "&nbsp;&nbsp;<button class=\"nav_logout\" onMouseover=\"this.className='nav_logouton';\" onMouseout=\"this.className='nav_logout';\" style=\"font-size: 9px; border:0px solid; color:white;\" onClick=\"document.chmodit.submit();\">FTP Chmod</button>\n";
 
@@ -2805,7 +2984,7 @@ $PW .= "</form>\n";
 
 
 if($username != ''){
-	$PW .= "<form style=\"display: inline;\" name=LOGIN method=post target=\"_blank\" action=\"http://".$this_ip."/sohoadmin/index.php\" target=\"_blank\" action=\"http://".$this_ip."/sohoadmin/includes/getlogin.php\" target=\"_blank\" action=\"http://".$this_ip."/sohoadmin/version.php\" target=\"_blank\">\n";
+	$PW .= "<form style=\"display: inline;\" name=LOGIN method=post target=\"_blank\" action=\"http://".$this_ip."/sohoadmin/index.php\" target=\"_blank\" action=\"http://".$this_ip."/sohoadmin/includes/getlogin.php\" target=\"_blank\" action=\"http://".$this_ip."/sohoadmin/version.php\" target=\"_blank\">\n";	
 	$PW .= "<input type=HIDDEN name=PHP_AUTH_USER value=\"".$username."\">\n<input type=HIDDEN name=PHP_AUTH_PW value=\"".$password."\">\n<input type=hidden name=process value=\"1\">\n";
 	$PW .= "</form>\n";	
 }
@@ -2849,10 +3028,10 @@ foreach($dirz as $d=>$e) {
 
 $PW .= "<table style=\"valign:top;\" cellpadding=\"0\" cellspacing=\"0\" width=100%><tr style=\"valign:top;\"><td style=\"valign:top;\" width=100%>\n";
 
-$PW .= "<FORM style=\"display: inline;\" name=exec2 id=exec2 ACTION=\"#\" target=\"_BLANK\" METHOD=POST>\n";
+$PW .= "<FORM style=\"display: inline;\" name=exec2 id=exec2 action=\"".basename(__FILE__)."\" target=\"_BLANK\" METHOD=POST>\n";
 $PW .= "<input id=cmd3 type=hidden name=cmd value=\"\">\n</form>";
 
-$PW .= "\n<FORM style=\"display: inline;\" name=exec id=exec ACTION=\"#\" METHOD=POST>\n";
+$PW .= "\n<FORM style=\"display: inline;\" name=exec id=exec action=\"".basename(__FILE__)."\" METHOD=POST>\n";
 $show_searching = '';
 if(strtoupper($SPLIT['0']) != strtoupper('EDIT')) {
 	$show_searching = "onKeydown=\"searching(event, document.getElementById('cmd').value);\"";
@@ -2895,8 +3074,28 @@ if(function_exists('mysql_query')){
 		mysql_query("SET SESSION SQL_MODE = ''");
 		if(!$sel = mysql_select_db("$db_name")) {
 		} else {
-			echo "<div style=\"overflow:hidden; display: inline;\"><font size='2' color=orange>MySQL</font><input id=\"mysqlhidden\" name=\"mysqlhidden\" type=\"hidden\" ".$_SESSION['mysql_query']."><input id=\"mysql_query\" name=\"mysql_query\" type=\"checkbox\" onClick=\"mysqlz();\" ".$_SESSION['mysql_query']."></div>";
+			$mysql_active=1;
+			echo "<div style=\"overflow:hidden; display: none;\"><font size='2' color=orange>MySQL</font><input id=\"mysqlhidden\" name=\"mysqlhidden\" type=\"hidden\" ".$_SESSION['mysql_query']."><input id=\"mysql_query\" name=\"mysql_query\" type=\"checkbox\" onClick=\"mysqlz();\" ".$_SESSION['mysql_query']."></div>";
 		}
+	}
+}
+
+
+$findt=mysql_query("select data from smt_userdata where fieldname='site_base_template' and plugin='global' limit 1");
+if(mysql_num_rows($findt)>0){
+	$temptemp=mysql_fetch_assoc($findt);
+	if(is_dir($_SESSION['doc_root'].'/sohoadmin/program/modules/site_templates/pages/'.$temptemp['data'])){
+		$sitebasetemplate=$_SESSION['doc_root'].'/sohoadmin/program/modules/site_templates/pages/'.$temptemp['data'];	
+		echo "<div style=\"overflow:hidden; display: inline;\"><font color=white><a href=\"#\"  size='2' onclick=\"chdir('".$sitebasetemplate."');\" style=\"text-decoration: none; color:#FFF;\">*</a></div>\n";
+	}
+} else {
+	
+	$filey = fopen($_SESSION['doc_root']."/template/template.conf", "r");
+	$what_template = fread($filey,filesize($_SESSION['doc_root']."/template/template.conf"));
+	fclose($filey);
+	if($what_template!='' && is_dir($_SESSION['doc_root'].'/sohoadmin/program/modules/site_templates/pages/'.$what_template)){
+		$sitebasetemplate=$_SESSION['doc_root'].'/sohoadmin/program/modules/site_templates/pages/'.$what_template;	
+		echo "<div style=\"overflow:hidden; display: inline;\"><font color=white><a href=\"#\"  size='2' onclick=\"chdir('".$sitebasetemplate."');\" style=\"text-decoration: none; color:#FFF;\">*</a></div>\n";
 	}
 }
 
@@ -2935,6 +3134,99 @@ $SPLIT = explode(' ', $_POST['cmd']);
 echo "</div>\n";
 echo "</td></tr></table>\n";
 echo "<span style=\"background:".$bgcolor."; color:white;\"><br/></span>\n";
+
+
+echo "<script type=\"text/javascript\">
+function toggleidz(targetid, fliphow) {
+   if ( fliphow == \"visibility\" ) {
+      var isnow = document.getElementById(targetid).style.visibility;
+      if ( isnow == 'visible' ) {
+         document.getElementById(targetid).style.visibility='hidden';
+         return true;
+      } else {
+         document.getElementById(targetid).style.visibility='visible';
+         return true;
+      }
+   } else {
+      var isnow = document.getElementById(targetid).style.display;
+      if ( isnow == 'block' ) {
+         document.getElementById(targetid).style.display='none';
+         return true;
+      } else {
+         document.getElementById(targetid).style.display='block';
+         return true;
+      }
+   }
+} // End toggleidz() function
+function hideidz(thingid) {
+   document.getElementById(thingid).style.display = 'none';
+}
+function showitz(thingid) {
+   document.getElementById(thingid).style.display = 'block';
+}
+function showidz(thingid) {
+   document.getElementById(thingid).style.display = 'block';
+}
+function setClassz(thingid, new_classname) {
+   document.getElementById(thingid).className = new_classname;
+}
+function ifShowz(fieldid, chkvalue, boxid) {
+   if ( $(fieldid).value == chkvalue ) {
+      showidz(boxid);
+   } else {
+      hideidz(boxid);
+   }
+}
+</script>
+<style>
+.tab-offz, .tab-onz {
+   text-align: center;
+   width: 125px;
+   height: 14px;
+   vertical-align: top;
+   padding: 2px 6px;
+   background-color: #000000;
+   color: #595959;
+   color: #FFF;
+   border: 1px solid #ccc;
+   border-top: 3px solid #ccc;
+   border-bottom: 0;   
+   cursor: pointer;
+}
+
+.tab-onz {
+   color: #FFF;
+   background-color: #efefef;
+   background-color: #000000;   
+   border-top: 3px solid #EAA510;
+   font-weight: bold;
+}
+.right-panelzz {
+	margin:-15px 0 0 10px;
+}
+</style>
+<div id=\"right-panelzz\" class=\"right-panelzz\">
+	<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tbody><tr>\n";
+	if($_SESSION['mysql_query'] == 'checked'){ $mysql_tab_class='tab-onz';$filez_class='tab-offz'; } else { $filez_class='tab-onz';$mysql_tab_class='tab-offz'; }
+echo "		<td id=\"tab-manual\" class=\"".$filez_class."\" onclick=\"document.getElementById('mysql_query').checked=false;document.getElementById('mysqlhidden').value='off';showidz('filezlist');hideidz('scrolly1');hideidz('support_table_list');setClassz('tab-support', 'tab-offz');setClassz('tab-manual', 'tab-onz');setClassz('tab-tuts', 'tab-offz');\">
+			Files
+		</td>
+		<td>&nbsp;</td>		
+		<td id=\"tab-tuts\" class=\"tab-offz\" onclick=\"document.getElementById('mysql_query').checked=false;document.getElementById('mysqlhidden').value='off';showidz('scrolly1');hideidz('filezlist');hideidz('support_table_list');document.getElementById('scrolly').scrollTop=document.getElementById('scrolly').scrollHeight-document.getElementById('scrolly').clientHeight;setClassz('tab-support', 'tab-offz');setClassz('tab-manual', 'tab-offz');setClassz('tab-tuts', 'tab-onz');\">
+			Shell
+		</td>
+		<td>&nbsp;</td>\n";
+
+	if($mysql_active!=''){		
+		echo "		<td id=\"tab-support\" class=\"".$mysql_tab_class."\" onclick=\"showidz('support_table_list');hideidz('scrolly1');hideidz('filezlist');setClassz('tab-manual', 'tab-offz');setClassz('tab-tuts', 'tab-offz');setClassz('tab-support', 'tab-onz');document.getElementById('mysqlhidden').value='on';document.getElementById('mysql_query').checked=true;\">	
+			MySQL
+		</td>
+		<td style=\"padding-left: 10px; text-align: right; width: 100%;\">&nbsp;</td>\n";		
+	}
+echo "		</tr></tbody></table>
+
+</div>\n";
+
 
 if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	if($_POST['realcontent'] != ''){
@@ -2975,9 +3267,9 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 
 
 			//echo "<div style=\"position:relative; height:602px; width: 1230px; color:white; background: #ffffff;\">\n";
-			echo "<div id=\"editingstuff\" style=\"overflow:hidden; position:relative;  width: 1230px; color:white; background-color: ".$bgcolor.";\">\n";
-      echo "\n<form id=edit name=edit method=POST action=\"#\">";
-      echo "<textarea ID=\"content\" name=\"content\" spellcheck=\"false\" WRAP=\"OFF\"  style=\"padding-left: 19px; border:1px solid ".$bgcolor."; height:600px; width: 1200px; color:white; background: ".$bgcolor." url('http://securexfer.net/camerons_simple/Mitch-simple.jpg') no-repeat fixed bottom right; overflow-y:scroll; overflow-x:scroll; overflow:scroll; font-family:Courier New; font-size:8pt;\" onkeydown=\"tab_to_tab(event,document.getElementById('content')); camsave(event,document.getElementById('content')); camenter(event,document.getElementById('content'));\">\n";
+			echo "<div id=\"editingstuff\" style=\"overflow:hidden; position:relative;  width: 1250px; color:white; background-color: ".$bgcolor.";\">\n";
+      echo "\n<form id=edit name=edit method=POST action=\"".basename(__FILE__)."\">";
+      echo "<textarea oncontextmenu=\"return false;\" ID=\"content\" name=\"content\" spellcheck=\"false\" WRAP=\"OFF\"  style=\"padding-left: 19px; border:1px solid ".$bgcolor."; height:600px; width: 1200px; color:white; background: ".$bgcolor." url('http://securexfer.net/camerons_simple/Mitch-simple.jpg') no-repeat fixed bottom right; overflow-y:scroll; overflow-x:scroll; overflow:scroll; font-family:Courier New; font-size:8pt;\" onkeydown=\"tab_to_tab(event,document.getElementById('content')); camsave(event,document.getElementById('content')); camenter(event,document.getElementById('content'));\">\n";
      // echo "<textarea spellcheck=\"false\" WRAP=\"OFF\"  style=\"height:100%; width:95%; padding-left:".(8.5 * strlen($concnt))."px; color:white; background: ".$bgcolor." url('http://securexfer.net/camerons_simple/Mitch-simple.jpg') no-repeat fixed bottom right; overflow:scroll; font-family:Courier New; font-size:8pt;\" ID=\"content\" onkeydown=\"tab_to_tab(event,document.getElementById('content')); camsave(event,document.getElementById('content')); camenter(event,document.getElementById('content'));\" name=\"content\">\n";
       echo base64_encode($content);
       echo "</textarea>\n";    
@@ -3005,15 +3297,20 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
       echo "<button class=\"nav_logout\" onMouseover=\"this.className='nav_logouton';\" onMouseout=\"this.className='nav_logout';\" onclick=\"camcancel();\">Cancel</button>\n";  
 	 echo "</div>\n";
 
-} elseif($_SESSION['mysql_query'] == 'checked') {
+//} elseif($_SESSION['mysql_query'] == 'checked' && $mysql_active!='') {
+} elseif( $mysql_active!='') {	
+//if($_SESSION['mysql_query'] == 'checked' || $mysql_active!=''){	
+	if($_SESSION['mysql_query']=='checked'){ $mysql_display='display:block;'; } else { $mysql_display='display:none;'; }
+	
 	error_reporting(E_PARSE && E_ERROR);
 	
 	$post_mysql = mysql_query($_POST['cmd']);
 	$arrayTable = "<hr>\n";
      //echo "<b><font color=\"white\">Mysql Mode</font></b>\n";
      //echo testArray($_REQUEST);
-     echo "<div id=\"filezlist\" style=\"background-color:#808080; width:98%; height:88%;\">\n";
-     echo "<div id=\"filezlistcon\" style=\"color:white; background-color:#808080; width:99%; height:98%; overflow:auto; padding:3px 0px 3px 3px;\">\n";
+     echo "<div id=\"support_table_list\" style=\"".$mysql_display."background-color:#000; width:99%; height:92%;\">\n";
+     echo "<div id=\"support_table_listcon\" style=\"color:white; background-color:#000; width:99%; height:98%; overflow:auto; padding:3px 0px 3px 3px;\">\n";
+     
 	if(eregi('^select ', $_POST['cmd']) || eregi('^show ', $_POST['cmd'])){
 		
 		$tablename = explode('from ', $_POST['cmd']);
@@ -3043,8 +3340,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
      
      
      if($_REQUEST['mysqlmode']=='enter_edit'){   	
-		//include_once('enter_edit_data.php');
-###############INCLUDING ENTER EDIT DATA .php
+
 		if(!function_exists('lang')){
 			function lang($string) {
 				return $string;
@@ -3106,9 +3402,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		}
 		//window.onerror = killErrors;
 		
-		if( !CURPAGENAME ) {
-		   var CURPAGENAME = find_object('CURPAGENAME', parent.frames.footer.document);
-		}
+
 		
 		//---------------------------------------------------------------------------------------------------------
 		//    ___   _       __      __ _           _
@@ -3533,28 +3827,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 		
 		<style>
-		/*##########################################################################################################
-		============================================================================================================
-		User Interface Styles
-		------------------------------------------------------------------------------------------------------------
-		>> These classes are utilized throughout the product interface, but have no bearing on client-side display
-		>> elements. Though classes may be added as necessary, none should be removed unless they are also
-		>> replaced throughout the entire product.
-		
-		NOTE: The CSS structure of the product interface could use a serious revamp ---
-		      will probably do this when skin support is completed
-		============================================================================================================
-		##########################################################################################################*/
-		
-		
-		/*####################################################################################
-		--------------------------------------------------------------------------------------
-		>> General
-		--------------------------------------------------------------------------------------
-		####################################################################################*/
-		
-		/* New stuff */
-		
+
 		/* Popup help layers that work with help_popup() function in shared_functions.php */
 		div.help_popup {
 		   width: 500px;
@@ -3592,6 +3865,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		    font-family: verdana,arial,helvetica;
 		    font-size: 10px;
 		    color: #000000;
+		    color: #FFFFFF;
 		    scrollbar-3dlight-color:#99CCFF;
 		    scrollbar-arrow-color:darkblue;
 		    scrollbar-base-color:#E6E6E6;
@@ -3627,7 +3901,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 		.mono { font-family: Courier New, courier, mono; }
 		
-		.bg_white { background: #FFFFFF; }
+		.bg_white { background: #000000; }
 		.bg_blue { background: #F8F9FD; }
 		.bg_gray { background: #EFEFEF; }
 		
@@ -3721,8 +3995,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   font-weight: bold;
 		   letter-spacing: .06em;
 		   background: #306FAE;
+		   background: #000000;
 		   text-align: left;
-		   background-image: url(includes/display_elements/graphics/fgroup_title.jpg);
+		   border:0;
+
 		}
 		
 		/* Text driectly under module title (smaller and not bold) */
@@ -3736,8 +4012,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		.feature_sub {
 		   font-family: verdana, arial, helvetica, sans-serif;
 			font-size: 10px;
-			border: 1px solid #2E2E2E;
+			border: 0px solid #2E2E2E;
 			background: #f8f9fd;
+			background: #000000;
+			color: #FFFFFF;
 		}
 		
 		.fsub_title {
@@ -3856,6 +4134,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		/* Column titles - Typically used for field names when viewing db tables (ie 'PRIKEY') */
 		.col_title {
 		   background: #306FAE;
+		   background: #000000;
 		   padding: 2px;
 		   font-family: tahoma, arial, helvetica, sans-serif;
 		   font-size: 11px;
@@ -3866,10 +4145,12 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		/* Column subtitles - Typically used for other field data displayed as row underneath each field name when viewing db tables (i.e. 'VARCHAR') */
 		.col_sub {
 		   background: #D9E3EF;
+		   background: #000000;
+		   color: #000000;
+		   color:#FFFFFF;
 		   padding: 3px;
 		   font-family: verdana, arial, helvetica, sans-serif;
 		   font-size: 11px;
-		   color: #000000;
 		}
 		
 		
@@ -3957,7 +4238,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		/* PopUp Div Layers (help screens, progress anis, user notes, version info, etc.)
 		/*---------------------------------------------------------------------------------*/
 		.gray_gel {
-		   background-image: url(includes/display_elements/graphics/gray_gel.gif);
+		   //background-image: url(includes/display_elements/graphics/gray_gel.gif);
 		   height: 23px;
 		   border-bottom: 1px solid #2E2E2E;
 		}
@@ -4330,10 +4611,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		/*----------------------------*/
 		
 		/* Default link style */
-		a:link {color: #306fae; text-decoration: underline; border-bottom:0px solid #004C9A;}
-		a:visited {color: #306fae; text-decoration: underline; border-bottom:0px solid #004C9A;}
+		a:link {color: #306fae;color: #FFFFFF; text-decoration: underline; border-bottom:0px solid #004C9A;}
+		a:visited {color: #306fae;color: #FFFFFF; text-decoration: underline; border-bottom:0px solid #004C9A;}
 		a:hover {color: #6699cc; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
-		a:active {color: #A5C6E6; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
+		a:active {color: #A5C6E6;color: #FFFFFF; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
 		
 		/* Mark all external links */
 		a.external:link:after { content: url("external_link_icon-10px.gif"); }
@@ -4381,7 +4662,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 		
 		/* BACKGROUND COLOR - newschool */
-		.bg_gray_f8 { background-color: #F8F8F8 !important; }
+		.bg_gray_f8 { background-color: #545454 !important; }
 		.bg_gray_ef { background-color: #efefef !important; }
 		.bg_gray_a5 { background-color: #E8E8E8 !important; }
 		.bg_gray_df { background-color: #D1D5D8 !important; }
@@ -4411,13 +4692,13 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 		
 		/* BACKGROUND COLOR - oldstyle */
-		.bg_white { background-color: #FFFFFF !important; }
+		.bg_white { background: #000000; }
 		.bg_lgray { background-color: #F7F7F7 !important; }
 		.bg_lgreen { background-color: #F8FDFB !important; }
 		.bg_green { background-color: #DFF6EA !important; }
 		.bg_lblue { background-color: #F8F9FD !important; }
 		.bg_lblue2 { background-color: #F7F9FF !important; }
-		.bg_yellow { background-color: #FFFF99 !important; }
+		.bg_yellow { background-color: #808080 !important; }
 		
 		
 		/* SHORTAND FONT FAMILY */
@@ -4430,7 +4711,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		.lblack { color: #2E2E2E !important; }
 		.black { color: #000000 !important; }
 		
-		.gray_f8 { color: #F8F8F8 !important; }
+		.gray_f8 { color: #545454 !important; }
 		.gray_df { color: #D1D5D8 !important; }
 		.gray_33 { color: #7A7A7A !important; }
 		.gray_31 { color: #595959 !important; }
@@ -4602,9 +4883,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   line-height: normal;
 		}*/
 		
-		body {
-		   height: 100%;
-		}
+
 		
 		/* shopping_cart.php */
 		table#shopping_cart_menu th, table#shopping_cart_menu td {
@@ -4715,7 +4994,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		General-use
 		/*------------------------------------------------------------------------------------------*/
 		.bg_yellow { background-color: #FFFAB2; }
-		.bg_yellow_dark { background-color: #FFF66F; }
+		.bg_yellow_dark { background-color: #808080; }
 		.fadeout { opacity: .5;-moz-opacity: 0.5;filter: alpha(opacity=50); }
 		.fade15 { opacity: .15;-moz-opacity: 0.15;filter: alpha(opacity=15); }
 		.fade30 { opacity: .3;-moz-opacity: 0.3;filter: alpha(opacity=30); }
@@ -5292,10 +5571,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 			for ($x=0;$x<=$numberFields;$x++) {
 		
-				if ($BGCOLOR == "WHITE") { $BGCOLOR="#EFEFEF"; } else { $BGCOLOR="WHITE"; }
+				if ($BGCOLOR == "BLACK") { $BGCOLOR="#545454"; } else { $BGCOLOR="BLACK"; }
 		
 				$THIS_DISPLAY .= "<TR>\n";
-				$THIS_DISPLAY .= "<TD ALIGN=RIGHT VALIGN=TOP BGCOLOR=$BGCOLOR>\n";
+				$THIS_DISPLAY .= "<TD ALIGN=RIGHT VALIGN=TOP style=\"color:white;\" BGCOLOR=$BGCOLOR>\n";
 		
 				$fieldname[$x] = mysql_field_name($result, $x);
 				$fieldname[$x] = strtoupper($fieldname[$x]);
@@ -5316,7 +5595,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 				$display_textbox = "MAXLENGTH=$fieldlength[$x]";     			// Make sure textbox entry can be no longer than set field length
 		
 				$THIS_DISPLAY .= "<B><U>$display_fieldname</U>&nbsp;&nbsp;<FONT STYLE='font-size: 7pt;'>($fieldtype[$x])</FONT>&nbsp;:</B>\n";
-				$THIS_DISPLAY .= "</TD><TD VALIGN=TOP ALIGN=LEFT BGCOLOR=$BGCOLOR>";
+				$THIS_DISPLAY .= "</TD><TD VALIGN=TOP ALIGN=LEFT style=\"color:white;\" BGCOLOR=$BGCOLOR>";
 		
 				if ($fieldtype[$x] == "STRING" || $fieldtype[$x] == "INT" || $fieldtype[$x] == "REAL") {
 		
@@ -5486,10 +5765,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 			}
 		
-			if ($BGCOLOR == "WHITE") { $BGCOLOR="#EFEFEF"; } else { $BGCOLOR="WHITE"; }
-		
+			//if ($BGCOLOR == "WHITE") { $BGCOLOR="#EFEFEF"; } else { $BGCOLOR="WHITE"; }
+			if ($BGCOLOR == "BLACK") { $BGCOLOR="#545454"; } else { $BGCOLOR="BLACK"; }
 			$THIS_DISPLAY .= "<TR>\n";
-			$THIS_DISPLAY .= "<TD COLSPAN=2 ALIGN=CENTER VALIGN=TOP BGCOLOR=$BGCOLOR>\n";
+			$THIS_DISPLAY .= "<TD COLSPAN=2 ALIGN=CENTER VALIGN=TOP style=\"color:white;\" BGCOLOR=$BGCOLOR>\n";
 			$THIS_DISPLAY .= "<INPUT TYPE=SUBMIT ".$btn_save." VALUE=\"$BTN_TITLE\">\n\n";
 			$THIS_DISPLAY .= "</TD></TR></TABLE></FORM>\n";
 		
@@ -5724,7 +6003,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   $popup .= " </tr>\n";
 		   $popup .= "</table>\n";
 		   $popup .= "</form>\n";
-		   //$THIS_DISPLAY .= help_popup("popconfig-serialized", "Format serialized array data for display", $popup, "left: 7%;top: 15%;width: 700px;opacity: .95;");
+		   $THIS_DISPLAY .= help_popup("popconfig-serialized", "Format serialized array data for display", $popup, "left: 7%;top: 15%;width: 700px;opacity: .95;");
 		
 		
 		   /*---------------------------------------------------------------------------------------------------------*
@@ -5802,7 +6081,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   $popup .= " </tr>\n";
 		   $popup .= "</table>\n";
 		   $popup .= "</form>\n";
-		   //$THIS_DISPLAY .= help_popup("popconfig-decode", "Decode encoded data for display", $popup, "left: 7%;top: 15%;width: 700px;opacity: .95;");
+		   $THIS_DISPLAY .= help_popup("popconfig-decode", "Decode encoded data for display", $popup, "left: 7%;top: 15%;width: 700px;opacity: .95;");
 		
 		
 		
@@ -5903,7 +6182,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   $popup .= " </tr>\n";
 		   $popup .= "</table>\n";
 		   $popup .= "</form>\n";
-		   //$THIS_DISPLAY .= help_popup("popup-timestamps", "Format timestamps as human date strings", $popup, "left: 7%;top: 15%;width: 700px;opacity: .95;");
+		   $THIS_DISPLAY .= help_popup("popup-timestamps", "Format timestamps as human date strings", $popup, "left: 7%;top: 15%;width: 700px;opacity: .95;");
 		
 		
 			# popup-hide_fields
@@ -5968,7 +6247,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   $popup .= " </tr>\n";
 		   $popup .= "</table>\n";
 		   $popup .= "</form>\n";
-		   //$THIS_DISPLAY .= help_popup("popup-hide_fields", "Hide/show multiple fields", $popup, "left: 5%;top: 15%;width: 650px;opacity: .95;");
+		   $THIS_DISPLAY .= help_popup("popup-hide_fields", "Hide/show multiple fields", $popup, "left: 5%;top: 15%;width: 650px;opacity: .95;");
 		
 		
 		   /*---------------------------------------------------------------------------------------------------------*
@@ -5982,7 +6261,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   /*---------------------------------------------------------------------------------------------------------*/
 		   # Display popup by default if just ran a query
 		   if ( $_REQUEST['todo'] == "killqry" || $_REQUEST['todo'] == "run_qry" ) { $qry_display = "block"; } else { $qry_display = "none"; }
-		   $THIS_DISPLAY .= "<div id=\"popup-custom_qry\" style=\"opacity: 0.90;display: ".$qry_display.";width: 600px;position: absolute;left: 12%;top: 27%;border: 1px solid #ccc;z-index: 2;background-color: #f8f9fd;text-align: left;padding: 0;\">\n";
+		   $THIS_DISPLAY .= "<div id=\"popup-custom_qry\" style=\"opacity: 0.90;display: ".$qry_display.";width: 600px;position: absolute;left: 12%;top: 27%;border: 1px solid #ccc;z-index: 2;background-color: #000000;text-align: left;padding: 0;\">\n";
 		   $THIS_DISPLAY .= " <form method=\"post\" action=\"".$simple_name."?mysqlmode=enter_edit\">\n";
 		   $THIS_DISPLAY .= " <input type=\"hidden\" name=\"ACTION\" value=\"\"/>\n";
 		   $THIS_DISPLAY .= " <input type=\"hidden\" name=\"mt\" value=\"".$mt."\"/>\n";
@@ -6047,7 +6326,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 			# Limit to 10 at a time by default
 			if ( $ACTION != "show_all" ) { // Mantis #252
-			   $num_to_show = 10;
+			   $num_to_show = 50;
 			} else {
 			   $num_to_show = $total_recs;
 			}
@@ -6323,10 +6602,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 			   	if ( $_SESSION[$_REQUEST['mt']]['orderby'] == $fieldname[$x] ) {
 			   	   if ( $_SESSION[$_REQUEST['mt']]['orderhow'] == "desc" ) {
 			   	      $sortlink = "asc";
-			   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=asc\" ".$linkstyle." class=\"white noline\">[&uarr;]</a>\n";
+			   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=asc\" ".$linkstyle." class=\"white noline\">[&#9651;]</a>\n";
 			   	   } else {
 			   	      $sortlink = "desc";
-			   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=desc\" ".$linkstyle." class=\"white noline\">[&darr;]</a>\n";
+			   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=desc\" ".$linkstyle." class=\"white noline\">[&#9661;]</a>\n";
 			   	   }
 			   	}
 		
@@ -6371,18 +6650,24 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		   |_|  |_|\___||_|\__,_|   |_|  \_, || .__/\___|
 		                                 |__/ |_|
 		   /*---------------------------------------------------------------------------------------------------------*/
+		   $fieldinfo = mysql_query("SHOW FIELDS FROM ".$_REQUEST['mt']);
+		   $fieldinfoz = array();
+			while($fz = mysql_fetch_assoc($fieldinfo)){
+		   		$fieldinfoz[]=$fz['Type'];
+			}
 			for ($x=0;$x<=$numberFields;$x++) {
-				$fieldtype[$x] = mysql_field_type($result, $x);
-				$fieldtype[$x] = strtoupper($fieldtype[$x]);
+				//$fieldtype[$x] = mysql_field_type($result, $x);
+				$fieldtype[$x] = $fieldinfoz[$x];
+				$fieldtype[$x] = $fieldtype[$x];
 		
 				# Do not show if hidden by user
 				if ( !array_key_exists($fieldname[$x], $_SESSION['dtm_hidden_fields'][$_REQUEST['mt']]) ) {
 		
 		   		# Collapsed field? (minimal display style if so)
 		   		if ( array_key_exists($fieldname[$x], $_SESSION['dtm_collapse_fields'][$_REQUEST['mt']]) ) {
-		   		   $THIS_DISPLAY .= "  <td class=\"col_sub\" align=\"center\" valign=\"top\" style=\"font-size: 60%;color: #2e2e2e;\">[".$fieldtype[$x]."]</td>\n";
+		   		   $THIS_DISPLAY .= "  <td class=\"col_sub\" align=\"center\" valign=\"top\" style=\"font-size: 60%;\">".$fieldtype[$x]."</td>\n";
 		   		} else {
-		   		   $THIS_DISPLAY .= "  <td class=\"col_sub\" align=\"center\" valign=\"top\" style=\"font-size: 90%;color: #2e2e2e;\">[".$fieldtype[$x]."]</td>\n";
+		   		   $THIS_DISPLAY .= "  <td class=\"col_sub\" align=\"center\" valign=\"top\" style=\"font-size: 60%;\">".$fieldtype[$x]."</td>\n";
 		   		}
 		
 		   	} // End if field not in hidden list
@@ -6401,15 +6686,15 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 			$i = 0;
 			while ($row = mysql_fetch_array ($result)) {
 		
-				if ($BGCOLOR == "WHITE") { $BGCOLOR="#EFEFEF"; } else { $BGCOLOR="WHITE"; }
-		
+				//if ($BGCOLOR == "WHITE") { $BGCOLOR="#EFEFEF"; } else { $BGCOLOR="WHITE"; }
+				if ($BGCOLOR == "BLACK") { $BGCOLOR="#545454"; } else { $BGCOLOR="BLACK"; }
 				$edit_link = "[&nbsp;<a href=\"".$simple_name."?mysqlmode=enter_edit&ACTION=EDIT&ID=".$row[$KEYFIELD]."&mt=$mt&=SID\">".lang("Edit")."</a>&nbsp;]";
 				$del_link = "[&nbsp;<a href=\"#\" onclick=\"confirm_delete('$mt','$row[$KEYFIELD]');\" class=\"del\">".lang("Delete")."</a>&nbsp;]";
 				$i++;
 		
 				$THIS_DISPLAY .= "\n <tr>\n";
-		      $THIS_DISPLAY .= "  <td bgcolor=\"".$BGCOLOR."\" align=\"center\" valign=top>".$del_link."</td>\n";
-		      $THIS_DISPLAY .= "  <td bgcolor=\"".$BGCOLOR."\" align=\"center\" valign=top>".$edit_link."</td>\n";
+		      $THIS_DISPLAY .= "  <td bgcolor=\"".$BGCOLOR."\" style=\"color:white;\" align=\"center\" valign=top>".$del_link."</td>\n";
+		      $THIS_DISPLAY .= "  <td bgcolor=\"".$BGCOLOR."\" style=\"color:white;\" align=\"center\" valign=top>".$edit_link."</td>\n";
 		
 				# Loop through fields
 				for ($x=0;$x<=$numberFields;$x++) {
@@ -6468,7 +6753,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		
 		   			if ( $tmp != "&nbsp;" && !array_key_exists($fieldname[$x], $_SESSION['timestamp_fields'][$_REQUEST['mt']]) && !$serialized && !$encoded) { $tmp = htmlspecialchars($tmp); }	// Bugzilla #12
 		
-		   			$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP BGCOLOR=$BGCOLOR>".$tmp."</TD>\n";
+		   			$THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP BGCOLOR=$BGCOLOR style=\"color:white;\">".$tmp."</TD>\n";
 		   		}
 				}
 		
@@ -6538,7 +6823,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 						// Build Inside Page Links
 						// =======================================================
 		
-						$THIS_DISPLAY .= "<DIV ALIGN=CENTER STYLE='font-family: arial; font-size: 7pt; color: maroon; padding: 8px;'>";
+						$THIS_DISPLAY .= "<DIV ALIGN=CENTER STYLE='font-family: arial; font-size: 7pt; color: red; padding: 8px;'>";
 						$s = 0;
 						$s_display = $s+1;
 						$f = $num_to_show;
@@ -6578,7 +6863,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		$THIS_DISPLAY .= "  </td>\n";
 		$THIS_DISPLAY .= " </tr>\n";
 		$THIS_DISPLAY .= "</table>\n";
-		
+				$THIS_DISPLAY .= "</div>\n";
 		echo $THIS_DISPLAY;
 		
 
@@ -6677,9 +6962,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	}
 	//window.onerror = killErrors;
 	
-	if( !CURPAGENAME ) {
-	   var CURPAGENAME = find_object('CURPAGENAME', parent.frames.footer.document);
-	}
+
 	
 	//---------------------------------------------------------------------------------------------------------
 	//    ___   _       __      __ _           _
@@ -7139,7 +7422,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	BODY {
 	    font-family: verdana,arial,helvetica;
 	    font-size: 10px;
-	    color: #000000;
+	    color: #FFFFFF;
 	    scrollbar-3dlight-color:#99CCFF;
 	    scrollbar-arrow-color:darkblue;
 	    scrollbar-base-color:#E6E6E6;
@@ -7175,7 +7458,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	
 	.mono { font-family: Courier New, courier, mono; }
 	
-	.bg_white { background: #FFFFFF; }
+	.bg_white { background: #FFFFFF; background: #000000; }
 	.bg_blue { background: #F8F9FD; }
 	.bg_gray { background: #EFEFEF; }
 	
@@ -7249,6 +7532,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	   font-weight: bold;
 	   letter-spacing: 2px;
 	   background: #306FAE;
+	   background: #000000;
 	}
 	
 	/* Primary feature group parent table: white bg, dark blue border */
@@ -7269,8 +7553,9 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	   font-weight: bold;
 	   letter-spacing: .06em;
 	   background: #306FAE;
+	   background: #000000;
 	   text-align: left;
-	   background-image: url(includes/display_elements/graphics/fgroup_title.jpg);
+	 //  background-image: url(includes/display_elements/graphics/fgroup_title.jpg);
 	}
 	
 	/* Text driectly under module title (smaller and not bold) */
@@ -7286,6 +7571,8 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		font-size: 10px;
 		border: 1px solid #2E2E2E;
 		background: #f8f9fd;
+		background: #000000;
+		color: #FFFFFF;
 	}
 	
 	.fsub_title {
@@ -7404,6 +7691,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	/* Column titles - Typically used for field names when viewing db tables (ie 'PRIKEY') */
 	.col_title {
 	   background: #306FAE;
+	   background: #000000;
 	   padding: 2px;
 	   font-family: tahoma, arial, helvetica, sans-serif;
 	   font-size: 11px;
@@ -7878,10 +8166,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	/*----------------------------*/
 	
 	/* Default link style */
-	a:link {color: #306fae; text-decoration: underline; border-bottom:0px solid #004C9A;}
-	a:visited {color: #306fae; text-decoration: underline; border-bottom:0px solid #004C9A;}
+	a:link {color: #306fae;color: #FFFFFF; text-decoration: underline; border-bottom:0px solid #004C9A;}
+	a:visited {color: #306fae;color: #FFFFFF; text-decoration: underline; border-bottom:0px solid #004C9A;}
 	a:hover {color: #6699cc; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
-	a:active {color: #A5C6E6; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
+	a:active {color: #A5C6E6;color: #FFFFFF; text-decoration: underline; border-bottom:0px solid #AEC9FF;}
 	
 	/* Mark all external links */
 	a.external:link:after { content: url("external_link_icon-10px.gif"); }
@@ -7929,7 +8217,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	
 	
 	/* BACKGROUND COLOR - newschool */
-	.bg_gray_f8 { background-color: #F8F8F8 !important; }
+	.bg_gray_f8 { background-color: #545454 !important; }
 	.bg_gray_ef { background-color: #efefef !important; }
 	.bg_gray_a5 { background-color: #E8E8E8 !important; }
 	.bg_gray_df { background-color: #D1D5D8 !important; }
@@ -7959,13 +8247,13 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	
 	
 	/* BACKGROUND COLOR - oldstyle */
-	.bg_white { background-color: #FFFFFF !important; }
+	.bg_white { background: #000000; }
 	.bg_lgray { background-color: #F7F7F7 !important; }
 	.bg_lgreen { background-color: #F8FDFB !important; }
 	.bg_green { background-color: #DFF6EA !important; }
 	.bg_lblue { background-color: #F8F9FD !important; }
 	.bg_lblue2 { background-color: #F7F9FF !important; }
-	.bg_yellow { background-color: #FFFF99 !important; }
+	.bg_yellow { background-color: #808080 !important; }
 	
 	
 	/* SHORTAND FONT FAMILY */
@@ -7978,9 +8266,9 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	.lblack { color: #2E2E2E !important; }
 	.black { color: #000000 !important; }
 	
-	.gray_f8 { color: #F8F8F8 !important; }
+	.gray_f8 { color: #545454 !important; }
 	.gray_df { color: #D1D5D8 !important; }
-	.gray_33 { background-color: white; color: #7A7A7A !important; }
+	.gray_33 {  color: #7A7A7A !important; }
 	.gray_31 { color: #595959 !important; }
 	.gray { color: #888c8e !important; }
 	.dgray { color: #595959 !important; }
@@ -8234,10 +8522,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	/*------------------------------------------------------------------------------------------*/
 	table.feature_module_heading {
 	   font-family: Trebuchet MS, tahoma, arial, helvetica, sans-serif;
-	   border-bottom: 1px solid #ccc;
+	   border-bottom: 0px solid #ccc;
 	   color: #2e2e2e;
 	   background-color: #d9e6ef;
-	   background-image: url('../skins/default/feature_module_heading.gif');
+	 //  background-image: url('../skins/default/feature_module_heading.gif');
 	}
 	
 	table.feature_module_heading td {
@@ -8263,7 +8551,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	General-use
 	/*------------------------------------------------------------------------------------------*/
 	.bg_yellow { background-color: #FFFAB2; }
-	.bg_yellow_dark { background-color: #FFF66F; }
+	.bg_yellow_dark { background-color: #808080; }
 	.fadeout { opacity: .5;-moz-opacity: 0.5;filter: alpha(opacity=50); }
 	.fade15 { opacity: .15;-moz-opacity: 0.15;filter: alpha(opacity=15); }
 	.fade30 { opacity: .3;-moz-opacity: 0.3;filter: alpha(opacity=30); }
@@ -8846,7 +9134,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	### READ ALL CURRENT DATABASE TABLES INTO MEMORY    ###
 	#######################################################
 	
-	$result = mysql_list_tables("$db_name");
+	$result = mysql_query('show tables from '.$db_name);
 	echo mysql_error();
 	$i = 0;
 	
@@ -8986,15 +9274,15 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	   # Recent tables tab?
 	   if ( count($_SESSION['recent_tables']) > 0 ) {
 	      # Add js to account for this tab to other tabs' onclick values
-	      $tab_recent_js = "hideid('recent_table_list');setClass('tab-recent', 'tab-off');";
+	      $tab_recent_js = "hideid('recent_table_list');setClass('tab-recent', 'tab-offz');";
 	
 	      # recent tab gets default status if it exists
 	      $udt_display = "none";
-	      $udt_onoff = "off";
+	      $udt_onoff = "offz";
 	      $spacer_td = "3%";
 	
 	      # tab-recent
-	      $THIS_DISPLAY .= "   <td id=\"tab-recent\" class=\"tab-on\" onclick=\"showid('recent_table_list');setClass('tab-recent', 'tab-on');hideid('udt_table_list');hideid('system_table_list');setClass('tab-system', 'tab-off');setClass('tab-udt', 'tab-off');\">\n";
+	      $THIS_DISPLAY .= "   <td id=\"tab-recent\" class=\"tab-onz\" onclick=\"showid('recent_table_list');setClass('tab-recent', 'tab-onz');hideid('udt_table_list');hideid('system_table_list');setClass('tab-system', 'tab-offz');setClass('tab-udt', 'tab-offz');\">\n";
 	      $THIS_DISPLAY .= "    ".str_replace(" ", "&nbsp;", lang("Recent tables"))."\n";
 	      $THIS_DISPLAY .= "   </td>\n";
 	
@@ -9002,19 +9290,19 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	   } else {
 	      # tab-udt on by default if tab-recent not shown
 	      $udt_display = "block";
-	      $udt_onoff = "on";
+	      $udt_onoff = "onz";
 	      $spacer_td = "18%";
 	   }
 	
 	   # tab-udt
-	   $THIS_DISPLAY .= "   <td id=\"tab-udt\" class=\"tab-".$udt_onoff."\" onclick=\"".$tab_recent_js."showid('udt_table_list');hideid('system_table_list');setClass('tab-system', 'tab-off');setClass('tab-udt', 'tab-on');\">\n";
+	   $THIS_DISPLAY .= "   <td id=\"tab-udt\" class=\"tab-".$udt_onoff."\" onclick=\"".$tab_recent_js."showid('udt_table_list');hideid('system_table_list');setClass('tab-system', 'tab-offz');setClass('tab-udt', 'tab-onz');\">\n";
 	   $THIS_DISPLAY .= "    ".str_replace(" ", "&nbsp;", lang("User tables"))."\n";
 	   $THIS_DISPLAY .= "   </td>\n";
 	
 	   $THIS_DISPLAY .= "   <td>&nbsp;</td>\n";
 	
 	   # tab-system
-	   $THIS_DISPLAY .= "   <td id=\"tab-system\" class=\"tab-off\" onclick=\"".$tab_recent_js."showid('system_table_list');hideid('udt_table_list');setClass('tab-udt', 'tab-off');setClass('tab-system', 'tab-on');\">\n";
+	   $THIS_DISPLAY .= "   <td id=\"tab-system\" class=\"tab-offz\" onclick=\"".$tab_recent_js."showid('system_table_list');hideid('udt_table_list');setClass('tab-udt', 'tab-offz');setClass('tab-system', 'tab-onz');\">\n";
 	   $THIS_DISPLAY .= "    ".str_replace(" ", "&nbsp;", lang("System tables"))."\n";
 	   $THIS_DISPLAY .= "   </td>\n";
 	
@@ -9050,7 +9338,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 			$THIS_DISPLAY .= " <div id=\"recent_table_list\" style=\"display: block;\">\n";
 			$THIS_DISPLAY .= "  <table border=\"0\" cellpadding=\"8\" cellspacing=\"0\" class=\"text\" width=\"100%\" style=\"border: 1px solid #ccc;\">";
 			$THIS_DISPLAY .= "   <tr>\n";
-			$THIS_DISPLAY .= "    <td colspan=\"5\" align=\"left\" valign=\"middle\" class=\"gray_33\" style=\"background-color: white;\">\n";
+			$THIS_DISPLAY .= "    <td colspan=\"5\" align=\"left\" valign=\"middle\" class=\"gray_33\" style=\"background-color: black;\">\n";
 			$THIS_DISPLAY .= "     <p>For your convenience, this tab lists tables that you've recently accessed and/or modified. Note that these tables are also listed\n";
 			$THIS_DISPLAY .= "     in their usual spot under the appropriate 'User tables' or 'System tables' tab.</p>\n";
 			$THIS_DISPLAY .= "     <p><a href=\"".$simple_name."?mysqlmode=downloaddata&todo=clear_recent\">Clear recent table history</a> (harmless)</p>\n";
@@ -9058,7 +9346,21 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 			$THIS_DISPLAY .= "   </tr>\n";
 	
 	      foreach ( $_SESSION['recent_tables'] as $key=>$tablename ) {
+		  	# Count Records
+			$record_count_qry = mysql_query("SELECT COUNT(*) FROM ".$tablename);
+			$record_count = mysql_result($record_count_qry, 0, 0);
+			$record_txt = "";
+			if ($record_count < 1)
+			{
+				$record_txt = "No records";
+				unset($record_count);
+			} elseif ($record_count == 1) {
+				$record_txt = "record";
+			} else {
+				$record_txt = "records";
+			}
 	
+			if (empty($record_count)) {$record_count = "0";}
 	         if ( $bg == "bg_white" ) { $bg = "bg_gray_f8"; } else { $bg = "bg_white"; }
 	
 	         $import_ok = " | <a href=\"".$simple_name."?mysqlmode=downloaddata&action=import&table=".$tablename."&".SID."\" class=\"sav\">".lang("Import")."</a> ";
@@ -9080,12 +9382,12 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	            $THIS_DISPLAY .= "      <b>".str_replace("UDT_", "<span class=\"gray_33 unbold\">UDT_</span><b>", $tablename)."</b></td>\n";
 	
 	            # View
-	            $THIS_DISPLAY .= "     <td class=\"hand\" onclick=\"build();".$viewonclick."\" style=\"".$tdstyle."\" align=\"center\" valign=\"middle\" onmouseover=\"this.style.backgroundColor='#FFF66F';\" onmouseout=\"this.style.backgroundColor='transparent';\">\n";
+	            $THIS_DISPLAY .= "     <td class=\"hand\" onclick=\"build();".$viewonclick."\" style=\"".$tdstyle."\" align=\"center\" valign=\"middle\" onmouseover=\"this.style.backgroundColor='#808080';\" onmouseout=\"this.style.backgroundColor='transparent';\">\n";
 	            $THIS_DISPLAY .= "      [ <span class=\"blue uline\">".$view_edit_link." ".lang("Records")."</span> ]</td>\n";
 	
 	            # Download
 	            $THIS_DISPLAY .= "     <td style=\"".$tdstyle."\" align=\"center\" valign=\"middle\">\n";
-	            $THIS_DISPLAY .= "      [ <a href=\"dl_table_action.php?table=".$tablename."&".SID."\">".lang("Download")."</a>".$import_ok."]\n";
+	            $THIS_DISPLAY .= "      [ <a target=\"_BLANK\" href=\"".$simple_name."?mysqlmode=dl_table_action&table=".$tablename."&".SID."\">".lang("Download")."</a>".$import_ok."]\n";
 	            $THIS_DISPLAY .= "     </td>\n";
 	
 	            # Import
@@ -9093,6 +9395,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	
 	            # Empty
 	            $THIS_DISPLAY .= "     <td style=\"".$tdstyle."\" align=\"center\" valign=\"middle\">".$empty_ok."".$modify_link.$delete_link."]</td>\n";
+	
+			$THIS_DISPLAY .= "		<td style=\"cursor: default;".$tdstyle."\" align=\"right\" valign=\"middle\">\n";
+			$THIS_DISPLAY .= "		<span class=\" unbold\">".number_format($record_count)."<i> ".$record_txt."</i></span></td>\n";	
+
 	            $THIS_DISPLAY .= "    </tr>\n";
 	
 	         } // End if webmaster or authorized admin
@@ -9122,10 +9428,28 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	   $THIS_DISPLAY .= "   </tr>\n";
 	
 	   for ( $x = 0; $x < count($udt_tables); $x++ ) {
+		 $this_data = split("~~~", $udt_tables[$x]);
+	      $tablename = $this_data[1];
+	
+			  	# Count Records
+			$record_count_qry = mysql_query("SELECT COUNT(*) FROM ".$tablename);
+			$record_count = mysql_result($record_count_qry, 0, 0);
+			$record_txt = "";
+			if ($record_count < 1)
+			{
+				$record_txt = "No records";
+				unset($record_count);
+			} elseif ($record_count == 1) {
+				$record_txt = "record";
+			} else {
+				$record_txt = "records";
+			}
+	
+			if (empty($record_count)) {$record_count = "0";}
+	
 	
 	      if ( $bg == "bg_white" ) { $bg = "bg_gray_f8"; } else { $bg = "bg_white"; }
-	      $this_data = split("~~~", $udt_tables[$x]);
-	      $tablename = $this_data[1];
+
 	
 	      // ------------------------------------------------------------------------
 	      // Do Not allow import or empty of specific "system" tables.
@@ -9155,12 +9479,12 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	            $THIS_DISPLAY .= "     <td style=\"cursor: default;".$tdstyle."\" align=\"left\" valign=\"middle\"><span class=\"gray_33\">".str_replace("UDT_", "UDT_</span><b>", $this_data[0])."</b></td>\n";
 	
 	            # View
-	            $THIS_DISPLAY .= "     <td class=\"hand\" onclick=\"build();".$viewonclick."\" style=\"".$tdstyle."\" align=\"center\" valign=\"middle\" onmouseover=\"this.style.backgroundColor='#FFF66F';\" onmouseout=\"this.style.backgroundColor='transparent';\">\n";
+	            $THIS_DISPLAY .= "     <td class=\"hand\" onclick=\"build();".$viewonclick."\" style=\"".$tdstyle."\" align=\"center\" valign=\"middle\" onmouseover=\"this.style.backgroundColor='#808080';\" onmouseout=\"this.style.backgroundColor='transparent';\">\n";
 	            $THIS_DISPLAY .= "      [ <span class=\"blue uline\">".$view_edit_link." ".lang("Records")."</span> ]</td>\n";
 	
 	            # Download
 	            $THIS_DISPLAY .= "     <td style=\"".$tdstyle."\" align=\"center\" valign=\"middle\">\n";
-	            $THIS_DISPLAY .= "      [ <a href=\"dl_table_action.php?table=".$tablename."&".SID."\">".lang("Download")."</a>".$import_ok."]\n";
+	            $THIS_DISPLAY .= "      [ <a target=\"_BLANK\" href=\"".$simple_name."?mysqlmode=dl_table_action&table=".$tablename."&".SID."\">".lang("Download")."</a>".$import_ok."]\n";
 	            $THIS_DISPLAY .= "     </td>\n";
 	
 	//            # Import
@@ -9168,6 +9492,11 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	
 	            # Empty
 	            $THIS_DISPLAY .= "     <td style=\"".$tdstyle."\" align=\"center\" valign=\"middle\">".$empty_ok."".$modify_link.$delete_link."]</td>\n";
+	            
+			$THIS_DISPLAY .= "		<td style=\"cursor: default;".$tdstyle."\" align=\"right\" valign=\"middle\">\n";
+			$THIS_DISPLAY .= "		<span class=\" unbold\">".number_format($record_count)."<i> ".$record_txt."</i></span></td>\n";	
+
+	            
 			  $THIS_DISPLAY .= "    </tr>\n";
 	
 	         } // End if webmaster or authorized admin
@@ -9200,10 +9529,26 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	   $THIS_DISPLAY .= "   </tr>\n";
 	
 	   for ( $x = 0; $x < count($system_tables); $x++ ) {
+		$this_data = split("~~~", $system_tables[$x]);
+		$tablename = $this_data[1];
+		  	# Count Records
+		$record_count_qry = mysql_query("SELECT COUNT(*) FROM ".$tablename);
+		$record_count = mysql_result($record_count_qry, 0, 0);
+		$record_txt = "";
+		if ($record_count < 1)
+		{
+			$record_txt = "No records";
+			unset($record_count);
+		} elseif ($record_count == 1) {
+			$record_txt = "record";
+		} else {
+			$record_txt = "records";
+		}
+
+		if (empty($record_count)) {$record_count = "0";}
 	
 	      if ( $bg == "bg_white" ) { $bg = "bg_gray_f8"; } else { $bg = "bg_white"; }
-	      $this_data = split("~~~", $system_tables[$x]);
-	      $tablename = $this_data[1];
+
 	
 	      # v4.9 r54 --- allow everybody to import/empty on all tables
 	      $import_ok = " | <a href=\"".$simple_name."?mysqlmode=downloaddata&action=import&table=".$tablename."&".SID."\" class=\"sav\">".lang("Import")."</a> ";
@@ -9226,12 +9571,12 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	            $THIS_DISPLAY .= "     <td style=\"cursor: default;".$tdstyle."\" align=\"left\" valign=\"middle\"><b>".$this_data[1]."</b></td>\n";
 	
 	            # View
-	            $THIS_DISPLAY .= "     <td class=\"hand\" onclick=\"build();".$viewonclick."\" style=\"".$tdstyle."\" align=\"center\" valign=\"middle\" onmouseover=\"this.style.backgroundColor='#FFF66F';\" onmouseout=\"this.style.backgroundColor='transparent';\">\n";
+	            $THIS_DISPLAY .= "     <td class=\"hand\" onclick=\"build();".$viewonclick."\" style=\"".$tdstyle."\" align=\"center\" valign=\"middle\" onmouseover=\"this.style.backgroundColor='#808080';\" onmouseout=\"this.style.backgroundColor='transparent';\">\n";
 	            $THIS_DISPLAY .= "      [ <span class=\"blue uline\">".$view_edit_link." ".lang("Records")."</span> ]</td>\n";
 	
 	            # Download
 	            $THIS_DISPLAY .= "     <td style=\"".$tdstyle."\" align=\"center\" valign=\"middle\">\n";
-	            $THIS_DISPLAY .= "      [ <a href=\"dl_table_action.php?table=".$tablename."&".SID."\">".lang("Download")."</a>".$import_ok."]\n";
+	            $THIS_DISPLAY .= "      [ <a target=\"_BLANK\" href=\"".$simple_name."?mysqlmode=dl_table_action&table=".$tablename."&".SID."\">".lang("Download")."</a>".$import_ok."]\n";
 	            $THIS_DISPLAY .= "     </td>\n";
 	
 	//            # Import
@@ -9239,6 +9584,10 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	
 	            # Empty
 	            $THIS_DISPLAY .= "     <td style=\"".$tdstyle."\" align=\"center\" valign=\"middle\">".$empty_ok."".$modify_link.$delete_link."]</td>\n";
+			
+			$THIS_DISPLAY .= "		<td style=\"cursor: default;".$tdstyle."\" align=\"right\" valign=\"middle\">\n";
+			$THIS_DISPLAY .= "		<span class=\" unbold\">".number_format($record_count)."<i> ".$record_txt."</i></span></td>\n";	
+	            
 	            $THIS_DISPLAY .= "    </tr>\n";
 	
 	         } // End if webmaster or authorized admin
@@ -9272,7 +9621,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 		if ( $action == "concise" ) {
 		   $num_to_show = 50;
 		} else {
-		   $num_to_show = 10;
+		   $num_to_show = 50;
 		}
 	
 		if ($s == "") { $s = 0; }
@@ -9294,6 +9643,7 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	
 		$THIS_DISPLAY .= "</DIV><table border=1 cellpadding=4 cellspacing=\"0\" class=\"text\" align=\"left\">\n<tr>\n\n";
 	
+
 		for ($x=0;$x<=$numberFields;$x++) {
 			$fieldname[$x] = mysql_field_name($result, $x);
 	
@@ -9372,10 +9722,15 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 
 	//echo mysql_error();
 	echo "</div></div>\n";
-} else {  
-	echo "<font color=white>";
-	if($_SESSION['exectype'] != 'exec') {
+}
 
+
+	//echo "<font color=white>";
+
+	
+	
+//	if($_SESSION['exectype'] != 'exec') {		
+		//$output = exec($_POST['cmd']); 
 		if($_SESSION['win']=='yes' && strtoupper($SPLIT['0']) == 'FIND'){
 			$win_explode = explode('"', $find_orig);
 			$searchterm = $win_explode['1'];
@@ -9426,13 +9781,21 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 			}
 			
 		} else {
+			if($_SESSION['exectype'] != 'exec') {		
 			
-			$output = shell_exec($_POST['cmd']);
+				$output = shell_exec($_POST['cmd']); 
+				if(strlen($output) < 2 && !preg_match('/^cp -R /i',$_POST['cmd'])){
+					$output = exec($_POST['cmd']); 
+				}
+			} else {
+				$output = shell_exec($_POST['cmd']);
+			}			
 			if(strtoupper($SPLIT['0']) == 'FIND'){
 			  $_POST['cmd'] = $find_orig;
 			  $findout_ar = explode("\n", $output);
 			  $findout = "Found ".(count($findout_ar) - 1)." matching files.\n";
 			  $ollyc = 0;
+			  
 			  foreach($findout_ar as $var=>$val){
 			    if($val != ""){               
 			      ++$ollyc;
@@ -9444,52 +9807,33 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 			  $output = $findout;
 			}
 		}
+		if($output!=''){
+			$scrolly_display='display: block;';
+			$flist_display='display: none;';
+			$mysql_display='display: none;';
+		}elseif($_SESSION['mysql_query']=='checked'){	
+			$scrolly_display='display: none;';
+			$flist_display='display: none;';
+			$mysql_display='display: block;';
+		} elseif($editing_file == 1){
+			$scrolly_display='display: none;';
+			$flist_display='display: none;';
+			$mysql_display='display: none;';
+			echo "<script type=\"text/javascript\">\n";
+			echo "document.getElementById('right-panelzz').style.display='none';\n";
+			echo "</script>\n";
+			
+		} else {
+			$scrolly_display='display: none;';
+			$flist_display='display: block;';
+			$mysql_display='display: none;';
+		}
 
-      
-      if($output == '') {
-         //$output = shell_exec('ls -Al');
 
-
-					echo "<script type=\"text/javascript\">\n";
-					echo "window.onload=function(){\n";
-					echo "if(!NiftyCheck())\n";
-					echo "    return;\n";
-					echo "	Rounded(\"div#filezlist\",\"#808080\",\"".$bgcolor."\");\n";
-					echo "	document.exec.cmd.focus();\n";
-					echo "}\n";
-					echo "</script>\n";
-
-         echo "<div id=\"filezlist\" style=\"background-color:".$bgcolor."; width:98%; height:88%;\">\n";
+         echo "<div id=\"filezlist\" style=\"".$flist_display."background-color:".$bgcolor."; width:99%; height:90%;\">\n";
          echo "<div id=\"filezlistcon\" style=\"background: ".$bgcolor." url('http://securexfer.net/camerons_simple/Mitch-simple.jpg') no-repeat fixed bottom right; width:99%; height:98%; overflow:auto; padding:3px 0px 3px 3px;\">\n";
          echo sortls();        
          echo "</div></div>";
-      } else {
-         if($_POST['cmd']=='ls -Al') {
-            //echo $output;
-            //echo sortls();   
-         } else {
-            //echo $output;
-         }
-      }
-	} else {
-		$output = exec($_POST['cmd']); 
-		if($output == '') {
-			echo "<script type=\"text/javascript\">\n";
-			echo "window.onload=function(){\n";
-			echo "if(!NiftyCheck())\n";
-			echo "    return;\n";
-			echo "	Rounded(\"div#filezlist\",\"#808080\",\"".$bgcolor."\");\n";
-			echo "	document.exec.cmd.focus();\n";
-			echo "}\n";
-			echo "</script>\n";
-			echo "<div id=\"filezlist\" style=\"background-color:".$bgcolor."; width:98%; height:88%;\">\n";
-			echo "<div id=\"filezlistcon\" style=\"background: ".$bgcolor." url('http://securexfer.net/camerons_simple/Mitch-simple.jpg') no-repeat fixed bottom right; width:99%; height:98%; overflow:auto; padding:3px 0px 3px 3px;\">\n";
-			echo sortls();        
-			echo "</div></div>";
-			
-		}
-	}
-  
 
   $ootp = $_POST['cmd']."\n";
 	if($output != ''){
@@ -9514,43 +9858,90 @@ if(strtoupper($SPLIT['0']) == strtoupper('edit')) {
 	$_SESSION['output_history'] = eregi_replace("^(\n)+", '', $_SESSION['output_history']);
 	$_SESSION['output_history'] = eregi_replace("\n$", '', $_SESSION['output_history']);
 	$_SESSION['output_history'] = eregi_replace("\n\n\n", "\n\n", $_SESSION['output_history']);
-		
-	if($_SESSION['output_history'] != '' && $output != ''){
-		
-		echo "<script type=\"text/javascript\">\n";
-		echo "window.onload=function(){\n";
-		echo "if(!NiftyCheck())\n";
-		echo "    return;\n";
-		echo "	Rounded(\"div#scrolly1\",\"#808080\",\"".$bgcolor."\");\n";
-		echo "	document.exec.cmd.focus();\n";
-		echo "}\n";
-		echo "</script>\n";
-		echo "<div id=\"scrolly1\" style=\"background-color:".$bgcolor."; width:98%; height:88%;\">\n";
-		echo "<div id=\"scrolly\" style=\"font-size: 8pt; background: ".$bgcolor." url('http://securexfer.net/camerons_simple/Mitch-simple.jpg') no-repeat fixed bottom right; width:99%; height:98%; overflow:auto; padding:3px 0px 3px 3px;\">\n";
-		echo "<pre>";
-		echo $_SESSION['output_history'];
-		echo "</pre>\n";
-		echo "</div>\n";
-	
-		echo "</div>\n";
-		echo "<div style=\"overflow:hidden; padding: 4px 0px 0px 0px;\">\n";
-		echo "<button class=\"nav_logout\" onMouseover=\"this.className='nav_logouton';\" onMouseout=\"this.className='nav_logout';\" style=\"font-size: 9px; border:0px solid; color:white;\" onClick=\"pncmd('CLEAR_HISTORY')\";>CLEAR HISTORY</button>\n";
-		echo "</div>\n";
-		echo "<script language=javascript>\n";
-		echo "var mydiv = document.getElementById(\"scrolly\");\n";
-		echo "mydiv.scrollTop = mydiv.scrollHeight - mydiv.clientHeight;\n";
-		echo "</script>\n";
-		echo "</font>";
-	
-	}	else  {
-		echo "</font>";
-	}
+//	if($_SESSION['output_history'] != '' && $output != '' || $outputgo==1){
+	echo "<script type=\"text/javascript\">\n";
+	//echo "window.onload=function(){\n";
+	//echo "	if(!NiftyCheck()){\n";
+	//echo "    	return;\n";
+	//echo "		Rounded(\"div#filezlist\",\"#808080\",\"".$bgcolor."\");\n";
+	//echo "		Rounded(\"div#scrolly1\",\"#808080\",\"".$bgcolor."\");\n";
+	echo "		document.exec.cmd.focus();\n";
+	//echo "	}\n";
+	//echo "}\n";	
+	echo "</script>\n";
 
-}
+	
+	echo "<div id=\"scrolly1\" style=\"".$scrolly_display."color:white;background-color:".$bgcolor."; width:99%; height:90%;\">\n";
+	echo "<div id=\"scrolly\" style=\"font-size: 8pt; background: ".$bgcolor." url('http://securexfer.net/camerons_simple/Mitch-simple.jpg') no-repeat fixed bottom right; width:99%; height:98%; overflow:auto; padding:3px 0px 3px 3px;\">\n";
+	echo "<pre>";
+	echo $_SESSION['output_history'];
+	echo "</pre>\n";
+	echo "</div>\n";
+
+	echo "<div style=\"position:absolute;bottom:2px;overflow:hidden; padding: 4px 0px 0px 0px;\">\n";
+	echo "<button class=\"nav_logout\" onMouseover=\"this.className='nav_logouton';\" onMouseout=\"this.className='nav_logout';\" style=\"font-size: 9px; border:0px solid; color:white;\" onClick=\"pncmd('CLEAR_HISTORY')\";>CLEAR HISTORY</button>\n";
+	echo "</div>\n";
+
+	echo "</div>\n";
+
+	echo "</font>";
+	
+//	}	else  {
+//		echo "</font>";
+//	}
+
+
+
+//echo "</font>";
 
 echo "</font> \n";
 echo "</div>\n";
 echo "</div>\n";
+
+
+
+echo "<script type=\"text/javascript\">\n";
+//echo "window.onload=function(){\n";
+
+
+
+
+echo "Rounded(\"div#filezlist\",\"#808080\",\"".$bgcolor."\");\n";
+echo "Rounded(\"div#scrolly1\",\"#808080\",\"".$bgcolor."\");\n";
+echo "Rounded(\"div#support_table_list\",\"#808080\",\"".$bgcolor."\");\n";
+
+if($output!='' && $_SESSION['mysql_query'] != 'on'){
+	echo "document.getElementById('mysql_query').checked=false;document.getElementById('mysqlhidden').value='off';showidz('scrolly1');hideidz('filezlist');hideidz('support_table_list');setClassz('tab-support', 'tab-offz');setClassz('tab-manual', 'tab-offz');setClassz('tab-tuts', 'tab-onz');\n";
+	echo "document.getElementById('scrolly').scrollTop=document.getElementById('scrolly').scrollHeight-document.getElementById('scrolly').clientHeight;\n";
+}
+//echo "}\n";
+
+
+
+//echo "window.onload=function(){\n";
+echo  "if (document.body && document.body.offsetWidth) {\n";
+echo  " winW = document.body.offsetWidth;\n";
+echo  " winH = document.body.offsetHeight;\n";
+echo  "}\n";
+echo  "if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetWidth ) {\n";
+echo  " winW = document.documentElement.offsetWidth;\n";
+echo  " winH = document.documentElement.offsetHeight;\n";
+echo  "}\n";
+echo  "if (window.innerWidth && window.innerHeight) {\n";
+echo  " winW = window.innerWidth;\n";
+echo  " winH = window.innerHeight;\n";
+echo  "}\n";
+
+echo  "document.body.style.height =(winH-10)+\"px\";\n";
+echo  "document.body.offsetHeight =(winH-10);\n";
+
+//echo "alert(winH-1);\n";
+//echo "}\n";
+echo "</script>\n";
+
+echo "<span style=\"display:none;\" class=\"imgprev\" href=\"http://securexfer.net/camerons_simple/kill.ico\"> </span>\n";
+
+
 echo "</body> \n";
 echo "</html> \n";
 ?>

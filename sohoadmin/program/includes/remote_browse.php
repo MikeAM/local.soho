@@ -126,10 +126,12 @@ while($seo_optionq = mysql_fetch_assoc($getseoopt)){
 	   $lang_include = "sohoadmin/language/$language";
 	}
 	
-	include ($lang_include);
+	include_once($lang_include);
 	
-	session_register("lang");
-	session_register("language");
+	$_SESSION['language'] = $language;
+	foreach($lang as $lvar=>$lval){
+		$_SESSION['lang'][$lvar]=$lval;
+	}
 	
 	$_SESSION['getSpec'] = $getSpec;
 	

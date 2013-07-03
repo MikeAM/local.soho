@@ -14,24 +14,28 @@ require_once('includes/product_gui.php');
 
 /// Build page arrays (based on menu status) for jump menus
 ###==================================================================================
-
+$CUR_USER_ACCESS=$_SESSION['CUR_USER_ACCESS'];
 // Loop all and split into diff arrays by menu status
 $pgrez = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages ORDER BY page_name asc");
 while ( $getPg = mysql_fetch_array($pgrez) ) {
 	// Main menu pages
 	if(!preg_match('/^http:/i', $getPg['link'])){
    
-		if ( $getPg['main_menu'] > 0 ) {
-		   $main_pgz[] = $getPg['page_name'];
-		
-		// Sub-menu pages
-		} elseif ( strlen($getPg['sub_page_of']) > 4 ) {
-		   $tmppg = split("~~~", $getPg['sub_page_of']);
-		   $sub_pgz[$tmppg[0]][] = array( sort=>$tmppg[1], name=>$getPg['page_name'] );
-		
-		// Off-menu pages
-		} else {
-		   $other_pgz[] = $getPg['page_name'];
+		$TMP_CHK = eregi_replace(" ", "_", $getPg['page_name']);
+		if ($CUR_USER_ACCESS == "WEBMASTER" || strpos($CUR_USER_ACCESS, ";".$TMP_CHK.";") !== false || eregi(";MOD_ALLPAGES;", $CUR_USER_ACCESS) ) { // Admin is authorized, build page row now
+	   
+			if ( $getPg['main_menu'] > 0 ) {
+			   $main_pgz[] = $getPg['page_name'];
+			
+			// Sub-menu pages
+			} elseif ( strlen($getPg['sub_page_of']) > 4 ) {
+			   $tmppg = split("~~~", $getPg['sub_page_of']);
+			   $sub_pgz[$tmppg[0]][] = array( sort=>$tmppg[1], name=>$getPg['page_name'] );
+			
+			// Off-menu pages
+			} else {
+			   $other_pgz[] = $getPg['page_name'];
+			}
 		}
 	}
 }

@@ -836,24 +836,12 @@ echo "              </table>\n";
 
 
 
-<SCRIPT LANGUAGE=Javascript>
-
-// Set Current Nav Button Colors in Style Sheet
-// ---------------------------------------------
-
-<?
-
-	if ($ok == 1) { echo "alert('New Menu Layout has been saved.');\n"; }
-	if ($cok == 1) { echo "alert('New button colors have been saved.');\n window.location='#colors';"; }
-	if ($lok == 1) { echo "alert('External Page Link Added.');\n"; }
-
-	if ($linkc == "") { $menubg = "5F9EA0"; $linkc = "FFFFFF"; }
-
-//	echo "set_button(\"$menubg\",\"$linkc\");\n";
-
+<?php
+if ($ok == 1) { $report[] = "New Menu Layout has been saved."; }
+if ($cok == 1) { $report[] = 'New button colors have been saved.'; }
+if ($lok == 1) { $report[] = 'External Page Link Added.'; }
+if ($linkc == "") { $menubg = "5F9EA0"; $linkc = "FFFFFF"; }
 ?>
-
-</SCRIPT>
 
 <?
 # Grab module html into container var

@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
-
+header("X-XSS-Protection: 0");
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
 ## Version 4.7
@@ -12,7 +12,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 ##############################################################################
 ## COPYRIGHT NOTICE
-## Copyright 1999-2005 Soholaunch.com, Inc.  All Rights Reserved.
+## Copyright 1999-2012 Soholaunch.com, Inc.  All Rights Reserved.
 ##
 ## This script may be used and modified in accordance to the license
 ## agreement attached (license.txt) except where expressly noted within
@@ -104,7 +104,7 @@ if($_REQUEST['man']==''){
 } else {
 	$manual_start = 'http://saas.soholaunch.com/'.$_REQUEST['man'];
 }
-
+//$frameheight='min-height:350px;height:100%;';
 $OS = strtoupper(PHP_OS);
 $thisdomain = $_SESSION['this_ip'];
 $browser = $_SERVER['HTTP_USER_AGENT'];
@@ -115,28 +115,46 @@ $ginfo_q = mysql_query("select df_company, df_phone, df_email from site_specs li
 $ginfo = mysql_fetch_assoc($ginfo_q);
 
 $encodings = mb_list_encodings();
-$supinfo = urlencode(base64_encode(fixEncoding('df_email~@~'.$ginfo['df_email'].'~#~soho_un~@~'.strtolower($_SESSION['PHP_AUTH_USER']).'~#~soho_pw~@~'.strtolower($_SESSION['PHP_AUTH_PW']).'~#~name~@~'.$ginfo['df_company'].'~#~build~@~'.current_version().'~#~phone~@~'.$ginfo['df_phone'])));
+if($ginfo['df_email']==''){ $ginfo['df_email']=strtolower($_SESSION['PHP_AUTH_USER']); }
+$supinfo = urlencode(base64_encode(fixEncoding('df_email~@~'.strtolower($_SESSION['PHP_AUTH_USER']).'~#~soho_un~@~'.strtolower($_SESSION['PHP_AUTH_USER']).'~#~soho_pw~@~'.strtolower($_SESSION['PHP_AUTH_PW']).'~#~name~@~'.$ginfo['df_company'].'~#~build~@~'.current_version().'~#~phone~@~'.$ginfo['df_phone'])));
 
 
 $getstring = 'https://partner.soholaunch.com/media/ultra_support/ultra_tickets.php?test=yes&domain_name='.$_SESSION['this_ip'].'&domain_key='.$_SESSION['key'].'&supstring='.$supinfo.'&loadtime='.time();
 
+$HTML_DISPLAY = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\" \"http://www.w3.org/TR/html4/frameset.dtd\">
+<html xmlns=\"http://www.w3.org/1999/xhtml\" >\n";
+//$HTML_DISPLAY = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
+////$HTML_DISPLAY .= "<html xmlns=\"http://www.w3.org/1999/xhtml\" dir=\"ltr\">\n";
+//
+//
+////$HTML_DISPLAY = "<!DOCTYPE html>\n";
+//$HTML_DISPLAY .= "<html lang=\"en\" dir=\"ltr\">\n";
 
-$HTML_DISPLAY .= "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n";
-$HTML_DISPLAY .= "<html xmlns=\"http://www.w3.org/1999/xhtml\" dir=\"ltr\">\n";
 $HTML_DISPLAY .= "<head>\n";
+
+$HTML_DISPLAY .= "<title>Help Center</title>\n";
+$HTML_DISPLAY .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF".'-'."8\">\n";
+if(preg_match('/MSIE/i',$_SERVER['HTTP_USER_AGENT'])){
+	$HTML_DISPLAY .= "	<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\" />\n";
+}
+$HTML_DISPLAY .= "<script type=\"text/javascript\" src=\"../../../client_files/jquery.min.js\"></script>\n";
+
+$HTML_DISPLAY .= "<script type=\"text/javascript\" src=\"../../includes/display_elements/js_functions.php\"></script>\n";
+
+$HTML_DISPLAY .= "<link rel=\"stylesheet\" href=\"../dashboard/prettyPhoto.css\" type=\"text/css\" media=\"screen\" charset=\"utf-8\">\n";
+$HTML_DISPLAY .= "<script src=\"../dashboard/jquery.prettyPhoto.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n";
+
+
 
 $HTML_DISPLAY .= "<link rel=\"shortcut icon\" href=\"../../../skins/default/icons/help_center-enabled.gif\" />\n";
 $HTML_DISPLAY .= "<link rel=\"icon\" type=\"image/x-icon\" href=\"../../../skins/default/icons/help_center-enabled.gif\">\n";
 
-$HTML_DISPLAY .= "<title>Help Center</title>\n";
-$HTML_DISPLAY .= "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf".'-'."8\">\n";
 
-$HTML_DISPLAY .= "<script type=\"text/javascript\" src=\"http://ultra.soholaunch.com/sohoadmin/program/includes/display_elements/js_functions.php\"></script>\n";
 
-$HTML_DISPLAY .= "<link rel=\"stylesheet\" href=\"http://ultra.soholaunch.com/sohoadmin/program/product_gui.css\">\n";
-$HTML_DISPLAY .= "<link rel=\"stylesheet\" href=\"http://ultra.soholaunch.com/sohoadmin/program/includes/product_buttons-ultra.css\">\n";
+$HTML_DISPLAY .= "<link rel=\"stylesheet\" href=\"../../product_gui.css\">\n";
+$HTML_DISPLAY .= "<link rel=\"stylesheet\" href=\"../../includes/product_buttons-ultra.css\">\n";
 
-$HTML_DISPLAY .= "<link rel=\"stylesheet\" href=\"http://ultra.soholaunch.com/sohoadmin/program/includes/product_interface-ultra.css\">\n";
+$HTML_DISPLAY .= "<link rel=\"stylesheet\" href=\"../../includes/product_interface-ultra.css\">\n";
 $HTML_DISPLAY .= "<style>\n";
 $HTML_DISPLAY .= ".tab-off, .tab-on {\n";
 $HTML_DISPLAY .= "   text-align: center;\n";
@@ -152,6 +170,15 @@ $HTML_DISPLAY .= "   color: #595959;\n";
 $HTML_DISPLAY .= "   cursor: pointer;\n";
 $HTML_DISPLAY .= "}\n";
 
+
+$HTML_DISPLAY .= "iframe {\n";
+$HTML_DISPLAY .= "  width:100%;\n";
+$HTML_DISPLAY .= "min-height:600px;\n";
+$HTML_DISPLAY .= "}\n";
+$HTML_DISPLAY .= "#pp_full_res iframe {\n";
+$HTML_DISPLAY .= "  overflow-y:hidden;\n";
+$HTML_DISPLAY .= "height:100%;\n";
+$HTML_DISPLAY .= "}\n";
 $HTML_DISPLAY .= ".top-left\n";
 $HTML_DISPLAY .= "{\n";
 $HTML_DISPLAY .= "	position:absolute;\n";
@@ -172,7 +199,10 @@ $HTML_DISPLAY .= "   font-weight: bold;\n";
 $HTML_DISPLAY .= "}\n";
 
 
-$HTML_DISPLAY .= "body, html {\n";
+$HTML_DISPLAY .= "body {\n";
+$HTML_DISPLAY .= "  height:99%;\n";
+$HTML_DISPLAY .= "  overflow-y:hidden;\n";
+$HTML_DISPLAY .= "	background:url('../../includes/images/vert-bg.png') repeat-y;\n";
 $HTML_DISPLAY .= "	background-position: -203px 0px;\n";
 $HTML_DISPLAY .= "} \n";
 
@@ -180,8 +210,8 @@ $HTML_DISPLAY .= "} \n";
 $HTML_DISPLAY .= ".right-panel {\n";
 $HTML_DISPLAY .= "	position:relative;\n";
 $HTML_DISPLAY .= "	padding:5px 10px 10px 10px;\n";
-
-$HTML_DISPLAY .= "	margin-left:30;\n";
+$HTML_DISPLAY .= "  height:100%;\n";
+$HTML_DISPLAY .= "	margin-left:30px!important;\n";
 $HTML_DISPLAY .= "	padding:10px 10px 10px 10px;\n";
 $HTML_DISPLAY .= "}\n";
 
@@ -190,6 +220,9 @@ $HTML_DISPLAY .= "	top:-3px;\n";
 $HTML_DISPLAY .= "	left:-20px;\n";
 $HTML_DISPLAY .= "}\n";
 
+
+
+ 
 $HTML_DISPLAY .= "</style>\n";
 $HTML_DISPLAY .= "</head>\n";
 $HTML_DISPLAY .= "<body onLoad=\"window.focus();\">\n";
@@ -197,10 +230,13 @@ $HTML_DISPLAY .= "<body onLoad=\"window.focus();\">\n";
 
 $HTML_DISPLAY .= "			<div class=\"top-left\"></div>\n";
 
-$HTML_DISPLAY .= "<div class=\"right-panel\">	\n";
+$HTML_DISPLAY .= "<div id=\"right-panelz\" class=\"right-panel\" style=\"margin-left:30px!important;\">	\n";
 
 $HTML_DISPLAY .= "			<h3><img src=\"http://".$_SESSION['this_ip']."/sohoadmin/skins/default/icons/help_center-enabled.gif\" style=\"margin-bottom: 4px; margin-right: 4px; vertical-align: text-top; height: 30px;\">Help Center</h3>\n";
-$HTML_DISPLAY .= "			<p style=\"width: 100%;\" id=\"module_description_text\">Need help?&nbsp;Read about the different features in our user manual.\n&nbsp;&nbsp;Have Questions?&nbsp;Open a support ticket to our knowledgeable staff!<br/></p>\n";
+
+
+
+$HTML_DISPLAY .= "			<p style=\"width: 100%;\" id=\"module_description_text\">Need help?&nbsp;Read about the different features in our user manual.\n&nbsp;&nbsp;Have Questions?&nbsp;Open a support ticket to our knowledgeable staff!<br/><a href=\"\" onClick=\"showid('support_table_list');hideid('tuts_list');hideid('manual_list');setClass('tab-manual', 'tab-off');setClass('tab-tuts', 'tab-off');setClass('tab-support', 'tab-on');document.getElementById('partnertickets').src='".$getstring."';\">Ask a Question</a></p>\n";
 
 ############
 $tutorial_array = array();
@@ -218,6 +254,21 @@ $tutorialz = '';
 $tutorialz .= "<div class=\"box video\" style=\"background: url(video-med.png); background-repeat: no-repeat; position:relative;border:1px solid rgb(204, 204, 204);\" id=\"widget-tutorial-videos\">\n";
 $tutorialz .= "<div class=\"hdng\" style=\"padding-left:33px;padding-top:10px;\"><h3>Tutorial Videos</h3></div>\n";
 $tutorialz .= "<ul id=\"tutorial-thumbs\">\n";
+////New tutorials
+//add_tutorial('support', 'How to Get Support', 'http://www.youtube.com/watch?v=3RHxWruIMHk&feature=player_embedded');
+
+//add_tutorial('welcome_to_ultra', 'Welcome to Ultra', 'http://securexfer.net/tutorials/player.php?tutorial=ultra-working-with-images.mp4');
+add_tutorial('ultra-dashboard', 'Getting a Feel for Ultra', 'http://securexfer.net/tutorials/player.php?tutorial=ultra-getting-a-feel-for-ultra.mp4');
+add_tutorial('support', 'How to Get Support', 'http://securexfer.net/tutorials/player.php?tutorial=ultra-how-to-get-support.mp4');
+add_tutorial('sidebar_basics', 'Sidebar Basics', 'http://securexfer.net/tutorials/player.php?tutorial=ultra-sidebar-basics.mp4');
+
+add_tutorial('add-your-site-to-google', 'Adding Your Site to Google', 'http://securexfer.net/tutorials/player.php?tutorial=add-you-site-to-google.mp4');
+add_tutorial('analytics', 'Setting up Google Analytics', 'http://securexfer.net/tutorials/player.php?tutorial=ultra-google-analytics.mp4');
+add_tutorial('webmaster_tools', 'Google Webmaster Tools', 'http://securexfer.net/tutorials/player.php?tutorial=ultra-google-webmaster-tools.mp4');
+add_tutorial('working-with-images', 'Working With Images', 'http://securexfer.net/tutorials/player.php?tutorial=ultra-working-with-images.mp4');
+
+////END NEW tutorials working-with-images.mp4
+
 //add_tutorial('login', 'Log-in', 'http://securexfer.net/tutorials/player.php?tutorial=01_login_tutorial');
 add_tutorial('create-pages', 'Create Pages', 'http://securexfer.net/tutorials/player.php?tutorial=03_new_pages');
 add_tutorial('edit-pages', 'Open/Edit Pages', 'http://securexfer.net/tutorials/player.php?tutorial=04_open_pages');
@@ -241,17 +292,45 @@ add_tutorial('cart-tax', 'Shopping: Tax & Shipping', 'http://securexfer.net/tuto
 add_tutorial('backup', 'Backup & Restore', 'http://securexfer.net/tutorials/player.php?tutorial=16_backup_and_restore');
 add_tutorial('webmaster', 'Webmaster Settings', 'http://securexfer.net/tutorials/player.php?tutorial=24_Webmaster');
 
+
+
+
 $max = count($tutorial_array);
 for ( $n = 0; $n < $max; $n++ ) {
-	$tutorialz .= '<div style="width:130px; height:170px; float:left;clear:none;padding:10px 4px 10px 4px; text-align:center;font:12px Arial, Helvetica, sans-serif; color:#939292;">';
-	$tutorialz .= '<a href="#" onclick="window.open(\''.$tutorial_array[$n]['url'].'\', \''.$tutorial_array[$n]['caption'].'\', \'width=810,height=590\');" id="'.$tutorial_array[$n]['idname'].'"><img src="tutorial-thumbs/'.$tutorial_array[$n]['idname'].'.png" alt="'.$tutorial_array[$n]['caption'].'"/>';
-	$tutorialz .= '<h4 style="text-align:center;">'.$tutorial_array[$n]['caption'].'</h4></a>';
-	$tutorialz .= '</div>';
+	$tutorialz .= "<div style=\"width:150px; height:170px; float:left;clear:none;padding:10px 4px 10px 4px; text-align:center;font:12px Arial, Helvetica, sans-serif; color:#939292;\">\n";
+	$tutorialz .= "	<a style=\"text-decoration:none;border-bottom:none;\" href=\"".$tutorial_array[$n]['url']."&iframe=true\" rel=\"prettyPhoto[iframe]\" id=\"".$tutorial_array[$n]['idname']."\" class=\"videobtn\"><img src=\"tutorial-thumbs/".$tutorial_array[$n]['idname'].".png\" alt=\"".$tutorial_array[$n]['caption']."\" width=\"120\" height=\"90\"/><br/><span style=\"text-decoration:none;border-bottom:none;white-space:nowrap;\">".$tutorial_array[$n]['caption']."</span></a>\n";
+	$tutorialz .= "</div>\n";
 }
 
 $tutorialz .= "</ul>\n";
 $tutorialz .= "<div class=\"clear\"></div>\n";
 $tutorialz .= "</div>\n";
+
+
+
+$tutorialz .= "<script type=\"text/javascript\" charset=\"utf-8\">
+$(document).ready(function(){
+	var newheight = $(\"#right-panelz\").height()-140;
+	if(newheight > 100){
+	
+		$(\"#widget-tutorial-videos,#partnertickets,#manualiframe\").height(newheight);
+		//$(\"\").height(newheight);
+	}
+
+	$(\"a[rel^='prettyPhoto']\").prettyPhoto({    
+		default_width: 863,
+		default_height: 530,
+		default_width: '100%',
+		default_height: '100%',
+		autoplay: true,
+		autoplay_slideshow: false,
+		theme: 'dark_rounded',
+		social_tools: false,
+		iframe_markup: '<iframe style=\"min-width:863px; min-height:600px; width:100%; height:100%;\" src=\"{path}\" frameborder=\"0\" allowfullscreen></iframe>'
+	});
+});
+</script>\n";
+
 #######################
 
 if(strlen($_SESSION['suspend_msg']) > 3 && ($_SESSION['product_mode']=='suspended' || $_SESSION['product_mode']=='frozen' || $_SESSION['product_mode']=='orphan' || $_SESSION['product_mode']=='trial')){
@@ -289,35 +368,41 @@ if($_SESSION['product_mode']=='trial'){
 	$HTML_DISPLAY .= "		&nbsp;\n";
 	$HTML_DISPLAY .= "	</td>\n";
 	$HTML_DISPLAY .= "</tr></tbody></table>\n";
-	 
+	
+	
 	if($_SESSION['product_mode']=='trial'){
-		$HTML_DISPLAY .= "<div id=\"manual_list\" style=\"width:100%; display: block;\">\n";
+		$HTML_DISPLAY .= "<div id=\"manual_list\" style=\"width:100%; display: block; ".$frameheight."\">\n";
 	} else {
-		$HTML_DISPLAY .= "<div id=\"manual_list\" style=\"width:100%; display: none;\">\n";
+		$HTML_DISPLAY .= "<div id=\"manual_list\" style=\"width:100%; display: none; ".$frameheight."\">\n";
 	}
 	
-	$HTML_DISPLAY .= "	<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204);\">\n";
-	$HTML_DISPLAY .= "	<iframe src=\"".$manual_start."?loadtime=".time()."\" scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"height:80%;overflow:auto; width:100%;  display:block; border: 1px solid #666666;\"></iframe>\n";
+	$HTML_DISPLAY .= "	<div style=\"width:99%;padding:0px;border:1px solid rgb(204, 204, 204); ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "	<iframe id=\"manualiframe\" src=\"".$manual_start."?loadtime=".time()."\" scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"overflow:auto; display:block; border: 1px solid #666666; ".$frameheight."\"></iframe>\n";
 	$HTML_DISPLAY .= "	</div>\n";
 	$HTML_DISPLAY .= "</div>\n";
 	
-	$HTML_DISPLAY .= "<div id=\"tuts_list\" style=\"width:100%; display: none;\">\n";
-	$HTML_DISPLAY .= "	<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204);\">\n";
-	$HTML_DISPLAY .= "		<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204);\">\n";
+	
+	
+	$HTML_DISPLAY .= "<div id=\"tuts_list\" style=\"width:99%; display: none; ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "	<div style=\"width:99%; position:relative;padding:0px;border:1px solid rgb(204, 204, 204); ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "		<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204); ".$frameheight."\">\n";
 	$HTML_DISPLAY .= $tutorialz;
 	$HTML_DISPLAY .= "		</div>\n";
 	$HTML_DISPLAY .= "	</div>\n";
 	$HTML_DISPLAY .= "</div>\n";
 	
-	if($_SESSION['product_mode']=='trial'){
-		$HTML_DISPLAY .= "<div id=\"support_table_list\" style=\"display: none;\">\n";
-	} else {
-		$HTML_DISPLAY .= "<div id=\"support_table_list\" style=\"display: block;\">\n";	
+	
+	
+	if($_SESSION['product_mode']=='trial'){		
+		$HTML_DISPLAY .= "<div id=\"support_table_list\" style=\"display: none; ".$frameheight."\">\n";
+	} else {		
+		$HTML_DISPLAY .= "<div id=\"support_table_list\" style=\"display: block; ".$frameheight."\">\n";	
 	}
-	$HTML_DISPLAY .= "	<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204);\">\n";
-	$HTML_DISPLAY .= "	<iframe id=\"partnertickets\" name=\"partnertickets\" src='".$getstring."' scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"height:80%;overflow:auto; width:100%;  display:block; border: 1px solid #666666;\"></iframe>\n";
+	$HTML_DISPLAY .= "	<div style=\"width:99%;padding:0px;border:1px solid rgb(204, 204, 204); ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "	<iframe id=\"partnertickets\" name=\"partnertickets\" src='".$getstring."' scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"overflow:auto; display:block; border: 1px solid #666666; ".$frameheight."\"></iframe>\n";
 	$HTML_DISPLAY .= "	</div>\n";
 	$HTML_DISPLAY .= "</div>\n";
+	
 
 } else {
 		
@@ -341,32 +426,47 @@ if($_SESSION['product_mode']=='trial'){
 	$HTML_DISPLAY .= "		&nbsp;\n";
 	$HTML_DISPLAY .= "	</td>\n";
 	$HTML_DISPLAY .= "</tr></tbody></table>\n";
-	 
-	$HTML_DISPLAY .= "<div id=\"manual_list\" style=\"width:100%; display: block;\">\n";
-	$HTML_DISPLAY .= "	<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204);\">\n";
-	$HTML_DISPLAY .= "	<iframe src=\"".$manual_start."?loadtime=".time()."\" scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"height:80%;overflow:auto; width:100%;  display:block; border: 1px solid #666666;\"></iframe>\n";
+
+	
+	$HTML_DISPLAY .= "<div id=\"manual_list\" style=\"width:99%; display: block; ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "	<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204); ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "	<iframe id=\"manualiframe\" src=\"".$manual_start."?loadtime=".time()."\" scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"overflow:auto;   display:block; border: 1px solid #666666; ".$frameheight."\"></iframe>\n";
 	$HTML_DISPLAY .= "	</div>\n";
 	$HTML_DISPLAY .= "</div>\n";
 	
+
 	
-	$HTML_DISPLAY .= "<div id=\"tuts_list\" style=\"width:100%; display: none;\">\n";
+	
+	$HTML_DISPLAY .= "<div id=\"tuts_list\" style=\"width:99%; display: none; position:relative;padding:0px; ".$frameheight."\">\n";
 	
 	$HTML_DISPLAY .= $tutorialz;
 	
 	$HTML_DISPLAY .= "</div>\n";
 	
-	$HTML_DISPLAY .= "<div id=\"support_table_list\" style=\"display: none;\">\n";
-	$HTML_DISPLAY .= "	<div style=\"width:100%;padding:0px;border:1px solid rgb(204, 204, 204);\">\n";
-	$HTML_DISPLAY .= "	<iframe id=\"partnertickets\" name=\"partnertickets\" src='".$getstring."' scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"height:80%;overflow:auto; width:100%;  display:block; border: 1px solid #666666;\"></iframe>\n";
+	
+	
+	$HTML_DISPLAY .= "<div id=\"support_table_list\" style=\"display: none; ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "	<div style=\"width:99%;padding:0px;border:1px solid rgb(204, 204, 204); ".$frameheight."\">\n";
+	$HTML_DISPLAY .= "	<iframe id=\"partnertickets\" name=\"partnertickets\" src='".$getstring."' scrolling=\"yes\" marginwidth=\"0\" marginheight=\"0\" frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"overflow:auto;   display:block; border: 1px solid #666666; ".$frameheight."\"></iframe>\n";
 	$HTML_DISPLAY .= "	</div>\n";
 	$HTML_DISPLAY .= "</div>\n";
+	
 
 
 }
 
 $HTML_DISPLAY .= "</div>\n";
+
+if($_GET['show']=='ticket'){
+	$HTML_DISPLAY .= "<script type=\"text/javascript\" charset=\"utf-8\">\n";
+	$HTML_DISPLAY .= "$(document).ready(function(){\n";
+	$HTML_DISPLAY .= "	showid('support_table_list');hideid('tuts_list');hideid('manual_list');setClass('tab-manual', 'tab-off');setClass('tab-tuts', 'tab-off');setClass('tab-support', 'tab-on');document.getElementById('partnertickets').src='".$getstring."';";
+	$HTML_DISPLAY .= "});\n";
+	$HTML_DISPLAY .= "</script>\n";
+}
+
+
 $HTML_DISPLAY .= "</body>\n</html>";
 
 echo $HTML_DISPLAY;
 ?>
-

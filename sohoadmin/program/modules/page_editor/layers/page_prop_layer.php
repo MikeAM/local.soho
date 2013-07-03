@@ -33,7 +33,7 @@ chdir(str_replace(basename(__FILE__), '', __FILE__));
 require_once('../../../includes/product_gui.php');
 chdir($curdir);
 
-$templateName = eregi_replace("_"," ",$currentPage);
+$templateName = str_replace("_"," ",$currentPage);
 //$templateName = chop($templateName);
 
 if ($currentPage == "Home" || $CUR_USER_ACCESS != "WEBMASTER") {

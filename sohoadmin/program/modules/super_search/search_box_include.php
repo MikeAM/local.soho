@@ -50,7 +50,7 @@ if ($searchopts['search_button_text'] != '') {
   $searchoutput .= "Search";
 }
 $searchoutput .= "\">&nbsp;&nbsp;";
-if($searchopts['display_match_exact_phrase'] == 'yes'){
+if($searchopts['display_match_exact_phrase'] == 'yes' && 1==2){
 	$searchoutput .= "<br>\n";
 	$searchoutput .= "<span id=\"ss-exact-phrase-container\" style=\"font-size: 80%;\" valign=bottom><input type=\"checkbox\" name=\"t\" value=\"phrase\"";
 	$searchoutput .= ">";

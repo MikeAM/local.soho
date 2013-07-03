@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -30,9 +30,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## expressly forbidden and in violation of Domestic and International
 ## copyright laws.
 ###############################################################################
-
-error_reporting(E_PARSE);
-
 session_start();
 
 # Include core files
@@ -153,9 +150,9 @@ if( !$blog_comment_settings->get("require_approval") ){
 
 .result_select {
    float: right;
-   width: 75px;
+   width: 125px;
    /*background-color: #dfdfdf;*/
-   border: 1px solid #000000;
+   border: 0px solid #000000;
    border-style: none none solid solid;
    /*display: inline;*/
 }
@@ -180,14 +177,16 @@ if( !$blog_comment_settings->get("require_approval") ){
 
 .delete_select {
    float: right;
-   width: 65px;
+   width: 125px;
+   /*
    height: 20px;
    text-align: left;
    padding-left: 10px;
    font-size: 12px;
+   */
    /*text-align: right;*/
    /*background-color: #dfdfdf;*/
-   border: 1px solid #000000;
+   border: 0px solid #000000;
    border-style: solid none none solid;
    /*display: inline;*/
 }
@@ -558,8 +557,9 @@ function check_display(ele) {
                echo "<div class=\"a_comment\" style=\"\">\n";
 
                echo "   <div class=\"result_select\">\n";
-               echo "      <div class=\"green\" style=\"cursor: pointer;\" onclick=\"ajaxDo('comment_result.php?process=comment&comment=".$COMMENTS['prikey']."&do=approved', 'comment_result_".$COMMENTS['prikey']."');\">Approve</div>\n";
-               echo "      <div class=\"red\" style=\"cursor: pointer;\" onclick=\"ajaxDo('comment_result.php?process=comment&comment=".$COMMENTS['prikey']."&do=denied', 'comment_result_".$COMMENTS['prikey']."');\">Deny</div>\n";
+               
+               echo "      <a class=\"greenButton\" style=\"margin:4px 4px 0px 0px;float:right;cursor: pointer;\" onclick=\"ajaxDo('comment_result.php?process=comment&comment=".$COMMENTS['prikey']."&do=approved', 'comment_result_".$COMMENTS['prikey']."');\"><span>Approve</span></a>\n";
+               
                echo "   </div>\n";
 
                echo "   <div class=\"post_name blue\">Posted by ".htmlspecialchars(stripslashes(html_entity_decode($COMMENTS['name'], ENT_QUOTES)))."\n";
@@ -577,7 +577,8 @@ function check_display(ele) {
 
                echo "   <p>".htmlspecialchars(nl2br(stripslashes(html_entity_decode($COMMENTS['comments'], ENT_QUOTES))))."</p>\n";
 
-               echo "   <div class=\"red delete_select\" style=\"cursor: pointer;\" onclick=\"ajaxDo('comment_result.php?process=delete&comment=".$COMMENTS['prikey']."', 'comment_result_".$COMMENTS['prikey']."');\">Delete</div>\n";
+			echo "      <a class=\"grayButton\" style=\"margin:-4px 4px 4px 0px;float:right;cursor: pointer;\" onclick=\"ajaxDo('comment_result.php?process=comment&comment=".$COMMENTS['prikey']."&do=denied', 'comment_result_".$COMMENTS['prikey']."');\"><span>Deny</span></a>\n";
+               echo "   <a class=\"redButton\" style=\"margin:-4px 4px 4px 0px;float:right;cursor: pointer;\" onclick=\"ajaxDo('comment_result.php?process=delete&comment=".$COMMENTS['prikey']."', 'comment_result_".$COMMENTS['prikey']."');\"><span>Delete</span></a>\n";
                echo "   <div class=\"delete_spacer\">&nbsp;</div>\n";
 
                echo "</div>\n";

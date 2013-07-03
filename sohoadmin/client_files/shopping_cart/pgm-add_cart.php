@@ -13,7 +13,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## Release Notes:	sohoadmin/build.dat.php
 ###############################################################################
 
-##############################################################################
+#############################################################################
 ## COPYRIGHT NOTICE
 ## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston
 ## Copyright 2003-2007 Soholaunch.com, Inc.
@@ -40,7 +40,29 @@ $THIS_DISPLAY = "";
 $updated_text = "";
 
 include("pgm-cart_config.php");
-include_once("sohoadmin/includes/emulate_globals.php");
+//include_once("sohoadmin/includes/emulate_globals.php");
+if(count($_FILES) >= 1){
+	require_once("../sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
+}
+
+if(!function_exists('sterilize_char')){
+	function sterilize_char ($sterile_var) {
+	
+		$sterile_var = stripslashes($sterile_var);
+		$sterile_var = str_replace(";", ",", $sterile_var);
+		$sterile_var = str_replace(" ", "_", $sterile_var);
+		$st_l = strlen($sterile_var);
+		$st_a = 0;
+		$tmp = "";
+		while($st_a != $st_l) {
+			$temp = substr($sterile_var, $st_a, 1);
+			if (eregi("[0-9a-z_]", $temp)) { $tmp .= $temp; }
+			$st_a++;
+		}//endwhile	
+		$sterile_var = $tmp;
+		return $sterile_var;	
+	}//sterilize_char
+}
 
 /////Custom Form Session Store
 if($_POST['special_var_form'] == 'yes'){
@@ -200,6 +222,7 @@ if($_POST['special_var_form'] == 'yes'){
 	$qty = $N_qty_cnt;
 
 }
+$disable_count = 12;
 if (eregi(".FORM", $PROD['OPTION_FORMDATA']) && $FORMFLAG != "ON") {
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -235,8 +258,64 @@ if (eregi(".FORM", $PROD['OPTION_FORMDATA']) && $FORMFLAG != "ON") {
 	$body = eregi_replace(">", ">\n", $body);		// Make sure that each HTML TAG has a line feed after it
 	$lines = split("\n", $body);				// Split each line into array for easy manipulation
 	$numLines = count($lines);				// How many lines do we have?
-
-
+	$event_time_dd = '';
+	$find_dates = mysql_query("select PRIKEY,EVENT_DATE,EVENT_START,EVENT_END,EVENT_DETAILPAGE,custom_start,custom_end from calendar_events where EVENT_DATE >= '".date('Y-m-d')."' and EVENT_DETAILPAGE='".$id."' order by EVENT_DATE, EVENT_START");
+	
+	if(mysql_num_rows($find_dates) > 0 && $PROD['OPTION_FORMDATA'] !=''){	
+		$dbtablename=strtoupper(str_replace(' ','_','UDT_CART_DATA_'.sterilize_char($PROD['PROD_NAME'])));
+		if(strlen($dbtablename) > 64){
+			$dbtablename=substr($dbtablename,0,64);
+		}
+		$get_cartform_registrants = mysql_query("select EVENT_DATE from ".$dbtablename);
+		$disable_count = 0;
+		while($regs = mysql_fetch_assoc($get_cartform_registrants)){
+			if(preg_match('/ /',$regs['EVENT_DATE'])){
+				$edate_ar = explode(' ',$regs['EVENT_DATE']);
+				$edate = $edate_ar['0'];
+			} else {
+				$edate = $regs['EVENT_DATE'];
+			}
+			
+			$regz[$edate][]=$regs['EVENT_DATE'];
+		}
+		$event_time_dd = "<select name=\"event_date\">\n";
+		$avail_dates=0;
+		
+		while($got_dates=mysql_fetch_assoc($find_dates)){		
+			++$avail_dates;
+			$start_time = $got_dates['EVENT_START'];
+			$end_time = $got_dates['EVENT_END'];
+			$times = " ".$start_time."-".$end_time;
+			$display_times = " ".DATE("g:i a", STRTOTIME($start_time)).'-'.DATE("g:i a", STRTOTIME($end_time));
+			$display_date = DATE("M dS Y", STRTOTIME($got_dates['EVENT_DATE']));
+			if($got_dates['custom_start']!=''){
+				//$start_time = $got_dates['custom_start'];
+				//$end_time = $got_dates['custom_end'];
+				$times = '';
+				$display_times = '';
+			}
+			$eventselected = ' ';
+			if($_REQUEST['event']!='' && $_REQUEST['event']==$got_dates['PRIKEY']){
+				$eventselected = ' SELECTED';
+			}
+			
+			
+			$inventory_left = $PROD['OPTION_INVENTORY_NUM'] - count($regz[$got_dates['EVENT_DATE']]);
+			$disabledd='';
+			$disabled_display = '';
+			if($inventory_left < 1){
+				$disable_count++;
+				$disabledd = " disabled";
+				$disabled_display = lang("Event Full")." ";
+			}
+			
+			$event_time_dd .= "<option value=\"".$got_dates['EVENT_DATE'].$times."\"".$eventselected.$disabledd.">".$disabled_display.$display_date.$display_times."</option>\n";
+			//echo testArray($got_dates);
+		}
+		$event_time_dd .= "</select>\n";
+	}
+	
+	
 	if ($PROD['OPTION_FORMDISPLAY'] == "PERQTY") {
 		$num_times = $qty;
 		$form_title = lang("Item")." N ".lang("Details");
@@ -250,6 +329,7 @@ if (eregi(".FORM", $PROD['OPTION_FORMDATA']) && $FORMFLAG != "ON") {
 	// Send variable flags to "add routine" so that we can handle these variables as an add-on to
 	// the VAR_NAME field of the cart
 
+
 	$THIS_DISPLAY .= "<INPUT TYPE=HIDDEN NAME=FORMFLAG VALUE=\"ON\">\n";
 	$THIS_DISPLAY .= "<INPUT TYPE=HIDDEN NAME=FORMLOOP VALUE=\"".$num_times."\">\n\n";
 
@@ -259,15 +339,21 @@ if (eregi(".FORM", $PROD['OPTION_FORMDATA']) && $FORMFLAG != "ON") {
 
 		$THIS_DISPLAY .= "<TABLE BORDER=0 CELLPADDING=4 CELLSPACING=0 WIDTH=100% CLASS=text STYLE='border: 1px inset black;'>\n";
 		$THIS_DISPLAY .= "<TR>\n";
-		$THIS_DISPLAY .= "<th WIDTH=95%><font color=\"".$OPTIONS['DISPLAY_HEADERTXT']."\">\n";
+		$THIS_DISPLAY .= "<th WIDTH=95% style=\"color:".$OPTIONS['DISPLAY_HEADERTXT'].";background-color:".$OPTIONS['DISPLAY_HEADERBG'].";\">\n";
 		$THIS_DISPLAY .= "<B>$tmp : $PROD[PROD_NAME]<BR>".$instructions."\n";
 		$THIS_DISPLAY .= "</th></TR><TR><TD ALIGN=LEFT VALIGN=TOP>\n";
+
+
 
 
 		for ($x=0;$x<=$numLines;$x++) {			// Loop through lines and parse unwanted "display" HTML
 
 			# Include line in out put as long as they don't contain <form, <title, <meta, <html, <body, SUBMIT in them
 			if ($lines[$x] != "\n\n" && !eregi("SUBMIT", $lines[$x]) && !eregi("</FORM", $lines[$x]) && !eregi("<FORM", $lines[$x]) && !eregi("<META", $lines[$x]) && !eregi("</TITLE", $lines[$x]) && !eregi("<HTML", $lines[$x]) && !eregi("<TITLE", $lines[$x]) && !eregi("<BODY", $lines[$x]) && !eregi("<HEAD", $lines[$x]) && !eregi("</HEAD", $lines[$x]) && !eregi("</BODY", $lines[$x]) && !eregi("</HTML", $lines[$x]) && !eregi("<HTML", $lines[$x]) && !eregi("required_fields", $lines[$x]) ) {
+				
+	//$THIS_DISPLAY .= $x."<br/>";
+				
+				
 				if(!eregi("fileupload", $lines[$x])){
 					$this_line = eregi_replace("name=\"", "name=\"Item_".$y."_", $lines[$x]);	// Change name variables so that product can interpret them based on use
 				} else {
@@ -276,6 +362,12 @@ if (eregi(".FORM", $PROD['OPTION_FORMDATA']) && $FORMFLAG != "ON") {
 				$THIS_DISPLAY .= $this_line . "\n";
 
 			} elseif ( eregi("required_fields", $lines[$x]) ) {
+
+			if($event_time_dd != ''){
+				$THIS_DISPLAY .= "<div class=\"field-container\"><p style=\"width: 100px;\" class=\"myform-field_title-left\">&nbsp;Date:</p><p class=\"myform-input_container\">".eregi_replace("name=\"", "name=\"Item_".$y."_", $event_time_dd)."</p></div>";
+			}
+
+
 			   # Replace required_fields fieldname and add to output lines
 			   $THIS_DISPLAY .= eregi_replace("name=\"required_fields\"", "id=\"required_fields".$y."\"", $lines[$x]) . "\n";
 			   $reqfield_js = "<script type=\"text/javascript\">\n";
@@ -321,7 +413,12 @@ if (eregi(".FORM", $PROD['OPTION_FORMDATA']) && $FORMFLAG != "ON") {
 	// Step 4: Display Submit Button and Close out form
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	$THIS_DISPLAY .= "<BR><CENTER><input type=\"button\" value=\"".lang("Continue")."...\" CLASS=FormLt1 STYLE='cursor: hand;' onclick=\"req_fields();\"></CENTER></FORM>\n";
+if($avail_dates==$disable_count){
+	$THIS_DISPLAY .= "<BR><CENTER><b>Sorry there are no dates available for this event...</b> \n";
+	$THIS_DISPLAY .= " <input type=\"button\" value=\"".lang("Back")."...\" CLASS=FormLt1 STYLE='cursor: hand;' onclick=\"document.location='start.php';\"></CENTER></FORM>\n";
+} else {
+	$THIS_DISPLAY .= "<BR><CENTER><input type=\"button\" value=\"".lang("Continue")."...\" CLASS=FormLt1 STYLE='cursor: hand;' onclick=\"req_fields();\"></CENTER></FORM>\n";	
+}	
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Step 5: Display and wait for customer input
@@ -482,11 +579,20 @@ eval(hook("pgm-add_cart.php:calcaddnprice"));
 		$tmp_cnt = $tmp_cnt - 2;
 
 		for ($z=0;$z<=$tmp_cnt;$z++) {
-			if ($tmp[$z] == $id && $tmp_subcat[$z] == $subcat && $tmp_varname[$z] == $var_name && $tmp_price[$z] == $price) {
+//			if ( $_SERVER['REMOTE_ADDR'] == '50.79.231.201' ) { 
+//				echo testArray($_SESSION['CART_VARNAME']);
+//				echo '<p>['.$id.']==['.$tmp[$z].']</p>';
+//				echo '<p>['.$tmp_subcat[$z].']==['.$subcat.']</p>';
+//				echo '<p>['.$tmp_varname[$z].']==['.$var_name.']</p>';
+//				echo '<p>['.$tmp_price[$z].']==['.$price.']</p>';
+//				echo '<p>'.__FILE__.':'.__LINE__.'</p>'; 
+//				exit; 
+//			}
+			if ($tmp[$z] == $id && ($tmp_subcat[$z] == '' || ($tmp_subcat[$z] != '' && $tmp_subcat[$z] == $subcat && $tmp_varname[$z] == $var_name))) {
 				$DUP = 1;
 			}
-
 		}
+//		if ( $_SERVER['REMOTE_ADDR'] == '50.79.231.201' ) { echo '<p>'.__FILE__.':'.__LINE__.'</p>'; exit; }
 
 	if ($DUP != 1 || $FORMFLAG == "ON") {		// Add as new Product to cart
 		// Check for custom form data
@@ -662,55 +768,121 @@ eval(hook("pgm-add_cart.php:getattap"));
 					} else {
 						$soho_email .= lang("Uploaded file").":".$filesuploaded;
 					}
-					$test = new attach_mailer($name = "$from_email", $from = "$from_email", $to = "$from_email", $cc = "", $bcc = "", $subject = "".$SUBJECTLINE."");
+					//$test = new attach_mailer($name = "$from_email", $from = "$from_email", $to = "$from_email", $cc = "", $bcc = "", $subject = "".$SUBJECTLINE."");
 
-					foreach($_FILES['fileupload']['tmp_name'] as $filnum=>$fildat) {
-						if (move_uploaded_file($_FILES['fileupload']['tmp_name'][$filnum], $_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum])) {
-							if(file_exists($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum])) {
-								//file uploaded
-
-								//if(eregi('\.gif$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.jpg$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.jpeg$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.png$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.bmp$', $_FILES['fileupload']['name'][$filnum])) {
-								//	$test->add_html_image($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
-								//} else {
-									if(eregi('\.gz$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.zip$', $_FILES['fileupload']['name'][$filnum])){
-										$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
+	
+					$o_dir = getcwd();
+					chdir($_SESSION['doc_root'].'/sohoadmin/filebin/');
+					
+					if(is_dir('tmp_upload')){ rmdirr('tmp_upload'); }
+					mkdir('tmp_upload');
+					chdir('tmp_upload');
+					$purefiles = array();
+					foreach($_FILES['fileupload']['tmp_name'] as $filnum=>$fildat){
+						if(!preg_match('/\.htaccess/i', $_FILES['fileupload']['name'][$filnum])&& !preg_match('/\.\./', $_FILES['fileupload']['name'][$filnum])){
+							$_FILES['fileupload']['name'][$filnum] = str_replace(' ', '_', $_FILES['fileupload']['name'][$filnum]);
+							if(move_uploaded_file($_FILES['fileupload']['tmp_name'][$filnum], $_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum])) {						
+								if(file_exists($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum])) {
+									if(preg_match('/\.(gif|jpg|jpeg|png|bmp)$/i', $_FILES['fileupload']['name'][$filnum])) {
+										//$test->add_html_image($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
+										//$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
+										$purefiles[] = $_FILES['fileupload']['name'][$filnum];
+									} elseif(preg_match('/\.zip$/i', $_FILES['fileupload']['name'][$filnum])) {
+										//$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
+										$purefiles[] = $_FILES['fileupload']['name'][$filnum];
 									} else {
 										$SLASH = DIRECTORY_SEPARATOR;
-										$zipped_file = eregi_replace('\.[^\.]*$', '.zip', $_FILES['fileupload']['name'][$filnum]);
-										$b4zip = getcwd();
-										chdir($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin");
-//										if(eregi('WIN', PHP_OS)){
-//											$zippy = $_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."program".$SLASH."includes".$SLASH."untar".$SLASH."zip.exe";
-//											exec($zippy." ".$zipped_file." ".$_FILES['fileupload']['name'][$filnum]);
-//										} else {
-//											exec("zip ".$zipped_file." ".$_FILES['fileupload']['name'][$filnum]);
-//										}
+										$zipped_file = str_replace(' ', '_', preg_replace('/\.[^\.]*$/i', '.zip', $_FILES['fileupload']['name'][$filnum]));
 										soho_create_zip($zipped_file, $_FILES['fileupload']['name'][$filnum]);
-										chdir($b4zip);
-										if(file_exists($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$zipped_file)){
-											$test->add_attach_file($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$zipped_file);
-											unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$zipped_file);
+										$purefiles[] = $_FILES['fileupload']['name'][$filnum];
+										if(file_exists($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$zipped_file)){
+										//	$test->add_attach_file($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$zipped_file);
+	//										unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$zipped_file);
 										} else {
-											$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
+										//	$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/tmp_upload/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum]);
 										}
-								//	}
-								unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$_FILES['fileupload']['name'][$filnum]);
+	//								unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$_FILES['fileupload']['name'][$filnum]);
+									}
 								}
 							}
 						}
 					}
-
-					$test->html_body = "<html><pre>$soho_email</pre></html>";
-					$test->text_body = strip_tags($test->html_body, "<a>");
-					if($test->process_mail() == true) {
-						foreach($_FILES['fileupload']['tmp_name'] as $filnum=>$fildat) {
-							if(file_exists($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum])) {
-								unlink($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
-							}
-						}
-					} else {
-			//couldnotsend
+	
+				$emailattachments = array(
+					"attachments"=>$purefiles
+				);
+				if(SohoEmail($from_email, $from_email, $SUBJECTLINE, "<html><pre>$soho_email</pre></html>", $emailattachments)){
+					foreach($purefiles as $pfile){
+						unlink(basename($pfile));
 					}
+	//			if($test->process_mail() == true ) {
+					//echo "mail sent";
+				}
+				chdir($_SESSION['doc_root'].'/sohoadmin/filebin/');
+				rmdirr('tmp_upload');
+				chdir($o_dir);
+
+//					$o_dir = getcwd();
+//					chdir($_SESSION['doc_root'].'/sohoadmin/filebin/');
+//					if(is_dir('tmp_upload')){ rmdirr('tmp_upload'); }
+//					mkdir('tmp_upload');
+//					chdir('tmp_upload');
+//
+//					foreach($_FILES['fileupload']['tmp_name'] as $filnum=>$fildat) {
+//						if (move_uploaded_file($_FILES['fileupload']['tmp_name'][$filnum], $_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum])) {
+//							if(file_exists($_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum])) {
+//								//file uploaded
+//
+//								//if(eregi('\.gif$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.jpg$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.jpeg$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.png$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.bmp$', $_FILES['fileupload']['name'][$filnum])) {
+//								//	$test->add_html_image($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
+//								//} else {
+//									if(eregi('\.gz$', $_FILES['fileupload']['name'][$filnum]) || eregi('\.zip$', $_FILES['fileupload']['name'][$filnum])){
+//										//$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
+//										$purefiles[] = $_SESSION['doc_root'].'/sohoadmin/filebin/tmp_upload/'.$_FILES['fileupload']['name'][$filnum];
+//									} else {
+//										$SLASH = DIRECTORY_SEPARATOR;
+//										$zipped_file = eregi_replace('\.[^\.]*$', '.zip', $_FILES['fileupload']['name'][$filnum]);
+//										$b4zip = getcwd();
+//										chdir($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload");
+////										if(eregi('WIN', PHP_OS)){
+////											$zippy = $_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."program".$SLASH."includes".$SLASH."untar".$SLASH."zip.exe";
+////											exec($zippy." ".$zipped_file." ".$_FILES['fileupload']['name'][$filnum]);
+////										} else {
+////											exec("zip ".$zipped_file." ".$_FILES['fileupload']['name'][$filnum]);
+////										}
+//										soho_create_zip($zipped_file, $_FILES['fileupload']['name'][$filnum]);
+//										chdir($b4zip);
+//										if(file_exists($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$zipped_file)){
+//										//	$test->add_attach_file($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$zipped_file);
+//											$purefiles[] = $_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$zipped_file;
+//											//unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH.$zipped_file);
+//										} else {
+//											//$test->add_attach_file($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
+//											$purefiles[] = $_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$_FILES['fileupload']['name'][$filnum];
+//										}
+//								//	}
+//								//unlink($_SESSION['doc_root'].$SLASH."sohoadmin".$SLASH."filebin".$SLASH."tmp_upload".$SLASH.$_FILES['fileupload']['name'][$filnum]);
+//								}
+//							}
+//						}
+//					}
+//
+////					$test->html_body = "<html><pre>$soho_email</pre></html>";
+////					$test->text_body = strip_tags($test->html_body, "<a>");
+//					
+//					$emailattachments = array(
+//						"attachments"=>$purefiles
+//					);
+//					if(SohoEmail($EMAILTO, $RESPONSEFROM, lang("Website Form Submission"), "<html><pre>$soho_email</pre></html>", $emailattachments)){										
+////					if($test->process_mail() == true) {
+//						foreach($_FILES['fileupload']['tmp_name'] as $filnum=>$fildat) {
+//							if(file_exists($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum])) {
+//								unlink($_SESSION['doc_root'].'/sohoadmin/filebin/'.$_FILES['fileupload']['name'][$filnum]);
+//							}
+//						}
+//					} else {
+//			//couldnotsend
+//					}
 				}
 			}
 			//////////////// end form	attached file
@@ -733,6 +905,8 @@ eval(hook("pgm-add_cart.php:getattap"));
 ##########################################################################
 ### START PROCESSING DELETE FUNCTION
 ##########################################################################
+
+//if ( $_SERVER['REMOTE_ADDR'] == '50.79.231.201' ) { echo '<p>['.$ACTION.']</p>'.'<p>'.__FILE__.':'.__LINE__.'</p>'; exit; }
 
 if ($ACTION == "delete") {
 
@@ -1115,14 +1289,14 @@ eval(hook("pgm-add_cart.php:disp"));
            $THIS_DISPLAY .= "</TD>\n";
          }
          
-         $THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text>\n";
+         $THIS_DISPLAY .= "<TD ALIGN=LEFT VALIGN=TOP CLASS=text >\n";
 
          $tmp_sub[$z] = sprintf ("%01.2f", $tmp_sub[$z]);
 		$tmp_sub[$z] = $tmp_sub[$z] - sprintf ("%01.2f", $_SESSION['unitsub_array'][$z]);
 		$tmp_sub[$z] = sprintf ("%01.2f", $tmp_sub[$z]);
          $THIS_DISPLAY .= "$dSign".$tmp_sub[$z]."\n";
          $THIS_DISPLAY .= "</TD>\n";
-         $THIS_DISPLAY .= "<TD ALIGN=CENTER VALIGN=TOP CLASS=text>\n";
+         $THIS_DISPLAY .= "<TD ALIGN=CENTER VALIGN=TOP CLASS=text style=\"text-align:left;\">\n";
          $jscript_passvar = eregi_replace(" ", "+", $tmp_varname[$z]);
          $jscript_passvar = str_replace("&amp;", ":amp:", $jscript_passvar);
          $jscript_passvar = str_replace("&", ":amp:", $jscript_passvar);
@@ -1133,7 +1307,8 @@ eval(hook("pgm-add_cart.php:disp"));
 
 eval(hook("pgm-add_cart.php:jsvars"));
 
-         $THIS_DISPLAY .= "<A HREF=\"#\" onclick=\"delete_cart('".$tmp_keyid[$z]."','".$jscript_passsub."','".$jscript_passvar."');\"><IMG SRC=\"delete_button.gif\" width=44 height=14 align=absmiddle border=0></A><BR>&nbsp;<BR>&nbsp;\n";
+//         $THIS_DISPLAY .= "<A HREF=\"#\" onclick=\"delete_cart('".$tmp_keyid[$z]."','".$jscript_passsub."','".$jscript_passvar."');\"><IMG SRC=\"delete_button.gif\" width=44 height=14 align=absmiddle border=0></A><BR>&nbsp;<BR>&nbsp;\n";
+         $THIS_DISPLAY .= "<button type=\"button\" style=\"font-size: 90%;padding:2px 2px; font-weight:400;\" onclick=\"delete_cart('".$tmp_keyid[$z]."','".$jscript_passsub."','".$jscript_passvar."');\">Remove</button><BR>&nbsp;<BR>&nbsp;\n";
          $THIS_DISPLAY .= "</TD>\n";
          $THIS_DISPLAY .= "</TR>\n";
 
@@ -1159,7 +1334,7 @@ eval(hook("pgm-add_cart.php:jsvars"));
       $THIS_DISPLAY .= "<U>".$dSign."$display_subtotal</U>\n";
       $THIS_DISPLAY .= "</TD>\n";
       $THIS_DISPLAY .= "<TD ALIGN=CENTER VALIGN=MIDDLE CLASS=text>\n";
-      $THIS_DISPLAY .= "<INPUT TYPE=SUBMIT VALUE=\"".lang("Update Qty Changes")."\" STYLE='font-size: 9px;width: 110px; cursor: hand;'>\n";
+      $THIS_DISPLAY .= "<INPUT class=\"text\" TYPE=SUBMIT VALUE=\"".lang("Update Qty Changes")."\" STYLE='cursor: hand;'>\n";
       $THIS_DISPLAY .= "</TD>\n";
       $THIS_DISPLAY .= "</TR>\n";
 
@@ -1191,8 +1366,10 @@ eval(hook("pgm-add_cart.php:jsvars"));
 
    $THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" align=\"center\">\n";
    $THIS_DISPLAY .= " <tr>\n";
-   $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
-   $THIS_DISPLAY .= "   <a href=\"#\" onclick=\"continue_shopping();\"><img src=\"continue_button.gif\" width=\"161\" height=\"25\" border=\"0\"></a>\n\n";
+   $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\" style=\"padding:10px 0px;\">\n";
+  // $THIS_DISPLAY .= "   <a href=\"#\" onclick=\"continue_shopping();\"><img src=\"continue_button.gif\" width=\"161\" height=\"25\" border=\"0\"></a>\n\n";   
+	$THIS_DISPLAY .= "<input class=\"text\" type=\"BUTTON\" onclick=\"continue_shopping();\" style=\"cursor: hand;\" value=\"".strtoupper(lang('Continue Shopping'))."\">\n";
+   
    $THIS_DISPLAY .= "  </td>\n";
 
 
@@ -1232,9 +1409,10 @@ eval(hook("pgm-add_cart.php:jsvars"));
          echo $checkout_button; exit;
 
       } else {
-         $checkout_button .= "<input type=\"image\" src=\"checkout_button.gif\" width=\"106\" height=\"25\" border=\"0\" style=\"cursor: hand;\">\n";
+        // $checkout_button .= "<input type=\"image\" src=\"checkout_button.gif\" width=\"106\" height=\"25\" border=\"0\" style=\"cursor: hand;\">\n";
+		$checkout_button .= "<input class=\"arrowbutton text\" type=\"submit\"  height=\"25\" border=\"0\" value=\"".strtoupper(lang('Checkout'))."&nbsp;&nbsp;&gt;&gt;\" style=\"cursor: hand;\">\n";
          $checkout_button .= "</form>\n";
-         $THIS_DISPLAY .= " <td align=\"center\" valign=\"top\">\n";
+         $THIS_DISPLAY .= " <td align=\"center\" valign=\"top\" style=\"padding:10px 0px;\">\n";
          $THIS_DISPLAY .= $checkout_button;
          $THIS_DISPLAY .= " </td>\n";
       }

@@ -47,7 +47,7 @@ $KEYFIELD = mysql_field_name($rez, 0);
 
 
 ob_start();
-echo "<div id=\"db-maindiv\" style=\"height:80%; width:100%;border:0px solid red;overflow: auto; white-space:nowrap;\">\n";
+echo "<div id=\"db-maindiv\" style=\"height:80%; width:100%;border:0px solid red;overflow: visible; white-space:nowrap;\">\n";
 /*---------------------------------------------------------------------------------------------------------*
  ___                 _        _     _        _    _
 / __| _ __  ___  __ (_) __ _ | |   /_\   __ | |_ (_) ___  _ _   ___
@@ -312,7 +312,11 @@ if ($ACTION == "SAVE_UPDATE") {
 
 		if (ereg("VALUE_", $name) && !ereg("_DATEYEAR", $name) && !ereg("_DATEMONTH", $name) && !ereg("_DATEDAY", $name) && !ereg("_TIMEHOUR", $name) && !ereg("_TIMEMIN", $name)) {		// This is a proper value
 			$name = ereg_replace("VALUE_", "", $name);
-			$SQL_STRING .= "$name = '$value', ";
+			if(strtoupper($name)=='GROUP'){
+				$SQL_STRING .= "`$name` = '$value', ";
+			} else {
+				$SQL_STRING .= "$name = '$value', ";
+			}
 		}
 
 		if (ereg("_DATE", $name)) {
@@ -484,7 +488,7 @@ if ($ACTION == "ADD_NEW") {
 		$THIS_DISPLAY .= "<TD ALIGN=RIGHT style=\"width:20%;\" VALIGN=TOP BGCOLOR=$BGCOLOR>\n";
 
 		$fieldname[$x] = mysql_field_name($result, $x);
-		$fieldname[$x] = strtoupper($fieldname[$x]);
+		$fieldname[$x] = $fieldname[$x];
 		$fieldtype[$x] = mysql_field_type($result, $x);
 		$fieldlength[$x] = mysql_field_len($result, $x);
 		$fieldtype[$x] = strtoupper($fieldtype[$x]);
@@ -1532,10 +1536,10 @@ if ($ACTION == "" || $ACTION == "show_all" ) {
 	   	if ( $_SESSION[$_REQUEST['mt']]['orderby'] == $fieldname[$x] ) {
 	   	   if ( $_SESSION[$_REQUEST['mt']]['orderhow'] == "desc" ) {
 	   	      $sortlink = "asc";
-	   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=asc\" ".$linkstyle." class=\"white noline\">[&uarr;]</a>\n";
+	   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=asc\" ".$linkstyle." class=\"noline\">[&uarr;]</a>\n";
 	   	   } else {
 	   	      $sortlink = "desc";
-	   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=desc\" ".$linkstyle." class=\"white noline\">[&darr;]</a>\n";
+	   	      $sorticon = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=desc\" ".$linkstyle." class=\"noline\">[&darr;]</a>\n";
 	   	   }
 	   	}
 		if ( $globalprefObj->get('utf8') == 'on' ) {
@@ -1550,7 +1554,7 @@ if ($ACTION == "" || $ACTION == "show_all" ) {
    		   $titlestring = $fieldname[$x];
    		}
 
-   		$titlestring = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=".$sortlink."\" ".$linkstyle." class=\"white noline\" title=\"".$sortlink."\">".$titlestring."</a>";
+   		$titlestring = "<a href=\"".$base_href."&amp;orderby=".$fieldname[$x]."&orderhow=".$sortlink."\" ".$linkstyle." class=\"noline\" title=\"".$sortlink."\">".$titlestring."</a>";
 
          $THIS_DISPLAY .= $titlestring;
    		$THIS_DISPLAY .= $sorticon;
@@ -1788,10 +1792,10 @@ if ($ACTION == "" || $ACTION == "show_all" ) {
 
 } // End if NO ACTION submitted
 
-//$THIS_DISPLAY .= "  </td>\n";
-//$THIS_DISPLAY .= " </tr>\n";
-//echo $THIS_DISPLAY .= "</table>\n";
-$THIS_DISPLAY .= "</DIV>";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= " </tr>\n";
+ $THIS_DISPLAY .= "</table>\n";
+//$THIS_DISPLAY .= "</DIV>";
 
 
 

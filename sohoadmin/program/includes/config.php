@@ -58,7 +58,7 @@ if ($file = fopen("$filename", "r")) {
 			$value = $temp[1];
 				$value = chop($value);
 				$value = rtrim($value);
-			session_register("$variable");
+			
 			${$variable} = $value;
 		}
 	}

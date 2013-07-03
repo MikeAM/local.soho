@@ -44,7 +44,7 @@ include("../../includes/product_gui.php");
 		$match = 0;
 		$tablename = "campaign_manager";
 
-		$result = mysql_list_tables("$db_name");
+		$result = soho_list_tables();
 		$i = 0;
 		while ($i < mysql_num_rows ($result)) {
 			$tb_names[$i] = mysql_tablename ($result, $i);
@@ -91,7 +91,7 @@ include("../../includes/product_gui.php");
 		$match = 0;
 		$tablename = "unsubscribe";
 
-		$result = mysql_list_tables("$db_name");
+		$result = soho_list_tables();
 		$i = 0;
 		while ($i < mysql_num_rows ($result)) {
 			$tb_names[$i] = mysql_tablename ($result, $i);
@@ -174,7 +174,7 @@ function confirm_send(name,users,key){
 	var testemailaddress=window.prompt("Enter the email address to send the \""+name+"\" test to.")
 	if(testemailaddress!='' || testemailaddress==null){
 		build();
-		window.location = "enewsletter/send_now.php?id="+key+"&testemail="+testemailaddress+"&<?=SID?>";
+		window.location = "enewsletter/send_now.php?id="+key+"&testemail="+testemailaddress+"&usertotal="+users+"&<?=SID?>";
 	} else {
 		alert('Please enter a Valid test Email Address!');
 		//confirm_send(name,users,key);

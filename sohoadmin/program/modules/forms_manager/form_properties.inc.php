@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -34,7 +34,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 #  include("form_properties.inc.php");
 # </div>
 #===============================================================================================
-
+require_once("../../includes/product_gui.php");
 
 
 # COLORS - Pre-build options for color dropdowns (i.e. font color)
@@ -127,7 +127,7 @@ echo $color_options;
  <!---Background-->
  <span class="row">
   <label>Background color?</label>
-  <select id="form_body-background-color" onchange="formStyle('form_body-background-color', this.value);" style="width: 75px;">
+  <select id="form_body-background-color" onchange="formStyle('form_body-background-color', this.value);" style="width: 135px;">
    <option value="" style="color: #2e2e2e;font-style: italic;" selected>None (transparent)</option>
    <option value="fff" style="background-color: #000;color: #fff;font-weight: bold;">White</option>
    <option value="595959" style="color: #595959;font-weight: bold;">Dark Gray</option>

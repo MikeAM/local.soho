@@ -92,42 +92,53 @@ if ($CUR_TEMPLATE == '') {
 }
 
 $SELECT_OPTS = " <option value=\"\" style='font-family: Tahoma; font-size: 8pt;'>".lang("Select Base Template")."... </option>\n";
-for ($x=0;$x<=$numTemplates;$x++) {
-   # Custom HTML templates (uploaded via template manager)
-   if (eregi("CUSTOM", $templateFile[$x])) {
-      $custarray = split("~~~", $templateFile[$x]);
-      if(count($custarray) == 1){
-         $tmp = split("-", $templateFile[$x]);
-         $tCategory = strtoupper($tmp[0]);
-         $tmp[1] = eregi_replace("_", " ", $tmp[1]);
-         $display = "$tCategory  > $tmp[1] ";
-         if (!eregi("none", $tmp[2])) { $display .= "($tmp[2])"; }
-         if ($templateFile[$x] == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
-         $SELECT_OPTS .= " <option value=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">".$display." </option>\n";
-      }else{
-         $display = "CUSTOM > ".$custarray[1];
-         $thisFile = $doc_root."/tCustom/".$custarray[1];
+$SELECT_OPTS = '';
+//for ($x=0;$x<=$numTemplates;$x++) {
+//   # Custom HTML templates (uploaded via template manager)
+//   if (eregi("CUSTOM", $templateFile[$x])) {
+//      $custarray = split("~~~", $templateFile[$x]);
+//      if(count($custarray) == 1){
+//         $tmp = split("-", $templateFile[$x]);
+//         $tCategory = strtoupper($tmp[0]);
+//         $tmp[1] = eregi_replace("_", " ", $tmp[1]);
+//         $display = "$tCategory  > $tmp[1] ";
+//         if (!eregi("none", $tmp[2])) { $display .= "($tmp[2])"; }
+//         if ($templateFile[$x] == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
+//         $SELECT_OPTS .= " <option value=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">".$display." </option>\n";
+//      }else{
+//         $display = "CUSTOM > ".$custarray[1];
+//         $thisFile = $doc_root."/tCustom/".$custarray[1];
+//
+//            // Check for Win32/IIS Directory Formating
+//            if (eregi("IIS", $SERVER_SOFTWARE)) {
+//               $thisFile = eregi_replace("/", "\\", $thisFile);
+//            }
+//
+//         if ($thisFile == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
+//         $SELECT_OPTS .= " <option value=\"$thisFile\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">$display </option>\n";
+//      }
+//
+//   # Factory templates (from /pages dir)
+//   } elseif(!eregi("unzips", $templateFile[$x])) {
+//      $tmp = split("-", $templateFile[$x]);
+//      $tCategory = strtoupper($tmp[0]);
+//      $tmp[1] = eregi_replace("_", " ", $tmp[1]);
+//      $display = "$tCategory  > $tmp[1] ";
+//      if (!eregi("none", $tmp[2])) { $display .= "($tmp[2])"; }
+//      if ($templateFile[$x] == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
+//         $SELECT_OPTS .= " <option value=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">".$display." </option>\n";
+//   } // End If CUSTOM
+//} // End For Loop
 
-            // Check for Win32/IIS Directory Formating
-            if (eregi("IIS", $SERVER_SOFTWARE)) {
-               $thisFile = eregi_replace("/", "\\", $thisFile);
-            }
 
-         if ($thisFile == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
-         $SELECT_OPTS .= " <option value=\"$thisFile\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">$display </option>\n";
-      }
-
-   # Factory templates (from /pages dir)
-   } elseif(!eregi("unzips", $templateFile[$x])) {
-      $tmp = split("-", $templateFile[$x]);
-      $tCategory = strtoupper($tmp[0]);
-      $tmp[1] = eregi_replace("_", " ", $tmp[1]);
-      $display = "$tCategory  > $tmp[1] ";
-      if (!eregi("none", $tmp[2])) { $display .= "($tmp[2])"; }
-      if ($templateFile[$x] == $CUR_TEMPLATE) { $isSel = " selected"; } else { $isSel = ""; }
-         $SELECT_OPTS .= " <option value=\"".$templateFile[$x]."\" style=\"font-family: Tahoma; font-size: 8pt;\"".$isSel.">".$display." </option>\n";
-   } // End If CUSTOM
-} // End For Loop
+$USEDIR = $doc_root."/sohoadmin/program/modules/site_templates/";
+	//$this_page = "Latest_News";
+$this_template = $selThisTemp;
+ob_start();
+	include($doc_root."/sohoadmin/program/modules/site_templates/pgm-read_templates.php");
+	$SELECT_OPTS .= ob_get_contents();
+	$SELECT_OPTS = str_replace(" value=\"".$CUR_TEMPLATE."\">"," value=\"".$CUR_TEMPLATE."\" selected>",$SELECT_OPTS);
+ob_end_clean();
 
 
 # Create search options table if doesn't already exist

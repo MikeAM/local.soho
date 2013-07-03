@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 session_start();
 
@@ -54,11 +54,17 @@ if ( !include("program/includes/product_gui.php") ) {
 }
 
 
-error_reporting(E_PARSE);
+$login_indexurl = "http://".$_SESSION['this_ip']."/sohoadmin/version.php";
+if(strtolower($_SERVER['HTTPS']) == 'on'){
+	$login_indexurl = "https://".$_SESSION['this_ip']."/sohoadmin/version.php";
+}
+
 #########################################################################################
-###### DISPLAY LOADING SCREEN AND OPEN APPLICATION WINDOW.							      #####
+###### DISPLAY LOADING SCREEN AND OPEN APPLICATION WINDOW.					 #####
 #########################################################################################
-header ("Location: http://".$_SESSION['this_ip']."/sohoadmin/version.php");
+//header ("Location: http://".$_SESSION['this_ip']."/sohoadmin/version.php");
+header ("Location: ".$login_indexurl);
+
 exit;
 
 

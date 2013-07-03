@@ -170,3 +170,13 @@ div.plugin_description {
    cursor: pointer;
 }
 
+
+/* Payment Options */
+#testmode-container { display: none; }
+fieldset { margin-top: 5px; }
+legend { font-weight: bold; }
+.paypal-settings label { display: block; margin-top: 5px; }
+.field-email { width: 250px; }
+.field-url { width: 275px; }
+.field-password { width: 150px; }
+.field-apisig { width: 400px; }

@@ -43,17 +43,38 @@ session_start();
 $THIS_DISPLAY = "";
 $updated_text = "";
 
-include("pgm-cart_config.php");
+include_once("pgm-cart_config.php");
 include('../sohoadmin/client_files/check_min.php');
 // Re-registers all global & session info
 if ( strlen(lang("Order Date")) < 4 ) {
-   if ( !include("../sohoadmin/program/modules/mods_full/shopping_cart/includes/config-global.php") ) {
-      echo "Could not include config script!"; exit;
-   }
-   if ( !include("../sohoadmin/includes/db_connect.php") ) {
-      echo "Error 1: Your session has expired. Please go back through the checkout process.";
-      exit;
-   }
+//   if ( !include("../sohoadmin/program/modules/mods_full/shopping_cart/includes/config-global.php") ) {
+//      echo "Could not include config script!"; exit;
+//   }
+	include("../sohoadmin/includes/db_connect.php");
+      
+	$selSpecs = mysql_query("SELECT * FROM site_specs");
+	$getSpec = mysql_fetch_array($selSpecs);
+	
+	if ( $getSpec[df_lang] == "" ) {
+		$language = "english.php";
+	} else {
+		$language = $getSpec[df_lang];
+	}
+	
+	if ( $lang_dir != "" ) {
+		$lang_include = $lang_dir."/".$language;
+	} else {
+		$lang_include = "../sohoadmin/language/$language";
+	}
+	
+	include_once("$lang_include");
+	
+	$_SESSION['getSpec'] = $getSpec;
+	$_SESSION['language'] = $language;
+	foreach($lang as $lvar=>$lval){
+		$_SESSION['lang'][$lvar]=$lval;
+	}
+   
 }
 
 # Echo session vars for testing
@@ -122,6 +143,7 @@ foreach ( $cart_vars as $key=>$var ) {
    }
 }
 
+
 # Pull other polices
 //$filename = "$cgi_bin/other_policies.txt";
 //$other_policy_definedBool = false;
@@ -163,11 +185,13 @@ if ( strlen(lang("New Customer")) < 4 ) {
       $lang_include = "../sohoadmin/language/$language";
    }
 
-   include ("$lang_include");
+   include_once("$lang_include");
 
-   session_register("lang");
-   session_register("language");
-   session_register("getSpec");
+	$_SESSION['getSpec'] = $getSpec;
+	$_SESSION['language'] = $language;
+	foreach($lang as $lvar=>$lval){
+		$_SESSION['lang'][$lvar]=$lval;
+	}
 
    $refreshme = $_SERVER['PHP_SELF'];
    header("location:$refreshme");
@@ -178,7 +202,7 @@ if ( strlen(lang("New Customer")) < 4 ) {
 ### Register the session for secure socket if needed
 ##########################################################################
 
-if (!session_is_registered("CART_KEYID")) {
+if (!isset($_SESSION["CART_KEYID"])) {
 	$_SESSION['CART_KEYID'] = $CART_KEYID;
 	$_SESSION['CART_SKUNO'] = $CART_SKUNO;
 	$_SESSION['CART_CATNO'] = $CART_CATNO;
@@ -193,15 +217,18 @@ if (!session_is_registered("CART_KEYID")) {
 }
 
 reset($_POST);
-while (list($name, $value) = each($_POST)) {
-	if (eregi("CART_", $name)) {
+//while (list($name, $value) = each($_POST)) {
+foreach($_POST as $name=>$value){
+	if (preg_match("/^CART_/", $name)) {
 		$value = htmlspecialchars($value);	// Bugzilla #32 (This line was not here for #13)
-		$value = str_replace("&amp;", "&", $value);
-		${$name} = $value;
+		//$value = str_replace("&amp;", "&", $value);
+		${$name} = slashthis($value);
 	} else {
 		$value = htmlspecialchars($value);	// Bugzilla #13
-		${$name} = $value;
+		
+		${$name} = slashthis($value);
 	}
+	
 }
 ##########################################################################
 ### WE WILL NEED TO KNOW THE DATABASE NAME; UN; PW; ETC TO OPERATE THE
@@ -222,7 +249,7 @@ if ($CART_SKUNO != "" && $CART_UNITPRICE != "") {
 	$hacker = 0;	// Setup Hacker Flag to Zero
 	$CART_VARNAME = htmlspecialchars_decode($CART_VARNAME);
 
-   $skuCheck = split(";", $CART_SKUNO);
+   $skuCheck = split(";", htmlspecialchars_decode($CART_SKUNO));
    $priceCheck = split(";", $CART_UNITPRICE);
    $varCheck = split(";", $CART_VARNAME); // Bugzilla #36
    $subtotalCheck = split(";", $CART_UNITSUBTOTAL);
@@ -241,15 +268,14 @@ if ($CART_SKUNO != "" && $CART_UNITPRICE != "") {
 		for ($x=0;$x<=$tmp;$x++) {
 
 			if ($skuCheck[$x] != "") {
-			   $qry = "SELECT * FROM cart_products WHERE PROD_SKU = '".addslashes($skuCheck[$x])."'";
+			   $qry = "SELECT * FROM cart_products WHERE PROD_SKU = '".htmlspecialchars($skuCheck[$x])."'";
 				if ( !$newSkuTest = mysql_query($qry) ) {
-				   echo mysql_error();
+				  // echo mysql_error();
 				   exit;
 				}
             if ($qtyCheck[$x] < 1) { $qtyCheck[$x] = 1; }   //Bugzilla #36
 				$validateTest = mysql_num_rows($newSkuTest);		// Bugzilla #32
 				if ($validateTest < 1) { $hacker = 1; }				// Reflects that given key sku does not exist in database; therefore a hacker has tampered with form data
-
 				// Please note; this will also bomb if a given sku is deleted during a checkout
 				// process.  The odds of this happening or slim, but do exist.  I would say that
 				// it is a good practice to remove sku's from "display" for 48 hours before deleteing
@@ -410,14 +436,23 @@ $SSTATE = strtoupper($SSTATE);
 ### INSERT VALIDATE EMAIL FUNCTION
 ##########################################################################
 
-function email_is_valid ($email) {
-				// Bugzilla #15 resolved
-				if (eregi("^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-.]?[0-9a-z])*\\.[a-z]{2,4}$", $email, $check)) {
-					return TRUE;
-				}
+if(!function_exists('email_is_valid')){
+	function email_is_valid ($email) {
+		if(!function_exists('filter_var')){
+			if(preg_match("/^[A-Z0-9._%-+]+@[A-Z0-9._%-+]+\.[A-Z]{2,4}$/i",$email)){
+				return TRUE;
+			} else {
 				return FALSE;
-}	// END VALIDATE EMAIL FUNCTION
-
+			}
+		} else {
+			if(filter_var($email,FILTER_VALIDATE_EMAIL) === false){
+				return FALSE;
+			} else {
+				return TRUE;	
+			}
+		}
+	}	// END VALIDATE EMAIL FUNCTION
+}
 ##########################################################################
 
 //
@@ -546,7 +581,7 @@ if (eregi("Y", $OPTIONS[DISPLAY_REMEMBERME] ) && !eregi("Y", $customer_active) &
 		$THIS_DISPLAY .= "    <tr>\n";
 		$THIS_DISPLAY .= "     <td align=\"left\" valign=\"top\" class=\"text\">\n";
 		$THIS_DISPLAY .= "      ".lang("If you are a first time buyer select this option.")." ".lang("You will have the opportunity to register and become a preferred customer.")."\n";
-		$THIS_DISPLAY .= "      <form method=\"post\" action=\"pgm-checkout.php\"><input type=\"hidden\" name=\"customer_active\" value=\"Y\"><div align=\"center\"><input type=\"submit\" value=\" ".lang("New Customer")." \" class=\"text\" style='CURSOR: HAND;'></div><br/>&nbsp;</form>\n";
+		$THIS_DISPLAY .= "      <form method=\"post\" action=\"pgm-checkout.php\"><input type=\"hidden\" name=\"customer_active\" value=\"Y\"><div align=\"center\" style=\"padding-top:25px;\"><input type=\"submit\" value=\" ".lang("New Customer")." \" class=\"text\" style='CURSOR: HAND;'></div><br/>&nbsp;</form>\n";
 		$THIS_DISPLAY .= "     </td>\n";
 		$THIS_DISPLAY .= "    </tr>\n";
 		$THIS_DISPLAY .= "   </table>\n";
@@ -617,7 +652,8 @@ if (eregi("Y", $OPTIONS[DISPLAY_REMEMBERME] ) && !eregi("Y", $customer_active) &
 		// stop a client from buying more!
 		// ----------------------------------------------------------
 
-		$THIS_DISPLAY .= "<DIV ALIGN=CENTER><A HREF=\"start.php?browse=1&=SID\"><IMG SRC=\"continue_button.gif\" WIDTH=161 HEIGHT=25 ALIGN=ABSMIDDLE BORDER=0></A>\n</DIV>\n";
+		//$THIS_DISPLAY .= "<DIV ALIGN=CENTER><A HREF=\"start.php?browse=1&=SID\"><IMG SRC=\"continue_button.gif\" WIDTH=161 HEIGHT=25 ALIGN=ABSMIDDLE BORDER=0></A>\n</DIV>\n";
+		$THIS_DISPLAY .= "<DIV ALIGN=CENTER style=\"padding:5px 5px 10px;\"><button class=\"text\" onClick=\"window.location='start.php?browse=1&=SID';\">Continue Shopping</button>\n</DIV>\n";
 
 
 
@@ -747,7 +783,7 @@ if ($STEP == "3") {
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Commented out in v4.9.2 r13 --- causing problems: skip billing option "on", submit billing for with error, go back to browse, come back to billing form, rememberme box not checked
-//	if (isset($REMEMBERME)) { session_unregister("REMEMBERME"); }
+
 
 	$tmp_rem = 0;
 
@@ -762,8 +798,8 @@ if ($STEP == "3") {
    		$value = htmlspecialchars($value);	// Bugzilla #13
 
    		if ($tmp_rem == 1) {
-   			if (!session_is_registered("$name")) {
-   				session_register("$name");
+   			if(!isset($_SESSION[$name])){
+   				$_SESSION[$name]= $value;
    			}
    			$value = stripslashes($value);
    			//echo "(".$value.")<br>";
@@ -1097,7 +1133,8 @@ if ($STEP == "3") {
 				echo "</select></p>\n";
 //				echo "<p><input type=submit value=\"Next &gt;&gt;\">\n";
 				echo "<a href='pgm-checkout.php?EDIT_INFO=ON&customer_active=Y&=SID'>Change Shipping Address</a>\n";
-				echo "<p><input src=\"cont_checkout.gif\" onclick=\"document.shippingsubmit.submit();\" style=\"\" border=\"0\" height=\"25\" type=\"IMAGE\" width=\"106\"></p>\n";				
+				//echo "<p><input src=\"cont_checkout.gif\" onclick=\"document.shippingsubmit.submit();\" style=\"\" border=\"0\" height=\"25\" type=\"IMAGE\" width=\"106\"></p>\n";
+				echo "<p><button onclick=\"document.shippingsubmit.submit();\">Continue</button></p>\n";
 				echo "</form>\n";
 			} else {
 				echo "<p><br/><br/></p>\n";
@@ -1260,8 +1297,8 @@ if ($STEP == "3") {
 
 	$SHIPPING_TOTAL = sprintf ("%01.2f", $SHIPPING_TOTAL);			// Make sure SHIPPING_TOTAL is formated for proper display
 
-	if (!session_is_registered("SHIPPING_TOTAL")) {
-		session_register("SHIPPING_TOTAL");
+   	if(!isset($_SESSION['SHIPPING_TOTAL'])){
+   		$_SESSION['SHIPPING_TOTAL']= $SHIPPING_TOTAL;
 	}
 
 	$SHIPPING_TOTAL = $SHIPPING_TOTAL;	// Just in case PHP doesn't propogate var value until after var registration
@@ -1363,12 +1400,9 @@ if ($STEP == "4") {
 	// ---------------------------------------------------
 	// Register INVOICE with our session for databasing
 	// ---------------------------------------------------
-
-	if (!session_is_registered("INVOICE")) {
-		session_register("INVOICE");
+   	if($INVOICE!=''){
+   		$_SESSION['INVOICE']= $INVOICE;
 	}
-
-	$INVOICE = $INVOICE;
 
 	// ------------------------------------------------------------------------------
 	// Place the edit links into the INVOICE html -- Remember, we are going to use
@@ -1459,10 +1493,11 @@ if ($STEP == "4") {
 	##end promocode stuff
 
 	$THIS_DISPLAY .= "<br>\n";
-	$THIS_DISPLAY .= "<table border=0 cellpadding=4 cellspacing=0 width=100% class=text style='border: 1px inset black;'>\n";
+	$THIS_DISPLAY .= "<table border=0 cellpadding=4 cellspacing=0 width=100% class=text style='border: 0px'>\n";
 	$THIS_DISPLAY .= " <tr>\n";
-	$THIS_DISPLAY .= "  <td align=left valign=top class=text bgcolor=\"".$OPTIONS['DISPLAY_HEADERBG']."\">\n";
-	$THIS_DISPLAY .= "   <font color=\"".$OPTIONS['DISPLAY_HEADERTXT']."\">\n";
+	//$THIS_DISPLAY .= "  <td align=left valign=top class=text bgcolor=\"".$OPTIONS['DISPLAY_HEADERBG']."\">\n";
+	$THIS_DISPLAY .= "  <td align=left valign=top class=text>\n";
+	//$THIS_DISPLAY .= "   <font color=\"".$OPTIONS['DISPLAY_HEADERTXT']."\">\n";
 	
 	if($OPTIONS[PAYMENT_PROCESSING_TYPE] == ''){
 		$THIS_DISPLAY .= "   <B>".lang("The total is for information purposes only")."</B><BR>\n";
@@ -1641,7 +1676,7 @@ eval(hook("pgm-checkout.php:gateway_button"));
 
 	// PayPal Payments
 	// --------------------------------------
-	if ( eregi("paypal", $OPTIONS['PAYMENT_PROCESSING_TYPE']) && strlen($PAYPAL['PAYPAL_EMAIL']) > 4) {
+	if ( eregi("paypal", $OPTIONS['PAYMENT_PROCESSING_TYPE']) && ($cartprefs->get('paypalpro_username') != '' || strlen($PAYPAL['PAYPAL_EMAIL']) > 4) ) {
 		$CARDNAME = split(";", $OPTIONS['PAYMENT_CREDIT_CARDS']);	// Split Field into individual card names
 		$NUMCARDS = count($CARDNAME);						// How many cards are accepted?
 		$NUMCARDS--;								// Subtract 1 from total because we start at zero
@@ -1668,24 +1703,34 @@ eval(hook("pgm-checkout.php:gateway_button"));
 	   $THIS_DISPLAY .= " <form name=\"paypp\" method=\"post\" action=\"pgm-payment_gateway.php\">\n";
 	   $THIS_DISPLAY .= " <tr>\n";
 	   $THIS_DISPLAY .= "  <td align=\"left\" class=\"text\" style=\"".$padEm."\">\n";
-		$THIS_DISPLAY .= "   <input type=\"hidden\" name=\"PAY_TYPE\" value=\"".lang("PAYPAL")."\">\n";
+		$THIS_DISPLAY .= "   <input type=\"hidden\" name=\"PAY_TYPE\" id=\"PAY_TYPE\" value=\"".lang("PAYPAL")."\">\n";
+		
+		if ( preg_match('/paypalpro/i', $OPTIONS['PAYMENT_PROCESSING_TYPE']) ) {
+			# PayPal Pro
+			$THIS_DISPLAY .= " 	<link rel=\"stylesheet\" href=\"../sohoadmin/client_files/shopping_cart/cart-defaults.css\">\n";
+			$THIS_DISPLAY .= "   <div class=\"paypalpro-pay-container\">\n";
+			$THIS_DISPLAY .= "   	<a href=\"#\" onclick=\"document.getElementById('PAY_TYPE').value = 'PAYPALPRO';window.document.paypp.submit();\" class=\"paypalpro-pay-btn\">Pay with PayPal Pro</a>\n";
+			//$THIS_DISPLAY .= "   	<button onclick=\"document.getElementById('PAY_TYPE').value = 'PAYPALPRO';window.document.paypp.submit();\">Pay Now</button>\n";
+			$THIS_DISPLAY .= "   </div>\n";
+		}		
 
-//		 if ( eregi("offline", $OPTIONS['PAYMENT_PROCESSING_TYPE'])){
-//			$THIS_DISPLAY .= "   <a href=\"#\" onClick=\"window.document.paypp.submit();\"><img src=\"pay-paypal.gif\" border=\"0\"></a>\n";
-//		} else {
-			$THIS_DISPLAY .= "   <a href=\"#\" onClick=\"window.document.paypp.submit();\"><img src=\"pay-paypal.gif\" border=\"0\"></a><br/>\n";
-		//}
-		if ( $cartprefs->get('paypal_cc_logos') != 'no' ) {
+		if ( preg_match('/paypal[^pro]/i', $OPTIONS['PAYMENT_PROCESSING_TYPE']) ) {			
+			# PayPal Standard
+			$THIS_DISPLAY .= "   <a href=\"#\" onClick=\"document.getElementById('PAY_TYPE').value = 'PAYPAL';window.document.paypp.submit();\"><img src=\"pay-paypal.gif\" border=\"0\"></a><br/>\n";
+		}	
+		
+		# Credit card logos
+		if ( $cartprefs->get('paypal_cc_logos') != 'no' && eregi("paypal[^pro]", $OPTIONS['PAYMENT_PROCESSING_TYPE']) ) {
 			$THIS_DISPLAY .= "   <a href=\"#\" onClick=\"window.document.paypp.submit();\">$CC_IMGS</a>\n";
 		}
 		$THIS_DISPLAY .= "  </td>\n";
 
-	   $THIS_DISPLAY .= "  <td align=\"left\" class=\"text\" style=\"".$padEm."\">\n";
-	   $THIS_DISPLAY .= "   <b>".lang("PayPal Payments").": </b>\n";
-	   $THIS_DISPLAY .= "   ".lang("Transfer funds directly from your checking account through your own PayPal login, or")."\n";
-	   $THIS_DISPLAY .= "   ".lang("pay online with credit/debit card").".\n";
-
-	   $THIS_DISPLAY .= "  </td>\n";
+//	   $THIS_DISPLAY .= "  <td align=\"left\" class=\"text\" style=\"".$padEm."\">\n";
+//	   $THIS_DISPLAY .= "   <b>".lang("PayPal Payments").": </b>\n";
+//	   $THIS_DISPLAY .= "   ".lang("Transfer funds directly from your checking account through your own PayPal login, or")."\n";
+//	   $THIS_DISPLAY .= "   ".lang("pay online with credit/debit card").".\n";
+//
+//	   $THIS_DISPLAY .= "  </td>\n";
 		$THIS_DISPLAY .= " </tr>\n";
 
 		$THIS_DISPLAY .= " </form>\n";

@@ -34,7 +34,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 session_start();
 error_reporting(0);
 
-include('../../../includes/product_gui.php');
+require_once('../../../includes/product_gui.php');
 //include($_SESSION['doc_root'].'/sohoadmin/program/includes/shared_functions.php');
 # Hardcode lang function here because screen does not include product_gui.php
 //function lang($text) {
@@ -52,7 +52,7 @@ include('../../../includes/product_gui.php');
 // ----------------------------------------------------------------------
 
 // Mantis #0000004
-if ( strlen($lang["Order Date"]) < 4 ) {
+if ( strlen(lang("Order Date")) < 4 ) {
    if ( !include("includes/config-global.php") ) {
       echo "Cannot include config script!"; // Re-registers all global & session info
       exit;

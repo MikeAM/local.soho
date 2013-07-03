@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -38,8 +38,8 @@ session_start();
 
 require_once("../../../includes/product_gui.php");
 # Make sure session is restored (Mantis #4)
-if ( strlen($lang["Order Date"]) < 4 ) {
-   include("includes/config-global.php"); // Re-registers all global & session info
+if ( strlen(lang("Order Date")) < 4 ) {
+   //include("includes/config-global.php"); // Re-registers all global & session info
 }
 
 # Make sure shared functions is included
@@ -145,15 +145,16 @@ if(!table_exists('cart_invoice')){
 #######################################################
 ### START HTML/JAVASCRIPT CODE			    		###
 #######################################################
+//start_date_month=01&start_date_day=01&start_day_year=2012
 
 $MOD_TITLE = $lang["View/Retrieve Orders"];
 
-if ( count($_POST) > 0 ) {
-//   echo testArray($_POST); exit;
+if ( count($_REQUEST) > 0 ) {
+   //echo testArray($_REQUEST); exit;
 
    # Build get string for print button
    $print_string = "";
-   foreach ( $_POST as $key=>$value ) {
+   foreach ( $_REQUEST as $key=>$value ) {
      $print_string .= "&".$key."=".$value;
    }
    $print_string = substr($print_string, 1);
@@ -212,7 +213,7 @@ function setRow(disRow){
     <tr>
      <!---Module icon--->
      <td align="center">
-      <a href="../shopping_cart.php"><img src="http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/skins/<? echo $_SESSION['skin']; ?>/icons/full_size/shopping_cart-enabled.gif" border="0"></a>
+      <a href="../shopping_cart.php"><img src="<? echo httpvar().$_SESSION['docroot_url']; ?>/sohoadmin/skins/<? echo $_SESSION['skin']; ?>/icons/full_size/shopping_cart-enabled.gif" border="0"></a>
      </td>
 
      <!---Module title and description--->
@@ -251,13 +252,13 @@ if ($ACTION == "PROCESS") {
 		$keywords = trim($keywords);
 
       # DEFAULT: Split into multiplue keywords by spaces
-      if ( $_POST['keyword_splitby'] == "" ) { $_POST['keyword_splitby'] = " "; }
+      if ( $_REQUEST['keyword_splitby'] == "" ) { $_REQUEST['keyword_splitby'] = " "; }
 
       # Split string into multiple keywords?
-      if ( $_POST['keyword_splitby'] != "exact" ) {
+      if ( $_REQUEST['keyword_splitby'] != "exact" ) {
 
    		# Search on each term
-   		$tmp = split($_POST['keyword_splitby'], $keywords);
+   		$tmp = split($_REQUEST['keyword_splitby'], $keywords);
    		$tmp_cnt = count($tmp);
 
    		$SEARCH_STRING = "WHERE ";
@@ -290,8 +291,8 @@ if ($ACTION == "PROCESS") {
 
 	if ($search == "daterange") {
 
-		$start_date = $_POST['start_date_month'].'/'.$_POST['start_date_day'].'/'.$_POST['start_date_year'];
-		$end_date = $_POST['end_date_month'].'/'.$_POST['end_date_day'].'/'.$_POST['end_date_year'];
+		$start_date = $_REQUEST['start_date_month'].'/'.$_REQUEST['start_date_day'].'/'.$_REQUEST['start_date_year'];
+		$end_date = $_REQUEST['end_date_month'].'/'.$_REQUEST['end_date_day'].'/'.$_REQUEST['end_date_year'];
 		$SEARCH_DISPLAY = lang("Displaying all orders between")." $start_date and $end_date.";
 		$query_start_date = split("/", $start_date);
 		$query_end_date = split("/", $end_date);
@@ -299,8 +300,8 @@ if ($ACTION == "PROCESS") {
 		$int_start = $query_start_date[2].$query_start_date[0].$query_start_date[1];
 		$int_end = $query_end_date[2].$query_end_date[0].$query_end_date[1];
 		
-		$int_start = $_POST['start_date_year'].$_POST['start_date_month'].$_POST['start_date_day'];
-		$int_end = $_POST['end_date_year'].$_POST['end_date_month'].$_POST['end_date_day'];
+		$int_start = $_REQUEST['start_date_year'].$_REQUEST['start_date_month'].$_REQUEST['start_date_day'];
+		$int_end = $_REQUEST['end_date_year'].$_REQUEST['end_date_month'].$_REQUEST['end_date_day'];
 		
 		//echo $int_start."  ".$int_end."<br/>";
 		//$SEARCH_STRING = "WHERE ORDER_DATE >= '$start_date' AND ORDER_DATE <= '$end_date'";
@@ -368,7 +369,7 @@ if ($ACTION == "PROCESS") {
 //	$orderQry = "SELECT ORDER_NUMBER, ORDER_DATE, ORDER_TIME, BILLTO_FIRSTNAME, BILLTO_LASTNAME, TOTAL_SALE, PAY_METHOD, TRANSACTION_STATUS, TRANSACTION_ID FROM cart_invoice WHERE TRANSACTION_STATUS != 'Incomplete' ".$this_query;
 
 	# Show incomplete orders?
-	if ( $_POST['show_incomplete'] == "yes" ) {
+	if ( $_REQUEST['show_incomplete'] == "yes" ) {
 	   $orderQry = "SELECT * FROM cart_invoice WHERE TRANSACTION_STATUS <> '' ".$this_query;
 	} else {
 	   $orderQry = "SELECT * FROM cart_invoice WHERE TRANSACTION_STATUS != 'Incomplete' ".$this_query;

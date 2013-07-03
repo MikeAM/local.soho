@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -41,7 +41,43 @@ include_once("sohoadmin/client_files/pgm-site_config.php");
 include_once("sohoadmin/program/includes/shared_functions.php");
 
 include_once("sohoadmin/program/includes/smt_functions.php");
+$this_ip = $_SESSION['this_ip'];
+include_once("sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
+error_reporting('341');
+$DETAIL_SHOW_MONTH=$_REQUEST['DETAIL_SHOW_MONTH'];
+$DISPLAY_SEARCH_CALENDAR = $_REQUEST['DISPLAY_SEARCH_CALENDAR'];
+$PUBLIC_SUBMIT_EVENT=$_REQUEST['PUBLIC_SUBMIT_EVENT'];
+$pr=$_REQUEST['pr'];
+$dType=$_REQUEST['dType'];
+$DETAIL_SEARCH_KEYWORDS = $_REQUEST['DETAIL_SEARCH_KEYWORDS'];
+$SORT_RESULTS_BY = $_REQUEST['SORT_RESULTS_BY'];
+$SORT_BY_ORDER = $_REQUEST['SORT_BY_ORDER'];
+$CALENDAR_SEARCH = $_REQUEST['CALENDAR_SEARCH'];
+$CHANGE_CALENDAR_MONYEAR=$_REQUEST['CHANGE_CALENDAR_MONYEAR'];
+$FORM_SUBMIT_STEP = $_REQUEST['FORM_SUBMIT_STEP'];
+$DETAIL_VIEW = $_REQUEST['DETAIL_VIEW'];
+if($_POST['CALFORM_NAME']!=''){
+$CALFORM_NAME = $_POST['CALFORM_NAME'];
+$CALFORM_EMAILADDRESS = $_POST['CALFORM_EMAILADDRESS'];
+$CALFORM_MONTH = $_POST['CALFORM_MONTH'];
+$CALFORM_DAY = $_POST['CALFORM_DAY'];
+$CALFORM_YEAR = $_POST['CALFORM_YEAR'];
+$CALFORM_CATEGORY = $_POST['CALFORM_CATEGORY'];
+$CALFORM_START_TIME = $_POST['CALFORM_START_TIME'];
+$CALFORM_END_TIME = $_POST['CALFORM_END_TIME'];
+$CALFORM_TITLE = $_POST['CALFORM_TITLE'];
+$CALFORM_DETAILS = $_POST['CALFORM_DETAILS'];
+}
 
+if($_REQUEST['SEL_MONTH'] != ''){
+	$SEL_MONTH = $_REQUEST['SEL_MONTH'];
+}
+if($_REQUEST['SEL_YEAR'] != ''){
+	$SEL_YEAR = $_REQUEST['SEL_YEAR'];
+}
+if($_REQUEST['CHANGE_CAT'] != ''){
+	$CHANGE_CAT = $_REQUEST['CHANGE_CAT'];
+}
 
 $globalprefObj = new userdata('global');
 $from_email = $globalprefObj->get('login-email-from');
@@ -116,15 +152,16 @@ if (isset($OWNER_NAME) && $DISPLAY[ALLOW_PERSONAL_CALENDARS] == "Y") {
 
 
 $MONTH_OPTIONS = "";
+$lastyear = date('Y',strtotime('-366 days'));
 for ($x=1;$x<=12;$x++) {
-	$val = date("m", mktime(0,0,0,$x,1,2002));
-	$display = date("M", mktime(0,0,0,$x,1,2002));
+	$val = date("m", mktime(0,0,0,$x,1,$lastyear));
+	$display = date("M", mktime(0,0,0,$x,1,$lastyear));
 	if ($val == $SEL_MONTH) { $SEL = "SELECTED"; } else { $SEL = ""; }
 	$MONTH_OPTIONS .= "<OPTION VALUE=\"$val\" $SEL>$display</OPTION>\n";
 }
 
 $YEAR_OPTIONS = "";
-for ($x=2002;$x<=2015;$x++) {
+for ($x=$lastyear;$x<=($lastyear+5);$x++) {
 	if ($x == $SEL_YEAR) { $SEL = "SELECTED"; } else { $SEL = ""; }
 	$YEAR_OPTIONS .= "<OPTION VALUE=\"$x\" $SEL>$x</OPTION>\n";
 }
@@ -256,21 +293,23 @@ if (isset($PUBLIC_SUBMIT_EVENT)) {			// Submit event has been requested
 				$CALFORM_TITLE = stripslashes($CALFORM_TITLE);
 				$CALFORM_DETAILS = stripslashes($CALFORM_DETAILS);
 
-				$email_confirm = lang("The following event was submitted to your calendar. To approve this event, click the approve link below.")."\n\n";
-				$email_confirm .= lang("If you do not wish to add this event to your calendar, simply disregard this email.")."\n\n";
-				$email_confirm .= lang("Event Date").": $tmp_date\n";
-				$email_confirm .= lang("Event Category").": $CALFORM_CATEGORY\n";
-				$email_confirm .= lang("Event Title").": $CALFORM_TITLE\n";
-				$email_confirm .= lang("Start Time").": $CALFORM_START_TIME   ".$lang["End Time"].": $CALFORM_END_TIME\n\n";
-				$email_confirm .= lang("Event Details").": $CALFORM_DETAILS\n\n\n";
+				$email_confirm = lang("The following event was submitted to your calendar. To approve this event, click the approve link below.")."<br/><br/>";
+				$email_confirm .= lang("If you do not wish to add this event to your calendar, simply disregard this email.")."<br/><br/>";
+				$email_confirm .= lang("Event Date").": $tmp_date<br/>";
+				$email_confirm .= lang("Event Category").": $CALFORM_CATEGORY<br/>";
+				$email_confirm .= lang("Event Title").": $CALFORM_TITLE<br/>";
+				$email_confirm .= lang("Start Time").": $CALFORM_START_TIME   ".lang("End Time").": $CALFORM_END_TIME<br/><br/>";
+				$email_confirm .= lang("Event Details").": $CALFORM_DETAILS<br/><br/><br/>";
 
-				$email_confirm .= lang("To approve, click the link below:")."\n";
-				$email_confirm .= "http://$this_ip/pgm-cal-confirm.php?id=$LAST_ID\n\n\n";
+				$email_confirm .= lang("To approve, click the link below:")."<br/>";
+				$email_confirm .= "<a href=\"http://$this_ip/pgm-cal-confirm.php?id=$LAST_ID\">http://$this_ip/pgm-cal-confirm.php?id=$LAST_ID</a><br/><br/><br/>";
 
 				$email_confirm .= "*** ".lang("THIS IS AN AUTO-GENERATED EMAIL FROM YOUR WEBSITE")." ***";
 
 				if ($DISPLAY[EMAIL_CONFIRMATION] != "") {
-					mail("$DISPLAY[EMAIL_CONFIRMATION]", "Calendar Event Submission", "$email_confirm", "FROM: $from_email");
+					if(!SohoEmail($DISPLAY['EMAIL_CONFIRMATION'], $from_email, 'Calendar Event Submission', "<html><body>".str_replace("\n","<br/>",$email_confirm)."</body></html>")){
+						mail("$DISPLAY[EMAIL_CONFIRMATION]", "Calendar Event Submission", "$email_confirm", "FROM: $from_email");
+					}
 				}
 
 				$tResultFlag = 1;
@@ -302,7 +341,7 @@ if (isset($PUBLIC_SUBMIT_EVENT)) {			// Submit event has been requested
 // calendar for both displays
 // -----------------------------------------------------------
 
-$START_FORM = "<FORM METHOD=POST ACTION=\"index.php\">\n";
+$START_FORM = "<FORM METHOD=POST name=\"calsub\" ACTION=\"".pagename($CAL_MOD_PAGE)."\">\n";
 $START_FORM .= "<INPUT TYPE=HIDDEN NAME=\"pr\" VALUE=\"$CAL_MOD_PAGE\">\n";
 
 $END_FORM = "</FORM>\n\n";
@@ -361,7 +400,7 @@ if (eregi("M", $dType) && !eregi("W", $dType) && $dType != "FORM") {					// It's
 
 		$DROP_DOWN .= "<TD ALIGN=CENTER VALIGN=MIDDLE CLASS=text>\n";
 		if($hide_drop_down != 1){
-			$DROP_DOWN .= "<B>Category</B>: </FONT><SELECT NAME=\"CHANGE_CAT\" CLASS=smtext STYLE='background: #EFEFEF;'>\n";
+			$DROP_DOWN .= "<B>Category</B>: </FONT><SELECT NAME=\"CHANGE_CAT\" CLASS=smtext >\n";
 			$DROP_DOWN .= $copts;
 			$DROP_DOWN .= "</SELECT>&nbsp;<input type=submit name=CHANGE_CALENDAR_CATEGORY value=\"Change\" class=FormLt1>\n";
 		}
@@ -370,7 +409,7 @@ if (eregi("M", $dType) && !eregi("W", $dType) && $dType != "FORM") {					// It's
 	}
 
 	$DROP_DOWN .= "<TD ALIGN=CENTER VALIGN=MIDDLE CLASS=text>\n";
-	$DROP_DOWN .= "<B>".lang("Current View")."</B>: </font><SELECT NAME=\"SEL_MONTH\" class=smtext STYLE='background: #EFEFEF;'>$MONTH_OPTIONS</SELECT> <SELECT NAME=\"SEL_YEAR\" class=smtext STYLE='background: #EFEFEF;'>$YEAR_OPTIONS</SELECT>\n";
+	$DROP_DOWN .= "<B>".lang("Current View")."</B>: </font><SELECT id=\"SEL_MONTH\" NAME=\"SEL_MONTH\" class=smtext STYLE='background: #EFEFEF;'>$MONTH_OPTIONS</SELECT> <SELECT NAME=\"SEL_YEAR\" id=\"SEL_YEAR\" class=smtext STYLE='background: #EFEFEF;'>$YEAR_OPTIONS</SELECT>\n";
 	$DROP_DOWN .= "&nbsp;<INPUT TYPE=SUBMIT NAME=CHANGE_CALENDAR_MONYEAR VALUE=\"".lang("View")."\" CLASS=FormLt1>\n";
 	$DROP_DOWN .= "</TD>\n";
 
@@ -390,6 +429,10 @@ if (eregi("M", $dType) && !eregi("W", $dType) && $dType != "FORM") {					// It's
 		$CAL_FOOTER .= "</TD>\n";
 
 	}
+
+$CAL_FOOTER .= "<TD ALIGN=CENTER VALIGN=MIDDLE CLASS=smtext><BR>\n";
+$CAL_FOOTER .= $DROP_DOWN;
+$CAL_FOOTER .= "</Td>\n";
 
 	$CAL_FOOTER .= "<TD ALIGN=CENTER VALIGN=MIDDLE CLASS=smtext><BR>\n";
 	$CAL_FOOTER .= "<INPUT TYPE=SUBMIT NAME=DISPLAY_SEARCH_CALENDAR VALUE=\"".lang("Detail Event Search")."\" CLASS=FormLt1>\n";
@@ -489,7 +532,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 
 	echo "<TABLE BORDER=0 CELLPADDING=8 CELLSPACING=0 WIDTH=99% ALIGN=CENTER STYLE='border: 0px inset black;'>\n";
 	echo "<TR>\n";
-	echo "<TD ALIGN=CENTER VALIGN=TOP CLASS=smtext WIDTH=50% BGCOLOR=WHITE>\n";
+	echo "<TD ALIGN=CENTER VALIGN=TOP CLASS=smtext WIDTH=50% >\n";
 
 		// Build "Cal-At-A-Glance-Nav" Structure
 		// ----------------------------------------------------------------
@@ -502,7 +545,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 		echo "<TABLE BORDER=0 CELLPADDING=1 CELLSPACING=0 WIDTH=95% ALIGN=CENTER STYLE='border: 1px inset black;'>\n";
 		echo "<TR>\n";
 
-		echo "<TD ALIGN=CENTER VALIGN=MIDDLE BGCOLOR=\"OLDLACE\" CLASS=smtext  STYLE='border: 1px inset black;'>";
+		echo "<TD ALIGN=CENTER VALIGN=MIDDLE   CLASS=smtext  STYLE='border: 1px inset black;'>";
 		echo "<font color=$DISPLAY[TEXT_COLOR]><a href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_MONTHLY_CALENDAR=&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">".lang("Month")."</b><font>";
 		echo "</TD>\n";
 
@@ -518,7 +561,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 		$FLAG = 0;
 		$display_day = 1;
 
-		echo "<TD ALIGN=CENTER VALIGN=TOP BGCOLOR=OLDLACE CLASS=smtext STYLE='border: 1px inset black;'>\n";
+		echo "<TD ALIGN=CENTER VALIGN=TOP  CLASS=smtext STYLE='border: 1px inset black;'>\n";
 		$this_start = 1;
 		$this_end = 7 - $WK_NUM;
 		echo "<a href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_SEARCH_CALENDAR=&DETAIL_VIEW_WEEK=$this_start-$this_end&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">$TEXT_MONTH<BR>$this_start-$this_end</A>";
@@ -527,17 +570,17 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 		for ($x=0;$x<=6;$x++) {		// Start First Week Loop
 
 			if (eregi("$START_DOW", $day_of_week[$x]) || $FLAG == 1) {
-				if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = "skyblue"; } else { $BGCOLOR = "WHITE"; }
+				if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = $DISPLAY[BACKGROUND_COLOR]; } else { $BGCOLOR = $DISPLAY[BACKGROUND_COLOR]; }
 				echo "<TD ALIGN=CENTER VALIGN=TOP BGCOLOR=$BGCOLOR CLASS=smtext STYLE='border: 1px inset black;'>\n";
 				$this_date = $SEL_YEAR."-".$SEL_MONTH."-".$display_day;
-				echo "<a href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_SEARCH_CALENDAR=&DETAIL_VIEW=$this_date&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">$TEXT_MONTH<BR>$display_day</A>";
+				echo "<a style=\"color:".$DISPLAY['TEXT_COLOR']."!important;\" href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_SEARCH_CALENDAR=&DETAIL_VIEW=$this_date&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">$TEXT_MONTH<BR>$display_day</A>";
 				echo "</TD>\n";
 				$display_day++;
 				$FLAG = 1;
 
 			} else {
 
-				echo "\n<TD ALIGN=LEFT VALIGN=TOP BGCOLOR=#EFEFEF CLASS=text style='border: 1px inset black;'>";
+				echo "\n<TD ALIGN=LEFT VALIGN=TOP  CLASS=text style='border: 1px inset black;'>";
 				echo "&nbsp;";
 				echo "</TD>\n";
 
@@ -561,7 +604,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 
 			echo "\n\n<TR>\n";
 
-			echo "<TD ALIGN=CENTER VALIGN=TOP BGCOLOR=OLDLACE CLASS=smtext STYLE='border: 1px inset black;'>\n";
+			echo "<TD ALIGN=CENTER VALIGN=TOP BGCOLOR=".$DISPLAY[BACKGROUND_COLOR]." CLASS=smtext STYLE='border: 1px inset black;'>\n";
 			$this_start = $display_day;
 			$this_end = $this_start + 6;
 
@@ -569,22 +612,22 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 				$this_end = $NUM_DAYS_IN_MONTH;
 			}
 
-			echo "<a href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_SEARCH_CALENDAR=&DETAIL_VIEW_WEEK=$this_start-$this_end&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">$TEXT_MONTH<BR>$this_start-$this_end</A>";
+			echo "<a style=\"color:".$DISPLAY['TEXT_COLOR']."!important;\" href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_SEARCH_CALENDAR=&DETAIL_VIEW_WEEK=$this_start-$this_end&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">$TEXT_MONTH<BR>$this_start-$this_end</A>";
 			echo "</TD>\n";
 
 			for ($y=1;$y<=7;$y++) {			// Start Daily Loop
 
 				if ($FLAG != 1) {
 
-					if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = "skyblue"; } else { $BGCOLOR = "WHITE"; }
+					if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = $DISPLAY[BACKGROUND_COLOR]; } else { $BGCOLOR = $DISPLAY[BACKGROUND_COLOR]; }
 					echo "\n<TD ALIGN=CENTER VALIGN=TOP BGCOLOR=$BGCOLOR CLASS=smtext STYLE='border: 1px inset black;'>\n";
 					$this_date = $SEL_YEAR."-".$SEL_MONTH."-".$display_day;
-					echo "<a href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_SEARCH_CALENDAR=&DETAIL_VIEW=$this_date&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">$TEXT_MONTH<BR>$display_day</A>";
+					echo "<a style=\"color:".$DISPLAY['TEXT_COLOR']."!important;\" href=\"".pagename($CAL_MOD_PAGE, "&")."DISPLAY_SEARCH_CALENDAR=&DETAIL_VIEW=$this_date&SEL_MONTH=$SEL_MONTH&SEL_YEAR=$SEL_YEAR&CHANGE_CAT=$CHANGE_CAT\">$TEXT_MONTH<BR>$display_day</A>";
 					echo "\n</TD>\n";
 
 				} else {
 
-					echo "\n<TD ALIGN=LEFT VALIGN=TOP BGCOLOR=#EFEFEF CLASS=text STYLE='border: 1px inset black;'>";
+					echo "\n<TD ALIGN=LEFT VALIGN=TOP  CLASS=text STYLE='border: 1px inset black;'>";
 					echo "&nbsp;";
 					echo "</TD>\n";
 
@@ -608,7 +651,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 		}
 
 		echo "<TABLE BORDER=0 CELLPADDING=1 CELLSPACING=0 WIDTH=95% ALIGN=CENTER>\n";
-		echo "<TR><TD ALIGN=CENTER BGCOLOR=WHITE CLASS=smtext>\n";
+		echo "<TR><TD ALIGN=CENTER  CLASS=smtext>\n";
 		echo "<FONT COLOR=#999999>".lang("Current Category").": $tmp</FONT>\n";
 		echo "</TR></TABLE>\n\n";
 
@@ -783,6 +826,40 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 
 	if ($REQUEST_TITLE != "") {
 
+
+echo "<script type=\"text/javascript\" src=\"sohoadmin/client_files/jquery.min.js\"></script>
+<script type=\"text/javascript\">
+function openEvent(eid){
+	document.getElementById('event_details_div').style.display='block';
+	$('#event_details_div').load('pgm-cal-details.inc.php?id='+eid, function() {
+		return true;
+	});
+	//document.getElementById('event_details_div').innerHTML='
+}				
+function openCart(cid,event_id){
+	//document.getElementById('event_details_div').style.display='block';
+	//$('#event_details_div').load('shopping/pgm-more_information.php?&nft=blank_template&id='+cid, function() {
+	//$('#event_details_div').load('pgm-cal-details.inc.php?id='+cid, function() {
+	//	return true;
+	//});
+	//document.getElementById('event_details_div').innerHTML='
+	document.location.href='shopping/pgm-more_information.php?&id='+cid+'&event='+event_id;
+}					
+
+function openPagego(cid){
+	//document.getElementById('event_details_div').style.display='block';
+	//$('#event_details_div').load('shopping/pgm-more_information.php?&nft=blank_template&id='+cid, function() {
+	//$('#event_details_div').load('pgm-cal-details.inc.php?id='+cid, function() {
+	//	return true;
+	//});
+	//document.getElementById('event_details_div').innerHTML='
+	document.location.href=cid.replace(/ /g,'_')+'.php';
+}
+</script>\n";
+echo "<div style=\"position:relative;width:99%;\">\n";
+echo "<div id=\"event_details_div\"  style=\"position:absolute;z-index:99999;display:none;border:3px solid ".$DISPLAY['BACKGROUND_COLOR'].";width:100%;height:100%;top:0;left:0;padding:0px;background-color:#EFEFEF;\"></div>\n";
+
+
 		echo "<TABLE BORDER=0 CELLPADDING=5 CELLSPACING=0 WIDTH=99% ALIGN=CENTER STYLE='border: 1px inset black;'>\n";
 		echo "<TR>\n";
 		echo "<TD ALIGN=LEFT VALIGN=TOP BGCOLOR=$DISPLAY[BACKGROUND_COLOR]><FONT SIZE=2 FACE=VERDANA COLOR=$DISPLAY[TEXT_COLOR]>\n";
@@ -815,7 +892,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 
 					echo "<TABLE BORDER=0 CELLPADDING=6 CELLSPACING=0 WIDTH=100% ALIGN=LEFT STYLE='border: 1px inset black;'>\n";
 					echo "<TR>\n";
-					echo "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=\"#EFEFEF\">\n";
+					echo "<TD ALIGN=LEFT VALIGN=TOP CLASS=text  >\n";
 
 					if ($cat_num == $MD5CODE) {
 						echo "<img src=\"sohoadmin/client_files/securelogin.gif\" alt=\"".lang("This is your private event.")."\" border=0 hspace=2 vspace=2 align=absmiddle>\n";
@@ -843,12 +920,18 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 							echo "&nbsp;&nbsp;&nbsp;&nbsp; ($event_time)\n";
 						}
 
-					echo "</TD></TR><TR><TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=\"WHITE\" STYLE='border-top: 1px inset black;'>\n";
+					echo "</TD></TR><TR><TD ALIGN=LEFT VALIGN=TOP CLASS=text  STYLE='border-top: 1px inset black;'>\n";
 
 					echo "Event Details: ".$row[EVENT_DETAILS];
 
 					if ($row[EVENT_DETAILPAGE] != "") {
-						echo "<a href=\"#\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$row[PRIKEY]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
+						//echo "<a href=\"#\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$row[PRIKEY]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
+						if(is_numeric($row[EVENT_DETAILPAGE])){
+							echo "<a href=\"javascript:void(0);\" onclick=\"openCart('".$row[EVENT_DETAILPAGE]."','".$row[PRIKEY]."')\" >";
+						} else {
+							echo "<a href=\"javascript:void(0);\" onclick=\"openPagego('".$row[EVENT_DETAILPAGE]."')\" >";	
+						}
+						
 						if ($row[EVENT_DETAILS] != "") {
 							echo "[".lang("More Details")."...</a>]\n";
 						} else {
@@ -880,12 +963,12 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 
 					echo "<TABLE BORDER=0 CELLPADDING=6 CELLSPACING=1 WIDTH=100% ALIGN=CENTER STYLE='border: 1px inset black;'>\n";
 					echo "<TR>\n";
-					echo "<TD ALIGN=LEFT VALIGN=TOP BGCOLOR=#EFEFEF><FONT FACE=VERDANA SIZE=2 COLOR=BLACK>\n";
+					echo "<TD ALIGN=LEFT VALIGN=TOP  ><FONT FACE=VERDANA SIZE=2 COLOR=BLACK>\n";
 
 					$today ="'$SEL_YEAR-$SEL_MONTH-$DAY_COUNT";
 					$dDateOwk = date("l", mktime(0,0,0,$SEL_MONTH,$DAY_COUNT,$SEL_YEAR));
 					$my = date("(M j)", mktime(0,0,0,$SEL_MONTH,$DAY_COUNT,$SEL_YEAR));
-					echo "<B>$dDateOwk</B> $my</TD></TR><TD ALIGN=LEFT VALIGN=TOP BGCOLOR=WHITE CLASS=text>\n";
+					echo "<B>$dDateOwk</B> $my</TD></TR><TD ALIGN=LEFT VALIGN=TOP  CLASS=text>\n";
 
 					$WHERE_QUERY = "EVENT_DATE = '$SEL_YEAR-$SEL_MONTH-$DAY_COUNT'";
 
@@ -922,7 +1005,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 
 								echo "<TABLE BORDER=0 CELLPADDING=6 CELLSPACING=0 WIDTH=100% ALIGN=LEFT STYLE='border: 1px inset black;'>\n";
 								echo "<TR>\n";
-								echo "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=\"oldlace\">\n";
+								echo "<TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=\"".$DISPLAY[BACKGROUND_COLOR]."\">\n";
 
 								if ($cat_num == $MD5CODE) {
 									echo "<img src=\"sohoadmin/client_files/securelogin.gif\" alt=\"".$lang["This is your private event."]."\" border=0 hspace=2 vspace=2 align=absmiddle>\n";
@@ -935,7 +1018,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 								$row[EVENT_TITLE] = stripslashes($row[EVENT_TITLE]);
 								$row[EVENT_DETAILS] = stripslashes($row[EVENT_DETAILS]);
 
-								echo "[ <FONT COLOR=DARKGREEN>".$category."</FONT> ] <FONT SIZE=2 FACE=VERDANA><B>$row[EVENT_TITLE]</B></FONT>\n";
+								echo "[ <FONT  >".$category."</FONT> ] <FONT SIZE=2 FACE=VERDANA><B>$row[EVENT_TITLE]</B></FONT>\n";
 
 									$tmp = split(":", $row[EVENT_START]);
 									$tmp = date("g:ia", mktime($tmp[0],$tmp[1],$tmp[2],$SEL_MONTH,1,$SEL_YEAR));
@@ -947,12 +1030,27 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 									}
 
 								echo "&nbsp;&nbsp;&nbsp;&nbsp; ($event_time)\n";
-								echo "</TD></TR><TR><TD ALIGN=LEFT VALIGN=TOP CLASS=text BGCOLOR=\"WHITE\" STYLE='border-top: 1px inset black;'>\n";
+								echo "</TD></TR><TR><TD ALIGN=LEFT VALIGN=TOP CLASS=text STYLE='border-top: 1px inset black;'>\n";
 
 								echo lang("Event Details").": ".$row[EVENT_DETAILS];
 
 								if ($row[EVENT_DETAILPAGE] != "") {
-									echo "<a href=\"#\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$row[PRIKEY]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
+
+									
+									//onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$row[PRIKEY]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\"
+						if(is_numeric($row[EVENT_DETAILPAGE])){
+							echo "<a href=\"javascript:void(0);\" onclick=\"openCart('".$row[EVENT_DETAILPAGE]."','".$row['PRIKEY']."')\" >";
+						} else {
+							
+							if($row['EVENT_DETAILPAGE'] != ""){
+								echo "<a href=\"javascript:void(0);\" onclick=\"openPagego('".$row['EVENT_DETAILPAGE']."')\" >";
+							} else {
+								echo "<a href=\"javascript:void(0);\" onclick=\"openEvent('".$row['PRIKEY']."')\" >";
+								
+							}
+							
+							
+						}									
 									if ($row[EVENT_DETAILS] != "") {
 										echo "[".lang("More Details")."...</a>]\n";
 									} else {
@@ -996,7 +1094,7 @@ if (eregi("W", $dType) && !eregi("M", $dType) && $dType != "FORM") {
 
 
 		echo $END_FORM;
-
+	echo "</div>\n";
 	} else {
 
 		echo "<BR><BR><DIV ALIGN=CENTER CLASS=text>".lang("Please search for an event or select the day or week you wish to view.")."</DIV><BR><BR>\n";

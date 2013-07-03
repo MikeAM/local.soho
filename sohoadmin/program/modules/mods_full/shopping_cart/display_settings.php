@@ -14,7 +14,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 ##############################################################################
-## COPYRIGHT NOTICE
+## COPYRIGHT NOTICE 
 ## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston
 ## Copyright 2003-2007 Soholaunch.com, Inc.
 ## All Rights Reserved.
@@ -32,10 +32,10 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 
-error_reporting(0);
+error_reporting('341');
 session_start();
 
-include_once("../../../includes/product_gui.php");
+require_once("../../../includes/product_gui.php");
 //echo testArray($_POST); exit;
 ###################################################
 ### READ NETSCAPE COLOR TABLE CSV DATA INTO VAR ###
@@ -59,7 +59,12 @@ for ($x=0;$x<=$tLoop;$x++) {
       $color_hex[$numcolors] = '#'.eregi_replace("\r", '', $temp[1]);
    }
 }
-
+if($_POST['ACTION']=='updatedisplay'){
+	if($_POST['css']['table_bgcolor']==''){ $_POST['css']['table_bgcolor']='transparent'; }
+	if($_POST['display_headerbg']==''){ $_POST['display_headerbg']='transparent'; }
+	if($_POST['display_cartbg']==''){ $_POST['display_cartbg']='transparent'; }
+}
+$globalprefObj = new userdata('global');
 # Restore misc prefs
 $cartprefs = new userdata("cart");
 
@@ -75,7 +80,34 @@ if ( $cartprefs->get("custom_addcartbutton") == "" ) { $cartprefs->set("custom_a
 
 $update_complete = 0;
 
-if ($ACTION == "updatedisplay") {
+if ($_POST['ACTION'] == "updatedisplay") {
+
+//echo testArray($_POST);
+
+	if(is_array($_POST['buttons'])){
+		if($_POST['buttons']['buttonColor']=='disabled'){
+			//$_POST['buttons']['buttonColor']='disabled';
+			$_POST['buttons']['DefaultActiveButtons']='default';
+			$_POST['buttons']['activeColor']='';
+			$buttons['buttonColor']='disabled';
+			$buttons['activeColor']='';
+			$cartprefs->set('buttonColor','disabled');
+			$cartprefs->set('activeColor', '');
+		} else {
+			if($_POST['buttons']['DefaultButtons']=='default' || $_POST['buttons']['buttonColor']=='' || $_POST['buttons']['buttonColor']=='transparent'){
+				$buttons['buttonColor']='';
+			} else {
+				$buttons['buttonColor']	= $_POST['buttons']['buttonColor'];	
+			}
+			if($_POST['buttons']['DefaultActiveButtons']=='default' || $_POST['buttons']['activeColor']=='' || $_POST['buttons']['activeColor']=='transparent'){
+				$buttons['activeColor']='';
+			} else {
+				$buttons['activeColor']	= $_POST['buttons']['activeColor'];
+			}
+			$cartprefs->set('buttonColor', $buttons['buttonColor']);
+			$cartprefs->set('activeColor', $buttons['activeColor']);
+		}
+	}
 
    # Update prefs
    foreach ( $_POST['mprefs'] as $pref=>$setting ) {
@@ -141,6 +173,8 @@ if ($ACTION == "updatedisplay") {
 	$update_complete = 1;
 
 }
+$buttons['buttonColor']=$cartprefs->get("buttonColor");
+$buttons['activeColor']=$cartprefs->get("activeColor");
 
 #######################################################
 ### READ DATABASED OPTIONS INTO MEMORY NOW
@@ -148,7 +182,7 @@ if ($ACTION == "updatedisplay") {
 $result = mysql_query("SELECT * FROM cart_options");
 $DISPLAY = mysql_fetch_array($result);
 
-
+$cartcss = unserialize($DISPLAY['CSS']);
 #######################################################
 ### GET COUNTRY DATA FROM FLAT FILE		             ###
 #######################################################
@@ -173,10 +207,158 @@ for ($c=0;$c<=$numNats;$c++) {
 
 # Start buffering output
 ob_start();
+//echo "<style type=\"text/css\">@import url(\"../../../includes/jPicker/css/jPicker-1.1.6.css\");</style>\n";
+//echo "<style type=\"text/css\">@import url(\"../../../includes/jPicker/jPicker.css\");</style>\n";
+echo "<link rel=\"Stylesheet\" type=\"text/css\" href=\"../../../includes/jPicker/css/jPicker-1.1.6.css\" />\n";
+echo "<link rel=\"Stylesheet\" type=\"text/css\" href=\"../../../includes/jPicker/jPicker.css\" />\n";
+
+//echo "<link id=\"buttonpreviews\" rel=\"stylesheet\" type=\"text/css\" href=\"../../../../client_files/ultra-custom-button.css.php?mode=cart&id=previewtable&hex=".str_replace('#','',$buttons['buttonColor'])."&hex2=".str_replace('#','',$buttons['activeColor'])."&randid=".time()."\" />\n";
+if($buttons['buttonColor']=='disabled'){
+	echo "<link id=\"buttonpreviews\" rel=\"stylesheet\" type=\"text/css\" href=\"../../../../client_files/ultra-custom-button.css.php?mode=cart&id=previewtable&hex=".str_replace('#','',$buttons['buttonColor'])."&hex2=".str_replace('#','',$buttons['activeColor'])."&randid=".time()."\" />\n";
+} else {
+	//echo "<link id=\"buttonpreviews\" rel=\"stylesheet\" type=\"text/css\" href=\"../../../../client_files/ultra-custom-button.css.php?mode=cart&id=previewtable&randid=".time()."\" />\n";
+	echo "<link id=\"buttonpreviews\" rel=\"stylesheet\" type=\"text/css\" href=\"../../../../client_files/ultra-custom-button.css.php?mode=cart&id=previewtable&hex=".str_replace('#','',$buttons['buttonColor'])."&hex2=".str_replace('#','',$buttons['activeColor'])."&randid=".time()."\" />\n";
+}
+
 ?>
 
+<script src="../../../includes/jPicker/jpicker-1.1.6.js" type="text/javascript"></script>
+<script type="text/javascript">
+function toggleCustButtons(){
+	var useCstB=document.getElementById('DefaultButtons').selectedIndex;
+	if(useCstB==1){
+		document.getElementById('buttonColordDiv').style.display='inline';
+		document.getElementById('activeColordDiv').style.display='inline';
+		//document.getElementById('activeButtonTR').style.display='block';
+		document.getElementById('DefaultActiveButtons').disabled=false;	
+	} else {
+		if(useCstB==2){
+			document.getElementById('buttonColordDiv').style.display='none';
+			document.getElementById('activeColordDiv').style.display='none';
+			$("#buttonColor").val('disabled');
+			$('#buttonColordDiv span.jPicker span.Icon span.Color').css({ backgroundColor: 'transparent' });
+			$('#buttonColordDiv span.jPicker span.Icon span.Image').css({ visibility: 'visible' });	
+			document.getElementById('DefaultActiveButtons').selectedIndex=0;
+			document.getElementById('DefaultActiveButtons').disabled=true;		
+		} else {
+			document.getElementById('DefaultActiveButtons').disabled=false;
+			document.getElementById('buttonColordDiv').style.display='none';
+			document.getElementById('activeColordDiv').style.display='none';
+			$("#buttonColor").val('');
+			$('#buttonColordDiv span.jPicker span.Icon span.Color').css({ backgroundColor: 'transparent' });
+			$('#buttonColordDiv span.jPicker span.Icon span.Image').css({ visibility: 'visible' });	
+		}
 
-<script language="JavaScript">
+		
+		//$.jPicker.List[1].color.active.val('hex', 'e2ddcf', this);
+		//document.getElementById('activeButtonTR').style.display='none';
+	}
+
+	var useCstA=document.getElementById('DefaultActiveButtons').selectedIndex;
+	if(useCstA==1){
+		document.getElementById('activeColordDiv').style.display='inline';
+		//document.getElementById('activeButtonTR').style.display='block';
+		//alert($.jPicker.List[0].color.active.val())
+	} else {
+		document.getElementById('activeColordDiv').style.display='none';
+		$("#activeColor").val('');
+		$('#activeColordDiv span.jPicker span.Icon span.Color').css({ backgroundColor: 'transparent' });
+		$('#activeColordDiv span.jPicker span.Icon span.Image').css({ visibility: 'visible' });
+		//alert($.jPicker.List[0].color.active.val())
+	}
+	var bColr = document.getElementById('buttonColor').value.replace("#","");
+	var hColr = $("#activeColor").val().replace("#","");
+	
+<?php
+if($globalprefObj->get("buttonColor")!='disabled'){
+		echo "	var glob_bColr = '".str_replace('#','',$globalprefObj->get("buttonColor"))."';\n";
+		echo "	var glob_hColr = '".str_replace('#','',$globalprefObj->get("activeColor"))."';\n";
+} else {
+		echo "	var glob_bColr = 'DBDBDB';\n";
+		echo "	var glob_hColr = 'E4E4E4';\n";	
+}
+?>
+	if(bColr==''){ bColr=glob_bColr; }
+	if(hColr==''){ hColr=glob_hColr; }
+
+
+	if(hColr=='' && bColr==''){ hColr='E4E4E4'; }
+	if(bColr==''){ bColr='DBDBDB';document.getElementById('buttonColor').value='DBDBDB'; }
+
+	$("#buttonpreviews").attr("href", "../../../../client_files/ultra-custom-button.css.php?mode=cart&id=previewtable&hex="+bColr+"&hex2="+hColr);
+}
+
+
+$(document).ready(
+	function(){
+		$('.tfield_hex').jPicker({
+			window:{
+
+				expandable: true,
+				position:{
+					x: '0', // acceptable values "left", "center", "right",
+					y: '0', // acceptable values "top", "bottom", "center", or relative px
+				}
+			
+			},
+			images:{
+				clientPath: '../../../includes/jPicker/images/', // Path to image files
+			}
+	},
+	function(color, context)
+	{
+		var all = color.val('all');
+
+		if(all==null){
+			document.getElementById(this.id).value='transparent';
+		} else {
+			document.getElementById(this.id).value='#'+all.hex;
+		}
+		//alert(this.id);
+		//alert($("#buttonColor").val());
+		if(this.id=='buttonColor' || this.id=='activeColor'){
+			var bColr = $("#buttonColor").val().replace("#","");
+			var hColr = $("#activeColor").val().replace("#","");
+			if(bColr=='transparent'){ bColr='';$("#DefaultButtons").val('0');toggleCustButtons(); }
+			if(hColr=='transparent'){ hColr='';$("#DefaultActiveButtons").val('0');toggleCustButtons(); }			
+			$("#buttonpreviews").attr("href", "../../../../client_files/ultra-custom-button.css.php?mode=cart&id=previewtable&hex="+bColr+"&hex2="+hColr);
+		}
+		if(this.id=='table_textcolor'){
+			$('#previewtable').css({
+				color: all && '#' + all.hex || '#000000'
+			}); // prevent IE from throwing exception if hex is empty
+		}
+		if(this.id=='table_bgcolor'){
+		  	//alert(this.id+' Color chosen - hex: ' + (all && '#' + all.hex || 'none') + ' - alpha: ' + (all && all.a + '%' || 'none'));
+			$('#previewtable').css({
+				backgroundColor: all && '#' + all.hex || 'transparent'
+			}); // prevent IE from throwing exception if hex is empty
+		}
+		if(this.id=='display_headerbg'){
+			$('#header1,#header2,#header3').css({
+				backgroundColor: all && '#' + all.hex || 'transparent'
+			}); // prevent IE from throwing exception if hex is empty
+		}
+		if(this.id=='display_headertxt'){
+			$('#header1,#header2,#header3').css({
+				color: all && '#' + all.hex || '#000000'
+			}); // prevent IE from throwing exception if hex is empty
+		}
+		if(this.id=='display_cartbg'){
+			$('#cartarea').css({
+				backgroundColor: all && '#' + all.hex || 'transparent'
+			}); // prevent IE from throwing exception if hex is empty
+		}
+		if(this.id=='display_carttxt'){
+			$('#cartarea').css({
+				color: all && '#' + all.hex || '#000000'
+			}); // prevent IE from throwing exception if hex is empty
+		}
+	});
+});
+
+
+
 function SV2_findObj(n, d) { //v3.0
   var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
@@ -191,7 +373,7 @@ function SV2_openBrWindow(theURL,winName,features) { //v2.0
   window.open(theURL,winName,features);
 }
 
-<?
+<?php
 
 if ($update_complete == 1) {
 
@@ -326,71 +508,77 @@ function help_login() {
 
 }
 
-function set_scheme(sel) {
-
-	if (sel == "AM") {
-		var one = "#FF0000";
-		var two = "#FFFFFF";
-		var three = "#0000FF";
-		var four = "#FFFFFF";
-	}
-
-	if (sel == "CL") {
-		var one = "#708090";
-		var two = "#F5F5F5";
-		var three = "#EFEFEF";
-		var four = "#000000";
-	}
-
-	if (sel == "EA") {
-		var one = "#8B4513";
-		var two = "#FDF5E6";
-		var three = "#F4A460";
-		var four = "#8B4513";
-	}
-
-	if (sel == "NE") {
-		var one = "#006400";
-		var two = "#00FF00";
-		var three = "#2E8B57";
-		var four = "#90EE90";
-	}
-
-	if (sel == "SP") {
-		var one = "#6495ED";
-		var two = "#000000";
-		var three = "#FFD700";
-		var four = "#8B0000";
-	}
-
-	if (sel == "MO") {
-		var one = "#800000";
-		var two = "#FFFFFF";
-		var three = "#FDF5E6";
-		var four = "#000000";
-	}
-
-	if (sel != "NULL") {
-
-		set_headerbg(one);
-		document.displaysettings.SELCLRHEADBG.value = one;
-
-		set_headertxt(two);
-		document.displaysettings.SELCLRHEADTXT.value = two;
-
-		set_cartbg(three);
-		document.displaysettings.SELCLRCARTBG.value = three;
-
-		set_carttxt(four);
-		document.displaysettings.SELCLRCARTTXT.value = four;
-
-	}
-
-
-}
+//function set_scheme(sel) {
+//
+//	if (sel == "AM") {
+//		var one = "#FF0000";
+//		var two = "#FFFFFF";
+//		var three = "#0000FF";
+//		var four = "#FFFFFF";
+//	}
+//
+//	if (sel == "CL") {
+//		var one = "#708090";
+//		var two = "#F5F5F5";
+//		var three = "#EFEFEF";
+//		var four = "#000000";
+//	}
+//
+//	if (sel == "EA") {
+//		var one = "#8B4513";
+//		var two = "#FDF5E6";
+//		var three = "#F4A460";
+//		var four = "#8B4513";
+//	}
+//
+//	if (sel == "NE") {
+//		var one = "#006400";
+//		var two = "#00FF00";
+//		var three = "#2E8B57";
+//		var four = "#90EE90";
+//	}
+//
+//	if (sel == "SP") {
+//		var one = "#6495ED";
+//		var two = "#000000";
+//		var three = "#FFD700";
+//		var four = "#8B0000";
+//	}
+//
+//	if (sel == "MO") {
+//		var one = "#800000";
+//		var two = "#FFFFFF";
+//		var three = "#FDF5E6";
+//		var four = "#000000";
+//	}
+//
+//	if (sel != "NULL") {
+//
+//		set_headerbg(one);
+//		document.displaysettings.SELCLRHEADBG.value = one;
+//
+//		set_headertxt(two);
+//		document.displaysettings.SELCLRHEADTXT.value = two;
+//
+//		set_cartbg(three);
+//		document.displaysettings.SELCLRCARTBG.value = three;
+//
+//		set_carttxt(four);
+//		document.displaysettings.SELCLRCARTTXT.value = four;
+//
+//	}
+//
+//
+//}
 </script>
 
 <style>
+table.colorz { width:98%; margin-bottom: 10px; }
+.tfield_hex{
+	width:60px;
+	/*margin-left:25px;*/
+	display:none;
+}
 span.pref_label {
    display: block;
    margin-top: 6px;
@@ -412,11 +600,12 @@ span.unit {
 .tfield_hex {
    font-weight: normal;
    color:black;
+   
 }
 </style>
 
 
-<?
+<?php
 
 // Check checkbox?
 #-------------------------------------------------------
@@ -456,7 +645,7 @@ for ( $i=1; $i<=$numcolors; $i++ ) {
 }
 
 # Parent table with left cell for column and right cell for color scheme options
-$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" width=\"85%\" class=\"feature_sub\" style=\"margin-bottom: 15px;\">\n";
+$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" width=\"85%\" class=\" feature_sub\" style=\"margin-bottom: 15px;\">\n";
 $THIS_DISPLAY .= " <tr>\n";
 $THIS_DISPLAY .= "  <td class=\"fsub_title\" colspan=\"2\">\n";
 $THIS_DISPLAY .= "   <span class=\"hand\" onclick=\"document.location.href='display_settings.php';\">".lang("Shopping Cart Color Scheme")."</span>\n";
@@ -480,7 +669,7 @@ $THIS_DISPLAY .= "    <tr>\n";
 $THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\" ID=\"header1\" style=\"padding: 5px; padding-bottom: 20px;\">\n";
 $THIS_DISPLAY .= "      <font face=\"verdana\" size=2><b>".lang("Search Product")."</b></font><br/>\n";
 $THIS_DISPLAY .= "      <input type=\"text\" class=\"text\" style='width: 140px; background-color: #fff;' name=\"DEMOVAL\" size=\"15\" MAXLENGTH=15 DISABLED>\n";
-$THIS_DISPLAY .= "      <br/><input type=\"button\" value=\"".lang("Find Now")."\" class=\"FormLt1\">\n";
+$THIS_DISPLAY .= "      <br/><input type=\"button\" value=\"".lang("Find Now")."\" class=\"text\">\n";
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n";
 
@@ -513,7 +702,7 @@ $THIS_DISPLAY .= "    <tr>\n";
 $THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\" ID=\"cartarea\">\n";
 $THIS_DISPLAY .= "      &nbsp;(1) ".lang("Product")."<br/><br/>\n";
 $THIS_DISPLAY .= "      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".lang("Sub-Total").": $19.95<br/><br/>\n";
-$THIS_DISPLAY .= "      <div align=\"center\"><input type=\"button\" value=\"".lang("Checkout Now")."\" class=\"FormLt1\"><br/>&nbsp;</div>\n";
+$THIS_DISPLAY .= "      <div align=\"center\"><input type=\"button\" value=\"".lang("Checkout Now")."\" class=\"text\"><br/>&nbsp;</div>\n";
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n";
 $THIS_DISPLAY .= "   </table>\n\n";
@@ -533,10 +722,10 @@ $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\" width=\"90%\">\n";
 ####################################################################
 ### NORMAL (DEFAULT) TABLE CONTENT STYLES
 ####################################################################
-$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub\" width=\"100%\" style=\"margin-bottom: 10px;\">\n";
+$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub colorz\" style=\"margin-bottom: 10px;\">\n";
 # Title row
 $THIS_DISPLAY .= "    <tr>\n";
-$THIS_DISPLAY .= "     <th colspan=\"2\" align=\"left\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "     <th colspan=\"2\" align=\"left\" valign=\"middle\" >\n";
 //$THIS_DISPLAY .= "      <a href=\"display_settings.php\" target=\"_self\">".lang("Normal table content")."</a>:\n";
 $THIS_DISPLAY .= "      ".lang("Normal table content").":\n";
 $THIS_DISPLAY .= "     </th>\n";
@@ -544,81 +733,85 @@ $THIS_DISPLAY .= "    </tr>\n";
 
 # Table background color
 $THIS_DISPLAY .= "    <tr>\n";
-$THIS_DISPLAY .= "     <td align=\"right\" valign=\"middle\">\n";
-$THIS_DISPLAY .= "      ".lang("Background color").":\n";
-$THIS_DISPLAY .= "     </td>\n";
+$THIS_DISPLAY .= "<td align=\"left\" valign=\"middle\" style=\"width:110px;\">\n";
+$THIS_DISPLAY .= "".lang("Background color").":\n";
+$THIS_DISPLAY .= "</td>\n";
 $THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\">\n";
-$THIS_DISPLAY .= "      <select id=\"table_bgcolor-dd\" class=\"text\" onchange=\"set_cartcss('table_bgcolor',this.value);preview_cartcss('previewtable', 'backgroundColor', this.value);\">\n";
-$THIS_DISPLAY .= "       <option value=\"transparent\">transparent (default)</option>\n";
-$THIS_DISPLAY .= "       ".$color_options;
-$THIS_DISPLAY .= "       <option value=\"custom\" style=\"font-weight: bold;\">Custom</option>\n";
-$THIS_DISPLAY .= "      </select>\n\n";
+//$THIS_DISPLAY .= "      <select id=\"table_bgcolor-dd\" class=\"text\" onchange=\"set_cartcss('table_bgcolor',this.value);preview_cartcss('previewtable', 'backgroundColor', this.value);\">\n";
+//$THIS_DISPLAY .= "       <option value=\"transparent\">transparent (default)</option>\n";
+//$THIS_DISPLAY .= "       ".$color_options;
+//$THIS_DISPLAY .= "       <option value=\"custom\" style=\"font-weight: bold;\">Custom</option>\n";
+//$THIS_DISPLAY .= "      </select>\n\n";
 //$THIS_DISPLAY .= "     </td>\n";
 //$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\">\n";
 
-$THIS_DISPLAY .= "     &nbsp;<div id=\"table_bgcolor_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
+//$THIS_DISPLAY .= "     &nbsp;<div id=\"table_bgcolor_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
+if($cartcss['table_bgcolor']=='transparent'){
+	$THIS_DISPLAY .= "      <input type=\"text\" name=\"css[table_bgcolor]\" id=\"table_bgcolor\" value=\"\" class=\"tfield_hex\">\n\n\n";
+} else {
+	$THIS_DISPLAY .= "      <input type=\"text\" name=\"css[table_bgcolor]\" id=\"table_bgcolor\" value=\"".$cartcss['table_bgcolor']."\" class=\"tfield_hex\">\n\n\n";	
+}
 
-$THIS_DISPLAY .= "      CSS: <input type=\"text\" name=\"css[table_bgcolor]\" id=\"table_bgcolor\" value=\"\" class=\"tfield_hex\" style=\"width: 100px;\">\n\n\n";
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n\n";
 
 # Text color
 $THIS_DISPLAY .= "    <tr>\n";
-$THIS_DISPLAY .= "     <td align=\"right\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\" style=\"width:120px;white-space:nowrap;\">\n";
 $THIS_DISPLAY .= "      ".lang("Text color").":\n";
 $THIS_DISPLAY .= "     </td>\n";
-$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\">\n";
-$THIS_DISPLAY .= "      <select id=\"table_textcolor-dd\" onchange=\"set_cartcss('table_textcolor', this.value);preview_cartcss('previewtable', 'color', this.value);\" class=\"text\">\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\"  >\n";
+//$THIS_DISPLAY .= "      <select id=\"table_textcolor-dd\" onchange=\"set_cartcss('table_textcolor', this.value);preview_cartcss('previewtable', 'color', this.value);\" class=\"text\">\n";
 //$THIS_DISPLAY .= "       <option value=\"transparent\">----- Default (black) -----</option>\n";
-$THIS_DISPLAY .= "       ".$color_options;
-$THIS_DISPLAY .= "       <option value=\"custom\" style=\"font-weight: bold;\">Custom</option>\n";
-$THIS_DISPLAY .= "      </select>\n\n";
+//$THIS_DISPLAY .= "       ".$color_options;
+//$THIS_DISPLAY .= "       <option value=\"custom\" style=\"font-weight: bold;\">Custom</option>\n";
+//$THIS_DISPLAY .= "      </select>\n\n";
 //$THIS_DISPLAY .= "     </td>\n";
 //$THIS_DISPLAY .= "     <td align=\"right\" valign=\"middle\">\n";
-$THIS_DISPLAY .= "     &nbsp;<div id=\"table_textcolor_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
-
-$THIS_DISPLAY .= "      CSS: <input type=\"text\" name=\"css[table_textcolor]\" id=\"table_textcolor\" value=\"\" class=\"tfield_hex\" style=\"width: 100px;\">\n\n\n";
+//$THIS_DISPLAY .= "     &nbsp;<div id=\"table_textcolor_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
+$THIS_DISPLAY .= "      <input type=\"text\" name=\"css[table_textcolor]\" id=\"table_textcolor\" value=\"".$cartcss['table_textcolor']."\" class=\"tfield_hex\">\n\n\n";
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n\n";
-$THIS_DISPLAY .= "   </table>\n\n";
 
+$THIS_DISPLAY .= "   </table>\n\n";
 
 ####################################################################
 ### HEADER COLORS
 ####################################################################
-$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub\" width=\"100%\">\n";
+$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub colorz\"  >\n";
 
 # Header Background table row
 $THIS_DISPLAY .= "    <tr>\n";
-$THIS_DISPLAY .= "     <td align=\"right\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\"  style=\"width:110px;\">\n";
 $THIS_DISPLAY .= "      ".lang("Header Background").":\n";
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\">\n";
-$THIS_DISPLAY .= "      <select name=\"SELCLRHEADBG\" class=\"text\" onchange=\"set_headerbg(this.value);\">\n";
-$THIS_DISPLAY .= "       <option value=\"transparent\">transparent (default)</option>\n";
-$THIS_DISPLAY .= "       ".$color_options;
-$THIS_DISPLAY .= "      </select>\n\n";
+//$THIS_DISPLAY .= "      <select name=\"SELCLRHEADBG\" class=\"text\" onchange=\"set_headerbg(this.value);\">\n";
+//$THIS_DISPLAY .= "       <option value=\"transparent\">transparent (default)</option>\n";
+//$THIS_DISPLAY .= "       ".$color_options;
+//$THIS_DISPLAY .= "      </select>\n\n";
 
-$THIS_DISPLAY .= "     &nbsp;<div id=\"display_headerbg_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
-
-$THIS_DISPLAY .= "      &nbsp;&nbsp;Hex: <input type=\"text\" size=\"7\" id=\"display_headerbg\" name=\"display_headerbg\" value=\"\" class=\"tfield_hex\">\n\n\n";
+//$THIS_DISPLAY .= "     &nbsp;<div id=\"display_headerbg_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
+if($DISPLAY['DISPLAY_HEADERBG']=='transparent'){
+	$THIS_DISPLAY .= "      <input type=\"text\" size=\"7\" id=\"display_headerbg\" name=\"display_headerbg\" value=\"\" class=\"tfield_hex\">\n\n\n";	
+} else {
+	$THIS_DISPLAY .= "      <input type=\"text\" size=\"7\" id=\"display_headerbg\" name=\"display_headerbg\" value=\"".$DISPLAY['DISPLAY_HEADERBG']."\" class=\"tfield_hex\">\n\n\n";	
+}
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n\n";
 
 # Header Text table row
 $THIS_DISPLAY .= "    <tr>\n";
-$THIS_DISPLAY .= "     <td align=\"right\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\"  style=\"width:120px;white-space:nowrap;\">\n";
 $THIS_DISPLAY .= "      ".lang("Header Text").":\n";
 $THIS_DISPLAY .= "     </td>\n";
 
 $THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\">\n";
-$THIS_DISPLAY .= "      <select name=\"SELCLRHEADTXT\" id=\"SELCLRHEADTXT\" class=\"text\" ONCHANGE=\"set_headertxt(this.value);\">\n";
-$THIS_DISPLAY .= "       ".$color_options;
-$THIS_DISPLAY .= "      </select>\n\n";
-
-$THIS_DISPLAY .= "     &nbsp;<div id=\"display_headertxt_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
-
-$THIS_DISPLAY .= "      &nbsp;&nbsp;Hex: <input type=\"text\" size=\"7\" id=\"display_headertxt\" name=\"display_headertxt\" value=\"\" class=\"tfield_hex\">\n\n";
+//$THIS_DISPLAY .= "      <select name=\"SELCLRHEADTXT\" id=\"SELCLRHEADTXT\" class=\"text\" ONCHANGE=\"set_headertxt(this.value);\">\n";
+//$THIS_DISPLAY .= "       ".$color_options;
+//$THIS_DISPLAY .= "      </select>\n\n";
+//$THIS_DISPLAY .= "     &nbsp;<div id=\"display_headertxt_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
+$THIS_DISPLAY .= "      <input type=\"text\" size=\"7\" id=\"display_headertxt\" name=\"display_headertxt\" value=\"".$DISPLAY['DISPLAY_HEADERTXT']."\" class=\"tfield_hex\">\n\n";
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n\n";
 
@@ -628,28 +821,30 @@ $THIS_DISPLAY .= "   </table>\n\n";
 ### SHOPPING CART DISPLAY COLORS
 ####################################################################
 
-$THIS_DISPLAY .= "   <br/><br/>\n";
+//$THIS_DISPLAY .= "    <br/>\n";
 
-$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub\" width=\"100%\">\n";
+$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub colorz\"  >\n";
 
 // Shopping Cart Background table row
 // ------------------------------------------------------------------
 
 $THIS_DISPLAY .= "   <tr>\n";
-$THIS_DISPLAY .= "   <td align=\"right\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "   <td align=\"left\" valign=\"middle\"  style=\"width:120px;white-space:nowrap;\">\n";
 
 $THIS_DISPLAY .= lang("Shopping Cart Background").":\n";
 
 $THIS_DISPLAY .= "   </td><td align=\"left\" valign=\"middle\">\n";
-
-$THIS_DISPLAY .= "   <select name=\"SELCLRCARTBG\" class=\"text\" ONCHANGE=\"set_cartbg(this.value);\">\n";
-$THIS_DISPLAY .= "       <option value=\"transparent\">transparent (default)</option>\n";
-$THIS_DISPLAY .= "       ".$color_options;
-$THIS_DISPLAY .= "   </select>\n\n";
-
-$THIS_DISPLAY .= "     &nbsp;<div id=\"SELCLRCARTBG_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
-
-$THIS_DISPLAY .= "   &nbsp;&nbsp;Hex: <input type=\"text\" size=\"7\" name=\"display_cartbg\" id=\"display_cartbg\" value=\"\" class=\"tfield_hex\">\n\n\n";
+//
+//$THIS_DISPLAY .= "   <select name=\"SELCLRCARTBG\" class=\"text\" ONCHANGE=\"set_cartbg(this.value);\">\n";
+//$THIS_DISPLAY .= "       <option value=\"transparent\">transparent (default)</option>\n";
+//$THIS_DISPLAY .= "       ".$color_options;
+//$THIS_DISPLAY .= "   </select>\n\n";
+//$THIS_DISPLAY .= "     &nbsp;<div id=\"SELCLRCARTBG_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
+if($DISPLAY['DISPLAY_CARTBG']=='transparent'){
+	$THIS_DISPLAY .= "   <input type=\"text\" size=\"7\" name=\"display_cartbg\" id=\"display_cartbg\" value=\"\" class=\"tfield_hex\" >\n\n\n";
+} else {
+	$THIS_DISPLAY .= "   <input type=\"text\" size=\"7\" name=\"display_cartbg\" id=\"display_cartbg\" value=\"".$DISPLAY['DISPLAY_CARTBG']."\" class=\"tfield_hex\" >\n\n\n";	
+}
 
 $THIS_DISPLAY .= "   </td>\n";
 $THIS_DISPLAY .= "   </tr>\n\n";
@@ -658,51 +853,137 @@ $THIS_DISPLAY .= "   </tr>\n\n";
 // ------------------------------------------------------------------
 
 $THIS_DISPLAY .= "   <tr>\n";
-$THIS_DISPLAY .= "   <td align=\"right\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "   <td align=\"left\" valign=\"middle\" style=\"width:110px;\">\n";
 $THIS_DISPLAY .= lang("Shopping Cart Text").":\n";
 
-$THIS_DISPLAY .= "   </td><td align=\"left\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "   </td><td align=\"left\" valign=\"middle\"  >\n";
+//
+//$THIS_DISPLAY .= "   <select name=\"SELCLRCARTTXT\" class=\"text\" ONCHANGE=\"set_carttxt(this.value);\">\n";
+//$THIS_DISPLAY .= "       ".$color_options;
+//$THIS_DISPLAY .= "   </select>\n\n";
+//
+//$THIS_DISPLAY .= "     &nbsp;<div id=\"SELCLRCARTTXT_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
 
-$THIS_DISPLAY .= "   <select name=\"SELCLRCARTTXT\" class=\"text\" ONCHANGE=\"set_carttxt(this.value);\">\n";
-$THIS_DISPLAY .= "       ".$color_options;
-$THIS_DISPLAY .= "   </select>\n\n";
-
-$THIS_DISPLAY .= "     &nbsp;<div id=\"SELCLRCARTTXT_displ\" style=\"display:inline;margin-left:4px; margin-right:14px; width:18px;height:18px;border:1px solid #7F9DB9;\">&nbsp;&nbsp;&nbsp;&nbsp;</div>\n";
-
-$THIS_DISPLAY .= "   &nbsp;&nbsp;Hex: <input type=\"text\" size=\"7\" id=\"display_carttxt\" name=\"display_carttxt\" value=\"\" class=\"tfield_hex\">\n\n";
+$THIS_DISPLAY .= "   <input type=\"text\"  name=\"display_carttxt\" id=\"display_carttxt\" value=\"".$DISPLAY['DISPLAY_CARTTXT']."\" class=\"tfield_hex\">\n\n";
 $THIS_DISPLAY .= "   </td>\n";
 $THIS_DISPLAY .= "   </tr>\n\n";
 $THIS_DISPLAY .= "   </table>\n\n";
 
 ####################################################################
-### OPTION TO SELECT PREDEFINED COLOR SCHEMES
+### Button COLORS
 ####################################################################
+$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub colorz\" >\n";
+$THIS_DISPLAY .= "    <tr style=\"display:block;height:33px;\">\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"top\" style=\"width:85px;white-space:nowrap;\">\n";
+$THIS_DISPLAY .= "      ".lang("Button Color").":\n";
+$THIS_DISPLAY .= "     </td>\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\" id=\"buttonPickerTD\" >\n";
 
-$THIS_DISPLAY .= "   <br/><br/>\n";
 
-$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub\" width=\"100%\">\n";
 
-$THIS_DISPLAY .= "   <tr>\n";
-$THIS_DISPLAY .= "   <td align=\"right\" valign=\"middle\">\n";
+$THIS_DISPLAY .= "	<select id=\"DefaultButtons\" name=\"buttons[DefaultButtons]\" class=\"text\" style=\"vertical-align:middle;\" ONCHANGE=\"toggleCustButtons();\">\n";
+if($buttons['buttonColor']==''){
+	$THIS_DISPLAY .= "		<option value=\"default\" selected=\"selected\">".lang('Automatic')."</option>\n";
+	$THIS_DISPLAY .= "		<option value=\"custom\">".lang('Custom')."</option>\n";
+	$THIS_DISPLAY .= "		<option value=\"disabled\">".lang('Disabled')."</option>\n";
+	$buttonDivS='none';
+	$buttonTRS='none';
+	if($globalprefObj->get("buttonColor")!='disabled' && $globalprefObj->get("buttonColor")!=''){
+		$buttons['buttonColor']= $globalprefObj->get("buttonColor");
+	} else {
+		$buttons['buttonColor']='#DBDBDB';
+	}
+	//$buttons['buttonColor']='';
+} else {
+	if($buttons['buttonColor']=='disabled'){
+		$THIS_DISPLAY .= "		<option value=\"default\">".lang('Automatic')."</option>\n";
+		$THIS_DISPLAY .= "		<option value=\"custom\">".lang('Custom')."</option>\n";
+		$THIS_DISPLAY .= "		<option value=\"disabled\" selected=\"selected\">".lang('Disabled')."</option>\n";
+		$buttonDivS='none';
+		$buttonTRS='none';
+	} else {
+		$THIS_DISPLAY .= "		<option value=\"default\">".lang('Automatic')."</option>\n";
+		$THIS_DISPLAY .= "		<option value=\"custom\" selected=\"selected\">".lang('Custom')."</option>\n";
+		$THIS_DISPLAY .= "		<option value=\"disabled\">".lang('Disabled')."</option>\n";
+		$buttonDivS='inline';
+		$buttonTRS='block';
+	}
+}
+$THIS_DISPLAY .= "	</select>\n\n";
 
-$THIS_DISPLAY .= lang("Or choose a pre-defined color scheme").":\n";
-
-$THIS_DISPLAY .= "   </td><td align=\"left\" valign=\"middle\">\n";
-
-$THIS_DISPLAY .= "   <select name=\"SCHEME\" class=\"text\" ONCHANGE=\"set_scheme(this.value);\">\n";
-
-$THIS_DISPLAY .= "        <option value=\"NULL\">".lang("Choose Scheme")."... </option>\n";
-$THIS_DISPLAY .= "        <option value=\"AM\">".lang("America")." </option>\n";
-$THIS_DISPLAY .= "        <option value=\"CL\">".lang("Classic")." </option>\n";
-$THIS_DISPLAY .= "        <option value=\"EA\">".lang("Earth")." </option>\n";
-$THIS_DISPLAY .= "        <option value=\"MO\">".lang("Movies")." </option>\n";
-$THIS_DISPLAY .= "        <option value=\"NE\">".lang("Neon Green")." </option>\n";
-$THIS_DISPLAY .= "        <option value=\"SP\">".lang("Sports")." </option>\n";
-$THIS_DISPLAY .= "      </select>\n\n";
+$THIS_DISPLAY .= "	<div id=\"buttonColordDiv\" style=\"text-align:left;padding:0px;margin:0px;display:".$buttonDivS.";\">\n";
+$THIS_DISPLAY .= "      <input type=\"text\" name=\"buttons[buttonColor]\" id=\"buttonColor\" value=\"".$buttons['buttonColor']."\" class=\"tfield_hex\">\n\n\n";
+$THIS_DISPLAY .= "	</div>\n";
+//$THIS_DISPLAY .= "      <input type=\"radio\" name=\"DefaultButtons\" value=\"default\" checked />\n";
+//$THIS_DISPLAY .= "      <input type=\"radio\" name=\"DefaultButtons\" value=\"custom\" />\n";
+//$THIS_DISPLAY .= "      <input id=\"resetButtonColor\" type=\"checkbox\"/>\n\n\n";
 
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n\n";
+
+$THIS_DISPLAY .= "    <tr style=\"display:block;height:33px;\">\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"top\" style=\"margin-bottom:5px;width:85px;white-space:nowrap;\">\n";
+$THIS_DISPLAY .= "      ".lang("Hover Color").":\n";
+$THIS_DISPLAY .= "     </td>\n";
+$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\"  >\n";
+
+if($buttons['buttonColor']=='disabled'){
+	$THIS_DISPLAY .= "	<select id=\"DefaultActiveButtons\" name=\"buttons[DefaultActiveButtons]\" class=\"text\" style=\"vertical-align:middle;\" ONCHANGE=\"toggleCustButtons();\" disabled>\n";
+} else {
+	$THIS_DISPLAY .= "	<select id=\"DefaultActiveButtons\" name=\"buttons[DefaultActiveButtons]\" class=\"text\" style=\"vertical-align:middle;\" ONCHANGE=\"toggleCustButtons();\">\n";	
+}
+
+if($buttons['activeColor']==''){
+	$THIS_DISPLAY .= "		<option value=\"default\" selected=\"selected\">".lang('Automatic')."</option>\n";
+	$THIS_DISPLAY .= "		<option value=\"custom\">".lang('Custom')."</option>\n";
+	$buttonDivS='none';
+	$buttonTRS='none';
+} else {
+	$THIS_DISPLAY .= "		<option value=\"default\">".lang('Automatic')."</option>\n";
+	$THIS_DISPLAY .= "		<option value=\"custom\" selected=\"selected\">".lang('Custom')."</option>\n";
+	$buttonDivS='inline';
+	$buttonTRS='block';
+}
+$THIS_DISPLAY .= "	</select>\n\n";
+
+$THIS_DISPLAY .= "	<div id=\"activeColordDiv\" style=\"padding:0px;margin:0px;display:".$buttonDivS.";\">\n";
+$THIS_DISPLAY .= "      	<input type=\"text\" name=\"buttons[activeColor]\" id=\"activeColor\" value=\"".$buttons['activeColor']."\" class=\"tfield_hex\">\n\n\n";
+$THIS_DISPLAY .= "	</div>\n";
+$THIS_DISPLAY .= "     </td>\n";
+$THIS_DISPLAY .= "    </tr>\n\n";
+
 $THIS_DISPLAY .= "   </table>\n\n";
+
+
+####################################################################
+### OPTION TO SELECT PREDEFINED COLOR SCHEMES
+####################################################################
+
+//$THIS_DISPLAY .= "   <br/><br/>\n";
+//
+//$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"0\" class=\"feature_sub\" width=\"100%\">\n";
+//
+//$THIS_DISPLAY .= "   <tr>\n";
+//$THIS_DISPLAY .= "   <td align=\"right\" valign=\"middle\">\n";
+//
+//$THIS_DISPLAY .= lang("Or choose a pre-defined color scheme").":\n";
+//
+//$THIS_DISPLAY .= "   </td><td align=\"left\" valign=\"middle\">\n";
+//
+//$THIS_DISPLAY .= "   <select name=\"SCHEME\" class=\"text\" ONCHANGE=\"set_scheme(this.value);\">\n";
+//
+//$THIS_DISPLAY .= "        <option value=\"NULL\">".lang("Choose Scheme")."... </option>\n";
+//$THIS_DISPLAY .= "        <option value=\"AM\">".lang("America")." </option>\n";
+//$THIS_DISPLAY .= "        <option value=\"CL\">".lang("Classic")." </option>\n";
+//$THIS_DISPLAY .= "        <option value=\"EA\">".lang("Earth")." </option>\n";
+//$THIS_DISPLAY .= "        <option value=\"MO\">".lang("Movies")." </option>\n";
+//$THIS_DISPLAY .= "        <option value=\"NE\">".lang("Neon Green")." </option>\n";
+//$THIS_DISPLAY .= "        <option value=\"SP\">".lang("Sports")." </option>\n";
+//$THIS_DISPLAY .= "      </select>\n\n";
+//
+//$THIS_DISPLAY .= "     </td>\n";
+//$THIS_DISPLAY .= "    </tr>\n\n";
+//$THIS_DISPLAY .= "   </table>\n\n";
 
 
 
@@ -1089,19 +1370,21 @@ $THIS_DISPLAY .= "   <span class=\"unit\">px</span>\n";
 
 
 #New More Information Display Settings
-if ( $cartprefs->get("more_information_display") == "" ) { $cartprefs->set("more_information_display", "default"); } // default
-if ( $cartprefs->get("more_information_display") == "extended" ) {
-	$selecteddefault = "";
-	$selectedextended = " selected";
-} else {
-	$selecteddefault = " selected";
-	$selectedextended = "";
-} // default
-$THIS_DISPLAY .= "   <span class=\"pref_label\">".lang("Price Variation Layout Display")."</span>\n";
-$THIS_DISPLAY .= "   <select id=\"more_information_display\" name=\"mprefs[more_information_display]\">\n";
-$THIS_DISPLAY .= "    <option value=\"default\"".$selecteddefault.">Default</option>\n";
-$THIS_DISPLAY .= "    <option value=\"extended\"".$selectedextended.">Extended</option>\n";
-$THIS_DISPLAY .= "   </select>\n";
+$cartprefs->set("more_information_display", "extended");
+$THIS_DISPLAY .= "   <input type=\"hidden\" id=\"more_information_display\" name=\"mprefs[more_information_display]\" value=\"extended\"/>\n";
+//if ( $cartprefs->get("more_information_display") == "" ) { $cartprefs->set("more_information_display", "extended"); } // default
+//if ( $cartprefs->get("more_information_display") == "extended" ) {
+//	$selecteddefault = "";
+//	$selectedextended = " selected";
+//} else {
+//	$selecteddefault = " selected";
+//	$selectedextended = "";
+//} // default
+//$THIS_DISPLAY .= "   <span class=\"pref_label\">".lang("Price Variation Layout Display")."</span>\n";
+//$THIS_DISPLAY .= "   <select id=\"more_information_display\" name=\"mprefs[more_information_display]\">\n";
+//$THIS_DISPLAY .= "    <option value=\"default\"".$selecteddefault.">Default</option>\n";
+//$THIS_DISPLAY .= "    <option value=\"extended\"".$selectedextended.">Extended</option>\n";
+//$THIS_DISPLAY .= "   </select>\n";
 
 
 if ( $cartprefs->get("skip_billingform_ifdone") == "" ) { $cartprefs->set("skip_billingform_ifdone", "no"); } // default
@@ -1202,33 +1485,41 @@ $cartcss = unserialize($DISPLAY['CSS']);
 echo "<SCRIPT LANGUAGE=Javascript>\n\n";
 
 if(strlen($cartcss['table_bgcolor']) > 1){
-	echo "     set_cartcss('table_bgcolor', '".$cartcss['table_bgcolor']."');\n";
-	echo "     preview_cartcss('previewtable', 'backgroundColor', '".$cartcss['table_bgcolor']."');\n";
+	echo "	document.getElementById('previewtable').style.background = '".$cartcss['table_bgcolor']."';\n\n";
 }
 
 if(strlen($cartcss['table_textcolor']) > 1){
-	echo "     set_cartcss('table_textcolor', '".$cartcss['table_textcolor']."');\n";
-	echo "     preview_cartcss('previewtable', 'color', '".$cartcss['table_textcolor']."');\n";
+	echo "	document.getElementById('previewtable').style.color = '".$cartcss['table_textcolor']."';\n\n";
 }
 
 if(strlen($DISPLAY['DISPLAY_HEADERBG']) > 1){
-	echo "     set_headerbg('".$DISPLAY['DISPLAY_HEADERBG']."');\n";
-	echo "     document.displaysettings.SELCLRHEADBG.value = '".$DISPLAY['DISPLAY_HEADERBG']."';\n\n";
+	//echo "     set_headerbg('".$DISPLAY['DISPLAY_HEADERBG']."');\n";
+	//echo "     document.displaysettings.SELCLRHEADBG.value = '".$DISPLAY['DISPLAY_HEADERBG']."';\n\n";
+	echo "document.getElementById('header1').style.background='".$DISPLAY['DISPLAY_HEADERBG']."';\n\n";
+	echo "document.getElementById('header2').style.background='".$DISPLAY['DISPLAY_HEADERBG']."';\n\n";
+	echo "document.getElementById('header3').style.background='".$DISPLAY['DISPLAY_HEADERBG']."';\n\n";
 }
 
 if(strlen($DISPLAY['DISPLAY_HEADERTXT']) > 1){
-	echo "     set_headertxt('".$DISPLAY['DISPLAY_HEADERTXT']."');\n";
-	echo "     document.displaysettings.SELCLRHEADTXT.value = '".$DISPLAY['DISPLAY_HEADERTXT']."';\n\n";
+	//echo "     set_headertxt('".$DISPLAY['DISPLAY_HEADERTXT']."');\n";
+	//echo "     document.displaysettings.SELCLRHEADTXT.value = '".$DISPLAY['DISPLAY_HEADERTXT']."';\n\n";
+	echo "document.getElementById('header1').style.color='".$DISPLAY['DISPLAY_HEADERTXT']."';\n\n";
+	echo "document.getElementById('header2').style.color='".$DISPLAY['DISPLAY_HEADERTXT']."';\n\n";
+	echo "document.getElementById('header3').style.color='".$DISPLAY['DISPLAY_HEADERTXT']."';\n\n";
 }
 
 if(strlen($DISPLAY['DISPLAY_CARTBG']) > 1){
-	echo "     set_cartbg('".$DISPLAY['DISPLAY_CARTBG']."');\n";
-	echo "     document.displaysettings.SELCLRCARTBG.value = '".$DISPLAY['DISPLAY_CARTBG']."';\n\n";
+	//echo "     set_cartbg('".$DISPLAY['DISPLAY_CARTBG']."');\n";
+	//echo "     document.getElementById('display_cartbg').value = '".$DISPLAY['DISPLAY_CARTBG']."';\n\n";
+	echo "     document.getElementById('cartarea').style.background = '".$DISPLAY['DISPLAY_CARTBG']."';\n\n";
+
 }
 
 if(strlen($DISPLAY['DISPLAY_CARTTXT']) > 1){
-	echo "     set_carttxt('".$DISPLAY['DISPLAY_CARTTXT']."');\n\n";
-	echo "     document.displaysettings.SELCLRCARTTXT.value = '".$DISPLAY['DISPLAY_CARTTXT']."';\n\n";
+	//echo "     set_carttxt('".$DISPLAY['DISPLAY_CARTTXT']."');\n\n";
+	//echo "     document.displaysettings.SELCLRCARTTXT.value = '".$DISPLAY['DISPLAY_CARTTXT']."';\n\n";
+	echo "	document.getElementById('cartarea').style.color='".$DISPLAY['DISPLAY_CARTTXT']."';\n\n";
+
 }
 
 echo "     document.displaysettings.display_results.value = '$DISPLAY[DISPLAY_RESULTS]';\n\n";
@@ -1249,7 +1540,6 @@ echo "     ifShow('display_addcartbutton', 'C', 'custom_addcartbutton');\n";
 echo "</SCRIPT>\n\n";
 
 // ------------------------------------------------------------------
-
 
 
 

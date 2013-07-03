@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 ##########################################################################################################################################
@@ -39,6 +39,16 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 session_start();
 
+if(!function_exists('httpvar')){
+	function httpvar(){
+		global $_SERVER;
+		$httpvar='http://';
+		if(strtolower($_SERVER['HTTPS']) == 'on'){
+			$httpvar='https://';
+		}
+		return $httpvar;
+	}
+}
 
 /// Ensure 100% legit docroot var is available
 ###-------------------------------------------------------------------------------------
@@ -131,19 +141,19 @@ include($incdir_sub.DIRECTORY_SEPARATOR."class-file_download.php");
 
 # MySQL database connection script
 include($incdir_main.DIRECTORY_SEPARATOR."db_connect.php");
-
+error_reporting('341');
 # Shared Functions called throughout product
 include_once($incdir_program.DIRECTORY_SEPARATOR."shared_functions.php");
-
+error_reporting('341');
 # Build version / Autoupdate - related functions
 include_once($incdir_program.DIRECTORY_SEPARATOR."smt_functions.php");
 
 # Administrative login verification
 include($incdir_main.DIRECTORY_SEPARATOR."login.php");
-
+error_reporting('341');
 # This works for modules not located in modules dir (Yay Module Template!)
 include($incdir_program.DIRECTORY_SEPARATOR."smt_module.class.php");
-
+error_reporting('341');
 # Track click path on demo sites
 if ( $_SESSION['demo_site'] == "yes" ) {
    # Make sure demo_track table is created

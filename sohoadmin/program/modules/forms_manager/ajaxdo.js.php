@@ -1,4 +1,7 @@
 <?php
+error_reporting('E_PARSE');
+session_start();
+require_once("../../includes/product_gui.php");
 #===============================================================================================
 # Forms Manager Module v2.0 - ajaxDor() function include
 # Modified version of ajaxDo() used elsewhere in soho code

@@ -52,8 +52,9 @@ if (is_dir($directory)) {
    $handle = opendir("$directory");
    while ($files = readdir($handle)) {
 		if (strlen($files) > 2) {
-			if (eregi(".html", $files) || eregi(".htm", $files)) {
-			   if ( $files == eregi_replace("$doc_root/tCustom/","", $this_template) ) { $sel = "selected"; } else { $sel = ""; }
+			if(preg_match('/\.(html|htm|php)$/',$files)){			
+//			if (eregi(".html", $files) || eregi(".htm", $files)) {
+			   if ( $files == str_replace("$doc_root/tCustom/","", $this_template) ) { $sel = "selected"; } else { $sel = ""; }
 				$TEMPLATE_OPTIONS .= "<option value=\"".$doc_root."/tCustom/".$files."\" $sel>(Custom) ".$files."</option>\n";
 		      $a++;		
 			}
@@ -68,8 +69,7 @@ $handle = opendir("$directory");
 
 while ($files = readdir($handle)) {
 	if (strlen($files) > 2 && $files != "default") {
-
-		if(file_exists($directory.'/'.$files.'/index.html') || file_exists($directory.'/'.$files.'/cart.html') || file_exists($directory.'/'.$files.'/news.html') || file_exists($directory.'/'.$files.'/home.html')){
+		if(file_exists($directory.'/'.$files.'/index.html') || file_exists($directory.'/'.$files.'/cart.html') || file_exists($directory.'/'.$files.'/news.html') || file_exists($directory.'/'.$files.'/home.html') || file_exists($directory.'/'.$files.'/index.php') || file_exists($directory.'/'.$files.'/cart.php') || file_exists($directory.'/'.$files.'/news.php') || file_exists($directory.'/'.$files.'/home.php')){
 			$template_name = eregi_replace("_", " ", $files);
 			$template_name = strtolower($template_name);
 			$tmp = split("-", $template_name);		

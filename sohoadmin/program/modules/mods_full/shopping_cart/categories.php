@@ -42,12 +42,57 @@ chdir($curdir);
 //mysql_query("alter table cart_category add column prod_count varchar(255)");
 //mysql_query("alter table cart_category drop column prod_count");
 if(!table_exists("cart_category")){
-	create_table("cart_category");	
+	create_table("cart_category");
 }
+
+
+$result = mysql_query("SHOW COLUMNS FROM cart_category LIKE 'sortorder'");
+if(mysql_num_rows($result)==0){
+	mysql_query("alter table cart_category add column sortorder int(20) not null default '999' after product_count");	
+}
+
 #########################################################
 ### IF FORM SUBMITTED TO SAVE CATEGORY DATA, PERFORM
 ### SAVE/UPDATE ROUTINE AND RETURN WITH NOTIFICATION
 #########################################################
+$cartopts = new userdata("cart");
+
+if($cartopts->get("category_customsort")!='custom'){
+	$alphacheck='checked';
+}
+
+$display_cat_prodcount = '';
+if($cartopts->get("hide_cat_prodcount")=='hide'){
+	$display_cat_prodcount = 'hide';
+}
+
+if($_POST['category_sort']=='category_sort'){
+	if($_POST['display_cat_prodcount']=='show'){
+		$cartopts->set("hide_cat_prodcount",'');
+		$display_cat_prodcount = '';
+	} else {
+		$cartopts->set("hide_cat_prodcount",'hide');
+		$display_cat_prodcount = 'hide';
+	}
+	
+	if($_POST['category_customsort']=='alpha'){
+		$cartopts->set("category_customsort",'');
+		$alphacheck='checked';
+	} else {
+		$cartopts->set("category_customsort",'custom');
+		$alphacheck='';
+		
+		if($_POST['newCatOrder'] != ''){
+			$_POST['newCatOrder']=preg_replace('/^,/', '', $_POST['newCatOrder']);
+		}
+		$newcatsort_ar = explode(',', $_POST['newCatOrder']);
+		$arsortc=1;
+		foreach($newcatsort_ar as $valz){
+			mysql_query("update cart_category set sortorder='".$arsortc."' where keyfield='".$valz."'");
+			++$arsortc;
+		}
+	}
+}
 
 # Save category name edit action
 if ( $_POST['action'] == "savecat" && $_POST['cat_name'] != "" ) {
@@ -189,6 +234,14 @@ ob_start();
 
 
 <script type="text/javascript">
+function toggleSort(){
+	if(document.getElementById('category_customsort').checked==true){
+		document.getElementById('customsort').style.display='none';	
+	} else {
+		document.getElementById('customsort').style.display='block';
+	}
+}	
+	
 <!--
 function SV2_findObj(n, d) { //v3.0
   var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
@@ -230,6 +283,28 @@ function del_user(key, catname) {
 
 <?php
 $THIS_DISPLAY = "";
+
+
+$THIS_DISPLAY .= "function save_maincatorder(){\n";
+$THIS_DISPLAY .= "	var val = '';\n";
+$THIS_DISPLAY .= "	if(document.getElementById('category_customsort').checked!=true){\n";
+$THIS_DISPLAY .= "		var selectObj = document.catsort.SELECTMCATS;\n";
+$THIS_DISPLAY .= "			for ( var i = 0; i < selectObj.options.length; i++ ){\n";
+$THIS_DISPLAY .= "			if(selectObj.options[i].value.charAt(0)=='>'){\n";
+$THIS_DISPLAY .= '				val += selectObj.options[i].value;'."\n";
+$THIS_DISPLAY .= "			} else {\n";
+$THIS_DISPLAY .= '				val += ","+selectObj.options[i].value;'."\n";
+$THIS_DISPLAY .= "			}\n";
+
+$THIS_DISPLAY .= "		}\n";
+$THIS_DISPLAY .= "		document.getElementById('newCatOrder').value=val;\n";
+$THIS_DISPLAY .= "	} else {\n";
+$THIS_DISPLAY .= "		document.getElementById('newCatOrder').value='';\n";
+$THIS_DISPLAY .= "	}\n";	
+$THIS_DISPLAY .= "	document.catsort.submit();		// Submit the FORM\n";
+$THIS_DISPLAY .= "}\n\n";	
+
+
 
 $THIS_DISPLAY .= "function save_menu(){\n";
 $THIS_DISPLAY .= "	var val = '';\n";
@@ -313,6 +388,24 @@ $THIS_DISPLAY .= "	if ( (index >= 0) && (index != selectObject.options.length - 
 $THIS_DISPLAY .= "		swapOptions( selectObject, index, index + 1 );\n";
 $THIS_DISPLAY .= "	} // if\n";
 $THIS_DISPLAY .= "} // down( )\n";
+
+
+$THIS_DISPLAY .= "function mup(){\n";
+$THIS_DISPLAY .= "	var selectObject = document.catsort.SELECTMCATS;\n";
+$THIS_DISPLAY .= "	var index = selectObject.selectedIndex;\n";
+$THIS_DISPLAY .= "	if ( index > 0 ){\n";
+$THIS_DISPLAY .= "		swapOptions( selectObject, index, index - 1 );\n";
+$THIS_DISPLAY .= "	} // if\n";
+$THIS_DISPLAY .= "} // up( )\n";
+
+$THIS_DISPLAY .= "function mdown(){\n";
+$THIS_DISPLAY .= "	var selectObject = document.catsort.SELECTMCATS;\n";
+$THIS_DISPLAY .= "	var index = selectObject.selectedIndex;\n";
+$THIS_DISPLAY .= "	if ( (index >= 0) && (index != selectObject.options.length - 1)){\n";
+$THIS_DISPLAY .= "		swapOptions( selectObject, index, index + 1 );\n";
+$THIS_DISPLAY .= "	} // if\n";
+$THIS_DISPLAY .= "} // down( )\n";
+
 
 $THIS_DISPLAY .= "function swapOptions(obj,i,j){\n";
 $THIS_DISPLAY .= "	var o = obj.options;\n";
@@ -434,7 +527,11 @@ $THIS_DISPLAY .= "   <table border=\"0\" cellpadding=\"5\" cellspacing=\"1\" wid
 $THIS_DISPLAY .= "    <tr>\n";
 $THIS_DISPLAY .= "     <td align=\"left\" valign=\"left\" id=\"header2\" colspan=\"3\" class=\"fsub_title\">\n";
 
-$result = mysql_query("SELECT * FROM cart_category where level=1 ORDER BY category ASC");
+if($alphacheck!='checked'){
+	$result = mysql_query("SELECT * FROM cart_category where level=1 ORDER BY sortorder ASC, category ASC");
+} else {
+	$result = mysql_query("SELECT * FROM cart_category where level=1 ORDER BY category ASC");
+}
 
 if ( $_GET['edit_cat'] != ''){
 	$rez = mysql_query("SELECT * FROM cart_category where keyfield='".$_GET['edit_cat']."'");
@@ -697,7 +794,7 @@ if($_REQUEST['edit_cat'] == ''){
 	
 	$THIS_DISPLAY .= "   </form>\n<form name=CATSAVE method=\"post\" ACTION=\"categories.php\">\n";
 	$THIS_DISPLAY .= "   <input type=\"hidden\" name=\"ACTION\" value=\"ADDCAT\">\n";
-	$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=5 cellspacing=\"0\" class=\"feature_sub\" width=\"75%\">\n";
+	$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=5 cellspacing=\"0\" class=\"feature_sub\" width=\"90%\">\n";
 	$THIS_DISPLAY .= "    <tr>\n";
 	$THIS_DISPLAY .= "     <td align=\"center\" valign=\"middle\" ID=header2 class=\"fsub_title\">\n";
 	$THIS_DISPLAY .= "      ".lang("Add New Category")."<BR>\n";
@@ -707,15 +804,88 @@ if($_REQUEST['edit_cat'] == ''){
 	$THIS_DISPLAY .= "    <tr>\n";
 	$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\" bgcolor=WHITE style=\"color: #000099;\">\n";
 	$THIS_DISPLAY .= "     <b>".lang("New Category Name").":</b><BR><input class=\"text\" type=\"text\" name=\"ADDCATEGORY\" size=\"23\" maxlength=\"50\" value=\"\" style='width: 150px;'>\n";
-	$THIS_DISPLAY .= "     <BR><BR>\n";
-	$THIS_DISPLAY .= "     <button type=\"button\" class=\"greenButton\" onclick=\"document.CATSAVE.submit();\"><span><span>".lang("Add Category")."</span></span></button>\n\n";
+	$THIS_DISPLAY .= "     &nbsp;\n";
+	$THIS_DISPLAY .= "     <button type=\"button\" class=\"blueButton\" onclick=\"document.CATSAVE.submit();\"><span><span>".lang("Add Category")."</span></span></button>\n\n";
 	
-	$THIS_DISPLAY .= "     <BR><BR><div align=\"center\" style=\"background-color: #F5F5F5; border-top: 1px solid #999999;\"><font COLOR=#999999>".lang("To delete a category")."</font></div>";
+	$THIS_DISPLAY .= "     <br/>&nbsp;<div align=\"center\" style=\"background-color: #F5F5F5; border-top: 1px solid #999999;\"><font COLOR=#999999>".lang("To delete a category")."</font></div>";
 	
 	$THIS_DISPLAY .= "     </td>\n";
 	$THIS_DISPLAY .= "    </tr>\n";
 	$THIS_DISPLAY .= "   </table>\n";
 	$THIS_DISPLAY .= "   </form>\n\n";
+	
+	
+
+
+
+	$THIS_DISPLAY .= "   <br/><form name=\"catsort\" method=\"post\" ACTION=\"categories.php\">\n";
+	$THIS_DISPLAY .= "   <table border=\"0\" cellpadding=5 cellspacing=\"0\" class=\"feature_sub\" width=\"90%\">\n";
+	$THIS_DISPLAY .= "    <tr>\n";
+	$THIS_DISPLAY .= "     <td align=\"center\" valign=\"middle\" ID=header2 class=\"fsub_title\">\n";
+	$THIS_DISPLAY .= "      ".lang("Category Display Options")."<BR>\n";
+	$THIS_DISPLAY .= "     </td>\n";
+	$THIS_DISPLAY .= "    </tr>\n";
+
+#######################################################
+
+if($display_cat_prodcount=='hide'){
+	$display_cat_prodcount_check='';
+} else {
+	$display_cat_prodcount_check='checked';
+}
+
+	
+	$THIS_DISPLAY .= "    <tr>\n";
+	$THIS_DISPLAY .= "     <td align=\"left\" valign=\"middle\" bgcolor=WHITE style=\"color: #000099;\">\n";
+
+
+	$THIS_DISPLAY .= "     <input type=\"checkbox\" name=\"display_cat_prodcount\"  id=\"display_cat_prodcount\" value=\"show\" ".$display_cat_prodcount_check.">&nbsp;".lang("Display product count next to category.")."<BR>\n";
+	
+	$THIS_DISPLAY .= "     <input type=\"hidden\" name=\"category_sort\"  value=\"category_sort\">\n";
+	$THIS_DISPLAY .= "     <input onChange=\"toggleSort();\" type=\"checkbox\" name=\"category_customsort\"  id=\"category_customsort\" value=\"alpha\" ".$alphacheck.">&nbsp;".lang("Sort Main Categories Alphabetically")."<BR>\n";
+
+	$customsortdisplay='display:block; ';	
+	if($alphacheck=='checked'){
+		$customsortdisplay='display:none; ';
+	}		
+	$THIS_DISPLAY .= "	<br/><div id=\"customsort\" style=\"".$customsortdisplay."\">\n";
+
+	$THIS_DISPLAY .= "	<table class=\"text\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\"><tbody>\n";
+	$THIS_DISPLAY .= "	<tr>\n";
+	$THIS_DISPLAY .= "	<td align=\"right\" valign=\"top\">\n";	
+	
+	$getmcats = mysql_query("SELECT * FROM cart_category where level='1' ORDER BY sortorder ASC, category ASC");
+	$mheight='';
+	if(mysql_num_rows($getmcats) > 11){
+		$mheight='min-height:350px;';
+	} 
+	$THIS_DISPLAY .= "	<select style=\"width:260px;".$mheight."\" name=\"SELECTMCATS\" id=\"SELECTMCATS\" size=\"13\" class=\"menupg_list\">\n";
+	
+	while ($rowz = mysql_fetch_array ($getmcats)) {
+		if (strlen($rowz['category']) > 2) {
+			$THIS_DISPLAY .= "     <OPTION VALUE=\"".$rowz['keyfield']."\">".$rowz['category']."</OPTION>\n";		
+		}
+	}
+	$THIS_DISPLAY .= "	</select>\n";	
+
+	$THIS_DISPLAY .= "	</td>\n";
+	$THIS_DISPLAY .= "	<td align=\"left\" valign=\"top\" style=\"padding-top: 25px;\">\n";
+	
+	$THIS_DISPLAY .= "	<button type=\"button\" class=\"blueButton\" onclick=\"mup();\"><span><span>[^] Move Up</span></span></button>\n";
+	$THIS_DISPLAY .= "	<br><br><button type=\"button\" class=\"blueButton\" onclick=\"mdown();\"><span><span>[v] Move Down</span></span></button>\n";	
+	$THIS_DISPLAY .= "	</td></tr></table>\n";
+	
+	
+	$THIS_DISPLAY .= "	</div>\n";
+	
+	$THIS_DISPLAY .= "     <BR>\n";
+	$THIS_DISPLAY .= "	<textarea style=\"display: none;\" name=\"newCatOrder\" id=\"newCatOrder\"></textarea>\n";	
+	
+	$THIS_DISPLAY .= "     <button type=\"button\" class=\"greenButton\" onclick=\"save_maincatorder();\"><span><span>".lang("Save Changes")."</span></span></button>\n\n";
+	$THIS_DISPLAY .= "     </td>\n";
+	$THIS_DISPLAY .= "    </tr>\n";
+	$THIS_DISPLAY .= "   </table>\n";
+	$THIS_DISPLAY .= "   </form>\n\n";	
 	
 	$THIS_DISPLAY .= "</td>\n";
 }

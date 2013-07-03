@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
+
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -7,7 +8,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ### Core Functions and Classes - Included in all product files
 ###===================================================================================================
 
-error_reporting(0);
+
 
 ###############################################################################
 ## Soholaunch(R) Site Management Tool

@@ -1,8 +1,8 @@
-<?
+<?php
 error_reporting(E_PARSE);
-error_reporting(E_ALL);
 session_start();
-include($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
+
 
 /*---------------------------------------------------------------------------------------------------------*
    ____                   ____ _       __    __

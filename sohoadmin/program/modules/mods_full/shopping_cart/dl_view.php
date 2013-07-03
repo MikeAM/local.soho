@@ -33,11 +33,11 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(0);
 session_start();
-include("../../../includes/product_gui.php");
+require_once("../../../includes/product_gui.php");
 # Make sure session is restored (Mantis #4)
-if ( strlen($lang["Order Date"]) < 4 ) {
-   include("includes/config-global.php"); // Re-registers all global & session info
-}
+//if ( strlen(lang("Order Date")) < 4 ) {
+//   include("includes/config-global.php"); // Re-registers all global & session info
+//}
 
 //include("../includes/login.php");
 //include("../includes/db_connect.php");

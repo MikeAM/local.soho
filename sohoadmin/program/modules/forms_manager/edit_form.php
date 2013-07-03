@@ -30,7 +30,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 #===============================================================================================
 error_reporting(E_PARSE);
 session_start();
-include_once($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 
 # Make sure form-related db tables exist
 include_once("form_dbcheck.inc.php");
@@ -119,7 +119,8 @@ if ( $_REQUEST['todo'] == "save_form" ) {
 
       $data = array();
       if ( $globalprefObj->get('utf8') == 'on' ) {
-      	$data['dbname'] = $getField['dbname'];
+      	//$data['dbname'] = $getField['dbname'];
+      	$data['dbname'] = supersterilize($getField['dbname']);
       } else {
       	$data['dbname'] = supersterilize($getField['dbname']);
       }
@@ -132,7 +133,7 @@ if ( $_REQUEST['todo'] == "save_form" ) {
       $data['required'] = $getField['required'];
       $data['width'] = $getField['width'];
       $data['style'] = serialize($getField['style']);
-      $data['choices'] = addslashes(serialize($getField['choices']));
+      $data['choices'] = slashthis(serialize($getField['choices']));
       $data['checked'] = $getField['checked'];
       $data['notes'] = addslashes($getField['notes']);
 
@@ -153,11 +154,18 @@ if ( $_REQUEST['todo'] == "save_form" ) {
       fwrite($fp, $formHTML);
    }
    # DO NOT PUT NEWLINES (\n) in this message or it will cause the "preview pane goes blank on save but not on revert to saved" thing
-   $savedmsg = "<h3>Form and .html file created successfully!</h3>";
+   $savedmsg = "<h3 style=\"font-weight:bold;color:green;\">Form and .html file created successfully!</h3>";
    $savedmsg .= " To place this form on a page, open that page in the Page Editor, drag-and-drop the <strong>Forms</strong> object onto the page,";
    $savedmsg .= " select <strong>".basename($formfile)."</strong> from the drop-down list of forms, and configure as desired.";
 //   $status = "Form saved!";
    fclose($fp);
+
+
+if($_REQUEST['todo']=='save_form'){
+	echo "<script>\n";
+	echo "alert('".lang('Form saved!')."');\n";
+	echo "</script>\n";	
+}
 
 //   echo "<iframe src=\"create_formfile.inc.php?form_id=".$_REQUEST['form_id']."\" style=\"width: 650px;height: 400px;\"></iframe>\n"; exit;
 
@@ -278,6 +286,7 @@ function start_titlefield(fieldid, title, thevalue) {
    }
 
 //   showtime = setInterval("save_titlefield('blah')", 2000);
+
    showtime = setInterval("save_titlefield('"+fieldid+"', '"+title+"', '"+thevalue+"')", 3000);
 //   alert('started');
 }
@@ -347,8 +356,8 @@ function supersterilize(dirtystr, dblimit) {
       if ( c == " " ) { c = "_"; }
 
       // Alpha-only
-      c = c.replace(/[^a-zA-Z0-9_]/, "");
-
+      //c = c.replace(/[^a-zA-Z0-9_]/, "");
+	 c = c.replace(/[^\d\w]/, "");
       cleaner = cleaner + c;
    }
 
@@ -721,7 +730,7 @@ $popup .= "<input type=\"text\" name=\"saveas_name\" value=\"".$getForm['form_na
 $popup .= "<div style=\"display: block;padding: 8px;text-align: left;\"><input id=\"save_as\" type=\"button\" ".$_SESSION['btn_save']." value=\"".lang("Save")." &gt;&gt;\" onclick=\"document.getElementById('saveas_form').submit();\" style=\"font-weight: bold;font-size: 14px;\"></div>\n";
 $popup .= "</form>\n";
 $other = array('onclose' => "show_dropdowns();");
-echo help_popup("popconfig-save_as", "Save As...", $popup, "width: 325px;right: 10%;top: 30%;", $other);
+echo help_popup("popconfig-save_as", "Copy Form...", $popup, "width: 325px;right: 10%;top: 30%;", $other);
 
 
 /*---------------------------------------------------------------------------------------------------------*
@@ -751,7 +760,7 @@ $savebtnstyle .= "height: 20px;color: #000;\"";
   <button id="add_field" type="button" class="blueButton" onclick="toggleid('addfield_buttons-container');"><span><span>(+) Add Field</span></span></button>
 
   <!---Save As..-->
-  <button id="save_as" type="button" class="greenButton" onclick="hide_dropdowns();toggleid('popconfig-save_as');"><span><span><?php echo lang("Save As..."); ?></span></span></button>
+  <button id="save_as" type="button" class="greenButton" onclick="hide_dropdowns();toggleid('popconfig-save_as');"><span><span><?php echo lang("Copy Form..."); ?></span></span></button>
 
   <!---Save Changes-->
   <button id="save_changes" type="button" class="greenButton" onclick="document.location.href='edit_form.php?todo=save_form&form_id=<? echo $_REQUEST['form_id']; ?>';" style="font-weight: bold;"><span><span><? echo lang("Save Changes"); ?> &gt;&gt;</span></span></button>
@@ -827,7 +836,7 @@ ajaxDor('myform.ajax.php?form_id=<? echo $getForm['form_id']; ?>&dontcache='+ran
 // Make sure Field Properties dialog shows 'select a field to edit properties' message
 clear_properties();
 
-<?
+<?php
 # Show saved message in properties div?
 if ( $savedmsg != "" ) {
    echo "document.getElementById('field_properties').innerHTML = document.getElementById('field_properties').innerHTML + '<br/><br/><br/>".$savedmsg."';\n";
@@ -844,7 +853,7 @@ if ( navigator.appName.search("Internet Explorer") > 0 ) {
 
 </script>
 
-<?
+<?php
 # Grab module html into container var
 $module_html = ob_get_contents();
 ob_end_clean();

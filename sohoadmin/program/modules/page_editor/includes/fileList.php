@@ -48,15 +48,21 @@ $mspowerpoint = 0;
 $memberBases = 0;
 $zip_files = 0;
 
+$video_extensionsArr = array('mov', 'mpg', 'wmv', 'mpeg', 'flv', 'mp4', 'swf', 'rm', 'ogg');
+$audio_extensionsArr = array('mp3', 'ogg', 'oga', 'm4a', 'wav', 'aif', 'aac', 'wma');
+
 $directory = "$doc_root/media";
 $handle = opendir("$directory");
 	while ($files = readdir($handle)) {
 		if (strlen($files) > 2) {
-			if (eregi("\.avi", $files) || eregi("\.mov", $files) || eregi("\.mpeg", $files) || eregi("\.mpg", $files) || eregi("\.asf", $files) || eregi("\.wmv", $files) || eregi("\.asx", $files) || eregi("\.wmv", $files) || eregi("\.js", $files) || eregi("\.rm", $files) || eregi("\.ipx", $files)) {
+			preg_match('/([\d\s\w]+)$/i', $files, $out);
+			$file_extension = $out[0];
+			
+			if ( in_array($file_extension, $video_extensionsArr) ) {
 				$videomedia++;
 				$videofile[$videomedia] = $files;
 			}
-			if (eregi("\.mp3", $files) || eregi("\.mp4", $files) || eregi("\.wav", $files) || eregi("\.wma", $files) || eregi("\.mid", $files) || eregi("\.midi", $files)) {
+			if ( in_array($file_extension, $audio_extensionsArr) ) {
 				$mp3media++;
 				$mp3file[$mp3media] = $files;
 			}
@@ -192,14 +198,13 @@ if($_GET['type'] == "img"){
    
    echo "</select>\n";
    
-}elseif($_GET['type'] == "mp3"){
+} elseif($_GET['type'] == "mp3") {
 		
 		echo "Filename: &nbsp;\n";
 		echo "   <SELECT id=\"mp3name\" NAME=\"mp3name\" STYLE='font-family: Arial; font-size: 8pt; width: 350px;'>\n";
 		echo "      <option value=\"NONE\" style='color: #999999;'>Audio Files:</option>\n";
-	natcasesort($mp3file);
-	foreach($mp3file as $afile){
-		//for ($a=1;$a<=$mp3media;$a++) {
+		natcasesort($mp3file);
+		foreach($mp3file as $afile){
 			if ($tmp == "#EFEFEF") { $tmp = "WHITE"; } else { $tmp = "#EFEFEF"; }
 			echo "<option value=\"$afile\" style='background: $tmp;'>$afile</option>\n";
 		}
@@ -208,11 +213,10 @@ if($_GET['type'] == "img"){
 		
 }elseif($_GET['type'] == "video"){
 
-		echo "<b>Video File:</b>\n";
-
-		echo "<SELECT id=\"videoname\" NAME=\"videoname\" onChange=\"vidSize(this.value)\" STYLE=\"font-family: Arial; font-size: 8pt; width: 300px;\">\n";
+		echo "<SELECT id=\"videoname\" NAME=\"videoname\" class=\"field-video-files\">\n";
 		echo "<OPTION VALUE=\"NONE\" style='color: #999999;'>Video Files:</OPTION>\n";
 
+		sort($videofile);
 		for ($a=1;$a<=$videomedia;$a++) {
 			if (filesize("../../../../media/".$videofile[$a]) < '625000') {
 				$mediaimagesize = getimagesize("../../../../media/".$videofile[$a]);
@@ -220,7 +224,9 @@ if($_GET['type'] == "img"){
          $mediaheight = $mediaimagesize[1];
          $mediawidth = $mediaimagesize[0];
 			   if ($tmp == "#EFEFEF") { $tmp = "WHITE"; } else { $tmp = "#EFEFEF"; }
-			   echo "<option value=\"".$videofile[$a].";".$mediawidth.";".$mediaheight."\" STYLE='background: ".$tmp.";'>".$videofile[$a]."</option>\n";
+			   if ( $videofile[$a] != '' ) {
+			   	echo "<option value=\"".$videofile[$a]."\" STYLE='background: ".$tmp.";'>".$videofile[$a]."</option>\n";
+			   }
 		}
 
 		for ($a=1;$a<=$flashmedia;$a++) {
@@ -232,7 +238,7 @@ if($_GET['type'] == "img"){
 			//echo "[<b>".$flashfile[$a]."</b>] = (".$mediawidth." x ".$mediaheight.")<br>";
 
 			   if ($tmp == "#EFEFEF") { $tmp = "WHITE"; } else { $tmp = "#EFEFEF"; }
-		   	echo "<option value=\"".$flashfile[$a].";".$mediawidth.";".$mediaheight."\" STYLE='background: ".$tmp.";'>".$flashfile[$a]."</option>\n";
+		   	echo "<option value=\"".$flashfile[$a]."\" STYLE='background: ".$tmp.";'>".$flashfile[$a]."</option>\n";
 		}
 
 		echo "</SELECT> &nbsp;\n";

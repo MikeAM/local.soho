@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -30,7 +30,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 session_start();
-include_once($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 
 # Determines which types of fields can have which types of properties
 include_once("nocando.inc.php");
@@ -245,12 +245,8 @@ echo " <div id=\"userform-submit_btn-container\" style=\"text-align: ".formStyle
 echo "  <input id=\"userform-submit_btn\" type=\"submit\" value=\"".stripslashes(formStyle("submit_btn_text"))."\" style=\"font-size: ".formStyle("submit_btn-font-size")."px;font-weight: ".formStyle("submit_btn_weight").";\">\n";
 echo " </div>\n";
 ?>
-
-</form>
-
 </div>
-
-
+</form>
 <?
 $disHTML = ob_get_contents();
 ob_end_clean();

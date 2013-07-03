@@ -1839,6 +1839,10 @@ Galleria.prototype = {
                                 if ( (o.thumb_crop !== true || o.thumb_crop == m ) && o.thumb_fit ) {
                                     var css = {};
                                     css[m] = thumb[m];
+                                    if(thumb['width']>140){
+                                    	css['width']=140;
+                                    	thumb['width']=css['width'];
+                                    }
                                     $( thumb.container ).css( css );
                                     css = {};
                                     css[top[i]] = 0;

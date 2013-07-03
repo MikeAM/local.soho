@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -34,7 +34,7 @@ require_once('../../../includes/product_gui.php');
 chdir($curdir);
 
 ?>
-<link rel="stylesheet" href="http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/program/includes/product_buttons-ultra.css">
+
 <SCRIPT language=javascript>
 	function savenow() {
 		parent.frames.header.savePage('page_editor.php');

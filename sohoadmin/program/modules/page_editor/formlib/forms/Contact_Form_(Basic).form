@@ -1,5 +1,5 @@
 <form method=post action="pgm-form_submit.php">
-  <input type=hidden name="required_fields" value="Contact Name;Contact Phone;emailaddr">
+  <input type=hidden name="required_fields" value="Contact_Name;Contact_Phone;emailaddr">
 
   <table border="0" ALIGN="CENTER" cellpadding="3" cellspacing="0" style='font-family: Tahoma; font-size: 9pt;'>
     <tr align="center" valign="middle">
@@ -8,19 +8,19 @@
     </tr>
     <tr>
       <td  align="left">Company Name:</font></td>
-      <td  align="left" valign="middle"> <input type="text" name="Company Name" size="35" style='width: 250px; font-family: Tahoma; font-size: 9pt;'>
+      <td  align="left" valign="middle"> <input type="text" name="Company_Name" size="35" style='width: 250px; font-family: Tahoma; font-size: 9pt;'>
       </td>
     </tr>
     <tr>
       <td  align="left"><font COLOR="#FF0000" size="2" face="Tahoma, Arial, Helvetica, sans-serif">*</font>Contact
         Name:</font></td>
-      <td  align="left" valign="middle"> <input type="text" name="Contact Name" size="35" style='width: 250px; font-family: Tahoma; font-size: 9pt;'>
+      <td  align="left" valign="middle"> <input type="text" name="Contact_Name" size="35" style='width: 250px; font-family: Tahoma; font-size: 9pt;'>
       </td>
     </tr>
     <tr>
       <td  align="left"><font COLOR="#FF0000" size="2" face="Tahoma, Arial, Helvetica, sans-serif">*</font>Contact
         Phone Number:</font></td>
-      <td  align="left" valign="middle"> <input type="text" name="Contact Phone" size="35" style='width: 250px; font-family: Tahoma; font-size: 9pt;'>
+      <td  align="left" valign="middle"> <input type="text" name="Contact_Phone" size="35" style='width: 250px; font-family: Tahoma; font-size: 9pt;'>
       </td>
     </tr>
     <tr>
@@ -30,7 +30,7 @@
       </td>
     </tr>
     <tr>
-      <td  align="left">Topic of Inquiry:</font></td>
+      <td  align="left">Topic of Enquiry:</font></td>
       <td  align="left" valign="middle"> <input type="text" name="subjectline" size="35" style='width: 250px; font-family: Tahoma; font-size: 9pt;'>
       </td>
     </tr>

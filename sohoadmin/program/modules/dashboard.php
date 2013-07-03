@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -28,7 +28,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 #############################################################################################
 
 session_start();
-error_reporting(E_PARSE);
+
 
 # Include core interface files
 require_once("../includes/product_gui.php");
@@ -40,6 +40,7 @@ if($_GET['logout'] == 'logout'){
 }
 
 function dash_edit_page_link($pagename) {
+	$pagename=str_replace('&','%26',$pagename);
 	$link = 'page_editor/page_editor.php?currentPage='.$pagename.'&nocache='.time();
 	return $link;
 }
@@ -52,24 +53,38 @@ if ( $_SESSION['wizard'] == '' ) {
 }
 
 ob_start();
-echo "<link rel=\"stylesheet\" href=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/modules/dashboard/dashboard-styles.css\">\n";
 
+echo "<link rel=\"stylesheet\" href=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/dashboard/dashboard-styles.css\">\n";
 ########################
 ### JqPlot Graph Stats #
 #######################
-echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/jquery.jqplot.css\" />\n";
-echo '<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="http://'.$_SESSION['docroot_url'].'/sohoadmin/program/includes/jqPlot/excanvas.js"></script><![endif]-->'."\n";
-//echo "<script src=\"sohoadmin/client_files/jquery.min.js\" type=\"text/javascript\"></script>\n";
-echo "<script language=\"javascript\" type=\"text/javascript\" src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/jquery.jqplot.js\"></script>\n";
-echo "<script language=\"javascript\" type=\"text/javascript\" src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.highlighter.js\"></script>\n";
-echo "<script language=\"javascript\" type=\"text/javascript\" src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.barRenderer.js\"></script>\n";
-echo "<script language=\"javascript\" type=\"text/javascript\" src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.categoryAxisRenderer.js\"></script>\n";
+echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/jquery.jqplot.css\" />\n";
 
-echo "<link rel=\"stylesheet\" href=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/modules/dashboard/prettyPhoto.css\" type=\"text/css\" media=\"screen\" charset=\"utf-8\" />\n";
-echo "<script src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/modules/dashboard/jquery.prettyPhoto.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n";
+if(preg_match('/MSIE/i',$_SERVER['HTTP_USER_AGENT'])){
+	echo "	<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\" />\n";
+}
+echo '<!--[if IE]><script language="javascript" type="text/javascript" src="'.httpvar().$_SESSION['docroot_url'].'/sohoadmin/program/includes/jqPlot/excanvas.js"></script><![endif]-->'."\n";
+//echo "<script src=\"sohoadmin/client_files/jquery.min.js\" type=\"text/javascript\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/jquery.jqplot.js\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.highlighter.js\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.barRenderer.js\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.categoryAxisRenderer.js\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.canvasTextRenderer.min.js\"></script>\n";
+echo "<script language=\"javascript\" type=\"text/javascript\" src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/jqPlot/plugins/jqplot.canvasAxisLabelRenderer.min.js\"></script>\n";
+
+
+
+echo "<link rel=\"stylesheet\" href=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/dashboard/prettyPhoto.css\" type=\"text/css\" media=\"screen\" charset=\"utf-8\" />\n";
+echo "<script src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/dashboard/jquery.prettyPhoto.js\" type=\"text/javascript\" charset=\"utf-8\"></script>\n";
+
+$getcartoptsq=mysql_query("select PAYMENT_CURRENCY_SIGN from cart_options");
+$getcartopts=mysql_fetch_assoc($getcartopts);
+$currencysign=$getcartopts['PAYMENT_CURRENCY_SIGN'];
+if($currencysign==''){
+	$currencysign='$';	
+}
 
 $daysback = -9;
-
 $stat_graph_qry = mysql_query("select distinct IP, Real_Date from stats_unique where Real_Date > '".date('Y-m-d', strtotime($daysback.' days'))."' order by Real_Date");
 while($get_unique = mysql_fetch_assoc($stat_graph_qry)){
 	$unique_viz[$get_unique['Real_Date']][$get_unique['IP']] = 1;
@@ -96,18 +111,32 @@ while($do <= 0){
 	}
 	$hitz[$datdsp]['unique'] = 0;
 	$hitz[$datdsp]['hits'] = 0;
+	$hitz[$datdsp]['orders'] = 0;
 	++$do;
 }
 
-$getinvoices = mysql_query("select ORDER_NUMBER, ORDER_DATE, TRANSACTION_STATUS, TOTAL_SALE from cart_invoice where STR_TO_DATE(ORDER_DATE, '%m/%d/%Y') > '".date('Y-m-d', strtotime($daysback.' days'))."' and TRANSACTION_STATUS='Paid' order by ORDER_DATE");
+$getinvoices = mysql_query("select ORDER_NUMBER, ORDER_DATE, BILLTO_FIRSTNAME, BILLTO_LASTNAME, TRANSACTION_STATUS, TOTAL_SALE from cart_invoice where STR_TO_DATE(ORDER_DATE, '%m/%d/%Y') > '".date('Y-m-d', strtotime($daysback.' days'))."' and (TRANSACTION_STATUS='Paid' OR (TRANSACTION_STATUS = 'Pending' AND PAY_METHOD = 'Check or Money Order') OR (TRANSACTION_STATUS = 'Closed' AND PAY_METHOD = 'PayPal')) order by ORDER_DATE");
 $invoicecount = mysql_num_rows($getinvoices);
+$highcount=1;
+
 if($invoicecount > 0){
 	while($gi = mysql_fetch_assoc($getinvoices)){
+		$cart_invoices[]=$gi;		
 		$di = explode('/', $gi['ORDER_DATE']);
 		$hitz[$di['2'].'-'.$di['0'].'-'.$di['1']]['orders'] = $hitz[$di['2'].'-'.$di['0'].'-'.$di['1']]['orders'] + 1;
+		if($hitz[$di['2'].'-'.$di['0'].'-'.$di['1']]['orders'] > $highcount){
+			$highcount = 	$hitz[$di['2'].'-'.$di['0'].'-'.$di['1']]['orders'];
+		}
 	}
 }
 $startnow = (($daysback*-1)-7);
+
+$divisibleval=4;
+$highcount=$highcount+($divisibleval-1);
+if($highcount %$divisibleval != 0) {
+	$highcount += $divisibleval - ($highcount % $divisibleval);
+}
+$highcount2=1;
 $mo = 0;
 while($ss = mysql_fetch_assoc($stat_graph_qry)){
 	$hitz[$ss['Real_Date']]['unique'] = count($unique_viz[$ss['Real_Date']]);
@@ -122,8 +151,21 @@ foreach($hitz as $hvar=>$hval){
 	$dates .= "'".$hval['date']."',";
 	$unique_peeps .= $hval['unique'].',';
 	$hits1 .= $hval['hits'].',';
+	if($hval['hits'] > $highcount2){
+		$highcount2=$hval['hits'];
+	}
+	if($hval['unique'] > $highcount2){
+		$highcount2=$hval['unique'];
+	}
+	
 	$orders .= $hval['orders'].',';
 }
+
+$highcount2=$highcount2+($divisibleval-1);
+if($highcount2 %$divisibleval != 0) {
+	$highcount2 += $divisibleval - ($highcount2 % $divisibleval);
+}
+
 $hits1 = preg_replace('/,$/', '', $hits1);
 $unique_peeps = preg_replace('/,$/', '', $unique_peeps);
 $dates = preg_replace('/,$/', '', $dates);
@@ -153,10 +195,11 @@ if($invoicecount > 0){
 }
 
 echo "		series: [ \n";
+//echo "{renderer:$.jqplot.BarRenderer}, {yaxis:'y2axis'}, \n";
 echo "		{label:'Page Views', color: '#0F70D3'},\n";
 echo "		{label:'Unique Visitors', color: '#EAA510'}\n";
 if($invoicecount > 0){
-	echo "		,{label:'Cart Orders', color: '#019700'}\n";
+	echo "		,{label:'Cart Orders', color: '#019700',yaxis:'y2axis',autoscale: true}\n";
 }
 echo "		],\n";
 echo "		highlighter: {\n";
@@ -174,6 +217,10 @@ echo "			show: false\n";
 echo "		}, \n";
 echo "		seriesDefaults: {\n";
 echo '			renderer:$.jqplot.BarRenderer,'."\n";
+echo "			rendererOptions:{ \n";
+echo "				barMargin:5,  \n";
+echo "				barPadding:3 \n";
+echo "			}, \n";
 echo "			pointLabels: { show: false }, \n";
 echo "			shadow: true,\n";
 echo "			shadowAlpha: 0.05 \n";
@@ -181,16 +228,53 @@ echo "		},\n";
 echo "		axes: {\n";
 echo "			xaxis: {\n";
 echo '				renderer: $.jqplot.CategoryAxisRenderer,'."\n";
+//echo "				autoscale: true, \n";
 echo "				ticks: ticks\n";
+echo "			},\n";
+
+echo "			yaxis: {\n";
+
+echo "				label: 'Visitors',\n";
+echo "				labelRenderer: $.jqplot.CanvasAxisLabelRenderer,\n";
+echo "				labelOptions:{ \n";
+echo "					fontFamily:'verdana', \n";
+echo "					fontSize: '9pt' \n";
+
+echo "				},\n";
+echo "				padMin: 1, \n";
+echo "				min: 0, \n";
+echo "				max: ".$highcount2." \n";
 echo "			}\n";
+
+if($invoicecount > 0){
+	echo ",			y2axis: {\n";
+	echo "				label: 'Cart Orders',\n";
+	echo "				labelRenderer: $.jqplot.CanvasAxisLabelRenderer,\n";
+	echo "				labelOptions:{ \n";
+	echo "					fontFamily:'verdana', \n";
+	echo "					fontSize: '9pt', \n";
+	echo "					angle: 90 \n";
+	echo "				},\n";
+
+	echo "				padMin: 1, \n";
+	echo "				min: 0, \n";
+	echo "				max: ".$highcount.", \n";
+	
+
+	
+	echo "			}\n";
+}
 echo "		},\n";
 echo "		legend: {\n";
-echo "			show:true, \n";
+echo "			show:false, \n";
 //echo "			location: 'ne', \n";
-echo "			yoffset: 42 \n";
-//echo "			yoffset: 0 \n";
+echo "			yoffset: 0 \n";
 echo "		} \n";
 echo "	});\n";
+
+
+
+
 echo "	$('#chart1').bind('jqplotDataHighlight',\n";
 echo "		function (ev, seriesIndex, pointIndex, data, radius) {   \n";
 echo "			$('#contentLabel').html(jLabel[seriesIndex]);\n";
@@ -205,7 +289,7 @@ echo "<div style=\"position:relative;width:100%;\">\n";
 
 if($_SESSION['play_welcome_sound']==''){
 	echo "<audio autoplay=\"autoplay\">\n";
-	echo "  <source src=\"http://".$_SESSION['docroot_url']."/sohoadmin/client_files/sohostart.wav\" type=\"audio/wav\" />\n";
+	echo "  <source src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/client_files/sohostart.wav\" type=\"audio/wav\" />\n";
 
 	echo "</audio> \n"; 
 	$_SESSION['play_welcome_sound'] = 'played';
@@ -213,6 +297,7 @@ if($_SESSION['play_welcome_sound']==''){
 
 
 $installed = update_avail();
+//$installed['build_name']='ULTRA v1.16';
 //if($update_available == 'yes'){
 if ( update_avail() && $_SESSION['hostco']['software_updates'] != "OFF" && $_SESSION['CUR_USER_ACCESS'] == "WEBMASTER" ) {
 	echo "<div style=\"position:absolute; top:-30px; right:0px;\">";
@@ -313,7 +398,7 @@ echo "function dismiss_wizard() {\n";
 echo '	$(\'#widget-whatshouldidonext\').hide(\'fade\', function() {'."\n";
 echo '		$(\'#whatshouldidonext-button\').show(\'fade\');'."\n";
 echo '	});'."\n";
-echo '	$(\'#jqresult\').load(\'http://'.$_SESSION['docroot_url'].'/sohoadmin/program/includes/preference-saver.ajax.php?thing_id=wizard&show_or_hide=hide\', function() {'."\n";
+echo '	$(\'#jqresult\').load(\''.httpvar().$_SESSION['docroot_url'].'/sohoadmin/program/includes/preference-saver.ajax.php?thing_id=wizard&show_or_hide=hide\', function() {'."\n";
 echo '		return true;'."\n";
 echo '	});'."\n";
 echo '}'."\n";
@@ -321,7 +406,7 @@ echo 'function show_wizard() {'."\n";
 echo '	$(\'#whatshouldidonext-button\').hide(\'fade\', function() {'."\n";
 echo '		$(\'#widget-whatshouldidonext\').show(\'fade\');'."\n";
 echo '	});	'."\n";
-echo '	$(\'#jqresult\').load(\'http://'.$_SESSION['docroot_url'].'/sohoadmin/program/includes/preference-saver.ajax.php?thing_id=wizard&show_or_hide=show\', function() {'."\n";
+echo '	$(\'#jqresult\').load(\''.httpvar().$_SESSION['docroot_url'].'/sohoadmin/program/includes/preference-saver.ajax.php?thing_id=wizard&show_or_hide=show\', function() {'."\n";
 echo '		return true;'."\n";
 echo "	});	\n";
 echo "}\n";
@@ -338,7 +423,7 @@ if ($_SESSION['wizard'] == 'hide'){
 
 
 
-$tutorial_video_link = 'http://www.youtube.com/embed/c5SEyfzxcSM?rel=0&hd=1&fmt=22&autoplay=1&modestbranding=1&title=';
+$tutorial_video_link = httpvar().'www.youtube.com/embed/c5SEyfzxcSM?rel=0&hd=1&fmt=22&autoplay=1&modestbranding=1&title=';
 echo "<div style=\"margin:0px 0px 5px 0px; float:left;clear:none;\">\n";
 echo "	<a href=\"".$tutorial_video_link."&iframe=true&width=863&height=530\" rel=\"prettyPhoto[iframe]\" id=\"videobutton\" class=\"videobtn\"><span>Watch getting started video tutorial</span></a>\n";
 echo "</div>\n";
@@ -350,7 +435,7 @@ echo "</div>\n";
 if($n == 0){
 	echo "<div style=\"display:none;\">\n";	
 } else {
-	echo "<div style=\"margin:0px 0px 0px 0px;float:left;clear:left;width: 100%;\">\n";
+	echo "<div style=\"margin:0px 0px 0px 0px;float:left;clear:left;width:99%;\">\n";
 }
 
 //echo "	<a href=\"#\" id=\"whatshouldidonext-button\" class=\"videobtn\" style=\"float:left;\" onclick=\"show_wizard();\"".$wiz_button."><span>What should I do next?</span></a>\n";
@@ -436,17 +521,144 @@ echo "	</ul>\n";
 ########################
 ### JqPlot Graph Stats #
 #######################
-//echo "<div class=\"half-widget box half left\" style=\"position:relative; clear:none; float:right;border:0px;\">\n"; //echo "	<div id=\"chart1\" style=\"height:243px; width:420px;\"></div>\n"; //echo "</div>\n";
-echo "	<div id=\"chart1\" style=\"top:0px; clear:none;float:left;height:255px; width:600px;margin-right:5px;margin-left:15px;margin-top:5px;margin-bottom:10px;\"></div>\n";
+
+echo "	<div id=\"chart1\" style=\"position:relative;width:600px;height:255px; margin:5px 5px 10px 15px;clear:none;float:left;\">";
+
+echo "<div style=\"position:absolute;left:48px; margin:0px;top: 0px;width:88px;z-index:201;\"><table class=\"jqplot-table-legend\" style=\"border:1px solid #AEAEAC;margin-left:0px;margin-right:0px;font-family:verdana,arial,helvetica,sans-serif;font-size:9px;\"><tbody>
+<tr class=\"jqplot-table-legend\"><td style=\"text-align: center; padding-top: 1px;\" class=\"jqplot-table-legend\">
+<div><div style=\"padding:0px;background-color: rgb(15, 112, 211); border-color: rgb(15, 112, 211);\" class=\"jqplot-table-legend-swatch\"></div></div>
+</td><td style=\"white-space:nowrap;padding-top: 0px;\" class=\"jqplot-table-legend\">Page Views
+</td></tr><tr class=\"jqplot-table-legend\"><td style=\"text-align: center;\" class=\"jqplot-table-legend\">
+<div><div style=\"padding:0px;background-color: rgb(234, 165, 16); border-color: rgb(234, 165, 16);\" class=\"jqplot-table-legend-swatch\"></div></div>
+</td><td style=\"white-space:nowrap;\" class=\"jqplot-table-legend\">Unique Visitors</td>\n";
+if($invoicecount > 0){
+	echo "	<tr class=\"jqplot-table-legend\"><td style=\"text-align: center;padding-top: 0px;\" class=\"jqplot-table-legend\">
+	<div><div style=\"padding:0px; background-color: rgb(1, 151, 0); border-color: rgb(1, 151, 0);\" class=\"jqplot-table-legend-swatch\"></div></div></td>
+	<td class=\"jqplot-table-legend\" style=\"white-space:nowrap;\">Cart Orders</td>\n";
+}
+echo "</tr></tbody></table></div>\n";
+//if($invoicecount > 0){
+////	echo "		<div style=\"position:absolute;width:88px;right:75px; top: 0px;z-index:200;margin-right:0;padding-right:0;\"><table class=\"jqplot-table-legend\"><tbody>
+////	<tr class=\"jqplot-table-legend\"><td style=\"text-align: center;\" class=\"jqplot-table-legend\">
+////	<div><div style=\"padding:1px; background-color: rgb(1, 151, 0); border-color: rgb(1, 151, 0);\" class=\"jqplot-table-legend-swatch\"></div></div></td>
+////	<td class=\"jqplot-table-legend\" style=\"white-space:nowrap;\">Cart Orders</td>
+////	</tr></tbody></table></div>";
+//}
+echo "	</div>\n";
 #################
 ### End JqPlot ##
 ################
-echo "	<!--- <br style=\"height: 100%;\"/> -->\n";
+//echo "	<!--- <br style=\"height: 100%;\"/> -->\n";
 echo "	<a href=\"mods_full/statistics.php\" class=\"more\" style=\"clear:both;\">More Detailed Stats</a>\n";
 echo "</div>\n";
 
 
-echo "<div class=\"half-widget box half left\" id=\"widget-recent-pages\" style=\"position:relative;clear:both; float:left;\">\n";
+
+
+$recent_act_counter = 0;
+
+$sev_days_ago=strtotime("-7 days");
+$getformsq=mysql_query("select referrer,date,db_table from form_submissions where time > '".$sev_days_ago."' order by time desc");
+$recent_forms_subs='';
+while($getforms=mysql_fetch_assoc($getformsq)){
+	$formdate_ar=explode('-',$getforms['date']);
+	$formdate=$formdate_ar['1'].'/'.$formdate_ar['2'].'/'.$formdate_ar['0'];
+	$refref=str_replace('_',' ',array_pop(array_reverse(explode('.php',basename($getforms['referrer'])))));
+	$viewform='';
+	if($getforms['db_table']!='' && table_exists($getforms['db_table'])){
+		$viewform="<a href=\"mods_full/database_manager/enter_edit_data.php?mt=".$getforms['db_table']."\">view</a>";
+		++$recent_act_counter;
+	}
+	$recent_forms_subs_ar[$refref.$formdate]=$recent_forms_subs_ar[$refref.$formdate]+1;
+	if($recent_forms_subs_ar[$refref.$formdate]>1){
+		$recent_forms_subs_ar2[$refref.$formdate]="	    <li class=\"form\">".$recent_forms_subs_ar[$refref.$formdate]." Form submissions from ".$refref." page (".$formdate.") ".$viewform."</li>\n";	
+	} else {
+		$recent_forms_subs_ar2[$refref.$formdate]="	    <li class=\"form\">Form submission from ".$refref." page (".$formdate.") ".$viewform."</li>\n";	
+	}
+}
+$formdispcount=0;
+foreach($recent_forms_subs_ar2 as $pvar=>$pval){
+	++$formdispcount;
+	if($formdispcount<=3){
+		$recent_forms_subs .= $pval;
+	}
+}
+
+$get_newcomments=mysql_query("select blog_key,status from blog_comments where status='new'");
+$newblogcomments='';
+if(mysql_num_rows($get_newcomments)>0){
+	$newblogcomments = "	<li class=\"blogitem\">".mysql_num_rows($get_newcomments)." blog comments <a href=\"blog/blog_comments.php\">awaiting approval</a>.</li>\n";
+	++$recent_act_counter;
+}
+
+$get_allnewcomments=mysql_query("select blog_key,status from blog_comments where comment_date >= '".strtotime('-48 hours')."'");
+$allnewblogcomments='';
+if(mysql_num_rows($get_allnewcomments)>0){
+	$allnewblogcomments = "	<li class=\"blogitem\">".mysql_num_rows($get_allnewcomments)." new blog comments in the past 48 hours.</li>\n";
+	++$recent_act_counter;
+}
+
+
+$get_newcartcomments=mysql_query("select PRIKEY,STATUS from cart_comments where status='not_approved'");
+$newcartcomments='';
+if(mysql_num_rows($get_newcartcomments)>0){
+	$newcartcomments = "	<li class=\"cartitem\">".mysql_num_rows($get_newcartcomments)." cart product comments <a href=\"mods_full/shopping_cart/cart_comments.php\">awaiting approval</a>.</li>\n";
+	++$recent_act_counter;
+}
+
+$new_cart_orders = '';
+if(count($cart_invoices)>0){
+	$cart_invoices=array_reverse($cart_invoices);
+	$cartdisp_limit = 0;
+	foreach($cart_invoices as $crt_inv){
+		if($cartdisp_limit<3){
+			++$recent_act_counter;
+			$new_cart_orders .= "	    <li class=\"cartitem\"><a href=\"mods_full/shopping_cart/view_orders.php?ACTION=PROCESS&search=ordernumbers&sortby=ORDER_NUMBER&sortby_dir=DESC&keyword_split=exact\">New purchase</a> from ".$crt_inv['BILLTO_FIRSTNAME']." ".$crt_inv['BILLTO_LASTNAME']." for <strong>".$currencysign.$crt_inv['TOTAL_SALE']."</strong> (".$crt_inv['ORDER_DATE'].")</li>\n";
+		}
+		++$cartdisp_limit;
+	}
+}
+$failed_login_attempts = '';
+$failedlogins = mysql_query("SELECT * FROM login_attempts where time > '".strtotime('-7 days')."' and ip_address!='".$_SERVER['REMOTE_ADDR']."' order by time desc limit 2");
+
+if(mysql_num_rows($failedlogins) > 0){
+	while($failed_logins_ar = mysql_fetch_assoc($failedlogins)){
+		++$recent_act_counter;
+		$failed_login_attempts .= "	    <li class=\"securityitem\">Failed admin login attempt from ".$failed_logins_ar['ip_address']." on ".$failed_logins_ar['date']."&nbsp;&nbsp;<a href=\"../webmaster/security_center.php\">view</a></li>\n";
+	}
+}
+$activ_display='none';
+if($recent_act_counter > 0){
+	$activ_display='block';	
+}
+$new_ticket_update='';
+if($_SESSION['ticketupdate']!=""){
+	if(time()-$_SESSION['ticketupdate'] < 400){
+		$new_ticket_update="<li class=\"suptikitem\" >Your support tickets has been updated. <a onclick=\"openHelp('help_center/help_center.php?show=ticket');\" href=\"javascript:void(0);\" >view response</a>.</li>\n";
+	}
+}
+
+
+echo "<div class=\"half-widget box half left\" style=\"display: ".$activ_display.";margin-right:10px;min-height:210px;\">\n";
+echo "	<div class=\"hdng\"><h3 style=\"background-image: url(../../skins/default/icons/blog_manager-enabled.gif) ;background-size:30px 30px;\">Recent Site Activity</h3></div>\n";
+echo "	<ul style=\"text-align:left;\">\n";
+echo $new_ticket_update;
+echo $new_cart_orders;
+echo $newcartcomments;
+echo $newblogcomments;
+echo $allnewblogcomments;
+echo $recent_forms_subs;
+echo $failed_login_attempts;
+//echo "		 <li class=\"form\"><a href=\"#\">Contact form inquiry</a> from <a href=\"#\">Billy Jean</a></li>\n";
+//echo "	    <li class=\"cart\"><a href=\"#\">New purchase</a> by Billy Jean for <strong>$32.54</strong> (5/3/2011)</li>\n";
+//echo "	    <li class=\"cart\"><a href=\"#\">New purchase</a> by Billy Jean for <strong>$26.99</strong> (5/3/2011)</li>\n";
+//echo "	    <li class=\"form\"><a href=\"#\">Form inquiry</a> from Fred Ward</li>\n";
+//echo "	    <li class=\"cartitem\"><a href=\"#\">New purchase</a> by Jimmy Smith for <strong>$82.48</strong> (5/3/2011)</li>\n";
+echo "	</ul>\n";
+echo "</div>\n";
+
+
+echo "<div class=\"half-widget box half left\" id=\"widget-recent-pages\" style=\"position:relative; float:left;min-height:210px;\">\n";
 echo "	<div class=\"hdng\"><h3>Recently Edited Pages</h3></div>\n";
 echo "	<ul>\n";
 
@@ -473,17 +685,6 @@ echo "	</ul>\n";
 echo "	<a href=\"open_page.php\" class=\"more\">Full Page List</a>\n";
 echo "</div>\n";
 
-
-echo "<div class=\"box\" style=\"display: none;\">\n";
-echo "	<div class=\"hdng\"><h3>Recent Site Activity</h3></div>\n";
-echo "	<ul>\n";
-echo "		 <li class=\"form\"><a href=\"#\">Contact form inquiry</a> from <a href=\"#\">Billy Jean</a></li>\n";
-echo "	    <li class=\"cart\"><a href=\"#\">New purchase</a> by Billy Jean for <strong>$32.54</strong> (5/3/2011)</li>\n";
-echo "	    <li class=\"cart\"><a href=\"#\">New purchase</a> by Billy Jean for <strong>$26.99</strong> (5/3/2011)</li>\n";
-echo "	    <li class=\"form\"><a href=\"#\">Form inquiry</a> from Fred Ward</li>\n";
-echo "	    <li class=\"cart\"><a href=\"#\">New purchase</a> by Jimmy Smith for <strong>$82.48</strong> (5/3/2011)</li>\n";
-echo "	</ul>\n";
-echo "</div>\n";
 
 //echo "<div class=\"box video\" style=\"position:relative;float:left;\" id=\"widget-tutorial-videos\">\n";
 //echo "<div class=\"hdng\"><h3>Tutorial Videos</h3></div>\n";
@@ -541,15 +742,15 @@ echo "</div>\n";
 
 echo "</div>\n";
 
-echo "<form name=\"addframes\" action=\"../../version.php\" method=\"POST\" style=\"display:inline;\">\n";
-echo "<input type=\"hidden\" name=\"gotopage\" value=\"program/modules/dashboard.php\">\n";
-echo "</form>\n";
-
-echo "<script type=\"text/javascript\">\n";
-echo "if(top.location == location){\n";
-echo "	document.addframes.submit();\n";
-echo "}\n";
-echo "</script>\n";
+//echo "<form name=\"addframes\" action=\"../../version.php\" method=\"POST\" style=\"display:inline;\">\n";
+//echo "<input type=\"hidden\" name=\"gotopage\" value=\"program/modules/dashboard.php\">\n";
+//echo "</form>\n";
+//
+//echo "<script type=\"text/javascript\">\n";
+//echo "if(top.location == location){\n";
+//echo "	document.addframes.submit();\n";
+//echo "}\n";
+//echo "</script>\n";
 
 
 //echo "<script type=\"text/javascript\">\n";
@@ -576,6 +777,7 @@ echo "</script>\n";
 
 echo "<script type=\"text/javascript\" charset=\"utf-8\">\n";
 echo "$(document).ready(function(){\n";
+echo "	self.focus();\n";
 echo "	$(\"a[rel^='prettyPhoto']\").prettyPhoto({    \n";
 echo "		default_width: 863,\n";
 echo "		default_height: 530,\n";
@@ -601,7 +803,7 @@ echo "</form>\n";
 $module_html = ob_get_contents();
 ob_end_clean();
 
-$instructions = lang("This is the Main Menu. All features can be accessed from here.")."<br/>";
+$instructions = lang("This is the Main Menu Dashboard. All features can be accessed from here.")."<br/>";
 
 # Build into standard module template
 $module = new smt_module($module_html);
@@ -610,4 +812,44 @@ $module = new smt_module($module_html);
 //$module->heading_text = lang("Main Menu");
 $module->description_text = $instructions;
 $module->good_to_go();
+
+// Shop update popup if this on first login since availability
+$check_update_popup_switch=$global_admin_prefs->get('version_update_popup');
+//$global_admin_prefs->set('version_update_popup', '');  //// for testing
+if(update_avail() && $_SESSION['hostco']['software_updates'] != "OFF" && $_SESSION['CUR_USER_ACCESS'] == "WEBMASTER" && $installed['build_name'] != '' && $check_update_popup_switch != str_replace(' ','_',$installed['build_name'])){	
+// Show update popup
+	$global_admin_prefs->set('version_update_popup', str_replace(' ','_',$installed['build_name']));
+	echo "<div id=\"update_avail_div\" style=\"display: block;overflow:hidden;\">
+	<div class=\"pp_pic_holder light dark_rounded\" style=\"top: 34%; left: 34%; display: block; width: 357px;\">	
+		
+		<div class=\"pp_top\">
+			<div class=\"pp_left\"></div>
+			<div class=\"pp_middle\"></div>
+			<div class=\"pp_right\"></div>
+		</div>
+		<div class=\"pp_content_container\">
+			<div class=\"pp_left\">
+			<div class=\"pp_right\">
+			 <div  style=\"background-color:white; width: 320px;\">		  
+			  <div class=\"pp_fade\" style=\"display: block;\">		   
+			   <div style=\"font-size:16px;font-weight:bold;text-align:center;background-color:white;padding:30px 20px;\">";
+	echo "&nbsp;&nbsp;A Version Update is Available!\n";
+	echo "<br/><br/>";
+	echo "<a style=\"margin-right:20px;\" class=\"grayButton\" href=\"javascript:void(0);\"   onClick=\"document.getElementById('update_avail_div').style.display='none';\"><span>Ignore</span></a>\n";
+	echo "<a class=\"greenButton\" href=\"../webmaster/software_updates.php?todo=checknow\"><span>Update Now</span></a>\n";
+	echo "			   </div>
+				  </div>
+				 </div>
+				</div>
+				</div>
+			</div>
+			<div class=\"pp_bottom\">
+				<div class=\"pp_left\"></div>
+				<div class=\"pp_middle\"></div>
+				<div class=\"pp_right\"></div>
+			</div>
+		</div>
+		<div class=\"pp_overlay\" style=\"opacity: 0.8; height: 100%; width: 100%; display: block;overflow:hidden;\"></div>
+	</div>\n";
+}
 ?>

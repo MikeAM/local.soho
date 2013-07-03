@@ -52,7 +52,7 @@ $BG = "shared/stats_bg.jpg";
 ### CREATE ARCHIVE TABLES IF NEEDED
 #######################################################
 
-$st_db_result = mysql_list_tables($db_name);
+$st_db_result = soho_list_tables();
 $st_db_match = 0;
 $stdb_i = 0;
 while ($stdb_i <= mysql_num_rows ($st_db_result)) {

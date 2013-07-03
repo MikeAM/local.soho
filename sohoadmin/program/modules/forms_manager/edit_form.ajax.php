@@ -1,3 +1,4 @@
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -32,6 +33,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 session_start();
+require_once("../../includes/product_gui.php");
 ?>
 
 <h1 id="prev-form_title">Form Title <span class="unbold">(click to edit)</span></h1>

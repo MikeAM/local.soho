@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -55,14 +55,16 @@ if ( $faqpref->get("sort") == "" ) { $faqpref->set("sort", "asc"); }
 # SET SORT ORDER: triggered onchange on sort order dropdown
 if ( $_GET['set_sortorder'] != "" ) { $faqpref->set("sort", $_GET['set_sortorder']); }
 
-
+if($_REQUEST['highest_sortnum']!=''){
+$highest_sortnum = $_REQUEST['highest_sortnum'];
+}
 #######################################################
 ### READ CURRENT CATEGORIES INTO MEMORY             ###
 #######################################################
 $match = 0;
 $tablename = "faq_content";
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 while ($i < mysql_num_rows ($result)) {
    $tb_names[$i] = mysql_tablename ($result, $i);
@@ -98,7 +100,7 @@ if ($match == 1) {
 $match = 0;
 $tablename = "faq_content";
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 while ($i < mysql_num_rows ($result)) {
    $tb_names[$i] = mysql_tablename ($result, $i);
@@ -125,7 +127,7 @@ if ($match == 1) {
 $match = 0;
 $tablename = "faq_category";
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 while ($i < mysql_num_rows ($result)) {
    $tb_names[$i] = mysql_tablename ($result, $i);
@@ -158,7 +160,7 @@ if ($match != 1) {
 $match = 0;
 $tablename = "faq_content";
 
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 while ($i < mysql_num_rows ($result)) {
    $tb_names[$i] = mysql_tablename ($result, $i);
@@ -304,6 +306,7 @@ $disHTML .= "  return item\n";
 $disHTML .= "}\n";
 $disHTML .= "\n";
 $disHTML .= "function join(name, isDoubleClick) {\n";
+
 $disHTML .= "  var view = document.getElementById(name + \"View\")\n";
 $disHTML .= "  view.editor = document.getElementById(name + \"Edit\")\n";
 $disHTML .= "  var showEditor = function(event) {\n";
@@ -713,8 +716,8 @@ while ( $gbak = mysql_fetch_array($rez) ) {
    $disHTML .= "               <input type=\"hidden\" name=\"".$k."3EditORG\" value=\"".$gbak['CAT_NAME']."\">\n";
    $disHTML .= "               <input id=\"".$k."3Edit\" name=\"".$k."3Edit\" class=\"inplace\">\n";
    $disHTML .= "               <td class=\"text\" align=\"left\" style=\"".$rowStyle."\"><div id=\"".$k."3View\" class=\"view text\">".$gbak['CAT_NAME']."</div></td>\n";
-   $disHTML .= "               <td align=\"center\" style=\"".$rowStyle."\"><a href=\"faq_manager.php?show_cat=".$gbak['prikey']."\"><img src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/preview_icon.gif\" width=\"17\" height=\"13\" border=\"0\"></a></td>\n";
-   $disHTML .= "               <td align=\"center\" style=\"".$rowStyle."\"><a href=\"faq_manager.php?do=kill&show_cat=".$gbak['prikey']."\"><img src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/img-del_faq_cat.gif\" width=\"15\" height=\"15\" border=\"0\"></a></td>\n";
+   $disHTML .= "               <td align=\"center\" style=\"".$rowStyle."\"><a href=\"faq_manager.php?show_cat=".$gbak['prikey']."\"><img src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/preview_icon.gif\" width=\"17\" height=\"13\" border=\"0\"></a></td>\n";
+   $disHTML .= "               <td align=\"center\" style=\"".$rowStyle."\"><a href=\"faq_manager.php?do=kill&show_cat=".$gbak['prikey']."\"><img src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/img-del_faq_cat.gif\" width=\"15\" height=\"15\" border=\"0\"></a></td>\n";
    $disHTML .= "              </tr>\n";
    $j++;
 }
@@ -778,6 +781,7 @@ if ( $show_cat != "" ) {
    $gbak = mysql_fetch_array($rez);
 
    $qry = "SELECT * FROM faq_content WHERE CAT_NAME='$show_cat' ORDER BY ROUND(SORT_NUM, 3) ".$faqpref->get("sort");
+
    $rez = mysql_query($qry);
 
    $billy = mysql_num_rows($rez);
@@ -798,7 +802,7 @@ if ( $show_cat != "" ) {
       $faqList .= "           </tr>\n";
 
       # Loop through FAQs in this category
-      while ( $getFaq = mysql_fetch_array($rez) ) {
+      while ( $getFaq = mysql_fetch_assoc($rez) ) {
 
 //         # Uncomment for dev use
 //         $update_numformat = "UPDATE faq_content SET SORT_NUM = '".sprintf("%05.1f", $getFaq['SORT_NUM'])."' WHERE prikey = '".$getFaq['prikey']."'";
@@ -810,7 +814,11 @@ if ( $show_cat != "" ) {
          $faqList .= "            <td valign=\"top\" align=\"center\" style=\"border-bottom: 1px dotted #888c8e;\">".sprintf("%.1f", $getFaq['SORT_NUM'])."</td>\n";
 
          # Will contain first (highest) sort_num fetched in mysql select query (so we can add 1 to it for new FAQs)
-         if ( !isset($highest_sortnum) ) { $highest_sortnum = $getFaq['SORT_NUM']; }
+		if ( !isset($highest_sortnum) ) { 
+			$highest_sortnum = $getFaq['SORT_NUM']; 
+		} elseif($getFaq['SORT_NUM'] > $highest_sortnum){
+			$highest_sortnum = $getFaq['SORT_NUM']; 
+		}
 
          # Question text & hidden answer text
          $faqList .= "            <td style=\"border-bottom: 1px dotted #888c8e;\">\n";
@@ -825,7 +833,9 @@ if ( $show_cat != "" ) {
          $faqList .= "             [ <a href=\"".$editlink."\">".lang("View/Edit")."</a> ]\n";
          $faqList .= "            </td>\n";
          $faqList .= "          </tr>\n";
+         $lala[]=$getFaq;
       }
+     // echo testArray($lala);
 
       $faqList .= "          </table>\n";
       $faqList .= "         </td>\n";
@@ -841,7 +851,7 @@ if ( $show_cat != "" ) {
 
    # Convert to whole integer (reset decimal for new faq sort number)
    $highest_sortnum = sprintf("%d", $highest_sortnum);
-
+//echo $highest_sortnum; exit;
    # NOW Show top html for table containing $faqList
    $disHTML .= "     <tr>\n";
    $disHTML .= "      <td valign=\"top\">";
@@ -877,10 +887,10 @@ if ( $show_cat != "" ) {
 
 $disHTML .= "<script language=\"JavaScript\">\n";
 $disHTML .= "  join(\"a3\")\n";
-$disHTML .= "  join(\"b3\")\n";
-$disHTML .= "  join(\"c3\")\n";
-$disHTML .= "  join(\"d3\")\n";
-$disHTML .= "  join(\"e3\")\n";
+//$disHTML .= "  join(\"b3\")\n";
+//$disHTML .= "  join(\"c3\")\n";
+//$disHTML .= "  join(\"d3\")\n";
+//$disHTML .= "  join(\"e3\")\n";
 $disHTML .= "</script>\n";
 
 

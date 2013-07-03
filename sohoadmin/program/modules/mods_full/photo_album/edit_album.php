@@ -28,10 +28,10 @@ if ($id == "") {
 if(count($_POST['image_name']) > 0){
 	$l = 0;
 	$rl = 1;
-	$insrt = "insert into photo_album_images (album_id, image_order, image_name, caption) values ";
+	$insrt = "insert into photo_album_images (album_id, image_order, image_name, caption, link) values ";
 	while($l < count($_POST['image_name'])){
 		if($_POST['image_name'][$l] != ''){
-			$insrt .= "('".$id."', '".$rl."', '".$_POST['image_name'][$l]."', '".$_POST['caption'][$l]."'), ";
+			$insrt .= "('".$id."', '".$rl."', '".slashthis($_POST['image_name'][$l])."', '".slashthis($_POST['caption'][$l])."', '".slashthis($_POST['link'][$l])."'), ";
 			++$rl;
 		}
 		++$l;	
@@ -41,8 +41,19 @@ if(count($_POST['image_name']) > 0){
 	mysql_query($insrt);
 }
 ob_start();
+
 echo "<script type=\"text/javascript\">	\n";
+
+echo "$(function () {\n";
+echo "	$('body').on('change keyup', 'select.arrowsel', function () {\n";
+echo "		if($(this).children(\"option:selected\").attr('value')!=''){\n";
+echo "			update_demo(this);\n";
+echo "		}\n";
+echo "	}).change();\n";
+echo "});\n";
+
 echo "function update_demo(disguy){	\n";
+ 
 echo "	var valuez = disguy.value;\n";
 echo "	disguy.options[disguy.selectedIndex].defaultSelected = true;\n";
 echo "	var other = disguy.id.substr(5);		\n";
@@ -53,33 +64,45 @@ echo "		eval(\"document.getElementById('DEMO\"+other+\"').innerHTML='<img src=\\
 echo "	} \n";
 echo "} // End Func \n";
 echo "</script>\n";
-echo "<div style=\"position:relative; width:100%;\">\n";
+
+echo "<style>\n";
+echo ".palbum img { max-width:110px; }\n";
+echo "</style>\n";
+echo "<div class=\"palbum\" style=\"position:relative; width:100%;\">\n";
 $gq = mysql_query("select * from photo_album_images where album_id='".$id."' order by image_order asc");
 
 while($v2 = mysql_fetch_assoc($gq)){
 	//echo testArray($v2['atr']);
 	$image = $v2['image_name'];
 	$caption = $v2['caption'];
-	$gall_ar[] = array('image'=>$image, 'caption'=>$caption);
+	$link = $v2['link'];
+	$gall_ar[] = array('image'=>$image, 'caption'=>$caption, 'link'=>$link);
 }
 
 if(count($gall_ar) == 0){
-	$gall_ar[] = array('image'=>'', 'caption'=>'');	
+	$gall_ar[] = array('image'=>'', 'caption'=>'','link'=>'');
 }
 
 $xc = 1;
 
 $filnames = array();
 $filePath = array();
+$fileLinks = array();
 
 echo "	<form name=\"selectimages\" action=\"#\" method=\"post\">\n";
 echo "	<input type=\"hidden\" name=\"id\" value=\"".$id."\"/>\n";
-echo "	<div id=\"bigdiv\" style=\"position:relative; width:580px; clear:right;\">\n";
+echo "	<div id=\"bigdiv\" style=\"position:relative; width:620px; clear:right;\">\n";
 $img_dd = "\n		<div style=\"float:left;  width:470px; height:62px;\">\n";
-$img_dd .= "			<p style=\"margin:0px; padding:0px;\">Image:&nbsp;&nbsp;<select id=image".$xc." name=\"image_name[]\" style=\"font-size: 10px; width: 402px; background: none repeat scroll 0% 0% rgb(239, 239, 239); color: darkblue;\" onchange=\"update_demo(this);\">\n";
+$img_dd .= "			<p style=\"margin:0px; padding:0px;\">Image:&nbsp;&nbsp;<select id=image".$xc." name=\"image_name[]\" style=\"font-size: 10px; width: 402px; background: none repeat scroll 0% 0% rgb(239, 239, 239); color: darkblue;\" onchange=\"update_demo(this);\" class=\"arrowsel\">\n";
 $img_dd .= "      		<option value=\"\">[Select Image]</option>\n";
 
-foreach(glob($_SESSION['doc_root']."/images/*") as $key){
+foreach(glob($_SESSION['doc_root']."/images/*") as $keyz){
+	if(strtolower(array_pop(explode('.',$keyz)))!='html'){
+		$key_ar[]=$keyz;
+	}
+}
+natcasesort($key_ar);
+foreach($key_ar as $key){
 	$filePath[] = $key;
 	$key = basename($key);
 	$filenames[] = $key;
@@ -88,6 +111,7 @@ foreach(glob($_SESSION['doc_root']."/images/*") as $key){
 
 $img_dd .= "			</select></p>\n";
 $img_dd .= "			<p style=\"margin:3px 0px 0px 0px; padding:0px;\">Caption:&nbsp;<input name=\"caption[]\" id=caption".$xc." value=\"\" class=\"text\" style=\"width: 400px;\" type=\"TEXT\"></p>\n";
+$img_dd .= "			<p style=\"margin:3px 0px 0px 0px; padding:0px;\">Link:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input name=\"link[]\" id=link".$xc." value=\"\" class=\"text\" style=\"width: 400px;\" type=\"TEXT\"></p>\n";
 $img_dd .= "			<span style=\"float:right; padding-top:3px; padding-right:18px;\">[<a style=\"color:#BF0000;\" href=\"javascript:void(0);\" onclick=\"removediv(this.parentNode.parentNode)\">Remove Image</a>]</span>\n";
 $img_dd .= "		</div>\n";
 $img_dd .= "		<div style=\"float:left; padding:2px 0px 2px 0px;\">\n";
@@ -96,6 +120,7 @@ foreach($gall_ar as $gvar=>$gval){
 	$img_dd2 = str_replace('value="'.$gval['image'].'"', 'value="'.$gval['image'].'" selected', $img_dd);
 	$img_dd2 = str_replace('id=image1', 'id=image'.$xc, $img_dd2);
 	$img_dd2 = str_replace("name=\"caption[]\" id=caption1 value=\"\"", "name=\"caption[]\" id=caption".$xc." value=\"".$gval['caption']."\"", $img_dd2);
+	$img_dd2 = str_replace("name=\"link[]\" id=link1 value=\"\"", "name=\"link[]\" id=link".$xc." value=\"".$gval['link']."\"", $img_dd2);
 	if($xc == 1){
 		echo str_replace("<span style=\"float:right; padding-top:3px; padding-right:18px;\">[<a style=\"color:#BF0000;\" href=\"javascript:void(0);\" onclick=\"removediv(this.parentNode.parentNode)\">Remove Image</a>]</span>", '', $img_dd2);
 	} else {
@@ -133,7 +158,7 @@ echo "	var mydiv = document.getElementById(\"bigdiv\"); \n";
 echo "	var imgc = parseInt(document.getElementById('imgcount').value);\n";
 echo "	document.getElementById('imgcount').value = parseInt(imgc+1);\n";
 echo "	var newcontent = document.createElement('div'); \n";
-echo "	newcontent.innerHTML = '".str_replace("id=image1 ", "id=image'+imgc+' ", str_replace("'", "\'", str_replace("\n", '\n', str_replace("name=\"caption[]\" id=caption1 value=\"\"", "name=\"caption[]\" id=caption'+imgc+' ", $img_dd))))."<span id=\"DEMO'+imgc+'\"></span></div><br/>';";
+echo "	newcontent.innerHTML = '".str_replace("id=image1 ", "id=image'+imgc+' ", str_replace("'", "\'", str_replace("\n", '\n', str_replace("name=\"caption[]\" id=caption1 value=\"\"", "name=\"caption[]\" id=caption'+imgc+' ", str_replace('selected="selected"','',$img_dd)))))."<span id=\"DEMO'+imgc+'\"></span></div><br/>';";
 echo "    while (newcontent.firstChild) { \n";
 echo "        mydiv.appendChild(newcontent.firstChild); \n";
 echo "    } \n";

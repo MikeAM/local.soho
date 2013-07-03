@@ -6,6 +6,7 @@ session_start();
 $curdir = getcwd();
 chdir(str_replace(basename(__FILE__), '', __FILE__));
 require_once('../../../includes/product_gui.php');
+require_once("../../../includes/SohoEmail_class/SohoEmail.php");
 chdir($curdir);
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
@@ -56,7 +57,7 @@ function GEN_KEY() {
 
 ########################################################
 
-if (isset($DELETEEVENTNOW)) {
+if ($_REQUEST['DELETEEVENTNOW']==1) {
 
 	// Make sure passed date selection is dead on what sql is looking for in a date field
 
@@ -156,13 +157,20 @@ if ($ACTION == "1") {
 	// Prepare title/detail vars for inclusion into data table
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	$EVENT_TITLE = addslashes($EVENT_TITLE);
-	$EVENT_DETAILS = addslashes($EVENT_DETAILS);
+//	$EVENT_TITLE = addslashes($EVENT_TITLE);
+//	$EVENT_DETAILS = addslashes($EVENT_DETAILS);
 
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// Finish building intitial mySql query
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+	if($_POST['EVENT_CARTPAGE']!=''){
+		$EVENT_DETAILPAGE = $_POST['EVENT_CARTPAGE'];
+	}
+	$EVENT_TITLE = str_replace("'", "&rsquo;", $EVENT_TITLE);	
+	$EVENT_DETAILS = str_replace("'", "&rsquo;", $EVENT_DETAILS);	
+	$EVENT_DETAILPAGE = str_replace("'", "&rsquo;", $EVENT_DETAILPAGE);	
+	$EVENT_CATEGORY = str_replace("'", "&rsquo;", $EVENT_CATEGORY);
+	$KEYWORDS = str_replace("'", "&rsquo;", $KEYWORDS);
 	if ( trim($_POST['START_TIME']) == "" ) { $custom_start = '[nothing]'; } else { $custom_start = ''; }
 	if ( trim($_POST['END_TIME']) == "" ) { $custom_end = '[nothing]';  } else { $custom_end = ''; }
 	$SQL_INSERT .= "EVENT_START = '$START_TIME', EVENT_END = '$END_TIME', EVENT_TITLE = '$EVENT_TITLE', EVENT_DETAILS = '$EVENT_DETAILS', EVENT_CATEGORY = '$EVENT_CATEGORY', ";
@@ -198,7 +206,9 @@ if ($ACTION == "1") {
 		$email_str .= "$etitle\n$edate ($etime)\n\n$edetail";
 		$email_str .= "\n\n\n** THIS IS AN AUTO-GENERATED MESSAGE; DO NOT REPLY **";
 
-		mail("$EVENT_EMAIL_CC", "$SERVER_NAME Calendar Update", "$email_str", "From: webmaster@$SERVER_NAME");
+		if(!SohoEmail($EVENT_EMAIL_CC, preg_replace('/^www\./i','',$_SESSION['this_ip']), "$SERVER_NAME Calendar Update", str_replace("\n","<br/>\n", $email_str))){
+			mail("$EVENT_EMAIL_CC", "$SERVER_NAME Calendar Update", "$email_str", "From: webmaster@$SERVER_NAME");
+		}
 
 	} // End Email Event
 
@@ -255,7 +265,9 @@ if ($ACTION == "1") {
 		// *********************************************
 
 		if ($RECUR_FREQUENCY == "DAILY") {
-
+			if($_POST['EVENT_CARTPAGE']!=''){
+				$EVENT_DETAILPAGE = $_POST['EVENT_CARTPAGE'];
+			}
 			$this_day = $DATE_ARRAY[2];
 			if ($RECUR_LENGTH == "LIMIT") { $limit_cnt = $RECUR_LIMIT_NUMBER - 1; } else { $limit_cnt = 365; }
 
@@ -305,7 +317,9 @@ if ($ACTION == "1") {
 
 			$event_dow_num = date("w", mktime(0,0,0,$DATE_ARRAY[1], $DATE_ARRAY[2], $DATE_ARRAY[0])); 	// Numeric Day of Week 0=Sun, 1=Mon, etc.
 			$start_week_day = $DATE_ARRAY[2] - $event_dow_num;											// What "Day of this Month" do we start the week?
-
+			if($_POST['EVENT_CARTPAGE']!=''){
+				$EVENT_DETAILPAGE = $_POST['EVENT_CARTPAGE'];
+			}
 			while ($x <= $limit_cnt) {		// Start Loop Through Each Ocurrence
 
 				// Every Sunday?
@@ -418,7 +432,9 @@ if ($ACTION == "1") {
 			if ($RECUR_LENGTH == "LIMIT") { $last_month = $cur_month + $RECUR_LIMIT_NUMBER; } else { $last_month = $cur_month + 365; }
 
 			$NUM_TO_ADD = 0;
-
+			if($_POST['EVENT_CARTPAGE']!=''){
+				$EVENT_DETAILPAGE = $_POST['EVENT_CARTPAGE'];
+			}
 			for ($x=$cur_month;$x<=$last_month;$x++) {   // Start loop through each month set by limit
 
 				$num_days_in_month = date("t", mktime(0,0,0,$x,1,$cur_year));
@@ -468,7 +484,9 @@ if ($ACTION == "1") {
 				$N = $N + 1;
 
 				$NEW_EVENT_ADD = date("Y-m-d", mktime(0,0,0,$DATE_ARRAY[1], $DATE_ARRAY[2], $N));
-
+				if($_POST['EVENT_CARTPAGE']!=''){
+					$EVENT_DETAILPAGE = $_POST['EVENT_CARTPAGE'];
+				}
 				if ($NEW_EVENT_ADD != $EVENT_DATE) {
 					$SQL_INSERT = "INSERT INTO calendar_events VALUES('NULL','$NEW_EVENT_ADD', ";
 					$SQL_INSERT .= "'$KEYWORDS', '$START_TIME', '$END_TIME', '$EVENT_TITLE', '$EVENT_DETAILS', '$EVENT_CATEGORY', ";
@@ -528,10 +546,33 @@ SV2_showHideLayers('cartMenu?header','','show');
 SV2_showHideLayers('menuLayer?header','','hide');
 SV2_showHideLayers('editCartMenu?header','','hide');
 
-//-->
+
+
+function toggText(){
+	$("#EVENT_DETAILS").css("background-color","#FFFFFF");
+	if(document.getElementById('EVENT_DETAILPAGE').selectedIndex > 0){
+		document.getElementById('EVENT_CARTPAGE').selectedIndex=0;
+		//document.getElementById('EVENT_DETAILS').setAttribute('readonly', true);
+		$("#EVENT_DETAILS").attr("readonly", true);
+		$("#EVENT_DETAILS").css("background-color","#EBEBE4");
+	} else {
+		if(document.getElementById('EVENT_CARTPAGE').selectedIndex > 0){
+			document.getElementById('EVENT_DETAILPAGE').selectedIndex=0;
+			//document.getElementById('EVENT_DETAILS').setAttribute('readonly', true);
+			$("#EVENT_DETAILS").attr("readonly", true);
+			$("#EVENT_DETAILS").css("background-color","#EBEBE4");
+		} else {
+			//document.getElementById('EVENT_DETAILS').removeAttribute('readonly',0);
+			$("#EVENT_DETAILS").removeAttr("readonly");
+			$("#EVENT_DETAILS").css("background-color","#FFFFFF");
+			
+		}
+	}
+}
+-->
 </script>
 
-<?
+<?php
 
 $result = mysql_query("SELECT * FROM calendar_events WHERE PRIKEY = '$id'");
 $DATA = mysql_fetch_array($result);
@@ -543,18 +584,15 @@ ob_start();
 ob_end_clean();
 
 
-
-?>
-
-<script type="text/javascript">
-	updateform.EVENT_CATEGORY.options.value = '<? echo $DATA[EVENT_CATEGORY]; ?>';
-	updateform.EVENT_SECURITYCODE.options.value = '<? echo $DATA[EVENT_SECURITYCODE]; ?>';
-	updateform.EVENT_DETAILPAGE.options.value = '<? echo $DATA[EVENT_DETAILPAGE]; ?>';
-</script>
-
-
-<?
-
+$THIS_DISPLAY .= "<script type=\"text/javascript\">
+jQuery(document).ready(function(){
+	
+	
+	document.getElementById('EVENT_CATEGORY').options.value = '".$DATA['EVENT_CATEGORY']."';
+	document.getElementById('EVENT_SECURITYCODE').options.value = '".$DATA['EVENT_SECURITYCODE']."';
+	toggText();
+});
+</script>\n";
 
 echo $THIS_DISPLAY;
 

@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -34,6 +34,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 #  include("addfield_popup.inc.php");
 # </div>
 #===============================================================================================
+require_once("../../includes/product_gui.php");
 ?>
  <h1>Add form element</h1>
  <p>Click on the element you want to add.</p>

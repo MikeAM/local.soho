@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -113,20 +113,21 @@ if(!in_array("HttpRequest", $clazzes)) {
 
 # RETURNS: Info array of latest stable build available
 /*---------------------------------------------------------------------------------------------------------*/
-function latest_build() {
-
-	$installed = build_info();
-
-	# Pull remote info on latest stable
-	$stable_avail = 1;
-   
-	$stable_update = include_r("http://update.securexfer.net/public_builds/api-ultra_build_info-latest.php");
-   	$stable_update = unserialize($stable_update);
-   
-	return $stable_update;
-
-} // End update_avail() function
-
+if (!function_exists('function latest_build')){
+	function latest_build() {
+	
+		$installed = build_info();
+	
+		# Pull remote info on latest stable
+		$stable_avail = 1;
+	   
+		$stable_update = include_r("http://update.securexfer.net/public_builds/api-ultra_build_info-latest.php");
+	   	$stable_update = unserialize($stable_update);
+	   
+		return $stable_update;
+	
+	} // End update_avail() function
+}
 
 /*---------------------------------------------------------------------------------------------------------*
  _   _           _        _                _    _  _                       _
@@ -141,46 +142,47 @@ function latest_build() {
 #
 # TESTING NOTE: return $error array during development to see details
 /*---------------------------------------------------------------------------------------------------------*/
-function updates_allowed($geterrors = false) {
-
-	# Make sure this site isn't running in 'Live Demo' mode
-	if ( $_SESSION['demo_site'] == "yes" ) {
-		$errors[] = "This site is configured for demo use only, and cannot access automatic version updates.";
-	}
+if (!function_exists('updates_allowed')){
+	function updates_allowed($geterrors = false) {
 	
-	
-	# Check for safe_mode (because of shell_exec)
-	if ( ini_get('safe_mode') == 1 || ini_get('safe_mode') == 'on' || ini_get('safe_mode') == 'On' || ini_get('safe_mode') == 'ON' ) {
-		$errors[] = "<b>safe_mode = [".settype(ini_get('safe_mode'), "string")."]</b>: Cannot extract new build files when the php.ini directive 'safe_mode' is disabled.";
-	}
-	
-	//   # Check allow_url_fopen
-	//   if ( ini_get('allow_url_fopen') != 1 ) {
-	//      $errors[] = "<b>allow_url_fopen = [".ini_get('allow_url_fopen')."]</b>: Cannot download new build files unless the php.ini directive allow_url_fopen is enabled.";
-	//   }
-	
-	# Check branding options
-	if ( $_SESSION['hostco']['software_updates'] == "OFF" ) {
-		$errors[] = "<b>software_updates = ['".$_SESSION['hostco']['software_updates']."']</b>: Software Updates are disabled.";
-	}
-	
-	if(!preg_match('/tra\.soholaunch\.com\/htdocs/', $_SESSION['docroot_path'])){
-		# Return true if no errors
-		if ( count($errors) > 0 ) {
-			if ( $geterrors ) {
-				return $errors;
-			} else {
-				return false;
-			}
-		} else {
-			return true;
+		# Make sure this site isn't running in 'Live Demo' mode
+		if ( $_SESSION['demo_site'] == "yes" ) {
+			$errors[] = "This site is configured for demo use only, and cannot access automatic version updates.";
 		}
-   	} else {
-		return false;
-	}
-
-} // End update_avail() function
-
+		
+		
+		# Check for safe_mode (because of shell_exec)
+		if ( ini_get('safe_mode') == 1 || ini_get('safe_mode') == 'on' || ini_get('safe_mode') == 'On' || ini_get('safe_mode') == 'ON' ) {
+			$errors[] = "<b>safe_mode = [".settype(ini_get('safe_mode'), "string")."]</b>: Cannot extract new build files when the php.ini directive 'safe_mode' is disabled.";
+		}
+		
+		//   # Check allow_url_fopen
+		//   if ( ini_get('allow_url_fopen') != 1 ) {
+		//      $errors[] = "<b>allow_url_fopen = [".ini_get('allow_url_fopen')."]</b>: Cannot download new build files unless the php.ini directive allow_url_fopen is enabled.";
+		//   }
+		
+		# Check branding options
+		if ( $_SESSION['hostco']['software_updates'] == "OFF" ) {
+			$errors[] = "<b>software_updates = ['".$_SESSION['hostco']['software_updates']."']</b>: Software Updates are disabled.";
+		}
+		
+		if(!preg_match('/tra\.soholaunch\.com\/htdocs/', $_SESSION['docroot_path'])){
+			# Return true if no errors
+			if ( count($errors) > 0 ) {
+				if ( $geterrors ) {
+					return $errors;
+				} else {
+					return false;
+				}
+			} else {
+				return true;
+			}
+	   	} else {
+			return false;
+		}
+	
+	} // End update_avail() function
+}
 /*---------------------------------------------------------------------------------------------------------*
  _   _           _        _            _              _  _        _     _
 | | | | _ __  __| | __ _ | |_  ___    /_\ __ __ __ _ (_)| | __ _ | |__ | | ___
@@ -192,32 +194,34 @@ function updates_allowed($geterrors = false) {
 # Note: Only checks for new stable build
 # Returns: true/false based on whether any new updates are available
 /*---------------------------------------------------------------------------------------------------------*/
-function update_avail() {
-	
-	$installed = build_info();
-	
-	# Pull remote info on latest stable
-	$stable_avail = 1;
-	
-	$stable_update = include_r("http://update.securexfer.net/public_builds/api-ultra_build_info-stable.php");
-	//			$filename = "http://update.securexfer.net/public_builds/api-ultra_build_info-stable.php";
-	//			$r = new HTTPRequest("$filename");
-	//echo $r->DownloadToString();
-	//   	}
-	
-	$stable_update = unserialize($stable_update);
-	if(updates_allowed()){
-		# Check release dates of available updates against date of installed build (make sure update is newer)
-		if ( $stable_avail == 1 && $installed['build_date'] < $stable_update['build_date'] ) {
-			return $stable_update;
+if (!function_exists('update_avail')){
+	function update_avail() {
+
+		$installed = build_info();
+		
+		# Pull remote info on latest stable
+		$stable_avail = 1;
+		
+		$stable_update = include_r("http://update.securexfer.net/public_builds/api-ultra_build_info-stable.php");
+		//			$filename = "http://update.securexfer.net/public_builds/api-ultra_build_info-stable.php";
+		//			$r = new HTTPRequest("$filename");
+		//echo $r->DownloadToString();
+		//   	}
+		
+		$stable_update = unserialize($stable_update);
+		if(updates_allowed()){
+			# Check release dates of available updates against date of installed build (make sure update is newer)
+			if ( $stable_avail == 1 && $installed['build_date'] < $stable_update['build_date'] ) {
+				return $stable_update;
+			} else {
+				return false;				
+			}
 		} else {
 			return false;
 		}
-	} else {
-		return false;
-	}
-
-} // End update_avail() function
+	
+	} // End update_avail() function
+}
 /*---------------------------------------------------------------------------------------------------------*
            _                   _      _
  ___ __ __| |_  _ _  __ _  __ | |_   | |_  __ _  ___
@@ -229,62 +233,50 @@ function update_avail() {
 # ACCEPTS: Path to tgz file
 # NOTE: Requires shell_exec to operate (so safe_mode has to be off)
 /*--------------------------------------------------------------------------------------------------------*/
-function extract_tgz($pathtofile) {
-
-   # Preserve original working dir
-   $odir = getcwd();
-
-   # Switch wroking dir to tgz parent dir
-   $parent_dir = dirname($pathtofile);
-   chdir($parent_dir);
-
-   # Make sure safe_mode is off (won't work on either OS without shell_exec)
-   if ( ini_get('safe_mode') ) {
-      $errors[] = "<b>safe_mode = [".settype(ini_get('safe_mode'), "string")."]</b>: Cannot extract file because the php.ini directive 'safe_mode' is enabled.";
-   }
-
-   # Normal Linux method or Windows work-around?
-   if ( !eregi("WIN", PHP_OS) ) {
-      # Extract via standard tar command
-      $command_output = shell_exec("tar -xzvf ".$pathtofile);
-
-      # Switch back to original working directory
-      chdir($odir);
-
-      if ( $command_output != "" ) {
-         return true;
-      } else {
-         return false;
-      }
-
-
-   } else { // Windows
-
-      # Build path to bundled .exe command files
-      $SLASH = DIRECTORY_SEPARATOR; // Readability
-      $GUNZIP_EXE = $_SESSION['docroot_path'].$SLASH."sohoadmin".$SLASH."program".$SLASH."includes".$SLASH."untar".$SLASH."gunzip.exe";
-      $TAR_EXE = $_SESSION['docroot_path'].$SLASH."sohoadmin".$SLASH."program".$SLASH."includes".$SLASH."untar".$SLASH."tar.exe";
-
-      # Decompress tgz file, Extract tar file
-      $extract = "";
-      $extract .= shell_exec($GUNZIP_EXE." -d ".$pathtofile);
-      $extract .= shell_exec($TAR_EXE.' -xvf '.str_replace(".tgz", ".tar", $pathtofile));
-
-      # Switch back to original working directory
-      chdir($odir);
-
-      # Did extract command succeed?
-      if ( $extract == "" ) {
-         return false;
-      } else {
-         return true;
-      }
-
-   } // End if Linux/Win
-
-} // End extract tgz function
-
-
+if(!function_exists('extract_tgz')){
+	function extract_tgz($pathtofile) {
+	   # Preserve original working dir
+	   $odir = getcwd();
+	   # Switch wroking dir to tgz parent dir
+	   $parent_dir = dirname($pathtofile);
+	   chdir($parent_dir);
+	   # Make sure safe_mode is off (won't work on either OS without shell_exec)
+	   if ( ini_get('safe_mode') ) {
+	      $errors[] = "<b>safe_mode = [".settype(ini_get('safe_mode'), "string")."]</b>: Cannot extract file because the php.ini directive 'safe_mode' is enabled.";
+	   }
+	   # Normal Linux method or Windows work-around?
+	   if ( !eregi("WIN", PHP_OS) ) {
+	      # Extract via standard tar command
+	      $command_output = shell_exec("tar -xzvf ".$pathtofile);
+	      # Switch back to original working directory
+	      chdir($odir);
+	      if ( $command_output != "" ) {
+	         return true;
+	      } else {
+	         return false;
+	      }
+	   } else { // Windows
+	      # Build path to bundled .exe command files
+	      $SLASH = DIRECTORY_SEPARATOR; // Readability
+	      $GUNZIP_EXE = $_SESSION['docroot_path'].$SLASH."sohoadmin".$SLASH."program".$SLASH."includes".$SLASH."untar".$SLASH."gunzip.exe";
+	      $TAR_EXE = $_SESSION['docroot_path'].$SLASH."sohoadmin".$SLASH."program".$SLASH."includes".$SLASH."untar".$SLASH."tar.exe";
+	
+	      # Decompress tgz file, Extract tar file
+	      $extract = "";
+	      $extract .= shell_exec($GUNZIP_EXE." -d ".$pathtofile);
+	      $extract .= shell_exec($TAR_EXE.' -xvf '.str_replace(".tgz", ".tar", $pathtofile));
+	      # Switch back to original working directory
+	      chdir($odir);
+	
+	      # Did extract command succeed?
+	      if ( $extract == "" ) {
+	         return false;
+	      } else {
+	         return true;
+	      }
+	   } // End if Linux/Win	
+	} // End extract tgz function
+}
 
 
 /*---------------------------------------------------------------------------------------------------------*
@@ -297,14 +289,15 @@ function extract_tgz($pathtofile) {
 # when we want to direct the user to their webhost for help.
 # RETURNS: Specific Company name as definied in Branding Controls OR generic 'your web hosting provider'
 /*---------------------------------------------------------------------------------------------------------*/
-function please_contact() {
-   if ( $_SESSION['hostco']['company_name'] != "" && $_SESSION['hostco']['company_name'] != "Soholaunch" ) {
-      return $_SESSION['hostco']['company_name'];
-   } else {
-      return "your web hosting provider";
-   }
+if(!function_exists('please_contact')){
+	function please_contact() {
+	   if ( $_SESSION['hostco']['company_name'] != "" && $_SESSION['hostco']['company_name'] != "Soholaunch" ) {
+	      return $_SESSION['hostco']['company_name'];
+	   } else {
+	      return "your web hosting provider";
+	   }
+	}
 }
-
 /*---------------------------------------------------------------------------------------------------------*
  ___               _  _
 | _ ) _  _  _  _  | \| | ___ __ __ __
@@ -313,32 +306,33 @@ function please_contact() {
             |__/
 # Returns url for buy now buttons that appear throughout the product when all mods are not enabled
 /*---------------------------------------------------------------------------------------------------------*/
-function buynow_onclick() {
-   # BUY NOW: Custom link
-   if ( $_SESSION['hostco']['upgrades'] != "soholaunch" && $_SESSION['hostco']['buy_now'] == "custom" ) { // Custom link
-      $buy_now_goto = "window.open('http://".$_SESSION['hostco']['buy_now_url']."');";
-
-   # BUY NOW: Soholaunch website
-   } elseif ( ($_SESSION['hostco']['upgrades'] == "soholaunch" || $_SESSION['hostco']['buy_now'] == "soholaunch") || ($_SESSION['hostco']['buy_now'] == "" && ($hostco_email == "" || $hostco_email == "sales@domain.com")) ) {
-      $buy_now_goto = "window.open('http://buysingle.soholaunch.com/index.php?user_domain=".$_SERVER['HTTP_HOST']."');";
-
-   # BUY NOW: Upgrade Request form
-   } elseif ( $_SESSION['hostco']['buy_now'] == "upgrade_form" || ($hostco_email != "" && $hostco_email != "sales@domain.com") ) { // Upgrade form
-
-      # Make sure we've got an email to send form data to
-      if ( $_SESSION['hostco']['upgrade_request_email'] != "" ) {
-         $form_goes_to = $_SESSION['hostco']['upgrade_request_email'];
-      } else {
-         $form_goes_to = $hostco_email;
-      }
-
-      $buy_now_goto = "parent.body.location.href='../marketing/promotion.php?todo=upgrade_form&sendto=".$form_goes_to."&mod=$mod';";
-   }
-
-   return $buy_now_goto;
-
-} // End buynow_onclick() function
-
+if(!function_exists('buynow_onclick')){
+	function buynow_onclick() {
+	   # BUY NOW: Custom link
+	   if ( $_SESSION['hostco']['upgrades'] != "soholaunch" && $_SESSION['hostco']['buy_now'] == "custom" ) { // Custom link
+	      $buy_now_goto = "window.open('http://".$_SESSION['hostco']['buy_now_url']."');";
+	
+	   # BUY NOW: Soholaunch website
+	   } elseif ( ($_SESSION['hostco']['upgrades'] == "soholaunch" || $_SESSION['hostco']['buy_now'] == "soholaunch") || ($_SESSION['hostco']['buy_now'] == "" && ($hostco_email == "" || $hostco_email == "sales@domain.com")) ) {
+	      $buy_now_goto = "window.open('http://buysingle.soholaunch.com/index.php?user_domain=".$_SERVER['HTTP_HOST']."');";
+	
+	   # BUY NOW: Upgrade Request form
+	   } elseif ( $_SESSION['hostco']['buy_now'] == "upgrade_form" || ($hostco_email != "" && $hostco_email != "sales@domain.com") ) { // Upgrade form
+	
+	      # Make sure we've got an email to send form data to
+	      if ( $_SESSION['hostco']['upgrade_request_email'] != "" ) {
+	         $form_goes_to = $_SESSION['hostco']['upgrade_request_email'];
+	      } else {
+	         $form_goes_to = $hostco_email;
+	      }
+	
+	      $buy_now_goto = "parent.body.location.href='../marketing/promotion.php?todo=upgrade_form&sendto=".$form_goes_to."&mod=$mod';";
+	   }
+	
+	   return $buy_now_goto;
+	
+	} // End buynow_onclick() function
+}
 
 /*---------------------------------------------------------------------------------------------------------*
  ___       _  _  __   __              _
@@ -348,22 +342,23 @@ function buynow_onclick() {
 
 # RETURNS: true/false depending on whether all advanced modules are enabled (licensed)
 /*---------------------------------------------------------------------------------------------------------*/
-function full_version() {
-
-   $donthave = 0;
-
-   # Check that each mod is enabled
-   foreach ( $_SESSION['keyfile'] as $mod=>$status ) {
-      if ( $status == "disabled" ) { $donthave++; }
-   }
-
-   if ( $donthave === 0 ) {
-      return true;
-   } else {
-      return false;
-   }
+if(!function_exists('full_version')){
+	function full_version() {
+	
+	   $donthave = 0;
+	
+	   # Check that each mod is enabled
+	   foreach ( $_SESSION['keyfile'] as $mod=>$status ) {
+	      if ( $status == "disabled" ) { $donthave++; }
+	   }
+	
+	   if ( $donthave === 0 ) {
+	      return true;
+	   } else {
+	      return false;
+	   }
+	}
 }
-
 
 /*---------------------------------------------------------------------------------------------------------*
  ___  _              _               _    _  _                       _
@@ -536,7 +531,7 @@ function mkbutton( $id, $label, $class = "btn_goto", $onClick = "", $make = "but
 
    // Flip background image onMouseover
    //========================================================
-   $imgPath = "http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/";
+   $imgPath = httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/";
    $imgOn = "btn-".$class."-on.jpg";
    $imgOff = "btn-".$class."-off.jpg";
 
@@ -564,6 +559,9 @@ function mkbutton( $id, $label, $class = "btn_goto", $onClick = "", $make = "but
 		return $dBtn;
 	} elseif($class == 'nav_main'){
 		$dBtn = "<a href=\"javascript:void(0);\" class=\"blueButton\" ".$onClick."><span>".$label."</span></a>\n";
+		return $dBtn;
+	} elseif($class == 'nav_gray'){
+		$dBtn = "<a href=\"javascript:void(0);\" class=\"grayButton\" ".$onClick."><span>".$label."</span></a>\n";
 		return $dBtn;
 	} elseif($class == 'submitBtnOff'){
 		$dBtn = "<a href=\"javascript:void(0);\" class=\"redButton\" ".$onClick."><span>".$label."</span></a>\n";

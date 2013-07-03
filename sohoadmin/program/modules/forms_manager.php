@@ -42,7 +42,7 @@ chdir($curdir);
 include_once("forms_manager/form_dbcheck.inc.php");
 
 # Shared forms-related php functions
-include_once("forms_manager/_forms_manager_functions.inc.php");
+include_once("forms_manager/forms_manager_functions.inc.php");
 
 $formpref = new userdata('forms');
 

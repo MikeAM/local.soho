@@ -1,0 +1,73 @@
+<?php
+error_reporting(E_PARSE);
+if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
+
+// Main Menu
+$lang["Collapse All"] = "Reducir Todo"; 
+$lang["Expand All"] = "Desplegar Todo";
+$lang["Dashboard"] = "Salpicadero";
+$lang["Pages"] = "Páginas";
+$lang["Edit"] = "Editar";
+$lang["Create"] = "Crear";
+$lang["Menu"] = "Menú";
+$lang["Files &amp; Images"] = "Archivos &amp; Imágenes";
+$lang["Manage"] = "Gestionar";
+$lang["Upload"] = "Subir";
+$lang["Blogs"] = "Blogs";
+$lang["Manage"] = "Gestionar";
+$lang["Authors"] = "Autores";
+$lang["Comments"] = "Comentarios";
+$lang["Shopping Cart"] = "Compras";
+$lang["Products"] = "Productos";
+$lang["Categories"] = "Categorías";
+$lang["Coupons"] = "Cupones";
+$lang["Payment"] = "Pago";
+$lang["Shipping"] = "Envío";
+$lang["Taxes"] = "Impuestos";
+$lang["Orders"] = "Órdenes";
+$lang["Appearance"] = "Apariencia";
+$lang["Comments"] = "Comentarios";
+$lang["Business Information"] = "Información de Contacto";
+$lang["Calendar"] = "Calendario";
+$lang["Events"] = "Eventos";
+$lang["Email Newsletter"] = "Email Newsletter";
+$lang["Preferences"] = "Preferencias";
+$lang["Photo Albums"] = "Álbum de Fotos";
+$lang["Albums"] = "Álbumes";
+$lang["Upload Images"] = "Subir Imágenes";
+$lang["Web Forms"] = "Los Formularios";
+$lang["Forms"] = "Formularios";
+$lang["Submitted Data"] = "Los Datos Presentados";
+$lang["Site Search"] = "Búsqueda en el Sitio";
+$lang["What Gets Searched"] = "Qué Obtiene Buscado";
+$lang["Appearance"] = "Apariencia";
+$lang["Statistics"] = "Estadística";
+$lang["Database Tables"] = "Tablas de Bases de Datos";
+$lang["Edit Tables &amp; Data"] = "Editar Tablas &amp; Datos";
+$lang["Create Table"] = "Crear Tabla";
+$lang["Delete Table"] = "Eliminar Tabla";
+$lang["Member Logins"] = "Logins Miembros";
+$lang["Users &amp; Groups"] = "Usuarios &amp; Grupos";
+$lang["Add Member"] = "Añadir Miembro";
+$lang["FAQ Manager"] = "FAQ Manager";
+$lang["Manage FAQ's"] = "Administrar FAQ's";
+$lang["Traffic Statistics"] = "Estadísticas de Tráfico";
+$lang["Unique Visitors"] = "Visitantes únicos";
+$lang["Top 25 Pages"] = "Top 25 Páginas";
+$lang["Views By Day"] = "Visitas por Día";
+$lang["Views By Hour"] = "Visitas por Hora";
+$lang["Referring Sites"] = "Sitios Web de Referencia";
+$lang["Browser/OS Stats"] = "Browser/OS Estadísticas";
+$lang["Search Engine Spiders"] = "Las Arañas del Search Engine";
+$lang["Google Analytics"] = "Google Analytics";
+$lang["Global Settings"] = "Configuración Global";
+$lang["Template Manager"] = "Template Administrar";
+$lang["Admin Users"] = "Usuarios Administrativos";
+$lang["Default Contact Info"] = "Defecto Información de Contacto";
+$lang["Search Engine Ranking"] = "Graduación del Search Engine";
+$lang["Software Updates"] = "Actualizaciones de Software";
+$lang["Google Webmaster Tools"] = "Google Webmaster Tools";
+$lang["Security Center"] = "Centro de Seguridad";
+$lang["Backup/Restore"] = "Copia de Seguridad / Restaurar";
+
+?>

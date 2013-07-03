@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -33,7 +33,7 @@ session_start();
 include_once($_SESSION['product_gui']);
 
 # Determines which types of fields can have which types of properties
-include_once("nocando.inc.php");
+require_once("../../includes/product_gui.php");
 
 $justmodifed_fieldid = ""; // Used to show field w/yellow bg if it just had an action performed on it
 

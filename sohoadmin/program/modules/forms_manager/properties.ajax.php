@@ -1,4 +1,4 @@
-<?
+<?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 ###############################################################################
@@ -33,7 +33,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 session_start();
-include($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 
 # Pull field properties from db
 if ( $_REQUEST['field_id'] == "" ) {
@@ -88,7 +88,7 @@ if ( $_REQUEST['field_id'] == "" ) {
  </span>
 
 </fieldset>
-<?
+<?php
    } // End if can be required
 
    # multiple choice?

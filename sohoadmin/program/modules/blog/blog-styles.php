@@ -11,7 +11,9 @@ textarea {
 label {
 	font-size: 14px;
 }
-.input {width: 500px;}
+.input {
+	width: 500px;
+}
 #categories, #newPost {
 	margin-bottom: 10px;
 	border: 1px solid #222;
@@ -35,7 +37,13 @@ select {
 	color: #464646;
 	border: 1px solid #7F9DB9;
 	font: normal 16px Arial,Helvetica,sans-serif;
-	width: 200px;
+	width: 150px;
+	padding: 0px;
+	margin: 3px 0px;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:14px;
+	line-height:18px;
+
 }
 
 #authors:hover,
@@ -58,14 +66,14 @@ select {
 .fsub_title, .postTable th {
 	border-bottom: 1px solid #7D8084;
 	background:#d2d2d2 url(../../includes/images/title-bg.png) repeat-x;
-	padding:4px;
+	padding:3px;
 	text-align: left;
 	font: italic normal bold 16px Arial,Helvetica,sans-serif;
 	text-shadow: 0px 1px 1px #f8f8f8;
 	color: #444;
 }
 .postTable td {
-	padding: 5px 5px;
+	padding: 5px 3px;
 	text-align: left;
 	font: italic normal bold 12px Arial,Helvetica,sans-serif;
 	text-shadow: 0px 1px 1px #f8f8f8;
@@ -85,7 +93,7 @@ input[type=password],
 input[type=text]{
 	background: #F1EBEB;
 	border: 1px solid #7D8084;
-	padding: 5px;
+	padding: 3px;
 	margin: 3px 0px;
 	font: italic normal bold 14px Arial,Helvetica,sans-serif;
 	/* text-shadow: 0px 1px 1px #f8f8f8; */
@@ -267,11 +275,26 @@ span img {
 	font-style: italic;
 }
 .pform {
-	margin:2px;
+	width:auto;
+	float:left;
+	padding:2px 10px;
+	display:inline;
+	white-space:nowrap;
+/*	height:30px; */
+	vertical-align:bottom;
 }
 
 .blogtables {
 	border:0px solid black;
 	vertical-align:top;
 }
+
+#tiny_editor_pdw_toggle.mceButtonEnabled {
+	border:1px solid #0A246A!important; background-color:#C2CBE0!important;
+}
+#tiny_editor_pdw_toggle.mceButtonActive {
+	background-color:transparent!important;
+	border:0px!important;
+}
+
 </style>

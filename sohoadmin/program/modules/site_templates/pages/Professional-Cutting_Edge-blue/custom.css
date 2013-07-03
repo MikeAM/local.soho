@@ -79,9 +79,9 @@ body {
 {
 	/* background:#fff; */
 	float:left;
-	width:180px;
+	width:220px;
 	margin-right:20px;
-	padding:15px 30px;
+	padding:15px 10px;
 
      min-height:510px;
      height:auto !important;
@@ -92,7 +92,7 @@ body {
 
 .right-panel
 {
-	width:650px;
+	width:660px;
 	float:right;
 	background:#fff;
 	padding:5px 10px;

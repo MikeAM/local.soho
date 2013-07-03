@@ -69,8 +69,15 @@ if(!table_exists("smt_userdata")){
 	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','custom_login_email','Hi [OWNER_NAME],\n\nWe have created a member account for you so you can access protected areas of our website. See below for your username and password.\n\nUsername: [USERNAME]\nPassword: [PASSWORD]\n\n\nSee our website for more...\nhttp://".$nowwws."\n\nSincerely,\n".$nowwws." Staff\n')");
 	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','login-email-from','noreply@".$nowwws."')");
 	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','login-email-subject','Here is your member login information')");
-	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','goog_trans','off')");
+
+	if($spanish=='yes' || $_SESSION['spanish']=='yes'){
+		mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','goog_trans','on')");
+	} else {
+		mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','goog_trans','off')");
+	}		
+	
 	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','goog_trans_website','off')");
+	
 	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','google_analytics_non','')");
 	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','google_analytics_secure','')");
 	mysql_query("insert into smt_userdata (plugin,fieldname,data) VALUES ('global','member-email-on-create','on')");
@@ -117,7 +124,7 @@ if(!table_exists("site_specs")) {
    			$variable = strtok($lines[$x], "=");
    			$value = strtok("\n");
    			$value = rtrim($value);
-   			session_register("$variable");
+   			$_SESSION[$variable] = $value;
    			${$variable} = $value;
    		}
    	}
@@ -125,9 +132,13 @@ if(!table_exists("site_specs")) {
    } // End If File Open
    // Set language to english if empty
    // =========================================
-   if ( $lang_set == "" ) {
-      $lang_set = "english.php";
-   }
+	if ( $lang_set == "" ) {
+		if($spanish=='yes' || $_SESSION['spanish']=='yes'){
+			$lang_set = "spanish.php";
+		} else {
+			$lang_set = "english.php";	
+		}      
+	}
    // Read HDRTXT and SLOGAN text if available
    // ============================================
    $logoconf = "$cgi_bin/logo.conf";
@@ -295,7 +306,7 @@ if ( !table_exists("site_pages")){
 <TBODY>
 <TR>
 <TD vAlign=top align=middle width=199>
-<DIV class=TXTCLASS id=NEWOBJ12911554 onclick="textEdit(NEWOBJ12911554,\'NEWOBJ12911554\');" align=left><blink>
+<DIV class=TXTCLASS id=NEWOBJ12911554 onclick="startEditor(this.id);" align=left><blink>
 <P><FONT face=geneva,arial,sans-serif color=#008000><FONT color=#000080><FONT face="georgia, geneva, arial, sans-serif" color=#0080ff size=4><STRONG>Welcome to your new website!</STRONG> </FONT></FONT></P><STRONG>
 <HR>
 </STRONG></FONT>
@@ -454,7 +465,7 @@ if(!table_exists('cart_options')){
 	$data['PAYMENT_VLOGINID'] = '';
 	$data['PAYMENT_INCLUDE'] = '';
 	$data['PAYMENT_SSL'] = '';
-	$data['BIZ_PAYABLE'] = 'saas';
+	$data['BIZ_PAYABLE'] = '';
 	$data['BIZ_ADDRESS_1'] = '';
 	$data['BIZ_ADDRESS_2'] = '';
 	$data['BIZ_CITY'] = '';
@@ -498,6 +509,10 @@ if(!table_exists('cart_options')){
 
 }
 
+if(!table_exists("cart_products_usersignup")){
+	create_table("cart_products_usersignup");
+}
+
 if(!table_exists("cart_paypal")){
 	create_table("cart_paypal");
 	mysql_query("INSERT INTO cart_paypal (PAYPAL_EMAIL,PAYPAL_USER1,PAYPAL_USER2,PAYPAL_USER3) VALUES(' ',' ',' ',' ')");
@@ -524,6 +539,14 @@ if(!table_exists('cart_products')){
 
 if(!table_exists('cart_shipping_opts')){
 	create_table('cart_shipping_opts');
+	$offline_notice = "Please note that applicable shipping charges are not included in the total shown below. ";
+	$offline_notice .= "Your final invoice, including shipping costs, will be emailed to you shortly after you complete your purchase. ";
+	$offline_notice .= "Once you have approved the final total, your order will be processed immediately.";
+	$qry = "INSERT INTO cart_shipping_opts (SHIP_METHOD, ST_GTHAN1, NOTICE, order_type)";
+	$qry_vals_local = " VALUES('Standard', '0.01', '".$offline_notice."', 'local')";
+	$qry_vals_intl = " VALUES('Standard', '0.01', '".$offline_notice."', 'intl')";
+	mysql_query($qry.$qry_vals_local);
+	mysql_query($qry.$qry_vals_intl);
 }
 
 if(!table_exists('cart_tax')){

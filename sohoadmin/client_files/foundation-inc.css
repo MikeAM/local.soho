@@ -1,0 +1,18 @@
+@charset "utf-8";
+
+.row {
+	display: block!important;
+}
+.nav-bar {
+	width:100%;
+}
+.vertical {
+	width:auto;
+}
+.nav-bar > li.active a {
+	cursor: pointer!important;
+}
+
+.sub-flyout a {
+	white-space:nowrap!important;
+}

@@ -33,8 +33,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 session_start();
-include($_SESSION['product_gui']);
 
+require_once("../../includes/product_gui.php");
 # Pull field properties from db
 if ( $_REQUEST['field_id'] == "" ) {
    echo "[No field selected. Click on a field to edit its properties.]";

@@ -58,7 +58,7 @@ $pages = $doc_root."/sohoadmin/program/modules/site_templates/pages";
 	function scandirs($directory){
 		foreach (GLOB($directory."/*") as $file) {
 			if (is_dir($file)) {
-				$file = eregi_replace($directory."/", '', $file);
+				$file = str_replace($directory."/", '', $file);
 				$files .= $file.";";
 			}
 		}
@@ -68,7 +68,7 @@ $pages = $doc_root."/sohoadmin/program/modules/site_templates/pages";
 
 chdir($pages."/tmp");
 $this_zip = $_FILES['FILE1']['name'];
-$this_zip = eregi_replace(" ", "_", $this_zip);
+$this_zip = str_replace(" ", "_", $this_zip);
 
 if (move_uploaded_file($_FILES['FILE1']['tmp_name'], $this_zip)) {
 	chmod($this_zip, 0755);
@@ -102,13 +102,13 @@ if (move_uploaded_file($_FILES['FILE1']['tmp_name'], $this_zip)) {
 //		}
 		$sshRez = unZip($this_zip);
 		if (eregi(' ', $fdrName)) {
-			rename($fdrName, eregi_replace(' ', '_', $fdrName));
+			rename($fdrName, str_replace(' ', '_', $fdrName));
 		}
 		unlink($pages."/".$this_zip);
 
 	} else {
 
-		$fdrName = eregi_replace(".zip", "", $this_zip);
+		$fdrName = str_replace(".zip", "", $this_zip);
 		chdir($pages);
 		if(is_dir($fdrName)) {
 			if ( !rmdirr($pages."/".$fdrName) ) {

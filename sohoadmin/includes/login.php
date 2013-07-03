@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -58,8 +58,6 @@ if(!table_exists('login_bans')){
 
 $auth = 0;
 
-
-
 if ( !isset($_SESSION['PHP_AUTH_USER']) && !isset($_POST['PHP_AUTH_USER']) ) {
 	/////////////////////////////////////////
 	/////////////camerons check login attempts
@@ -83,8 +81,8 @@ if ( !isset($_SESSION['PHP_AUTH_USER']) && !isset($_POST['PHP_AUTH_USER']) ) {
 	}
 	/////////////////////////////////////////
 	/////////////end camerons check login attempts
-
-	include($_SESSION['docroot_path']."/sohoadmin/includes/get_login.php");
+	
+	include("includes/get_login.php");
 	exit;
 
 } elseif (strlen($_SESSION['PHP_AUTH_USER']) > 1 || strlen($_POST['PHP_AUTH_USER']) > 1){
@@ -104,7 +102,7 @@ if ( !isset($_SESSION['PHP_AUTH_USER']) && !isset($_POST['PHP_AUTH_USER']) ) {
 			$infoarray['time'] = time();
 			$frminsrt = new mysql_insert($tablename, $infoarray);
 			$frminsrt->insert();
-			
+
 			mysql_query("update login_bans set time='".time()."' where PRIKEY='".$bancountstuff['PRIKEY']."'");
 			echo "<font color=white>You have been banned due too many failed login attempts!<br/>\n You must wait ".$thirty_mins." minute(s) before attempting to login again.</font>";
 			     session_destroy();
@@ -136,19 +134,19 @@ if ( !isset($_SESSION['PHP_AUTH_USER']) && !isset($_POST['PHP_AUTH_USER']) ) {
 
 		if ($thisCheck == "$PHP_AUTH_USER:$PHP_AUTH_PW") {
 			$auth=1;
-			session_register("PHP_AUTH_PW");
-			session_register("PHP_AUTH_USER");
-			session_register("dot_com");
+			$_SESSION['PHP_AUTH_PW'] = $PHP_AUTH_PW;
+			$_SESSION['PHP_AUTH_USER'] = $PHP_AUTH_USER;
+			$_SESSION['dot_com'] = $dot_com;
+
 
 			// Added for version 5 : Multi-User Access Rights
 			// ----------------------------------------------
 
 			$CUR_USER = $row["Email"];
 			$CUR_USER_KEY = $row["PriKey"];
-
-			session_register("CUR_USER_KEY");	// Register Current User PriKey
-			session_register("CUR_USER");		// Register Current User Name
-
+			$_SESSION['CUR_USER_KEY'] = $CUR_USER_KEY;
+			$_SESSION['CUR_USER'] = $CUR_USER;
+			
 			if ($pk != 1) {
 				$ares = mysql_query("SELECT ACCESS_STRING FROM user_access_rights WHERE LOGIN_KEY = '$pk'");
 				$this_access = mysql_fetch_array($ares);
@@ -159,8 +157,7 @@ if ( !isset($_SESSION['PHP_AUTH_USER']) && !isset($_POST['PHP_AUTH_USER']) ) {
 			
 			$ten_mins_ago = strtotime('-'.$thirty_mins.' minutes');
 			mysql_query("DELETE from login_attempts where ip_address='".$_SERVER['REMOTE_ADDR']."' and time > '".$ten_mins_ago."'");
-			session_register("CUR_USER_ACCESS");	// Register Access Rights String
-			
+			$_SESSION['CUR_USER_ACCESS'] = $CUR_USER_ACCESS;
 			if(strlen($_POST['PHP_AUTH_USER']) > 1 && strlen($_POST['PHP_AUTH_PW']) > 1){
 				unset($loginiparray);
 				$loginiparray['ip_address'] = $_SERVER['REMOTE_ADDR'];
@@ -190,12 +187,12 @@ if ($auth != 1){
 		$infoarray['ip_address'] = $_SERVER['REMOTE_ADDR'];
 		$infoarray['date'] = date("m/d/Y");
 		$infoarray['time'] = time();
-		$infoarray['username'] = $_POST['PHP_AUTH_USER'];
-		$infoarray['password'] = $_POST['PHP_AUTH_PW'];
+		$infoarray['username'] = str_replace("'",'',$_POST['PHP_AUTH_USER']);
+		$infoarray['password'] = str_replace("'",'',$_POST['PHP_AUTH_PW']);
 	
 		$frminsrt = new mysql_insert('login_attempts', $infoarray);
 		$frminsrt->insert();
-	
+
 		if($badcount >= 6){
 			//30 minute ban
 			unset($infoarray);

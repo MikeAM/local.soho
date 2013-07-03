@@ -32,10 +32,12 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 error_reporting(0);
 session_start();
 
-//include_once("../../../includes/product_gui.php");
 $skuno_array = explode(';', $_SESSION['CART_SKUNO']);
 $qty_array = explode(';', $_SESSION['CART_QTY']);
 $unitsub_array = explode(';',$_SESSION['CART_UNITSUBTOTAL']);
+array_pop($skuno_array);
+array_pop($qty_array);
+array_pop($unitsub_array);
 $thecount = count($skuno_array);
 
 if($thecount > 0) {
@@ -61,14 +63,14 @@ if($thecount > 0) {
 			
 			/////
 				$qty_disc_qry=mysql_query('select required_qty from qty_discounts where sku=\''.$skuno_array[$xox].'\'');
-				$crtdsc = mysql_fetch_array($qty_disc_qry);
+				$crtdsc = mysql_fetch_assoc($qty_disc_qry);
 				$skutotalcount." ".$crtdsc['required_qty']."<br/>";
 //					$zc++;
 //		}
 				$skuno_array[$xox];
 				if($skutotalcount < $crtdsc['required_qty']) {
 					$prodname = mysql_query('select PRIKEY, PROD_NAME from cart_products where PROD_SKU=\''.$skuno_array[$xox].'\'');
-					$prodres=mysql_fetch_array($prodname);
+					$prodres=mysql_fetch_assoc($prodname);
 					$productname = $prodres['PROD_NAME'];
 
 					//$URLredirect = "pgm-add_cart.php?action=view&id=".$prodres['PRIKEY'];

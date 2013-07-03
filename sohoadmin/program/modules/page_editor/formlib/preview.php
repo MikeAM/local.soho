@@ -63,7 +63,10 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
 
 </script>
 
-<?
+<?php
+if($_GET['lookat']!=''){
+	$lookat=$_GET['lookat'];
+}
 
 if ($lookat != "") {
 	$action_bg = "beige";
@@ -73,12 +76,12 @@ if ($lookat != "") {
 
 ?>
 
-<table width="100%" height="100%" border="1" cellspacing="0" cellpadding="7" STYLE='border: 0px solid green;'>
+<table width="100%" border="1" cellspacing="0" cellpadding="7" STYLE='border: 0px solid green;'>
   <tr>
     <td align=center valign=middle>
 
-    	<?
-
+    	<?php
+		
 		if ($lookat != "") {
 
 			$filename = $lookat;

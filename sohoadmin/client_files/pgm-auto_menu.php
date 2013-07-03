@@ -1,7 +1,6 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
-
 
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
@@ -30,8 +29,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## expressly forbidden and in violation of Domestic and International
 ## copyright laws.
 ###############################################################################
-error_reporting(0);
-$webmasterpref = new userdata("webmaster");
+
+$webmasterprefz = new userdata("webmaster");
 
 ######################################################################################
 ##====================================================================================
@@ -311,7 +310,7 @@ if ($numsubpages != 0) {
 
 
 						}else{
-							$sub_buttons .= "       <a href=\"http://".$subpage_link[$xedusvar]."\" class=\"".$subClass."\">".$subpage_name[$xedusvar]."</a>\n";
+							$sub_buttons .= "       <a href=\"".httpvar().$subpage_link[$xedusvar]."\" class=\"".$subClass."\">".$subpage_name[$xedusvar]."</a>\n";
 						}
       				//$sub_buttons .= "       <a href=\"".$subpage_link[$xedusvar]."\" class=\"".$subClass."\">".$subpage_name[$xedusvar]."</a>\n";
       			}
@@ -345,7 +344,7 @@ if ($numsubpages != 0) {
 					   }
 
 					}else{
-						$hsubz .= "  <td class=\"hsubs\"><a href=\"http://".$subpage_link[$xedusvar]."\" class=\"hsubs\">".$subpage_name[$xedusvar]."</a></td>\n";
+						$hsubz .= "  <td class=\"hsubs\"><a href=\"".httpvar().$subpage_link[$xedusvar]."\" class=\"hsubs\">".$subpage_name[$xedusvar]."</a></td>\n";
 					}
 				}
 				// ----------------------------------------------------------------------------------------
@@ -423,14 +422,14 @@ while ($row = mysql_fetch_array ($result)) {
 	$pagelink = eregi_replace(" ", "_", $thispage);
 
 	# v4.9.2 r8 -- allows for Home_Page to link to domain root so search engines to penalize for duplicate content
-	if ( $pagelink == startpage() && $webmasterpref->get("replace_homelinks") == "yes" ) {
-	   $pagelink_href = isHttps().$_SESSION['this_ip'];
+	if ( $pagelink == startpage() && $webmasterprefz->get("replace_homelinks") == "yes" ) {
+	   $pagelink_href = httpvar().$_SESSION['this_ip'];
 	} else {
-		if(eregi('/shopping', $_SERVER['REQUEST_URI']) || eregi('/shopping', $_SERVER['FULL_URL'])){
+		if(preg_match('/\/shopping/', $_SERVER['REQUEST_URI']) || preg_match('/\/shopping/', $_SERVER['FULL_URL'])){
 			$pagelink_href = '../'.pagename($pagelink);
 		} else {
 			$pagelink_href = pagename($pagelink);
-		}   	   	
+		}
 	}
 
 
@@ -459,7 +458,7 @@ while ($row = mysql_fetch_array ($result)) {
 			      $main_buttons .= "<INPUT TYPE=BUTTON VALUE=\"$thispage\" STYLE=\"font-family: Verdana; font-size: 8pt; width: 120px; height: 20px; background: #$menubg; color: #$linkc; cursor: pointer;\" onclick=\"navtoLink('".$subpage_link[$a]."');\">\n$vertOption\n";
 			   }
 			}else{
-				$main_buttons .= "<INPUT TYPE=BUTTON VALUE=\"$thispage\" STYLE=\"font-family: Verdana; font-size: 8pt; width: 120px; height: 20px; background: #$menubg; color: #$linkc; cursor: pointer;\" onclick=\"navtoLink('http://$subpage_link[$a]');\">\n$vertOption\n";
+				$main_buttons .= "<INPUT TYPE=BUTTON VALUE=\"$thispage\" STYLE=\"font-family: Verdana; font-size: 8pt; width: 120px; height: 20px; background: #$menubg; color: #$linkc; cursor: pointer;\" onclick=\"navtoLink('".httpvar().$subpage_link[$a]."');\">\n$vertOption\n";
 			}
 		}
 	} else {
@@ -480,7 +479,7 @@ while ($row = mysql_fetch_array ($result)) {
 			      $main_buttons .= "    <a href=\"".$subpage_link[$a]."\" class=\"".$mainClass."\">".$thispage."</a>\n";
 			   }
 			}else{
-				$main_buttons .= "    <a href=\"http://".$subpage_link[$a]."\" class=\"".$mainClass."\">".$thispage."</a>\n";
+				$main_buttons .= "    <a href=\"".httpvar().$subpage_link[$a]."\" class=\"".$mainClass."\">".$thispage."</a>\n";
 			}
 		}
 		$main_buttons .= "   </div>\n";
@@ -503,8 +502,8 @@ while ($row = mysql_fetch_array ($result)) {
             $main_textmenu .= "<a href=\"".$subpage_link[$a]."\">$thispage</a> | ";
          }
       }else{
-         $hmainz .= "  <td class=\"hmains".$current."\"><a href=\"http://".$subpage_link[$a]."\" class=\"hmains\">".$thispage."</a></td>\n";
-         $main_textmenu .= "<a href=\"http://".$subpage_link[$a]."\" class=\"".$current."\">$thispage</a> | ";
+         $hmainz .= "  <td class=\"hmains".$current."\"><a href=\"".httpvar().$subpage_link[$a]."\" class=\"hmains\">".$thispage."</a></td>\n";
+         $main_textmenu .= "<a href=\"".httpvar().$subpage_link[$a]."\" class=\"".$current."\">$thispage</a> | ";
       }
    }
 

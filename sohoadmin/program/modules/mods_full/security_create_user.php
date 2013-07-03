@@ -32,10 +32,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 session_start();
-
-session_start();
 require_once('../../includes/product_gui.php');
-
+require_once("../../includes/SohoEmail_class/SohoEmail.php");
 
 eval(hook("security_create_user.php:global-stuff"));
 
@@ -56,7 +54,10 @@ function send_login_email($useridInt) {
 		$msgTxt = str_replace('['.$key.']', $getUser[$key], $msgTxt);
 	}
 	$headers = 'From: '.$globalprefObj->get('login-email-from')."\r\n".'Reply-To: '.$globalprefObj->get('login-email-from')."\r\n" .'X-Mailer: PHP/' . phpversion();
-	mail($getUser['OWNER_EMAIL'], $globalprefObj->get('login-email-subject'), $msgTxt, $headers);
+	
+	if(!SohoEmail($getUser['OWNER_EMAIL'], $globalprefObj->get('login-email-from'), $globalprefObj->get('login-email-subject'), str_replace("\n","<br/>\n", $msgTxt))){
+		mail($getUser['OWNER_EMAIL'], $globalprefObj->get('login-email-subject'), $msgTxt, $headers);
+	}
 	$reportStr = lang('Email message sent to').' '.$getUser['OWNER_EMAIL'];	
 	return $reportStr;
 }
@@ -186,7 +187,7 @@ if ($ACTION == "CREATE") {
 	$match = 0;
 	$tablename = "sec_users";
 
-	$result = mysql_list_tables("$db_name");
+	$result = soho_list_tables();
 	$i = 0;
 	while ($i < mysql_num_rows ($result)) {
 		$tb_names[$i] = mysql_tablename ($result, $i);
@@ -455,8 +456,8 @@ if (isset($_REQUEST['id'])) {
 	$numberFields--;
 
 	for ($x=0;$x<=$numberFields;$x++) {
-		$field_name = mysql_field_name($result, $x);
-		if (!session_is_registered("$field_name")) { session_register("$field_name"); }
+		$field_name = mysql_field_name($result, $x);		
+		if($field_name == ''){ $_SESSION[$field_name] = $user_data[$field_name]; }
 		${$field_name} = $user_data[$field_name];
 	}
 

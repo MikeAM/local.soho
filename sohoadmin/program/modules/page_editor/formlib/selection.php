@@ -48,28 +48,50 @@ if (eregi("IIS", $SERVER_SOFTWARE)) {
 	$cdirectory = "$doc_root/media";
 }
 
+//if ($selkey == "Forms") {		// Page Editor indicates this is a "Forms Library Request"
+//
+//	$FORM_OPTIONS = "<OPTION VALUE=\"\" STYLE='color: #999999;'>Available Forms:</OPTION>\n";
+//	//$cdirectory = "$doc_root/media";
+//	$handle = opendir("$cdirectory");
+//	while ($files = readdir($handle)) {
+//		if (strlen($files) > 2 && eregi("\.form", $files)) {
+//			$FORM_OPTIONS .= "<OPTION VALUE=\"$cdirectory/$files\">$files</OPTION>\n";
+//		}
+//	}
+//	closedir($handle);
+//
+//	$directory = "forms";
+//	$handle = opendir("$directory");
+//	while ($files = readdir($handle)) {
+//		if (strlen($files) > 2 && eregi("\.form", $files)) {
+//			$FORM_OPTIONS .= "<OPTION VALUE=\"$full_path$directory/$files\">$files</OPTION>\n";
+//		}
+//	}
+//	closedir($handle);
+//
+//}
+
+
 if ($selkey == "Forms") {		// Page Editor indicates this is a "Forms Library Request"
 
 	$FORM_OPTIONS = "<OPTION VALUE=\"\" STYLE='color: #999999;'>Available Forms:</OPTION>\n";
 	//$cdirectory = "$doc_root/media";
-	$handle = opendir("$cdirectory");
-	while ($files = readdir($handle)) {
-		if (strlen($files) > 2 && eregi("\.form", $files)) {
-			$FORM_OPTIONS .= "<OPTION VALUE=\"$cdirectory/$files\">$files</OPTION>\n";
+	foreach(glob($cdirectory.DIRECTORY_SEPARATOR.'*.*') as $files){
+		if (strlen($files) > 2 && preg_match("/\.form/i", $files)) {
+			$forms_ar[]=basename($files);
 		}
 	}
-	closedir($handle);
+	natcasesort($forms_ar);
 
-	$directory = "forms";
-	$handle = opendir("$directory");
-	while ($files = readdir($handle)) {
-		if (strlen($files) > 2 && eregi("\.form", $files)) {
-			$FORM_OPTIONS .= "<OPTION VALUE=\"$full_path$directory/$files\">$files</OPTION>\n";
-		}
+	foreach($forms_ar as $files){	
+		$FORM_OPTIONS .= "<OPTION VALUE=\"".$cdirectory.DIRECTORY_SEPARATOR.$files."\">$files</OPTION>\n";
 	}
-	closedir($handle);
+	foreach(glob($full_path.'forms'.DIRECTORY_SEPARATOR.'*.form') as $files){
+		$FORM_OPTIONS .= "<OPTION VALUE=\"".$files."\">".basename($files)."</OPTION>\n";
+	}
 
 }
+
 
 if ($selkey == "Newsletter") {		// Page Editor indicates this is a "Newsletter Form" Request
 	$FORM_OPTIONS = "<OPTION VALUE=\"\" STYLE='color: #999999;'>Newsletter Forms:</OPTION>\n";
@@ -86,17 +108,30 @@ if ($selkey == "Newsletter") {		// Page Editor indicates this is a "Newsletter F
 #######################################################
 ### READ AVAILABLE TEXT FILES (RESPONSE INSERTS)    ###
 #######################################################
+//
+//	$TEXTFILE_OPTIONS = "<OPTION VALUE=\"DEFAULT2020202024452345.TXT\" STYLE='color: #999999;'>[ Default ]</OPTION>\n";
+//
+//	$cdirectory = "$doc_root/media";
+//	$handle = opendir("$cdirectory");
+//	while ($files = readdir($handle)) {
+//		if (strlen($files) > 2 && eregi("\.txt", $files) && $files != "page_templates.txt") { //Bugzilla #73
+//			$TEXTFILE_OPTIONS .= "<OPTION VALUE=\"$cdirectory/$files\">$files</OPTION>\n";
+//		}
+//	}
+//	closedir($handle);
 
 	$TEXTFILE_OPTIONS = "<OPTION VALUE=\"DEFAULT2020202024452345.TXT\" STYLE='color: #999999;'>[ Default ]</OPTION>\n";
 
 	$cdirectory = "$doc_root/media";
-	$handle = opendir("$cdirectory");
-	while ($files = readdir($handle)) {
-		if (strlen($files) > 2 && eregi("\.txt", $files) && $files != "page_templates.txt") { //Bugzilla #73
-			$TEXTFILE_OPTIONS .= "<OPTION VALUE=\"$cdirectory/$files\">$files</OPTION>\n";
+	foreach(glob($cdirectory.DIRECTORY_SEPARATOR.'*.txt') as $files){
+		if (strlen($files) > 2 && preg_match("/\.txt/i", $files)) {
+			$txt_ar[]=basename($files);
 		}
 	}
-	closedir($handle);
+	natcasesort($txt_ar);
+	foreach($txt_ar as $files){	
+		$TEXTFILE_OPTIONS .= "<OPTION VALUE=\"$cdirectory/$files\">$files</OPTION>\n";
+	}
 
 ##########################################################
 ### READ ALL SITE PAGES INTO VAR FOR REDIRECT OPTION   ###
@@ -139,9 +174,9 @@ function edit_form() {
 
 </script>
 
-<form name="formselect">
+<form name="formselect" style="height:100%;">
 
-<table border=0 cellpadding=2 cellspacing=0 width=100% height=100%>
+<table border=0 cellpadding=2 cellspacing=0 width=100%>
 <TR>
       <td align=center valign=top class="text">
         <!-- START FORM SELECTION CONTENT -->
@@ -152,7 +187,7 @@ function edit_form() {
 
 			   <DIV ALIGN=CENTER STYLE='border: 1px solid BLACK;padding: 5px; background: #EFEFEF;'>
 
-					  <SELECT id="availforms" NAME="availforms" STYLE='font-family: Arial; font-size: 8pt; width: 250px;'>
+					  <SELECT id="availforms" NAME="availforms" STYLE='font-family: Arial; font-size: 8pt; width: 250px;' onChange="preview();" onBlur="preview();">
 					  <? echo $FORM_OPTIONS; ?>
 					  </SELECT>
 					  <!-- <BR><BR>
@@ -244,9 +279,9 @@ function edit_form() {
 			  </DIV>
 
 			  <DIV ALIGN=CENTER>
-			  	<button type="button" class="blueButton" onclick="placeobject();"><span><span>Put Form on Page</span></span></button>
+			  	<button type="button" class="blueButton" onclick="parent.header.document.getElementById('PAGE_EDITOR_LAYER').style.visibility='visible';placeobject();"><span><span>Put Form on Page</span></span></button>
 	   			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<button type="button" class="grayButton" onclick="$('form_display').style.display='none';checkRow(ColRowID);"><span><span>Cancel</span></span></button>
+				<button type="button" class="grayButton" onclick="parent.header.document.getElementById('PAGE_EDITOR_LAYER').style.visibility='visible';$('form_display').style.display='none';checkRow(ColRowID);"><span><span>Cancel</span></span></button>
 			  </DIV>
 
             </TD>

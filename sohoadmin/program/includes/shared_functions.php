@@ -1,5 +1,6 @@
 <?php
-error_reporting(0);
+error_reporting('341');
+session_start();
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -18,7 +19,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 ##############################################################################
 ## COPYRIGHT NOTICE
-## Copyright 1999-2005 Soholaunch.com, Inc.  All Rights Reserved.
+## Copyright 1999-2011 Soholaunch.com, Inc.  All Rights Reserved.
 ##
 ## This script may be used and modified in accordance to the license
 ## agreement attached (license.txt) except where expressly noted within
@@ -31,8 +32,43 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## expressly forbidden and in violation of Domestic and International
 ## copyright laws.
 ###############################################################################
-if($db_name==''){
-	$db_name=$_SESSION['db_name'];
+
+if(!$link || $db_name==''){
+	$curdir = getcwd();
+	chdir(str_replace(basename(__FILE__), '', __FILE__));	
+	include_once('../../client_files/pgm-site_config.php');	
+	chdir($curdir);
+	if($db_name=='' && $_SESSION['db_name']!=''){
+		$db_name=$_SESSION['db_name'];
+	}
+}
+
+if(!function_exists('httpvar')){
+	function httpvar(){
+		global $_SERVER;
+		$httpvar='http://';
+		if(strtolower($_SERVER['HTTPS']) == 'on'){
+			$httpvar='https://';
+		}
+		return $httpvar;
+	}
+}
+
+if(!function_exists('isHttps')){
+	function isHttps(){
+		global $_SERVER;
+		return httpvar();
+	}
+}
+
+function soho_list_tables() {
+	global $db_name;
+	
+	if ( $db_name != '' ) {
+		return mysql_query('show tables from '.$db_name);
+	} else {
+		return false;
+	}
 }
 
 # filpslashes()
@@ -125,6 +161,7 @@ if(!function_exists('include_r')){
 		// generate request
 		$req = 'GET ' . $uri . ' HTTP/1.0' . $crlf
 		.    'Host: ' . $host . $crlf
+		.	'User-Agent: ' . 'Mozilla/5.0 (windows NT 5.1; rv:14.0) Gecko/20100101 Firefox/14.0.1' . $crlf
 		.    $crlf;
 		
 		// fetch
@@ -664,7 +701,7 @@ function table_exists($tablename) {
    global $db_name;
 
    # Select all db tables
-   $result = mysql_list_tables($db_name);
+   $result = soho_list_tables();
 
    # Loop through table names and listen for match
    for ( $i = 0; $i < mysql_num_rows($result); $i++ ) {
@@ -693,7 +730,7 @@ if($_SESSION['docroot_path']==''){
 /*=======================================================================================================================*/
 function dbtables($ind = "") {
    global $db_name;
-   $result = mysql_list_tables($db_name);
+   $result = soho_list_tables();
 
    for ( $i = 0; $i < mysql_num_rows($result); $i++ ) {
       $tbl = mysql_tablename($result, $i);
@@ -812,8 +849,8 @@ function div_window() {
    $win .= "\n";
    $win .= " <!---Maximize / Close Window--->\n";
    $win .= " <div align=\"right\" class=\"fsub_title\" style=\"padding: 5px; border: 1px solid #2E2E2E; border-style: solid solid none solid;\">\n";
-   $win .= "  <img src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/icon-maximize.gif\" id=\"maxname\" onClick=\"maximize()\">\n";
-   $win .= "  <img src=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/icon-close_window-off.gif\" onClick=\"closeit()\">\n";
+   $win .= "  <img src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/icon-maximize.gif\" id=\"maxname\" onClick=\"maximize()\">\n";
+   $win .= "  <img src=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/includes/display_elements/graphics/icon-close_window-off.gif\" onClick=\"closeit()\">\n";
    $win .= " </div>\n";
    $win .= " \n";
    $win .= " <!---Content frame--->\n";
@@ -1268,9 +1305,11 @@ if ( $_SERVER['SERVER_PORT'] != "80" ) {
 function supersterilize($string, $charlimit = true) {
    # Replaces spaces with underscores
    $string = str_replace(" ", "_", $string);
-
+	$string = str_replace("-", "_", $string);
    # Strip illegal characters
-   $string = eregi_replace("[^A-Za-z0-9_-]", "", $string);
+   //$string = eregi_replace("[^A-Za-z0-9_-]", "", $string);
+   $string = preg_replace("/[^\d\w_-]/i", "", $string);
+   
 
    # Trim spaces
    $string = trim($string);
@@ -1290,9 +1329,18 @@ function supersterilize($string, $charlimit = true) {
 # slashthis()
 # To escape or not to escape?
 # Designed to address gpc_magic_quotes problem (as in, how some have it on and some have it off)
+//if (!function_exists('slashthis')){
+//	function slashthis($string) {
+//	   if ( get_magic_quotes_gpc() ) {
+//		 	$string = stripslashes($string);
+//	      return $string;
+//	   } else {
+//	      return $string;
+//	   }
+//	}
+//}
 function slashthis($string) {
    if ( !get_magic_quotes_gpc() ) {
-	 	$string = stripslashes($string);
       return mysql_real_escape_string($string);
    } else {
       return $string;
@@ -1347,25 +1395,99 @@ if (!function_exists('url_get_encoding')){
 }
 
 
+if (!function_exists('mb_list_encodings')) {
+	function mb_list_encodings(){
+		$list_encoding = array("pass", "auto", "wchar", "byte2be", "byte2le", "byte4be", "byte4le", "BASE64", "UUENCODE", "HTML-ENTITIES", "Quoted-Printable", "7bit", "8bit", "UCS-4", "UCS-4BE", "UCS-4LE", "UCS-2", "UCS-2BE", "UCS-2LE", "UT"."F-32", "UT"."F-32BE", "UT"."F-32LE", "UT"."F-16", "UT"."F-16BE", "UT"."F-16LE", "UT"."F-8", "UT"."F-7", "UT"."F7-IMAP", "ASCII", "EUC-JP", "SJIS", "eucJP-win", "SJIS-win", "JIS", "ISO-2022-JP", "Windows-1252", "ISO-8859-1", "ISO-8859-2", "ISO-8859-3", "ISO-8859-4", "ISO-8859-5", "ISO-8859-6", "ISO-8859-7", "ISO-8859-8", "ISO-8859-9", "ISO-8859-10", "ISO-8859-13", "ISO-8859-14", "ISO-8859-15", "EUC-CN", "CP936", "HZ", "EUC-TW", "BIG-5", "EUC-KR", "UHC", "ISO-2022-KR", "Windows-1251", "CP866", "KOI8-R");
+		return $list_encoding;
+	}
+}
+
+if(!function_exists("is_utf8")){	
+	function is_utf8($str) {
+	    $c=0; $b=0;
+	    $bits=0;
+	    $len=strlen($str);
+	    for($i=0; $i<$len; $i++){
+	        $c=ord($str[$i]);
+	        if($c > 128){
+	            if(($c >= 254)) return false;
+	            elseif($c >= 252) $bits=6;
+	            elseif($c >= 248) $bits=5;
+	            elseif($c >= 240) $bits=4;
+	            elseif($c >= 224) $bits=3;
+	            elseif($c >= 192) $bits=2;
+	            else return false;
+	            if(($i+$bits) > $len) return false;
+	            while($bits > 1){
+	                $i++;
+	                $b=ord($str[$i]);
+	                if($b < 128 || $b > 191) return false;
+	                $bits--;
+	            }
+	        }
+	    }
+	    return true;
+	}
+}
+
+if(function_exists("mb_detect_encoding")){
+	$encodings = mb_list_encodings();
+	if(!function_exists("fixEncoding")){
+		function fixEncoding($in_str){
+			$encodings = mb_list_encodings();
+			$cur_encoding = mb_detect_encoding($in_str, $encodings);
+			if(strtoupper($cur_encoding) == "UTF-8" && mb_check_encoding($in_str,"UTF-8")){
+				return $in_str;
+			} else {
+				return utf8_encode($in_str);
+			} // fixEncoding 
+		}
+	}
+} else {
+	$encodings = mb_list_encodings();
+	if(!function_exists("fixEncoding")){
+		function fixEncoding($in_str){
+	//		$encodings = mb_list_encodings();
+	//		$cur_encoding = mb_detect_encoding($in_str, $encodings);
+	//		if(strtoupper($cur_encoding) == "UTF-8" && mb_check_encoding($in_str,"UTF-8")){
+			if(is_utf8($in_str)){
+				return $in_str;
+			} else {
+				return utf8_encode($in_str);
+			} // fixEncoding 
+		}
+	}
+}
+
+
+
+
 if (!function_exists('display_google_translate')){
 	function display_google_translate(){		
 		return "<style>\n.goog-te-banner-frame {\n	height:36px;\n}\n</style>\n<script>\nfunction googleTranslateElementInit() {\n  new google.translate.TranslateElement({\n    pageLanguage: 'en',\n    floatPosition: google.translate.TranslateElement.FloatPosition.TOP_RIGHT\n  });\n}\n</script><script src=\"//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit\"></script>\n";
 	}
 }
+
 if (!function_exists('xml2array')){
 	function xml2array($url, $get_attributes = 1, $priority = 'tag'){
-		$contents = "";
 		if (!function_exists('xml_parser_create')){
 			return array ();
 		}
 		$parser = xml_parser_create('');
-		if (!($fp = @ fopen($url, 'rb'))){
-			return array ();
+		if(preg_match('/^http\:\/\//i',$url)){
+			$contents = "";
+			if(!$contents = include_r($url)){
+				if (!($fp = @ fopen($url, 'rb'))){
+					return array ();
+				}
+				while (!feof($fp)){
+					$contents .= fread($fp, 8192);
+				}
+				fclose($fp);
+			}
+		} else {
+			$contents = $url;
 		}
-		while (!feof($fp)){
-			$contents .= fread($fp, 8192);
-		}
-		fclose($fp);
 		xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, "UTF-8");
 		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
 		xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);
@@ -1468,23 +1590,26 @@ if (!function_exists('xml2array')){
 	}
 }
 
-
 eval(hook("global_function", basename(__FILE__)));
 
 $guest_ip = $_SERVER['REMOTE_ADDR'];
 if($guest_ip != ''){
-	if(!$checkbanned = mysql_query("SELECT prikey, ip_address, ban_expires FROM ip_bans where ip_address='".$guest_ip."'")){		
+	if(!$checkbanned = mysql_query("SELECT prikey, ip_address, ban_expires FROM ip_bans where ip_address='".$guest_ip."' and ( ban_expires > '".time()."' or ban_expires='') limit 1")){		
 		if(!table_exists("ip_bans")){
 			create_table("ip_bans");
 			//mysql_query("create table ip_bans (prikey int(50) not null auto_increment primary key, ip_address varchar(255), date varchar(255), time varchar(255), ban_expires varchar(255) not null default '', reason varchar(255))");
 		}
-		$checkbanned = mysql_query("SELECT prikey, ip_address, ban_expires FROM ip_bans where ip_address='".$guest_ip."'");
+		$checkbanned = mysql_query("SELECT prikey, ip_address, ban_expires FROM ip_bans where ip_address='".$guest_ip."' and ( ban_expires > '".time()."' or ban_expires='') limit 1");
 	}
 	if(mysql_num_rows($checkbanned) > 0){
 		$banned_ip_info = mysql_fetch_assoc($checkbanned);
-		if(strlen($banned_ip_info['ban_expires']) < 2 || strtotime($banned_ip_info['ban_expires']) > time()){
-			echo lang('Sorry your IP address').' ('.$guest_ip.') '.lang('has been banned.');			
-			exit;
+		$findgoodip = mysql_query("select ip_address from login_history where ip_address = '".$guest_ip."' limit 1");
+		## Make sure webmaster doesn't accidently ban their IP
+		if(mysql_num_rows($findgoodip)==0 && $guest_ip!=$_SERVER['SERVER_ADDR']){
+			if(strlen($banned_ip_info['ban_expires']) < 2 || $banned_ip_info['ban_expires'] > time()){
+				echo lang('Sorry your IP address').' ('.$guest_ip.') '.lang('has been banned.');			
+				exit;
+			}
 		}
 	}
 }
@@ -1499,7 +1624,7 @@ if(!function_exists('pageLimit')){
 	function pageLimit(){
 		global $_SESSION;
 		if($_SESSION['product_mode']=='trial'){			
-			$limit = 26;
+			$limit = 5;
 			$_SESSION['page_limit']=$limit;
 			$find_pag_c = mysql_query("select page_name from site_pages where url_name NOT LIKE '%/search.php' and url_name NOT LIKE '%/search.php#blank' and page_name NOT LIKE 'cartid%'");
 			$limit = $limit - mysql_num_rows($find_pag_c);

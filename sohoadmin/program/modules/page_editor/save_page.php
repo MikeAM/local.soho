@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -42,21 +42,37 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 session_start();
-error_reporting(E_PARSE);
+
 set_time_limit(0);		// IMPORTANT! If server hangs, this will save you! (Not necesary in PHP-Safe_Mode)
 
 # Include core interface files!
 require_once("../../includes/product_gui.php");
 
-if($_POST['SAVEAS_name'] != ''){
-	$_POST['SAVEAS_name'] = str_replace('_', ' ', $_POST['SAVEAS_name']);
+
+if($_POST['PROP_name']!=''){
+	$_POST['PROP_name'] = preg_replace('/[ _]+$/','',$_POST['PROP_name']);
+	$_POST['PROP_name'] = preg_replace('/^[ _]+/','',$_POST['PROP_name']);
+	$PROP_name = $_POST['PROP_name'];
+}
+//if($_POST['SAVEAS_name']!=''){
+//	$_POST['SAVEAS_name'] = preg_replace('/[ ]?$/','',$_POST['SAVEAS_name']);
+//}
+
+if($_POST['SAVEAS_name'] != ''){	
+	$_POST['SAVEAS_name'] = str_replace('_', ' ', $_POST['SAVEAS_name']);	
+	$_POST['SAVEAS_name'] = preg_replace('/^[ ]+/','',$_POST['SAVEAS_name']);
+	$_POST['SAVEAS_name'] = preg_replace('/[ ]+$/','',$_POST['SAVEAS_name']);
+
+
 	$SAVEAS_name = $_POST['SAVEAS_name'];
 
 	$SAVEAS_name = slashthis($SAVEAS_name);
-	$SAVEAS_name = eregi_replace("'", "", $SAVEAS_name);
-	$SAVEAS_name = str_replace("&", "", $SAVEAS_name);
+	$SAVEAS_name = str_replace("'", "", $SAVEAS_name);
+	//$SAVEAS_name = str_replace("&", "", $SAVEAS_name);
 
-	$checkq = mysql_query("select prikey, page_name, url_name from site_pages where page_name='".str_replace('_', ' ', $SAVEAS_name)."' or url_name='".str_replace(' ', '_', $SAVEAS_name)."'");
+
+	$checkq = mysql_query("select prikey, page_name, url_name from site_pages where page_name='".str_replace('_', ' ', $SAVEAS_name)."' or url_name='".str_replace(' ', '_', $SAVEAS_name)."'");	
+	
 	if(mysql_num_rows($checkq) > 0){
 		echo "<script type=\"text/javascript\">\n";
 		echo "alert('".lang('A page named ').$SAVEAS_name.' '.lang('already exists.')."');\n";
@@ -100,7 +116,7 @@ function sterilize($sterile_var) {
 	$tmp = str_replace('', '', $tmp);
 	$tmp = str_replace('/', '', $tmp);
 	$tmp = str_replace('\\', '', $tmp);
-	$tmp = str_replace('&', "&amp;", $tmp);
+	//$tmp = str_replace('&', "&amp;", $tmp);
 	$tmp = str_replace('=', '', $tmp);
 	$tmp = str_replace('"', ' ', $tmp);
 	$tmp = str_replace('\'', '', $tmp);
@@ -115,13 +131,18 @@ function sterilize($sterile_var) {
 ###################################################################
 #### GET CONTENT VARIABLES
 ###################################################################
-
+//echo "<textarea style=\"width:1000px; height:800px;overflow:scroll;\">\n";
 //foreach($_POST as $var=>$val){
-//   echo "var = (".$var.") val = (".$val.") sterile_var = (".sterilize($val).")<br>\n";
+//  // echo "var = (".$var.") val = (".$val.") sterile_var = (".sterilize($val).") \n";
+//  echo print_r($_POST);
 //}
+//echo "</textarea>\n";
 //exit;
 
 //echo "HTTP_POST_VARS(".$HTTP_POST_VARS.")";
+
+
+
 $string = implode("!~!", $HTTP_POST_VARS);
 $formValues = split("!~!", $string);
 $numVars = count($formValues);
@@ -133,9 +154,12 @@ if(url_get_encoding('http://'.$_SESSION['this_ip'].'/sohoadmin/config/isp.conf.p
 	$PROP_name = utf8_decode($PROP_name);
 	$PROP_name = utf8_encode($PROP_name);
 }
+
+
 if (str_replace('_', ' ', $PROP_name) != str_replace('_', ' ', $PROP_KEYNAME)) {
 //if ($PROP_name != $PROP_KEYNAME) {
-	$new_name = stripslashes($PROP_name);
+	$new_name = slashthis($PROP_name);
+	//$new_name = stripslashes($PROP_name);
 	$new_name = sterilize($new_name);
 	//$new_name = ucwords($new_name);
 	$thisPage = str_replace(" ", "_", $new_name);
@@ -150,13 +174,18 @@ if (str_replace('_', ' ', $PROP_name) != str_replace('_', ' ', $PROP_KEYNAME)) {
 
 	if(file_exists($newfilenamecon)){
 		//echo "<b>Unable to rename page to (".$new_name.") because that page_name already exists!!<b><br><br>\n";
+		rename($newfilenamecon,$newfilenamecon.'.bak');
+		rename($newfilenameregen,$newfilenameregen.'.bak');
+//		echo "<script type=\"text/javascript\">\n";
+//		echo "alert('".lang('Unable to rename page to ').'('.$new_name.') '.lang(' because that page name already exists!! ')."');\n";
+//		echo "window.location = 'page_editor.php?currentPage=".str_replace('&','%26',str_replace('_', ' ', $oldthisPage))."&nocache=".time()."'; \n";
+//		echo "</script>\n"; exit;
+
+		rename($oldfilenameregen, $newfilenameregen);
+		rename($oldfilenamecon, $newfilenamecon);
+		rename($oldpagedocrootphp, $newpagedocrootphp);
 		
-		echo "<script type=\"text/javascript\">\n";
-		echo "alert('".lang('Unable to rename page to ').'('.$new_name.') '.lang(' because that page name already exists!! ')."');\n";
-		echo "window.location = 'page_editor.php?currentPage=".str_replace('_', ' ', $oldthisPage)."&nocache=".time()."'; \n";
-		echo "</script>\n"; exit;
-		
-		$thisPage = $oldthisPage;
+//		$thisPage = $oldthisPage;
 	} else {
 		rename($oldfilenameregen, $newfilenameregen);
 		rename($oldfilenamecon, $newfilenamecon);
@@ -165,13 +194,13 @@ if (str_replace('_', ' ', $PROP_name) != str_replace('_', ' ', $PROP_KEYNAME)) {
 } elseif ($SAVEAS_name) {
 	$new_name = stripslashes($SAVEAS_name);
 	//$new_name = ucwords($new_name);
-   $thisPage = eregi_replace(" ", "_", $new_name);
+   $thisPage = str_replace(" ", "_", $new_name);
 } else {
-   $thisPage = eregi_replace(" ", "_", $currentPage);
+   $thisPage = str_replace(" ", "_", $currentPage);
 }
 //echo "page name(".$currentPage.")<br/>\n";
 
-$daPage = eregi_replace(" ", "%20", $currentPage);
+$daPage = str_replace(" ", "%20", $currentPage);
 
 $filename = "$cgi_bin/$thisPage.regen";
 $thispageRegen = '';
@@ -183,7 +212,7 @@ for ($x=1;$x<=10;$x++) {
 	for ($y=1;$y<=3;$y++) {
 		$varTemp = "R" . $x . "C" . $y;
 		//echo "-------------------------------------(".$varTemp.")<br/>\n";
-
+		$varTemp = str_replace("<img class=\"blockerimg\" src=\"whitespace.gif\">",'',$varTemp);
 		$varTemp = ${$varTemp};
 		$varTemp = stripslashes($varTemp);
 		//echo "<textarea style=\"width:900px;height:150px;\">".$varTemp."</textarea><br/>\n";
@@ -244,15 +273,28 @@ for ($x=1;$x<=$numLinkVars;$x++) {
 //echo "<textarea style=\"width:900px;height:150px;\">".$thispageRegen."</textarea><br/>\n";
 //exit;
 fclose($file);
-mysql_query("update site_pages set content_regen='".addslashes($thispageRegen)."' where url_name='".$thisPage."'");
-chmod($filename, 0755);
+if($_POST['currentpageprik']!=''){
+	mysql_query("update site_pages set content_regen='".addslashes($thispageRegen)."' where prikey='".$_POST['currentpageprik']."'");
+} else {
+	mysql_query("update site_pages set content_regen='".addslashes($thispageRegen)."' where url_name='".$thisPage."'");	
+}
 
+chmod($filename, 0755);
+if($_POST['currentpageprik']!=''){
+	$getpagename=mysql_query("select prikey from site_pages where prikey='".$_POST['currentpageprik']."' limit 1");
+} else {
+	$getpagename=mysql_query("select prikey from site_pages where url_name='".$thisPage."' limit 1");	
+}
+$pageuid_ar=mysql_fetch_assoc($getpagename);
+$pageuid=$pageuid_ar['prikey'];
 ###################################################################
 #### START WRITE TO HTML SAVE ROUTINE 				   			###
 ###################################################################
 
 $spacer = "<image src=\"spacer.gif\" width=\"199\" height=\"1\" border=\"0\">\n";
-$tab = "\n     ";
+$tab = "     ";
+
+$divlayout=1;
 
 if ($CONTENTAREA_VAR == "FIXED") {
 	// Fixed Expansion (Old Style)
@@ -263,13 +305,18 @@ if ($CONTENTAREA_VAR == "FIXED") {
 	// -------------------------------------------------------------------------------
 	// Added by popular demand.  The old way is still in the code, just commented out
 	// in case fixed width comes back in style.
-
-	$thispage = "<table id=\"content-parent\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" align=\"center\">\n";
+	$thispage = "<table id=\"content-parent\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\">\n";
 }
+$tab="	";
+if($divlayout==1){
+	$thispage = "<div id=\"content-parent\">\n";
+}
+
+
 
 for ($row=1;$row<=10;$row++) {
 
-	$note = "\n\n\n<!-- Content Row $row ----------------------------------------- -->\n\n\n";
+	$note = $tab."<!-- Content Row $row ----------------------------------------- -->\n";
 	$thisrow = "";
 	$fill = " ";
 
@@ -287,7 +334,56 @@ for ($row=1;$row<=10;$row++) {
 	if (!eregi("pixel.gif", $col[2])) { $thisrow .= "1-"; } else { $thisrow .= "0-"; }
 	if (!eregi("pixel.gif", $col[3])) { $thisrow .= "1"; } else { $thisrow .= "0"; }
 
-	if ($CONTENTAREA_VAR == "FIXED") {
+	if($divlayout==1){
+		// New Liquid Expansion by cameron
+		if($thisrow == "0-0-0"){
+			$fill = "";
+		} else {
+			$fill = $note.$tab."<div class=\"sohorow row\">\n";
+			$csc=explode('-',$thisrow);
+			$totcolcount=$csc['0']+$csc['1']+$csc['2'];
+			$foundationarray['4']='four columns';
+			$foundationarray['6']='six columns';
+			$foundationarray['8']='eight columns';
+			$foundationarray['12']='twelve columns';
+//			if($totcolcount==1){ $foundationclass='twelve'; }
+//			if($totcolcount==2){ $foundationclass='twelve'; }
+//			if($totcolcount==1){ $foundationclass='twelve'; }
+			$csc_tot=round(100/$totcolcount);
+			if($csc['0']==1){
+				if($csc['1']==1){
+					$foundclass=$foundationarray['4'];
+					$l[1]='33%';
+				} else {
+					$foundclass=$foundationarray[12/$totcolcount];
+					$l[1]=$csc_tot.'%';
+				}				
+				$fill .= $tab.$tab."<div class=\"soholeft ".$foundclass."\">\n".$tab.$tab.$tab."#COL1#\n".$tab.$tab."</div>\n";
+			}
+			if($csc['1']==1){
+				if($csc['0']+$csc['2']==1){
+					$foundclass=$foundationarray['8'];
+					$l[2]='66%';
+				} else {
+					$foundclass=$foundationarray[12/$totcolcount];
+					$l[2]=$csc_tot.'%';
+				}
+				$fill .= $tab.$tab."<div class=\"sohocenter ".$foundclass."\">\n".$tab.$tab.$tab."#COL2#\n".$tab.$tab."</div>\n";
+			}
+			if($csc['2']==1){
+				if($csc['1']==1){
+					$foundclass=$foundationarray['4'];
+					$l[3]='33%';
+				} else {
+					$foundclass=$foundationarray[12/$totcolcount];	
+					$l[3]=$csc_tot.'%';
+				}
+				$fill .= $tab.$tab."<div class=\"sohoright ".$foundclass."\">\n".$tab.$tab.$tab."#COL3#\n".$tab.$tab."</div>\n";
+			}
+			$fill .= $tab."</div>\n";
+		}
+		
+	} elseif ($CONTENTAREA_VAR == "FIXED") {
 
 		if ($thisrow == "1-0-0") { $fill = "$note<tr>$tab<td align=left valign=top width=612 colspan=3>#COL1#</td>\n</tr>\n"; $l[1]=597; }
 		if ($thisrow == "0-1-0") { $fill = "$note<tr>$tab<td align=center valign=top width=612 colspan=3>#COL2#</td>\n</tr>\n"; $l[2]=597; }
@@ -331,12 +427,13 @@ for ($row=1;$row<=10;$row++) {
 			// ###############################################################################
 
 			$content[$row] = eregi_replace("#COL$x#", $droparea, $content[$row]);
-//     		echo "<textarea name=\"textarea\" style=\" width: 300; height: 300;\">".$content[$row]."</textarea><br><br>\n";
+     		//echo "<textarea name=\"textarea\" style=\" width: 300; height: 300;\">".$content[$row]."</textarea><br><br>\n";
 
 		}
 	}
 
 }
+
 
 ###################################################################
 #### Save Final Page HTML for Display				               ####
@@ -356,12 +453,25 @@ for ($row=1;$row<=10;$row++) {
 	$thispageContent .= "$content[$row]";
 }
 //fwrite($file, "\n</table>\n");
-$thispageContent .= "\n</table>\n";
+
+if($divlayout==1){
+	$thispageContent .= "</div>\n";
+} else {
+	$thispageContent .= "\n</table>\n";	
+}
+
 $thispageContent = str_replace(' src="http://'.$this_ip.'/images/', ' src="images/', $thispageContent);
+//mysql_query("create table sidebar_boxes (pageid int(10), box_number int(10), boxregen blob, boxcontent blob)");
+//echo mysql_error(); exit;
+
+//echo testArray($_POST['SB1']);
+//exit;
+//echo "<pre><textarea style=\"width:1000px;height:950px;\">".htmlspecialchars($thispageContent)."</textarea><br/>\n";
+//exit;
 
 $file = fopen("$filename", "w");
 if ( !fwrite($file, "$thispageContent") ) {
-   echo "<b>Unable to save page content for (".$_GET['currentPage'].") to file (".$filename.")!<b><br><br>\n";
+   echo "<b>Unable to save page content for (".$_REQUEST['currentPage'].") to file (".$filename.")!<b><br><br>\n";
    echo "<u>Possible Solution</u>:<br>\n";
    echo "Log in to your hosting account via FTP and change permissions on the '/sohoadmin/tmp_content' directory \n";
    echo "from '".substr(sprintf('%o', fileperms($cgi_bin)), -4)."'\n";
@@ -369,8 +479,11 @@ if ( !fwrite($file, "$thispageContent") ) {
    exit;
 }
 
-
-mysql_query("update site_pages set content='".addslashes($thispageContent)."' where url_name='".$pagefile."'");
+if($_POST['currentpageprik']!=''){
+	mysql_query("update site_pages set content='".addslashes($thispageContent)."' where prikey='".$_POST['currentpageprik']."'");
+} else {
+	mysql_query("update site_pages set content='".addslashes($thispageContent)."' where url_name='".$pagefile."'");	
+}
 fclose($file);
 
 chmod($filename, 0755);
@@ -388,12 +501,13 @@ $indexphpurl .= 'if($pagefile == \'\'){'."\n";
 $indexphpurl .= '	$pagefile = $_SERVER[\'SCRIPT_FILENAME\'];'."\n";
 $indexphpurl .= '}'."\n";
 
-$indexphpurl .= 'if(function_exists(\'url_get_encoding\')){'."\n";
-
-$indexphpurl .= '	if(url_get_encoding(\'http://\'.$_SESSION[\'this_ip\'].\'/sohoadmin/config/isp.conf.php\') != \'UTF-8\' && function_exists(\'utf8_decode\')){'."\n";
-$indexphpurl .= '		$pagefile = utf8_decode($pagefile);'."\n";
-$indexphpurl .= '	}'."\n";
-$indexphpurl .= '}'."\n";
+//$indexphpurl .= 'if(function_exists(\'url_get_encoding\')){
+//	if(strtoupper(url_get_encoding(\'http://\'.$_SESSION[\'this_ip\'].\'/sohoadmin/config/isp.conf.php\')) != \'UTF-8\' && function_exists(\'utf8_decode\')){
+//		if(file_exists(\'sohoadmin/tmp_content/\'.str_replace(\'.php\',\'.con\',utf8_decode(basename($pagefile))))){
+//			$pagefile = utf8_decode($pagefile);
+//		}
+//	}
+//}'."\n";
 
 $indexphpurl .= '$pagefile = preg_replace(\'/\.php$/i\', \'\', basename($pagefile));'."\n";
 
@@ -434,6 +548,50 @@ fclose($indexphpfile);
 chmod($indexphpfilename, 0755);
 
 
+
+
+if($_POST['pgboxcount'] != '' && $_POST['pgboxcount'] > 0 && $pageuid!='' && $pageuid > 0){
+	$finddefaultsq=mysql_query("select * from sidebar_default");
+	while($finddefaults = mysql_fetch_assoc($finddefaultsq)){
+		$finddefaultsq_ar[$finddefaults['box_number']]=$finddefaults['pageid'];	
+	}
+	for ($pgc=1;$pgc<=$_POST['pgboxcount'];$pgc++) {
+		if(strlen($_POST['copybox'.$pgc]) < 1){
+			$_POST['SB'.$pgc] = stripslashes($_POST['SB'.$pgc]);
+			$thisrow=$_POST['SB'.$pgc];
+			$droparea='';
+			include("object_write.php");
+			$thisdropcontent=$droparea;
+			mysql_query("delete from sidebar_boxes where pageid='".$pageuid."' and box_number='".$pgc."'");
+			if($pageuid != ''){
+				mysql_query("insert into sidebar_boxes (pageid, box_number, copy_box, boxregen, boxcontent) values('".$pageuid."','".$pgc."','','".addslashes($_POST['SB'.$pgc])."','".addslashes($thisdropcontent)."')");
+			}
+			if($_POST['defaultbox'.$pgc]=='true'){
+				mysql_query("delete from sidebar_default where box_number='".$pgc."'");
+				mysql_query("insert into sidebar_default (box_number,pageid) values('".$pgc."','".$pageuid."')");
+			}
+			$findempty=mysql_query("select pageid from sidebar_default where box_number='".$pgc."'");
+			if(mysql_num_rows($findempty)==0){
+				mysql_query("insert into sidebar_default (box_number,pageid) values('".$pgc."','".$pageuid."')");
+			}
+			//create table sidebar_default (box_number int(50), defaultbox varchar(255))
+		} else {
+			unset($copybox_ar);
+			$copybox_ar = explode('~~',$_POST['copybox'.$pgc]);
+			mysql_query("update sidebar_default set pageid='".$copybox_ar['0']."' where box_number='".$pgc."' and pageid='".$pageuid."'");
+			mysql_query("delete from sidebar_boxes where pageid='".$pageuid."' and box_number='".$pgc."'");
+			//echo $finddefaultsq_ar[$pgc].'!='.$copybox_ar['0'].'  '.$pgc.' != '.$copybox_ar['1']; exit;
+			if($finddefaultsq_ar[$pgc]!=$copybox_ar['0'] || $pgc != $copybox_ar['1']){
+				mysql_query("insert into sidebar_boxes (pageid, box_number, copy_box, boxregen, boxcontent) values('".$pageuid."','".$pgc."','".$_POST['copybox'.$pgc]."','','')");
+			}
+		}
+		//echo mysql_error();
+	}
+}
+
+
+
+
 #######################################################
 ### UPDATE PAGE PROPERTIES WITH SAVE		    	    ###
 #######################################################
@@ -447,7 +605,8 @@ include ("update-properties.php");
 eval(hook("save_page.php:bottom-before-redirect"));
 
 if ($redirect == "preview") {
-   $redirect = "page_editor.php?previewWindow=1&currentPage=$currentPage&=SID";
+   $redirect = "page_editor.php?previewWindow=1&currentPage=".str_replace('&','%26',$currentPage)."&=SID";
+  
 	echo "<script>\n";
 	echo "document.location.href='".$redirect."';";
 	echo "</script>\n";
@@ -459,7 +618,7 @@ unset($_GET);
 unset($_REQUEST);
 unset($_POST);
 echo "<script>\n";
-echo "document.location.href='".$redirect."?currentPage=".$currentPage."';";
+echo "document.location.href='".$redirect."?currentPage=".str_replace('&','%26',$currentPage)."';";
 echo "</script>\n";
 exit;
 //header ("Location: $redirect?currentPage=$currentPage&=SID");

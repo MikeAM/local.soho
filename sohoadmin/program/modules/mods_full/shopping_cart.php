@@ -42,7 +42,7 @@ include_once("../../includes/product_gui.php");
 		$match = 0;
 		$tablename = "cart_category";
 
-		$result = mysql_list_tables("$db_name");
+		$result = soho_list_tables();
 		$i = 0;
 		while ($i < mysql_num_rows ($result)) {
 			$tb_names[$i] = mysql_tablename ($result, $i);
@@ -78,7 +78,7 @@ include_once("../../includes/product_gui.php");
 		$match = 0;
 		$tablename = "cart_products";
 
-		$result = mysql_list_tables("$db_name");
+		$result = soho_list_tables();
 		$i = 0;
 		while ($i < mysql_num_rows ($result)) {
 			$tb_names[$i] = mysql_tablename ($result, $i);
@@ -105,7 +105,7 @@ include_once("../../includes/product_gui.php");
 		$match = 0;
 		$tablename = "cart_options";
 
-		$result = mysql_list_tables("$db_name");
+		$result = soho_list_tables();
 		$i = 0;
 		while ($i < mysql_num_rows ($result)) {
 			$tb_names[$i] = mysql_tablename ($result, $i);
@@ -190,7 +190,7 @@ if ( !mysql_query("select DISPLAY_ZIP from cart_options") ) {
 		$match = 0;
 		$tablename = "cart_products";
 
-		$result = mysql_list_tables("$db_name");
+		$result = soho_list_tables();
 		$i = 0;
 		while ($i < mysql_num_rows ($result)) {
 			$tb_names[$i] = mysql_tablename ($result, $i);
@@ -475,7 +475,8 @@ if ( !eregi(";INVOICES_YES;", $CUR_USER_ACCESS) ) {
 	$THIS_DISPLAY .= "	</tr>\n";
 	
 	$THIS_DISPLAY .= "	<tr>\n";
-	$THIS_DISPLAY .= "		<td class=\"first-child\">&nbsp;</td>\n";
+	//$THIS_DISPLAY .= "		<td class=\"first-child\">&nbsp;</td>\n";
+	$THIS_DISPLAY .= "		<td class=\"first-child\"><button type=\"button\" class=\"grayButton\" onclick=\"navto('shopping_cart/cart_comments.php');\"><span><span>".lang("Cart Comments")."</span></span></button></td>\n";
 	$THIS_DISPLAY .= "		<td><button type=\"button\" class=\"blueButton\" onclick=\"navto('shopping_cart/tax_rates.php');\"><span><span>".lang("Tax Rate Options")."</span></span></button></td>\n";
 	$THIS_DISPLAY .= "		<td><button type=\"button\" class=\"grayButton\" onclick=\"navto('shopping_cart/returns_policy.php');\"><span><span>".lang("Returns/Exchanges Policy")."</span></span></button></td>\n";
 	$THIS_DISPLAY .= "	</tr>\n";

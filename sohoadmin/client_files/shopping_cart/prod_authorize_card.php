@@ -52,7 +52,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 //
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-error_reporting(E_PARSE);
+error_reporting('341');
 
 /*---------------------------------------------------------------------------------------------------------*
    ______ __                                 ______                  __
@@ -68,9 +68,21 @@ if ( $do == "chargeit" ) {
    $result = mysql_query("SELECT * FROM cart_authorize");
    $AUTHORIZE = mysql_fetch_array($result);
 
+	$authcart = new userdata("cart_authorize");
+	if($authcart->get("scHost")!='' && $authcart->get("scPath")!=''){
+//		$scHost = "eprocessingnetwork.com";  $scPath = "/cgi-bin/an/transact.pl";
+		$scHost = $authcart->get("scHost");
+		$scPath = $authcart->get("scPath");
+	} else {
+   		$scHost = "secure.authorize.net";
+   		$scPath = "/gateway/transact.dll";
+	}
+
+   # Target url and script Lyndas
+//   $scHost = "eprocessingnetwork.com";
+//   $scPath = "/cgi-bin/an/transact.pl";
    # Target url and script
-   $scHost = "secure.authorize.net";
-   $scPath = "/gateway/transact.dll";
+
 
    # Data to pass to gateway
    $EXPDATE = "".$CC_MON."/".$CC_YEAR."";
@@ -163,7 +175,8 @@ if ( $do == "chargeit" ) {
       # Declined: show error message a cc form
       echo "<div align=\"center\" style=\"border: 1px solid red; background-color: #F7DFDF;\" class=\"text\"><br>\n";
       echo " ".lang("Unable to complete transaction").". ".lang("Your credit card has not been charged").".<br>";
-      echo " Error ".$scResult[2].": ".$scResult[3]."<br><br>\n";
+      echo lang("Please check your details and try again.");
+//      echo " Error ".$scResult[2].": ".$scResult[3]."<br><br>\n";
      // echo " ".$AUTHORIZE['AN_ACCTID']." | ".$AUTHORIZE['AN_ACCTKEY']."<br><br>";
       echo "</div><br>\n";
 
@@ -259,9 +272,9 @@ function onClick(){
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
  <tr>
   <td align="center" valign="top">
-   <table border="0" cellspacing="0" cellpadding="5"  style='border: 1px solid black;' align="center" bgcolor="#<? echo $OPTIONS[DISPLAY_CARTBG]; ?>">
+   <table border="0" cellspacing="0" cellpadding="5"  style='border: 1px solid black;' align="center" bgcolor="<? echo $OPTIONS[DISPLAY_CARTBG]; ?>">
     <tr>
-     <td colspan="2" class="text" align="left" bgcolor="#<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
+     <td colspan="2" class="text" align="left" bgcolor="<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
       &nbsp;
      </td>
     </tr>
@@ -269,9 +282,10 @@ function onClick(){
     <tr>
      <td colspan="2" class="text" align="left">
       <font color="red">
-      <? echo lang("The total amount of your purchase"); ?>,
-      $<? echo $ORDER_TOTAL; ?>,
-      <? echo lang("will be charged to your credit card."); ?>
+      <?php echo lang("The total amount of your purchase"); ?>,
+      <?php $dSign = $OPTIONS['PAYMENT_CURRENCY_SIGN']; ?>
+      <?php echo $dSign.$ORDER_TOTAL; ?>,
+      <?php echo lang("will be charged to your credit card."); ?>
       </font>
      </td>
     </tr>
@@ -378,7 +392,7 @@ function onClick(){
      </td>
     </tr>
     <tr>
-     <td colspan="2" class="text" align="center" bgcolor="#<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
+     <td colspan="2" class="text" align="center" bgcolor="<? echo $OPTIONS[DISPLAY_HEADERBG]; ?>">
       <span id="order_button_container"><input type="button" value=" Process Order &gt;&gt;" class="FormLt1" name="button" onClick="document.pay_authorize.submit();this.disabled=true;"></span>
      </td>
     </tr>

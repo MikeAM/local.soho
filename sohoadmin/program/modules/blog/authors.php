@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '' || $_REQUEST['_SESSION'] != '') { exit; }
 
 #=====================================================================================
@@ -13,7 +13,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 # module and keep it's look consistent with the rest of the product
 #=====================================================================================
 
-error_reporting(E_PARSE);
 session_start();
 
 # Include core files

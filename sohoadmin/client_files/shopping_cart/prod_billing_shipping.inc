@@ -27,8 +27,25 @@
 ## expressly forbidden and in violation of Domestic and International
 ## copyright laws.
 ###############################################################################
-
+create_table('cart_products_usersignup');
 $cartpref = new userdata("cart");
+
+
+$regform_signup = '';
+$kartkeys = explode(';',$_SESSION['CART_KEYID']);
+$usrsng = " where";
+foreach($kartkeys as $kval){
+	$kval=preg_replace('/[^0-9]/','',$kval);
+	$usrsng .= " product_id='".$kval."' or";
+}
+$usrsng = preg_replace('/ or$/','',$usrsng);
+$find_secstuffq = mysql_query("select * from cart_products_usersignup ".$usrsng);
+if(mysql_num_rows($find_secstuffq) == 1){
+	$find_secstuff = mysql_fetch_assoc($find_secstuffq);
+	if($find_secstuff['groups']!=''){
+		$regform_signup = $find_secstuff['groups'];
+	}
+}
 
 ?>
 
@@ -43,8 +60,19 @@ function same_info() {
 	document.CHECKOUT1.SCITY.value = document.CHECKOUT1.BCITY.value;
 	document.CHECKOUT1.SPHONE.value = document.CHECKOUT1.BPHONE.value;
 	document.CHECKOUT1.SCOUNTRY.value = document.CHECKOUT1.BCOUNTRY.value;
+<?php
+if ( $OPTIONS['DISPLAY_STATE'] != "noshow" ) {
+?>	
 	document.CHECKOUT1.SSTATE.value = document.CHECKOUT1.BSTATE.value;
+<?php
+}
+
+if ( $OPTIONS['DISPLAY_ZIP'] != "noshow" ) {
+?>
 	document.CHECKOUT1.SZIPCODE.value = document.CHECKOUT1.BZIPCODE.value;
+<?php
+}
+?>
 
 }
 </script>
@@ -73,11 +101,18 @@ function check_data() {
 		err_read = err_read+"Billing City\n";
 	}
 	
+
+<?php
+if ( $OPTIONS['DISPLAY_STATE'] != "noshow" ) {
+?>	
 	if (document.CHECKOUT1.BSTATE.value == "") {
 		err_read = err_read+"Billing State\n";
 	}
-	
+
+
 <?php
+}
+
 if ( $OPTIONS['DISPLAY_ZIP'] != "noshow" ) {
 ?>
 	if (document.CHECKOUT1.BZIPCODE.value == "" || document.CHECKOUT1.BZIPCODE.value == " " ) {
@@ -93,31 +128,57 @@ if ( $OPTIONS['DISPLAY_ZIP'] != "noshow" ) {
 
 	// Now Check Shipping Data
 	// ----------------------------------------------------
+	if(document.getElementById('shippingsame').checked!=true){
 
-	if (document.CHECKOUT1.SFIRSTNAME.value == "") {
-		err_read = err_read+"\nShipping First Name\n";
+		if (document.CHECKOUT1.SFIRSTNAME.value == "") {
+			err_read = err_read+"\nShipping First Name\n";
+		}
+		if (document.CHECKOUT1.SLASTNAME.value == "") {
+			err_read = err_read+"Shipping Last Name\n";
+		}
+		if (document.CHECKOUT1.SADDRESS1.value == "") {
+			err_read = err_read+"Shipping Address\n";
+		}
+		if (document.CHECKOUT1.SCITY.value == "") {
+			err_read = err_read+"Shipping City\n";
+		}
+<?php
+if ( $OPTIONS['DISPLAY_STATE'] != "noshow" ) {
+?>	
+		if (document.CHECKOUT1.SSTATE.value == "") {
+			err_read = err_read+"Shipping State\n";
+		}
+<?php
+}
+?>
+		if (document.CHECKOUT1.SZIPCODE.value == "" || document.CHECKOUT1.SZIPCODE.value == " ") {
+			err_read = err_read+"Shipping Zip Code\n";
+		}
+		if (document.CHECKOUT1.SPHONE.value == "") {
+			err_read = err_read+"Shipping Phone Number\n";
+		}
 	}
-	if (document.CHECKOUT1.SLASTNAME.value == "") {
-		err_read = err_read+"Shipping Last Name\n";
+
+<?php
+if($regform_signup!=''){
+?>
+	if (document.getElementById('BPASSWORD').value == "" || document.getElementById('BVERIFYPW').value == "") {
+		err_read = err_read+"Password\n";
+	} else {
+	
+		if (document.getElementById('BPASSWORD').value != document.getElementById('BVERIFYPW').value) {
+			err_read = err_read+" ";
+			alert('<?php echo lang("The passwords that you entered do not match each other. Please check them and re-submit."); ?>');
+		}
 	}
-	if (document.CHECKOUT1.SADDRESS1.value == "") {
-		err_read = err_read+"Shipping Address\n";
-	}
-	if (document.CHECKOUT1.SCITY.value == "") {
-		err_read = err_read+"Shipping City\n";
-	}
-	if (document.CHECKOUT1.SSTATE.value == "") {
-		err_read = err_read+"Shipping State\n";
-	}
-	if (document.CHECKOUT1.SZIPCODE.value == "" || document.CHECKOUT1.SZIPCODE.value == " ") {
-		err_read = err_read+"Shipping Zip Code\n";
-	}
-	if (document.CHECKOUT1.SPHONE.value == "") {
-		err_read = err_read+"Shipping Phone Number\n";
-	}
+<?php	
+}
+?>
 
 	if (err_read != "") {
-		alert("<?php echo lang("You have left the following required fields blank"); ?>:\n\n"+err_read);
+		if(err_read!=' '){
+			alert("<?php echo lang("You have left the following required fields blank"); ?>:\n\n"+err_read);
+		}
 	} else {
 		document.CHECKOUT1.submit();
 	}
@@ -126,13 +187,15 @@ if ( $OPTIONS['DISPLAY_ZIP'] != "noshow" ) {
 
 function check_n_send() {
    
-   <?
-   if ( $cartpref->get("disable_shipping") == "yes" ) {
+   <?php
+   if ( $cartpref->get("disable_shipping") == "yes" || $regform_signup!='') {
       echo "same_info();\n";
    }
    ?>
    
-   document.CHECKOUT1.submit();
+   
+   check_data();
+  
 }
 
 </SCRIPT>
@@ -140,7 +203,7 @@ function check_n_send() {
 <style>
 .shipping_row {
    <?
-   if ( $cartpref->get("disable_shipping") == "yes" ) {
+   if ( $cartpref->get("disable_shipping") == "yes" || $regform_signup!='') {
       echo "display: none;\n";
    }
    ?>
@@ -150,9 +213,7 @@ function check_n_send() {
 <FORM NAME="CHECKOUT1" METHOD=POST ACTION="pgm-checkout.php">
 <INPUT TYPE=HIDDEN NAME=customer_active VALUE="Y">
 
-<?
-
-
+<?php
 // ===========================================================================
 // If this needs to return to the verify order details step, the EDIT_INFO
 // flag var will be turned on because this is being accessed from the 'edit'
@@ -186,13 +247,17 @@ if ($email_err == 1) {
 // Only show remember me feature to "New Customers"
 // -------------------------------------------------------------------------------
 
+//echo testArray($_POST);
+//echo testArray($_SESSION);
+$pwrequired = '';
 
-if (eregi("Y", $OPTIONS['DISPLAY_REMEMBERME']) && !session_is_registered("REPEATCUSTOMER")) {
-
+if ($regform_signup != '' || ($OPTIONS['DISPLAY_REMEMBERME']=='Y' && $_SESSION["REPEATCUSTOMER"]=='')) {
+	$tddisp = '';
 	echo " <tr>\n";
 	echo "  <td colspan=\"2\" style=\"font-weight:bold\">".lang("Customer Registration")."</td>\n";
 	echo " </tr>\n";
-	echo " <TR>\n";
+	if($regform_signup!=''){ $tddisp = " style=\"display:none;\" "; }
+	echo " <TR ".$tddisp.">\n";	
 	echo "  <TD COLSPAN=\"2\">\n";
 
 	if ( strtoupper($REMEMBERME) == "ON" || strtoupper($_SESSION['REMEMBERME']) == "ON" ) { $chk_rememberme = " checked"; } else { $chk_rememberme = ""; }
@@ -202,11 +267,14 @@ if (eregi("Y", $OPTIONS['DISPLAY_REMEMBERME']) && !session_is_registered("REPEAT
 	echo " </TR>\n";
 	echo " <TR>\n";
 	echo "  <TD>\n";
-	echo "   <B>".lang("Choose a password")."</B>:<BR>\n";
-   echo "   <INPUT TYPE=\"password\" NAME=\"BPASSWORD\" SIZE=\"25\" class=\"tfield\" VALUE=\"".$BPASSWORD."\">\n";
+	if($regform_signup!=''){
+		$pwrequired = '<font color="#FF0000">*</font>';
+	}
+	echo "   <B>".$pwrequired.lang("Choose a password")."</B>:<BR>\n";
+	echo "   <INPUT TYPE=\"password\" NAME=\"BPASSWORD\" id=\"BPASSWORD\" SIZE=\"25\" class=\"tfield\" VALUE=\"".$BPASSWORD."\">\n";
 	echo "  </TD>\n";
-	echo "<TD ALIGN=\"LEFT\" VALIGN=\"MIDDLE\"><B>".lang("Verify your password")."</B>:<BR>\n";
-	echo ' <INPUT TYPE="password" NAME="BVERIFYPW" SIZE="25" STYLE="font-family: Arial; font-size: 9pt; width: 275px;" VALUE="'.$BVERIFYPW.'">
+	echo "<TD ALIGN=\"LEFT\" VALIGN=\"MIDDLE\"><B>".$pwrequired.lang("Verify your password")."</B>:<BR>\n";
+	echo ' <INPUT TYPE="password" NAME="BVERIFYPW" id="BVERIFYPW" SIZE="25" STYLE="font-family: Arial; font-size: 9pt; width: 275px;" VALUE="'.$BVERIFYPW.'">
 	    </TD>
 	  </TR>
 	  <TR ALIGN="CENTER">
@@ -219,7 +287,9 @@ if (eregi("Y", $OPTIONS['DISPLAY_REMEMBERME']) && !session_is_registered("REPEAT
 		echo "<FONT COLOR=RED>".lang("You have elected to register as a customer but did not choose a password for your account. Please do so now.")."</font><BR><BR>";
 	}
 
-	echo "<FONT COLOR=\"#999999\"><I>(".lang("If you are not using the customer registration feature, you may leave the password fields blank").")</I></FONT></TD></TR>";
+	if($regform_signup == ''){
+		echo "<FONT COLOR=\"#999999\"><I>(".lang("If you are not using the customer registration feature, you may leave the password fields blank").")</I></FONT></TD></TR>";
+	}
 
 } // End Remember Me Row
 
@@ -512,7 +582,7 @@ if ( $cartpref->get("nopobox_msg") != "no" ) {
       <INPUT TYPE="text" NAME="BPHONE" SIZE="25" class="tfield" VALUE="<? echo $BPHONE; ?>">
     </TD>
     <TD ALIGN="LEFT" VALIGN="TOP"><B><FONT COLOR="#FF0000">*</FONT><? echo lang("Email Address"); ?></B>:<BR>
-      <INPUT TYPE="text" NAME="BEMAILADDRESS" SIZE="25" class="tfield" VALUE="<? echo $_SESSION['BEMAILADDRESS']; ?>">
+      <INPUT TYPE="text" NAME="BEMAILADDRESS" id="BEMAILADDRESS" SIZE="25" class="tfield" VALUE="<? echo $_SESSION['BEMAILADDRESS']; ?>">
       <BR>
 
 	<?
@@ -537,12 +607,12 @@ if ( $cartpref->get("nopobox_msg") != "no" ) {
 <?
 
 	echo "<INPUT TYPE=HIDDEN NAME=shippingsame VALUE=\"$shippingsame\">\n";
-	if ($shippingsame == "1") { $CHECKED = "CHECKED"; } else { $CHECKED = ""; }
+	if ($shippingsame == "1" || $regform_signup!='') { $CHECKED = "CHECKED"; } else { $CHECKED = ""; }
 
 ?>
 
     <TD COLSPAN="2"> <? echo lang("Click Here"); ?>
-      <INPUT TYPE="checkbox" NAME="shippingsame" VALUE="1" onclick="same_info();" <? echo $CHECKED; ?>>
+      <INPUT TYPE="checkbox" id="shippingsame" NAME="shippingsame" VALUE="1" onclick="same_info();" <? echo $CHECKED; ?>>
       <? echo lang("to use Billing Information."); ?>
 <?
 if ( $cartpref->get("nopobox_msg") != "no" ) {
@@ -635,8 +705,9 @@ if ( $cartpref->get("nopobox_msg") != "no" ) {
     <TD COLSPAN=2 ALIGN="CENTER" VALIGN="MIDDLE">
 
 
-      <INPUT TYPE=IMAGE SRC="cont_checkout.gif" onclick="check_n_send();" WIDTH=106 HEIGHT=25 BORDER=0 STYLE="cursor: hand;" >
-
+     <button onclick="check_n_send();">Continue</button>
+      
+	
     </TD>
   </TR>
   <TR>

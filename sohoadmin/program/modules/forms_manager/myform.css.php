@@ -30,7 +30,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 error_reporting(E_PARSE);
 session_start();
-include_once($_SESSION['product_gui']);
+require_once("../../includes/product_gui.php");
 
 # Determines which types of fields can have which types of properties
 include_once("nocando.inc.php");
@@ -120,7 +120,7 @@ ob_start();
    margin-bottom: 0;
 }
 </style>
-<?
+<?php
 $disCSS = ob_get_contents();
 ob_end_clean();
 echo $disCSS;

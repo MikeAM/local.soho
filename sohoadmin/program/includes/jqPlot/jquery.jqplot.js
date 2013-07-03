@@ -502,7 +502,7 @@
         // Padding to extend the range above and below the data bounds.
         // The data range is multiplied by this factor to determine minimum and maximum axis bounds.
         // A value of 0 will be interpreted to mean no padding, and pad will be set to 1.0.
-        this.pad = 1.2;
+        this.pad = 1.1;
         // prop: padMax
         // Padding to extend the range above data bounds.
         // The top of the data range is multiplied by this factor to determine maximum axis bounds.
@@ -3493,7 +3493,7 @@
         this.prefix = '';
         // prop: formatString
         // string passed to the formatter.
-        this.formatString = '';
+        this.formatString = '%d';
         // prop: fontFamily
         // css spec for the font-family css attribute.
         this.fontFamily;

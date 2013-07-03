@@ -4,7 +4,6 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 
 require_once('../../includes/product_gui.php');
 
-
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
 ## Version 4.5
@@ -30,9 +29,12 @@ require_once('../../includes/product_gui.php');
 ## expressly forbidden and in violation of Domestic and International
 ## copyright laws.
 ###############################################################################
-
-$sresult = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages where page_name = '$currentPage'");
-$srow = mysql_fetch_array($sresult);
+if($_POST['currentpageprik']!=''){
+	$sresult = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages where prikey = '".$_POST['currentpageprik']."'");
+} else {
+	$sresult = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages where page_name = '$currentPage'");	
+}
+$srow = mysql_fetch_assoc($sresult);
 
 if($srow['username'] != "" && $srow['username'] != "NULL") {
    $pgsec = "1";
@@ -50,7 +52,7 @@ if($new_name) {
 //   echo $pge_request; exit;
 
 } else {
-   $pge_request = eregi_replace(" ", "_", $currentPage);
+   $pge_request = str_replace(" ", "_", $currentPage);
 }
 
 //$pge_request = trim($pge_request);
@@ -75,7 +77,7 @@ $thisMenu = "";
 $result = mysql_query("SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages WHERE type = 'main' AND main_menu <> '' ORDER BY main_menu");
 while ($row = mysql_fetch_array ($result)) {
 
-$htmlpgname = eregi_replace(" ", "_", $row['page_name']);
+$htmlpgname = str_replace(" ", "_", $row['page_name']);
 $htmlpgname .= ".html";
 $htmlpath = $doc_root."/".$htmlpgname;
 	if(!file_exists($htmlpath)) {
@@ -187,14 +189,33 @@ $BASE_HTML = eregi_replace("#DATE#", "$date", $BASE_HTML);
 
 ##########################################################################
 ##########################################################################
-
+if (str_replace('_', ' ', $PROP_name) != str_replace('_', ' ', $PROP_KEYNAME)) {
+	if($srow['sub_page_of']!=''){
+		$PROP_name = sterilize(stripslashes($PROP_name));
+		$subpageofar=explode('~~~',$srow['sub_page_of']);
+		$find_mainq=mysql_query("select prikey,page_name,url_name,sub_pages,sub_page_of from site_pages where page_name = '".$subpageofar['0']."'");
+		if(mysql_num_rows($find_mainq) == 1){
+			$find_mainq_ar=mysql_fetch_assoc($find_mainq);
+			$newsubsstuff=$find_mainq_ar['sub_pages'];
+			$newsubsstuff=preg_replace('/^'.$PROP_KEYNAME.'$/', $PROP_name, $find_mainq_ar['sub_pages']);
+			$newsubsstuff=preg_replace('/^'.$PROP_KEYNAME.';/', $PROP_name, $newsubsstuff);
+			$newsubsstuff=preg_replace('/;'.$PROP_KEYNAME.'$/', $PROP_name, $newsubsstuff);
+			$newsubsstuff=preg_replace('/;'.$PROP_KEYNAME.';/', $PROP_name, $newsubsstuff);
+			mysql_query("update site_pages set sub_pages='".str_replace("'","",$newsubsstuff)."' where prikey='".$find_mainq_ar['prikey']."'");
+			//echo $newsubsstuff;
+		}
+	}
+} 
 if (strlen($SAVEAS_name) < 2) {
 	$string = stripslashes($string);
-	$string = eregi_replace("'", "", $string);
+	$string = str_replace("'", "", $string);
 	$string = str_replace("&", "", $string);
 
-	$PROP_name = stripslashes($PROP_name);
+	$PROP_name = slashthis($PROP_name);
 	$PROP_name = str_replace('_', ' ', $PROP_name);
+	$PROP_name = sterilize(stripslashes($PROP_name));
+//	$PROP_name = str_replace("'", "", $PROP_name);
+//	$PROP_name = str_replace('"', "", $PROP_name);
 	//$PROP_name = sterilize($PROP_name);
 	//$PROP_name = ucwords($PROP_name);
 
@@ -212,7 +233,7 @@ if (strlen($SAVEAS_name) < 2) {
 
 
    if( $PROP_splash == "y" && $PROP_splash_type == "y" ){		// bgcolor
-   	$prop_bgcolor = eregi_replace("#", "", $prop_bgcolor);
+   	$prop_bgcolor = str_replace("#", "", $prop_bgcolor);
    	$prop_bgcolor_image = strtoupper($prop_bgcolor);
    } elseif ($PROP_splash == "y" && $PROP_splash_type == "i") {		// bg image
    	$prop_bgcolor_image = addslashes($PROP_image_type);
@@ -225,10 +246,14 @@ if (strlen($SAVEAS_name) < 2) {
 	$disStuff = "password = '".slashthis($KEYwords)."', page_name = '$PROP_name', url_name = '".str_replace(' ', '_', $PROP_name)."', type = 'Main', username = '$PROP_sec_code', ";
 	$disStuff .= "splash = '$PROP_splash_type',";
 	$disStuff .= "bgcolor = '$prop_bgcolor_image', title = '".slashthis($prop_title)."', description = '".slashthis($prop_desc)."'";
-	if ( !mysql_query("UPDATE site_pages SET $disStuff WHERE page_name = '$PROP_KEYNAME'") ) { echo "Could not save page properties because: ".mysql_error(); exit; }
-
-	if (str_replace(' ', '_', $PROP_KEYNAME) != str_replace(' ', '_',$PROP_name)) { $currentPage = $PROP_name; }
-
+	
+	if($_POST['currentpageprik']!=''){
+		if ( !mysql_query("UPDATE site_pages SET $disStuff WHERE prikey = '".$_POST['currentpageprik']."'") ) { echo "Could not save page properties because: ".mysql_error(); exit; }
+	} else {
+		if ( !mysql_query("UPDATE site_pages SET $disStuff WHERE page_name = '$PROP_KEYNAME'") ) { echo "Could not save page properties because: ".mysql_error(); exit; }	
+	}
+		if (str_replace(' ', '_', $PROP_KEYNAME) != str_replace(' ', '_',$PROP_name)) { $currentPage = $PROP_name; }
+	
 
 # Save As...
 } else {
@@ -240,11 +265,11 @@ if (strlen($SAVEAS_name) < 2) {
 	}
 	$link = substr("$time", 0, 10);
 
-	$SAVEAS_name = slashthis($SAVEAS_name);
-	$SAVEAS_name = eregi_replace("'", "", $SAVEAS_name);
-	$SAVEAS_name = str_replace("&", "", $SAVEAS_name);
+	$SAVEAS_name = stripslashes($SAVEAS_name);
+	$SAVEAS_name = str_replace("'", "", $SAVEAS_name);
+	$SAVEAS_name = str_replace('"', "", $SAVEAS_name);
 
-	$checkq = mysql_query("select prikey, page_name, url_name from site_pages where page_name='".str_replace('_', ' ', $SAVEAS_name)."' or url_name='".str_replace(' ', '_', $SAVEAS_name)."'");
+	$checkq = mysql_query("select prikey, page_name, url_name from site_pages where page_name='".str_replace('_', ' ', $SAVEAS_name)."' or url_name='".sterilize(str_replace(' ', '_', $SAVEAS_name))."'");
 	if(mysql_num_rows($checkq) > 0){
 		echo "<script type=\"text/javascript\">\n";
 		echo "alert('".lang('A page named ').$SAVEAS_name.' '.lang('already exists.')."');\n";
@@ -272,7 +297,7 @@ if (strlen($SAVEAS_name) < 2) {
 		if ( $_SESSION['CUR_USER_ACCESS'] == "WEBMASTER" || eregi(";MOD_CREATE_PAGES;", $_SESSION['CUR_USER_ACCESS']) ) {
 			//$qry = "INSERT INTO site_pages VALUES('$SAVEAS_name','$PROP_pagetype','', '$tmp', '','$link','$PROP_sec_code','$PROP_splash','$prop_bgcolor','$prop_title','".addslashes($prop_desc)."','$CUR_TEMPLATE')";
 			$qry = "INSERT INTO site_pages (page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, link, username, splash, bgcolor, title, description, template) ";
-			$qry .= "VALUES('$SAVEAS_name','".str_replace(' ', '_', $SAVEAS_name)."','$PROP_pagetype','','','', '$tmp','$link','$PROP_sec_code','$PROP_splash','$prop_bgcolor','$prop_title','".addslashes($prop_desc)."','$CUR_TEMPLATE')";
+			$qry .= "VALUES('$SAVEAS_name','".sterilize(str_replace(' ', '_', $SAVEAS_name))."','$PROP_pagetype','','','', '$tmp','$link','$PROP_sec_code','$PROP_splash','$prop_bgcolor','$prop_title','".addslashes($prop_desc)."','$CUR_TEMPLATE')";
 			mysql_query($qry);
 		}
 	
@@ -326,8 +351,12 @@ if(!table_exists("search_contents")){
 		echo mysql_error();
 	}
 }
+if($_POST['currentpageprik']!=''){
+	$query = "SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages where prikey='".$_POST['currentpageprik']."'"; // EDIT HERE and specify your table and field names for the SQL query
+} else {
+	$query = "SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages where page_name = '$PROP_name'"; // EDIT HERE and specify your table and field names for the SQL query	
+}
 
-$query = "SELECT prikey, page_name, url_name, type, custom_menu, sub_pages, sub_page_of, password, main_menu, link, username, splash, bgcolor, title, description, template FROM site_pages where page_name = '$PROP_name'"; // EDIT HERE and specify your table and field names for the SQL query
 $numresults=mysql_query($query); 
 $numrows=mysql_num_rows($numresults);	
 $curtmp = mysql_query("select allow_template_search from search_core where prikey='1'");
@@ -338,7 +367,7 @@ if ($CUR_TEMPLATE == 'include') {
 	$nft= '';
 } else {
 	$CUR_TEMPLATE == 'hide';
-	$nft = '&nft=../../../../program/modules/super_search/search_template';
+	$nft = '&nft=blank_template';
 }
 
 while ($row = mysql_fetch_array($numresults)) {							
@@ -357,7 +386,12 @@ while ($row = mysql_fetch_array($numresults)) {
 		
 		if ($row["username"] != '' ) {
 			$securegroup = $row["username"];
-			mysql_query("update site_pages set username='' where page_name='$title'");
+			if($_POST['currentpageprik']!=''){
+				mysql_query("update site_pages set username='' where prikey='".$_POST['currentpageprik']."'");
+			} else {
+				mysql_query("update site_pages set username='' where page_name='$title'");	
+			}
+			
 		}
 		
 		
@@ -380,8 +414,13 @@ while ($row = mysql_fetch_array($numresults)) {
 		$pagecontent = mysql_real_escape_string($pagecontent);
 
 		if ($row["username"] != '' ) {
-			$securegroup = $row["username"];
-			mysql_query("update site_pages set username='$securegroup' where page_name='$title'");
+			$securegroup = $row["username"];			
+			
+			if($_POST['currentpageprik']!=''){
+				mysql_query("update site_pages set username='$securegroup' where prikey='".$_POST['currentpageprik']."'");
+			} else {
+				mysql_query("update site_pages set username='$securegroup' where page_name='$title'");
+			}
 		}		
 	}	
 	$findmatch = mysql_query("select page_name from search_contents where page_name = '$title'");

@@ -57,12 +57,16 @@ $MONTHS[10] = "October";
 $MONTHS[11] = "November";
 $MONTHS[12] = "December";
 
+$archive_exists=0;
+if(table_exists('stats_byday_archive')){
+	$archive_exists=1;
+}
 ?>
 
 <HTML>
 <HEAD>
 <TITLE>Page Views by Day</TITLE>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<?php echo "<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=UT"."F-8\">\n"; ?>
 <LINK REL="stylesheet" HREF="../shared/soholaunch.css" TYPE="TEXT/CSS">
 <script language="JavaScript">
 
@@ -72,17 +76,16 @@ function MM_callJS(jsStr) { //v2.0
   return eval(jsStr)
 }
 
-function show_num(m,d,hit) {
+function show_num(MID,M,d,hit) {
 	if (hit == "") { hit = 0; }
-	displayvar = m+"_DNUM";
-	document.getElementById(displayvar).innerHTML = "Page Views for "+m+" "+d+": "+hit;
+	displayvar = MID+"_DNUM";
+	document.getElementById(displayvar).innerHTML = "Page Views for "+M+" "+d+": "+hit;
 }
-
 
 </script>
 </HEAD>
 
-<BODY BGCOLOR="#EFEFEF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#FF0000" VLINK="#FF0000" ALINK="#FF0000" LEFTMARGIN="10" TOPMARGIN="10" MARGINWIDTH="10" MARGINHEIGHT="10">
 
 	<?php
 
@@ -92,10 +95,21 @@ function show_num(m,d,hit) {
 
 	echo "<H5><FONT FACE=VERDANA><U>".$lang["PAGE VIEWS BY DAY"]."</U></FONT></H5>\n";
 
-	$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_byday GROUP BY Month UNION SELECT Month, Year, Real_Date FROM stats_byday_archive GROUP BY Month ORDER BY Real_Date DESC");
-
+	$result = mysql_query("SELECT Month, Year, Real_Date FROM stats_byday GROUP BY Real_Date UNION SELECT Month, Year, Real_Date FROM stats_byday_archive GROUP BY Real_Date ORDER BY Real_Date DESC");
+	$used=array();
 	while($ALL_MONTHS = mysql_fetch_array($result)) {
-
+		if(!in_array($ALL_MONTHS['Month'].$ALL_MONTHS['Year'], $used)){
+			$used[]=$ALL_MONTHS['Month'].$ALL_MONTHS['Year'];
+			
+				$statqry21="SELECT * FROM stats_byday WHERE Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]'";
+				if($archive_exists==1){
+					$statqry21.=" UNION SELECT * FROM stats_byday_archive WHERE Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]'";	
+				}
+				$statqry21 .= "  order by Hits DESC limit 1";
+				$db_result21 = mysql_query($statqry21);
+				$month_ciel_ar=mysql_fetch_assoc($db_result21);
+				$month_ciel=$month_ciel_ar['Hits'];
+			
 					$db_result = mysql_query("SELECT * FROM stats_byday WHERE Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]' UNION SELECT * FROM stats_byday_archive WHERE Month = '$ALL_MONTHS[Month]' AND Year = '$ALL_MONTHS[Year]'");
 
 					$tHITS = 0;											// Calculate Total Page Views
@@ -110,7 +124,8 @@ function show_num(m,d,hit) {
 
 
 					echo ("<TR>\n");
-					echo ("<TD ALIGN=\"RIGHT\" VALIGN=\"TOP\" class=smtext bgcolor=#EFEFEF>$tHITS -\n");
+					//echo ("<TD ALIGN=\"RIGHT\" VALIGN=\"TOP\" class=smtext bgcolor=#EFEFEF>$tHITS -\n");
+					echo ("<TD ALIGN=\"RIGHT\" VALIGN=\"TOP\" class=smtext bgcolor=#EFEFEF>$month_ciel -\n");
 
 					for ($x=1;$x<=31;$x++) {
 
@@ -122,11 +137,12 @@ function show_num(m,d,hit) {
 
 								$act_num[$x] = $row[Hits];
 
-								$tmp_calc = $row[Hits]/$tHITS;
+								//$tmp_calc = $row[Hits]/$tHITS;
+								$tmp_calc = $row[Hits]/$month_ciel;
 								$lWIDTH = $tmp_calc*100;
 								$lWIDTH = ceil($lWIDTH);
-
-								$line_chart = "<table border=0 cellpadding=0 cellspacing=0 STYLE='border: 1px solid black;' width=100% height=$lWIDTH><tr><td class=htext align=right bgcolor=darkgreen> </td></tr></table>";
+								$onhover = " onmouseover=\"show_num('".$ALL_MONTHS['Month'].$ALL_MONTHS['Year']."','".$ALL_MONTHS['Month']."','".$x."','".$row[Hits]."');\" ";
+								$line_chart = "<table ".$onhover." border=0 cellpadding=0 cellspacing=0 STYLE='border: 1px solid black;' width=100% height=$lWIDTH><tr><td class=htext align=right bgcolor=darkgreen> </td></tr></table>";
 
 								$tmp = $row[Real_Date];
 								$tmp = split("-", $tmp);
@@ -163,7 +179,7 @@ function show_num(m,d,hit) {
 
 						if (checkdate($cMON,$x,$cYER)) {
 							$ac_count++;
-							echo ("<TD ALIGN=\"CENTER\" VALIGN=\"MIDDLE\" class=smtext bgcolor=#EFEFEF style='cursor: pointer'; onmouseover=\"show_num('".$ALL_MONTHS['Month']."','".$x."','".$act_num[$x]."');\">".$x."</TD>\n");
+							echo ("<TD ALIGN=\"CENTER\" VALIGN=\"MIDDLE\" class=smtext bgcolor=#EFEFEF style='cursor: pointer'; onmouseover=\"show_num('".$ALL_MONTHS['Month'].$ALL_MONTHS['Year']."','".$ALL_MONTHS['Month']."','".$x."','".$act_num[$x]."');\">".$x."</TD>\n");
 						}
 
 					}
@@ -173,11 +189,14 @@ function show_num(m,d,hit) {
 
 					echo "<BR CLEAR=ALL>\n";
 					echo " <DIV align=left style='padding: 5px;' class=text><font color=darkblue>\n";
-					echo "  [ <span id=\"".$ALL_MONTHS[Month]."_DNUM\">".$lang["Mouseover a Selected day for actual total"]."</span> ]\n";
+					//echo "  [ <span id=\"".$ALL_MONTHS[Month]."_DNUM\">".$lang["Mouseover a Selected day for actual total"]."</span> ]\n";
+					echo "  [ <span id=\"".$ALL_MONTHS['Month'].$ALL_MONTHS['Year']."_DNUM\">".$lang["Mouseover a Selected day for actual total"]."</span> ]\n";
 					echo " </FONT></DIV>\n";
 
 					echo "</TD></TR></TABLE><BR CLEAR=ALL><BR>\n\n";
 
+	
+		}
 	} // End Monthly Loop (WHILE)
 
 	?>

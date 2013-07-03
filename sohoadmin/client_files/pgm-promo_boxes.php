@@ -84,7 +84,7 @@ if(!preg_match('/^(\d)+$/', $_REQUEST['cat']) && $_REQUEST['cat']!=""){
 if ( !function_exists("lang") ) {
    include("sohoadmin/program/includes/shared_functions.php");
 }
-
+require_once("sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
 if(!function_exists('db_string_format')){
 	function db_string_format($string) {
    	if ( !get_magic_quotes_gpc() ) {
@@ -385,8 +385,10 @@ if(!table_exists("blog_comments")){
             $email_content .= "</div>\n";
             $email_content .= "</body>\n";
             $email_content .= "</html>\n";
+            if(!SohoEmail($to_email, "noreply@".$_SESSION['this_ip'], 'New Blog Comment', "<html><body>".str_replace("\n","<br/>",$email_content)."</body></html>")){
+            	mail("$to_email", "New Blog Comment", "$email_content", $email_header);
+		  }
             
-            mail("$to_email", "New Blog Comment", "$email_content", $email_header);
          }
       }
    }

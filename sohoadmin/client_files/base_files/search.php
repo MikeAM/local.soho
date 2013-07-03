@@ -3,12 +3,11 @@
 session_start();
 error_reporting(E_PARSE);
 
-include("sohoadmin/includes/config.php");
-include("sohoadmin/includes/db_connect.php");
+//echo ini_get('magic_quotes_gpc');
+include('sohoadmin/client_files/pgm-site_config.php');
+
 include("sohoadmin/program/includes/shared_functions.php");
 include("sohoadmin/program/includes/smt_functions.php");
-include('sohoadmin/includes/emulate_globals.php');
-
 $sessiontime = $_SESSION['searchtime'];
 $_SESSION['searchtime'] = round(microtime(), 2);
 $output = '';
@@ -63,13 +62,17 @@ if( $searchopts['style3'] != '' ) { $style3 = "font-family: ".$searchopts['style
 if( $searchopts['style4'] != '' ) { $style4 = " font-size: ".$searchopts['style4']."px;"; } else { $style4 = ""; }
 	
 $mstyle = " style=\"".$style3.$style4.$style2."\"";
-$qvar = $_GET['q'];
+
+//echo slashthis($_GET['q'])."<br/>";
+$qvar = slashthis($_GET['q']);
+//echo $qvar."<br/>";
 $qvar = str_replace('<', '', $qvar);
 //$qvar = stripslashes($qvar);
 $qvar = str_replace('>', '', $qvar);
-$trimmed = trim($qvar); //trim whitespace from the stored variable
 
-$trimmed = slashthis($trimmed);
+$trimmed = trim($qvar); //trim whitespace from the stored variable
+//$qvar = stripslashes($qvar);
+//$trimmed = stripslashes($trimmed);
 
 if (!isset($_GET['t'])) { $t='single'; } else { $t = $_GET['t']; }
 
@@ -116,11 +119,13 @@ if ($_GET['t'] == 'phrase') {
 if(mysql_get_client_info() >= 4) {
 	foreach($qvar2 as $qval=>$qqvar) {
 		if ($qval == 0) {
-			$searchqry = "select * from search_contents where CAST(page_contents as char) LIKE '%$qqvar%'";
+			$searchqry = "select search_contents.prikey,search_contents.page_name,search_contents.include_in_search,search_contents.page_contents from search_contents INNER JOIN site_pages on site_pages.page_name=search_contents.page_name where CAST(search_contents.page_contents as char) LIKE '%$qqvar%'";
+			//$searchqry = "select * from search_contents where CAST(page_contents as char) LIKE '%$qqvar%'";
 			$querymeta = "select page_name, url_name, password from site_pages where CAST(password as char) LIKE '%$qqvar%'";
 			$cartqry = "select * from cart_products where (CAST(PROD_DESC as char) LIKE '%$qqvar%' or CAST(PROD_NAME as char) LIKE '%$qqvar%' or CAST(OPTION_KEYWORDS as char) LIKE '%$qqvar%')";
 		} else {
-			$searchqry .=  " AND CAST(page_contents as char) LIKE '%$qqvar%'";		
+			//$searchqry .=  " AND CAST(page_contents as char) LIKE '%$qqvar%'";		
+			$searchqry .=  " AND CAST(search_contents.page_contents as char) LIKE '%$qqvar%'";
 			$querymeta .= " AND CAST(password as char) LIKE '%$qqvar%' OR CAST(password as char) LIKE '%$trimmed%'";
 			$cartqry .=  " AND (CAST(PROD_DESC as char) LIKE '%$qqvar%' or CAST(PROD_NAME as char) LIKE '%$qqvar%' or CAST(OPTION_KEYWORDS as char) LIKE '%$qqvar%')";
 		}
@@ -129,11 +134,13 @@ if(mysql_get_client_info() >= 4) {
 	foreach($qvar2 as $qval=>$qqvar) {
 		$qqvar = strtolower($qqvar);
 		if ($qval == 0) {
-			$searchqry = "select * from search_contents where lcase(page_contents) LIKE lcase('%".$qqvar."%')";
+			$searchqry = "select search_contents.prikey,search_contents.page_name,search_contents.include_in_search,search_contents.page_contents from search_contents INNER JOIN site_pages on site_pages.page_name=search_contents.page_name where lcase(search_contents.page_contents) LIKE lcase('%".$qqvar."%')";
+			//$searchqry = "select * from search_contents where lcase(page_contents) LIKE lcase('%".$qqvar."%')";
 			$querymeta = "select page_name, url_name, password from site_pages where lcase(password) LIKE lcase('%".$qqvar."%')";
 			$cartqry = "select * from cart_products where (lcase(PROD_DESC) LIKE lcase('%".$qqvar."%') or lcase(PROD_NAME) LIKE lcase('%".$qqvar."%') or lcase(OPTION_KEYWORDS) LIKE lcase('%".$qqvar."%'))";
 		} else {
-			$searchqry .=  " AND lcase(page_contents) LIKE lcase('%".$qqvar."%')";
+			//$searchqry .=  " AND lcase(page_contents) LIKE lcase('%".$qqvar."%')";
+			$searchqry .=  " AND lcase(search_contents.page_contents) LIKE lcase('%".$qqvar."%')";
 			$querymeta .= " AND lcase(password) LIKE lcase('%".$qqvar."%') OR lcase(password) LIKE lcase('%".$trimmed."%')";
 			$cartqry .=  " AND (lcase(PROD_DESC) LIKE lcase('%".$qqvar."%') or lcase(PROD_NAME) LIKE lcase('%".$qqvar."%') or lcase(OPTION_KEYWORDS) LIKE lcase('%".$qqvar."%'))";
 		}
@@ -168,7 +175,7 @@ if ($z == 'yes') {
 		$cartnumrows=mysql_num_rows($cartsearch);
 		$numrows=$numrows+$cartnumrows;		
 	}
-$trimmed = stripslashes($trimmed);
+//$trimmed = stripslashes($trimmed);
 
 
 if ($countarray > 1) {
@@ -197,7 +204,14 @@ $searchoutput .= "    <td".$mstyle."class=sohotext valign=bottom width=100%><br>
 $searchoutput .= "    <form name=\"form\" action=\"search.php";
 if ($_GET['l'] != '') { $searchoutput .= '?s='.$_GET['s']; }
 $searchoutput .= "\" method=\"get\">\n";
-$searchoutput .= "    ".$searchopts['search_field_label']." <input type=\"text\" name=\"q\" value=\"".str_replace('"', '&quot;', $trimmed)."\"num>\n";
+//echo get_magic_quotes_gpc()."<br/>";
+if (!get_magic_quotes_gpc()) {	
+	$searchoutput .= "    ".$searchopts['search_field_label']." <input type=\"text\" name=\"q\" value=\"".str_replace('"', '&quot;', trim(str_replace('<','',str_replace('>','',$_GET['q']))))."\"num>\n";
+} else {
+	$searchoutput .= "    ".$searchopts['search_field_label']." <input type=\"text\" name=\"q\" value=\"".stripslashes(str_replace('"', '&quot;', trim(str_replace('<','',str_replace('>','',$_GET['q'])))))."\"num>\n";
+	//$searchoutput .= "    ".$searchopts['search_field_label']." <input type=\"text\" name=\"q\" value=\"".str_replace('"', '&quot;', stripslashes($trimmed))."\"num>\n";	
+}
+
 $searchoutput .= "    <input type=\"submit\" name=\"Submit\" value=\"";
 if ($searchopts['search_button_text'] != '') {
   $searchoutput .= $searchopts['search_button_text'];
@@ -243,9 +257,9 @@ $searchoutput .= "    <td ".$bmstyle.$mstyle."class=sohotext valign=top width=10
 			$searchstatsqry = mysql_query($searchstatsqrystring);
 			$searchstatsqry = mysql_fetch_array($searchstatsqry);
 
-			
+			//echo $qqvar."<br/>".__LINE__."<br/>";
 			if ($searchstatsqry['search_phrase'] == '') {
-				$qqvar = slashthis($qqvar);
+				//$qqvar = slashthis($qqvar);
 				if(!mysql_query("insert into search_stats (search_count, search_phrase, month, found) values('1', '$qqvar', '$thismonth', '$found')")){ echo "3".mysql_error(); exit;	}
 			} else {
 				$search_phrase = $searchstatsqry['search_phrase'];
@@ -474,12 +488,12 @@ if ($cansearch == 'true') {
 		$thistime = round(microtime(), 2);
 		$finaltime = ($thistime-$sessiontime);
 		if($finaltime < 0){ $finaltime = ($finaltime * -1); }
-		$output .= "		<span".$mstyle.">Results $b - $a of $hitcount for <font color=\"#".$style1."\">".$trimmed."</font> <span style=\"font-size: 70%;\">(".$finaltime." seconds).</span></span></form>\n		</td>\n	</tr>\n";
+		$output .= "		<span".$mstyle.">Results $b - $a of $hitcount for <font color=\"#".$style1."\">".str_replace('\\','', $trimmed)."</font> <span style=\"font-size: 70%;\">(".$finaltime." seconds).</span></span></form>\n		</td>\n	</tr>\n";
 		$_SESSION['searchtime'] = '';
 		$thistime = '';
 		$sessiontime = '';
 	} else {
-		$output .= $searchoutput."		<p>Sorry, your search: &quot;" . $trimmed . "&quot; returned zero results...</p>\n		</td>\n	</tr>\n";
+		$output .= $searchoutput."		<p>Sorry, your search: &quot;" . str_replace('\\','', $trimmed) . "&quot; returned zero results...</p>\n		</td>\n	</tr>\n";
 		$_SESSION['searchtime'] = '';
 		$thistime = '';
 		$sessiontime = '';
@@ -559,7 +573,7 @@ if ($cansearch == 'true') {
 	if ($trimmed == "") {
 		$searchoutput .= "		<p>Please enter a search...</p></form>\n		</td>\n	</tr>\n</table>\n"; $template_footer = eregi_replace('START PAGE CONTENT FROM CONTENT EDITOR.*END DYNAMIC PAGE CONTENT FROM PAGE EDITOR SYSTEM', '', $template_footer); echo $searchoutput .= $template_footer;
 	} else {
-		$searchoutput .= "		<p>Sorry, your search term, <i>".$trimmed."</i>, was too short and returned zero results...</p></form>\n		</td>\n	</tr>\n</table>\n"; $template_footer = eregi_replace('START PAGE CONTENT FROM CONTENT EDITOR.*END DYNAMIC PAGE CONTENT FROM PAGE EDITOR SYSTEM', '', $template_footer); echo $searchoutput .= $template_footer; exit;
+		$searchoutput .= "		<p>Sorry, your search term, <i>".str_replace('\\','', $trimmed)."</i>, was too short and returned zero results...</p></form>\n		</td>\n	</tr>\n</table>\n"; $template_footer = eregi_replace('START PAGE CONTENT FROM CONTENT EDITOR.*END DYNAMIC PAGE CONTENT FROM PAGE EDITOR SYSTEM', '', $template_footer); echo $searchoutput .= $template_footer; exit;
 	}
 }
 

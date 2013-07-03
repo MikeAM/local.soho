@@ -1,4 +1,4 @@
-<?
+<?php
 
 # These arrays determine which properties options to display for which field types
 # Included by: ajax-edit_compile_form.php AND ajax-properties.php

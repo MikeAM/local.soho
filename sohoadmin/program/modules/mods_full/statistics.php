@@ -45,7 +45,7 @@ $BG = "shared/stats_bg.jpg";
 ob_start();
 
 
-$st_db_result = mysql_list_tables($db_name);
+$st_db_result = soho_list_tables();
 $st_db_match = 0;
 $stdb_i = 0;
 while ($stdb_i <= mysql_num_rows ($st_db_result)) {
@@ -142,7 +142,7 @@ if (isset($_REQUEST['GOOG_ANALTICS'])){
 
 $THIS_DISPLAY = "<form method=\"POST\" action=\"statistics.php\" style=\"display:inline;\">\n";
 
-$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\" align=\"center\" class=\"smtext\">\n";
+$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\" align=\"center\" class=\"smtext\" style=\"height:95%;\">\n";
 $THIS_DISPLAY .= "<tr>\n";
 
 $THIS_DISPLAY .= "<td colspan=\"1\" align=\"left\" valign=\"middle\" class=\"text\">\n<table align=\"left\" class=\"smtext\" style=\"width:230px;\" cellspacing=0 cellpadding=0><tr>\n\n";
@@ -222,7 +222,7 @@ $THIS_DISPLAY .= "</form>\n";
 
 
 //$THIS_DISPLAY .= "I-Frame src=\"".$STAT_SHOW."\"<br>";
-$THIS_DISPLAY .= "<iframe width=\"95%\" height=\"70%\" border=\"0\" id=\"stats_frame\" style=\"border: 1px solid #ccc;\" src=\"".$STAT_SHOW."\" scroll=\"auto\" align=\"center\" valign=\"top\"></iframe>\n";
+$THIS_DISPLAY .= "<iframe width=\"95%\"  border=\"0\" id=\"stats_frame\" style=\"height:70%;min-height:550px;border: 1px solid #ccc;\" src=\"".$STAT_SHOW."\" scroll=\"auto\" align=\"center\" valign=\"top\"></iframe>\n";
 
 echo $THIS_DISPLAY;
 

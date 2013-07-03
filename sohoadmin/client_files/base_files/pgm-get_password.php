@@ -30,6 +30,7 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## copyright laws.  		                                           
 ###############################################################################
 error_reporting(0);
+exit;
 session_cache_limiter('none'); 
 session_start();	
 track_vars;

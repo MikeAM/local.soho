@@ -32,12 +32,29 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 session_start();
-include("../../includes/product_gui.php");
+require_once("../../includes/product_gui.php");
 
 #######################################################
 ### STAcRT HTML/JAVASCRIPT CODE						###
 #######################################################
-
+if(!function_exists('sterilize_char')){
+	function sterilize_char ($sterile_var) {
+	
+		$sterile_var = stripslashes($sterile_var);
+		$sterile_var = str_replace(";", ",", $sterile_var);
+		$sterile_var = str_replace(" ", "_", $sterile_var);
+		$st_l = strlen($sterile_var);
+		$st_a = 0;
+		$tmp = "";
+		while($st_a != $st_l) {
+			$temp = substr($sterile_var, $st_a, 1);
+			if (eregi("[0-9a-z_]", $temp)) { $tmp .= $temp; }
+			$st_a++;
+		}//endwhile	
+		$sterile_var = $tmp;
+		return $sterile_var;	
+	}//sterilize_char
+}
 $MOD_TITLE = lang("Event Calendar: Main Menu");
 $BG = "shared/enews_bg.jpg";
 
@@ -86,6 +103,16 @@ if(!table_exists('calendar_category')){
 #######################################################
 if(!table_exists('calendar_display')){
 	create_table('calendar_display');
+}
+
+$getinfo = mysql_query("SHOW FIELDS FROM calendar_events");
+echo mysql_error();
+while($getinfo_ar = mysql_fetch_assoc($getinfo)){
+	if($getinfo_ar['Field']=='PRIKEY'){
+		if(!preg_match('/varchar/i', $getinfo_ar['Type'])){
+			mysql_query("alter table calendar_events modify PRIKEY varchar(255)");
+		}
+	}
 }
 
 # Start buffering output
@@ -155,6 +182,7 @@ form {
    /*display: none;*/
    height: 29px;
    background-image: url(event_calendar/images/nav_bar2.gif);
+   width:780px;
 }
 
 .view_btn {
@@ -197,8 +225,26 @@ form {
 }
 
 </style>
+<?php
+echo "<script type=\"text/javascript\">
+function changedate(month,year){ 
+	var sel = document.getElementById('SEL_MONTH');
+	for(var i, j = 0; i = sel.options[j]; j++) {
+		if(i.value == month) {
+			sel.selectedIndex = j;
+			//break;
+		}
+	}
+	var sel2 = document.getElementById('SEL_YEAR');
+	for(var i2, j2 = 0; i2 = sel2.options[j2]; j2++) {
+		if(i2.value == year) {
+			sel2.selectedIndex = j2;
+		}
+	}
+	document.forms.top_nav_form.submit();
+}
+</script>\n";
 
-<?
 
 ########################################################################
 ### IF THIS IS FIRST RUN; SET CURRENT MONTH AND YEAR TO "TODAY"
@@ -218,22 +264,41 @@ $day_of_week = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fr
 
 $add_button_style = "width: 49px; font-family: Arial; background-color: darkgreen; color: white; font-size: 7pt; cursor: hand; border: inset #999999 1px;";
 
+//$MONTH_OPTIONS = "";
+//
+//
+//for ($x=1;$x<=12;$x++) {
+//	$val = date("m", mktime(0,0,0,$x,1,2002));
+//	$display = date("M", mktime(0,0,0,$x,1,2002));
+//	if ($val == $SEL_MONTH) { $SEL = "SELECTED"; } else { $SEL = ""; }
+//	$MONTH_OPTIONS .= "<OPTION VALUE=\"$val\" $SEL>$display</OPTION>\n";
+//}
+//
+//$YEAR_OPTIONS = "";
+//
+//for ($x=2002;$x<=2015;$x++) {
+//	if ($x == $SEL_YEAR) { $SEL = "SELECTED"; } else { $SEL = ""; }
+//	$YEAR_OPTIONS .= "<OPTION VALUE=\"$x\" $SEL>$x</OPTION>\n";
+//}
+
+
 $MONTH_OPTIONS = "";
-
-
+$lastyear = date('Y',strtotime('-366 days'));
 for ($x=1;$x<=12;$x++) {
-	$val = date("m", mktime(0,0,0,$x,1,2002));
-	$display = date("M", mktime(0,0,0,$x,1,2002));
+	$val = date("m", mktime(0,0,0,$x,1,$lastyear));
+	$display = date("M", mktime(0,0,0,$x,1,$lastyear));
 	if ($val == $SEL_MONTH) { $SEL = "SELECTED"; } else { $SEL = ""; }
 	$MONTH_OPTIONS .= "<OPTION VALUE=\"$val\" $SEL>$display</OPTION>\n";
 }
 
 $YEAR_OPTIONS = "";
-
-for ($x=2002;$x<=2015;$x++) {
+for ($x=$lastyear;$x<=($lastyear+5);$x++) {
 	if ($x == $SEL_YEAR) { $SEL = "SELECTED"; } else { $SEL = ""; }
 	$YEAR_OPTIONS .= "<OPTION VALUE=\"$x\" $SEL>$x</OPTION>\n";
 }
+
+
+
 
 
 ########################################################################
@@ -250,7 +315,7 @@ for ($x=2002;$x<=2015;$x++) {
 	$THIS_DISPLAY .= "   <div class=\"cal_main_btn\" onclick=\"document.getElementById('action_type').name='CATEGORY'; document.forms.top_nav_form.submit();\">".lang("Category Setup")."</div>\n";
 	$THIS_DISPLAY .= "   <div class=\"view_btn\" onclick=\"document.forms.top_nav_form.submit();\">View</div>\n";
 	$THIS_DISPLAY .= "   <div class=\"edit_view\">\n";
-	$THIS_DISPLAY .= "      ".lang("Edit View").": <SELECT NAME=\"SEL_MONTH\">$MONTH_OPTIONS</SELECT> <SELECT NAME=\"SEL_YEAR\">$YEAR_OPTIONS</SELECT>\n";
+	$THIS_DISPLAY .= "      ".lang("Edit View").": <SELECT id=\"SEL_MONTH\" NAME=\"SEL_MONTH\">$MONTH_OPTIONS</SELECT> <SELECT id=\"SEL_YEAR\" NAME=\"SEL_YEAR\">$YEAR_OPTIONS</SELECT>\n";
 	$THIS_DISPLAY .= "   </div>\n";
 	$THIS_DISPLAY .= "</div>\n";
 	
@@ -277,7 +342,7 @@ for ($x=2002;$x<=2015;$x++) {
 //	$THIS_DISPLAY .= "</table>\n";
 	
 	
-	$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"1\" cellspacing=\"0\" width=\"100%\">\n";
+	$THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"1\" cellspacing=\"0\" width=\"780px\">\n";
 	$THIS_DISPLAY .= " <tr>\n";
 	$THIS_DISPLAY .= "  <td align=\"center\" valign=\"middle\" class=\"text gray\" style=\"padding-top: 5px;\">\n";
 	$THIS_DISPLAY .= "   <font color=\"#FF0033\">[R]</font> = ".lang("Denotes an event that is a 'Recurrence' of an original master event.")."\n";
@@ -298,13 +363,13 @@ for ($x=2002;$x<=2015;$x++) {
 ########################################################################
 
 $tmp = "$SEL_YEAR-$SEL_MONTH";
-$result = mysql_query("SELECT PRIKEY, EVENT_DATE, EVENT_TITLE, EVENT_CATEGORY, EVENT_SECURITYCODE, RECUR_MASTER FROM calendar_events WHERE EVENT_DATE LIKE '$tmp%'");
-
+$result = mysql_query("SELECT PRIKEY, EVENT_DATE, EVENT_TITLE, EVENT_CATEGORY, EVENT_SECURITYCODE, RECUR_MASTER,EVENT_START,EVENT_END,EVENT_DETAILPAGE FROM calendar_events WHERE EVENT_DATE LIKE '$tmp%'");
+//$find_dates = mysql_query("select PRIKEY,EVENT_DATE,EVENT_START,EVENT_END,EVENT_DETAILPAGE,custom_start,custom_end from calendar_events where EVENT_DATE >= '".date('Y-m-d')."' and EVENT_DETAILPAGE='".$tmp_keyid[$z]."' order by EVENT_DATE, EVENT_START");
 // $NUM_EVENTS = mysql_num_rows($result);	!! Only if there are no personal calendars !!
 
 $x=0;
 
-while ($row = mysql_fetch_array($result)) {
+while ($row = mysql_fetch_assoc($result)) {
 
 	$x++;
 
@@ -317,8 +382,13 @@ while ($row = mysql_fetch_array($result)) {
 		$DB_EVENT_CATEGORY[$x] = $row[EVENT_CATEGORY];
 		$DB_RECUR_MASTER[$x] = $row[RECUR_MASTER];
 		$DB_EVENT_SECURITYCODE[$x] = $row[EVENT_SECURITYCODE];
+		$DB_EVENT_PAGE[$x] = $row[EVENT_DETAILPAGE];
+		$DB_EVENT_END[$x] = $row[EVENT_END];
+		$DB_EVENT_START[$x] = $row[EVENT_START];
+		
+		
 	}
-
+ 
 } // End While Loop
 
 $NUM_EVENTS = $x;

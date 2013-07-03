@@ -7,16 +7,12 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## Soholaunch(R) Site Management Tool
 ## Version 4.5
 ##
-## Author: 			Mike Johnston [mike.johnston@soholaunch.com]
 ## Homepage:	 	http://www.soholaunch.com
-## Bug Reports: 	http://bugzilla.soholaunch.com
-## Release Notes:	sohoadmin/build.dat.php
 ###############################################################################
 
 ##############################################################################
 ## COPYRIGHT NOTICE
-## Copyright 1999-2003 Soholaunch.com, Inc. and Mike Johnston
-## Copyright 2003-2007 Soholaunch.com, Inc.
+## Copyright 1999-2013 Soholaunch.com, Inc.
 ## All Rights Reserved.
 ##
 ## This script may be used and modified in accordance to the license
@@ -39,6 +35,9 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ############################################################################
 #### NOW BUILD HTML EMAIL RECEIPT FOR CLIENT AND SEND COPY TO OWNER OF SITE
 ############################################################################
+error_reporting('E_PARSE');
+session_start();
+require_once("../sohoadmin/program/includes/SohoEmail_class/SohoEmail.php");
 
 $result = mysql_query("SELECT * FROM cart_options");
 $BIZ = mysql_fetch_array($result);
@@ -58,12 +57,17 @@ if ($BIZ['BIZ_EMAIL_NOTICE'] != "") {
 		$from_email = $BIZ['BIZ_EMAIL_NOTICE'];
 	}
 	$email_notify = $BIZ['BIZ_EMAIL_NOTICE'];
-	$from_email = str_replace(' ', '', $from_email);
+	if($from_name!=''){
+		$from_email = $from_name.'<'.str_replace(' ', '', $from_email).'>';
+	} else {
+		$from_email = str_replace(' ', '', $from_email);
+	}
 	$email_notice_flag = "on";
+	
 } else {
-	$from_name = $SERVER_NAME;
-	$from_email = "webmaster@$SERVER_NAME";
-	$email_notify = "webmaster@$SERVER_NAME";
+	$from_email = 'noreply@'.$_SESSION['this_ip'];
+	$email_notify = 'webmaster@'.$_SESSION['this_ip'];
+	$from_name = 'noreply@'.$_SESSION['this_ip'];
 }
 
 $email_header = "";
@@ -74,8 +78,8 @@ if ( eregi('WIN', PHP_OS) ) {
    $email_header .= "From: $from_name <$from_email>\r\n";
 }
 
-$from_email = $email_notify;
-
+//$from_email = $email_notify;
+//$from_name = $from_email;
 $email_header .= "Content-Type: text/html; charset=iso-8859-1; name=\"final_invoice.html\"\r\n";
 $email_header .= "Content-Transfer-Encoding: 7bit\r\n";
 $email_header .= "Content-Disposition: inline;\n";
@@ -173,12 +177,14 @@ if ( $cust_email == "" ) {
    $cust_email = mysql_result($rez, 0);
 }
 
-$cust_email = eregi_replace('[^a-zA-Z0-9\.@]', '', stripslashes($cust_email));
+$cust_email = eregi_replace('[^a-zA-Z0-9\.@-]', '', stripslashes($cust_email));
+
 
 if ( $EMAIL_HTML != '' ) {
-	mail($cust_email, "$THIS_URL PURCHASE RECEIPT", "$EMAIL_HTML", $email_header);
+	if(!SohoEmail($cust_email, $from_email, "$THIS_URL PURCHASE RECEIPT", $EMAIL_HTML)){
+		//mail($cust_email, "$THIS_URL PURCHASE RECEIPT", "$EMAIL_HTML", $email_header);
+	}
 }
-
 
 // ---------------------------------------------------------------------
 // Send Order Notification to webmaster if requested
@@ -227,7 +233,10 @@ if ($email_notice_flag == "on") {
 	$email_subject = lang("New Website Purchase").": ".lang("Order")." #".$ORDER_NUMBER;
 	
 	if ( $EMAIL_HTML != '' ) {
-		mail($from_email, $email_subject, $EMAIL_HTML, $email_header);
+		
+		if(!SohoEmail($email_notify, $from_email, $email_subject, $EMAIL_HTML)){
+			//mail($from_email, $email_subject, $EMAIL_HTML, $email_header);
+		}
 	}
 
 }

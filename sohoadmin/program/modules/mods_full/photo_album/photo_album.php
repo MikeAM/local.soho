@@ -78,18 +78,31 @@ if ($ACTION == "NG") {
 #######################################################
 
 if(!table_exists("photo_album")){
-	mysql_query("CREATE TABLE photo_album (
-		prikey INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-		album_name CHAR(255))");
+	create_table('photo_album');
+//	mysql_query("CREATE TABLE photo_album (
+//		prikey INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+//		album_name CHAR(255))");
 } // End if Match != 1
 
 
 if(!table_exists("photo_album_images")){
-	mysql_query("CREATE TABLE photo_album_images (
-		prikey INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-		album_id int(64), image_order int(64), image_name varchar(255), caption BLOB)");
+	create_table('photo_album_images');
+//	mysql_query("CREATE TABLE photo_album_images (
+//		prikey INT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+//		album_id int(64), image_order int(64), image_name varchar(255), caption BLOB)");
 } // End if Match != 1
 
+
+$check_photo_images = mysql_query("SHOW COLUMNS from photo_album_images");
+$haslink = 0;
+while($ggg=mysql_fetch_array($check_photo_images)){
+	if($ggg['0']=='link'){
+		$haslink = 1;
+	}
+}
+if($haslink==0){
+	mysql_query("alter table photo_album_images add column link blob");	
+}
 
 #######################################################
 ### START HTML/JAVASCRIPT CODE					    ###	

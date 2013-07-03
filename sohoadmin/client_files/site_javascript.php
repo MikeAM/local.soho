@@ -6,15 +6,17 @@ exit;
 # This script is included in pgm-realtime_builder and pgm-template_builder...
 # <script language="javascript" src="/sohoadmin/client_files/site_javascript.php"></script>
 error_reporting(E_PARSE);
+header("Content-type: text/javascript");
 session_start();
 
 # Restore webmaster prefs
-include_once("pgm-site_config.php");
+include_once("../../pgm-site_config.php");
 include_once("../program/includes/shared_functions.php");
 //error_reporting(E_ALL);
 error_reporting(E_PARSE);
 $webmaster_pref = new userdata('webmaster_pref');
 ?>
+document.onkeyup = mouse_capture; 
 
 function killErrors() {
      return true;
@@ -166,6 +168,7 @@ function mouse_capture( event ) {
 
 		var key = event.which;
 		var key = event.keyCode;
+		
 		if (key == 113){
 
 <?
@@ -185,13 +188,14 @@ if ( $webmaster_pref->get("f2login") == "layer" ) {
 <?
 } else { // Launch new window
 ?>
-      window.open("http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/index.php?keystroke=on","adminlogin","width=560,height=331,resizable=no,scrollbars=yes");
+      window.open("http://<? echo $_SESSION['docroot_url']; ?>/sohoadmin/index.php?keystroke=on","adminlogin","width=580,height=361,resizable=no,scrollbars=yes");
 <?
 } // End if f2login == layer
 ?>
       }
 		return;
 } // End Func
+
 
 
 // Workaround for IE's infinite z-index issue

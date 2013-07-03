@@ -1,14 +1,11 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
-## Version 4.5
 ##      
-## Author: 			Mike Johnston [mike.johnston@soholaunch.com]                 
 ## Homepage:	 	http://www.soholaunch.com
-## Bug Reports: 	http://bugzilla.soholaunch.com
 ## Release Notes:	sohoadmin/build.dat.php
 ###############################################################################
 
@@ -31,14 +28,23 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 session_start();
+global $photoalbumcount;
+global $jqueryincluded;
+if($photoalbumcount==''){
+	$photoalbumcount=0;
+}
+++$photoalbumcount;
 //include_once('pgm-site_config.php');
 $bgcolor = '#333333';
 $bgcolor = '#ffffff';
 $bgcolor = 'transparent';
+if($photoalbumcount==1){
+	echo "		<meta charset=\"utf-8\">\n";
+	if($jqueryincluded==''){
+		echo "	<script type=\"text/javascript\" src=\"sohoadmin/client_files/jquery.min.js\"></script>\n";
+		$jqueryincluded=1;
+	}
 ?>
-	<meta charset="utf-8">
-	
-	<script type="text/javascript" src="sohoadmin/client_files/jquery.min.js"></script>
 	<script type="text/javascript" src="sohoadmin/client_files/galleria.js"></script>
 	<style>
 
@@ -46,7 +52,7 @@ $bgcolor = 'transparent';
 	h1{line-height:1.1;letter-spacing:-1px;}
 	/*a {color:#fff;}*/
 	#galleria{height:450px; }
-	
+	.galleriamain{height:450px; }
 	.galleria-container {
 		position: relative;
 		overflow: hidden;
@@ -271,9 +277,14 @@ $bgcolor = 'transparent';
 		background-repeat: no-repeat;
 	}
 	</style>
+<?php
+}
+?>
 		<div style="position:relative; text-align:left; ">
 		<div class="galcontent">    
-			<div id="galleria">
+<?php
+echo "			<div id=\"galleria".$photoalbumcount."\" class=\"galleriamain\">\n";
+?>
 			<?php
 			$getimages = mysql_query("select * from photo_album_images where album_id='".$THIS_ID."' order by image_order asc");
 			while($imgn = mysql_fetch_assoc($getimages)){
@@ -287,7 +298,7 @@ $bgcolor = 'transparent';
 		// Load the classic theme
 		Galleria.loadTheme('sohoadmin/client_files/galleria.classic.js');
 		//$('#galleria').galleria();
-		$('#galleria').galleria({
+<?php echo "		$('#galleria".$photoalbumcount."').galleria({\n"; ?>
 			on_image: function( image, thumb ) {
 				var gallery = this;
 				// image is now the image element and gallery the instance

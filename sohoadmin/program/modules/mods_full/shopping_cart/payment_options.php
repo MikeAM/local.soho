@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -72,15 +72,27 @@ if ($ACTION == "savepaymentopts") {
    $cartpref->set("ewayuk_companylogo", $_POST['ewayuk_companylogo']);
    $cartpref->set("ewayuk_pagebanner", $_POST['ewayuk_pagebanner']);
    $cartpref->set("sandbox-ip", $_POST['sandbox-ip']); // Allow them to set as blank
+   $cartpref->set("admin-testmode-status", $_POST['admin-testmode-status']);
    $cartpref->set("transactium_username", $_POST['transactium_username']);
    $cartpref->set("transactium_password", $_POST['transactium_password']);
    $cartpref->set("transactium_tag", $_POST['transactium_tag']);
+   $cartpref->set("paypalpro_username", $_POST['paypalpro_username']);
+   $cartpref->set("paypalpro_password", $_POST['paypalpro_password']);
+   $cartpref->set("paypalpro_api", $_POST['paypalpro_api']);
+   $cartpref->set("pp-sandbox-email", $_POST['pp-sandbox-email']);
+   $cartpref->set("pp-sandbox-username", $_POST['pp-sandbox-username']);
+   $cartpref->set("pp-sandbox-password", $_POST['pp-sandbox-password']);
+   $cartpref->set("pp-sandbox-apisig", $_POST['pp-sandbox-apisig']);
+   
+   if ( $_POST['PAYMENT_SSL'] == '' && $_POST['live_cc'] == 'use_paypalpro' ) {
+   	$report[] = 'Warning: You have chosen to use PayPal Pro, but have not specified a <a href=\"#ssl_cert\">secure URL</a>. <br/>PayPal Pro requires an SSL cert, otherwise it will display an error like \'Security header is not valid\' at checkout.';
+   }      
 
 eval(hook("payment_options.php:save_gateway_config_info"));
 
    $pay_methods = "";
 
-   $pay_types = "use_paystation;use_dps;use_paypro;use_paypal;use_check;use_worldpay;use_innovgate;use_verisign;use_paypoint;use_authorize;use_internetsecure;use_eway;use_euknzway;use_transactium;use_nochex";
+   $pay_types = "use_paystation;use_dps;use_paypro;use_paypal;use_check;use_worldpay;use_innovgate;use_verisign;use_paypoint;use_authorize;use_internetsecure;use_eway;use_euknzway;use_transactium;use_nochex;use_paypalpro";
 eval(hook("payment_options.php:pay_types"));
    $payMeth = split(";",$pay_types);
    $ptypes = count($payMeth);
@@ -470,15 +482,6 @@ function ifshow(ifthisid, equalsthisvalue, showthisid) {
 		hideid(showthisid);
 	}
 }
-<?
-
-if ($update_complete == 1) {
-
-	echo ("alert('Your payment options have been updated.');\n");
-
-}
-
-?>
 
 //-->
 
@@ -508,7 +511,7 @@ function checkMeTo() {
 function checkorcheque_preview() {
    var isnow = document.getElementById('checkorcheque').value;
    if ( isnow == '' ) { isnow = 'check'; }
-   document.getElementById('checkorcheque-preview').src = 'http://<?php echo $_SESSION['this_ip']; ?>/sohoadmin/client_files/shopping_cart/pay-'+isnow+'.gif';
+   document.getElementById('checkorcheque-preview').src = '<?php echo httpvar().$_SESSION['this_ip']; ?>/sohoadmin/client_files/shopping_cart/pay-'+isnow+'.gif';
 }
 
 </script>
@@ -519,13 +522,24 @@ function checkorcheque_preview() {
 h3, h4 {
    margin-bottom: 0;
 }
-
-
 </style>
 
 <?php
 $THIS_DISPLAY = "";
 $THIS_DISPLAY .= "<div style=\"position:relative;display:block;width:100%;\">\n";
+
+# pophelp-testmode
+$popHTML = '';
+$popHTML .= '<p><strong>What is test mode?</strong> Some payment gateways allow you to process test credit card payments through your website to try out your shopping cart\'s functionality from your visitor\'s perspective.'."</p>\n";
+$popHTML .= '<p><strong>The problem with test mode:</strong> ';
+$popHTML .= " It's really helpful to put your cart into test mode while your website is still under construction.";
+$popHTML .= " But if your site is live (i.e., there are people browsing it and placing orders), it can be tricky to flip your cart into test mode (if you need to tweak your 'Thank You' message or something)</p>";
+$popHTML .= '<p><strong>How we overcome this:</strong> If you check the box to turn test mode on for admin users,'."\n";
+$popHTML .= "	your shopping cart will behave in test mode only for you, and only when you are logged in to sohoadmin like you are right now.</p>\n";
+$popHTML .= '<p>This allows you to run test purchases from your computer, while your customers can keep running live purchases as normal.</p>';
+$popHTML .= '<p><strong>Gateways that currently support automatic test mode:</strong> PayPal Pro, PayPal Standard</p>';
+$THIS_DISPLAY .= help_popup('pophelp-testmode', 'Set Up Automatic Test Mode', $popHTML, 'top: 970px;');
+
 # pophelp-paypal_testmode
 $popHTML = '';
 $popHTML .= '<p>PayPal provides an alternate version of their payment gateway called \"PayPal Sandbox\"'."\n";
@@ -625,6 +639,7 @@ if ( eregi( "euknzway", $PAYMENT['PAYMENT_PROCESSING_TYPE']) ) { $chkewuk = " ch
 if ( eregi( "nochex", $PAYMENT['PAYMENT_PROCESSING_TYPE']) ) { $chknochex = " checked"; }
 if ( eregi( "dps", $PAYMENT['PAYMENT_PROCESSING_TYPE']) ) { $chkdps = " checked"; }
 if ( eregi( "transactium", $PAYMENT['PAYMENT_PROCESSING_TYPE']) ) { $chktrans = " checked"; }
+if ( eregi( "paypalpro", $PAYMENT['PAYMENT_PROCESSING_TYPE']) ) { $chkpaypalpro = " checked"; }
 
 if ( $chkol.$chkig.$chkvs == "" ) { $chknp = " checked"; } // No live processing
 
@@ -648,6 +663,9 @@ $THIS_DISPLAY .= " <p class=\"nomar_top note font90\">Note: Has the same effect 
 $THIS_DISPLAY .= "</div>\n";
 
 $THIS_DISPLAY .= "<div style=\"position:relative;display:block;width:100%;\">&nbsp;</div>\n";
+
+
+
 
 # 1. processing_options
 $THIS_DISPLAY .= "<div style=\"position:relative;width:100%;\"><a name=\"processing_options\"></a>\n";
@@ -763,6 +781,12 @@ $THIS_DISPLAY .= "    </tr>\n";
 //$THIS_DISPLAY .= "     <td colspan=\"2\" valign=\"top\" class=\"dred\">".lang("<b>NOTE:</b> For security purposes, when a order is processed using offline credit card, the first half of the card number along with the security code is sent via email to the notification address set in Shopping Cart > Business Information.  The last half is stored in the invoice display.")."</td>\n";
 //$THIS_DISPLAY .= "    </tr>\n";
 
+# PayPal Pro
+$THIS_DISPLAY .= "    <tr>\n";
+$THIS_DISPLAY .= "     <td><input type=\"radio\" name=\"live_cc\" id=\"use_paypalpro\" value=\"use_paypalpro\"".$chkpaypalpro."></td>\n";
+$THIS_DISPLAY .= "     <td valign=\"top\"><label for=\"use_paypalpro\"><a href=\"#paypal-pro\">".lang("PayPal Pro")."</a></label></td>\n";
+$THIS_DISPLAY .= "    </tr>\n";
+
 # Innovative
 $THIS_DISPLAY .= "    <tr>\n";
 $THIS_DISPLAY .= "     <td><input type=\"radio\" name=\"live_cc\" value=\"use_innovgate\"".$chkig."></td>\n";
@@ -834,7 +858,7 @@ $THIS_DISPLAY .= "<table border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n";
 $THIS_DISPLAY .= " <tr>\n";
 $THIS_DISPLAY .= "  <td align=\"center\" valign=\"middle\" rowspan=\"3\">\n";
 $THIS_DISPLAY .= "   <a name=\"check_moneyorder\"></a>\n";
-$THIS_DISPLAY .= "   <img id=\"checkorcheque-preview\" src=\"http://".$_SESSION['this_ip']."/sohoadmin/client_files/shopping_cart/pay-check.gif\" border=\"0\">\n";
+$THIS_DISPLAY .= "   <img id=\"checkorcheque-preview\" src=\"".httpvar().$_SESSION['this_ip']."/sohoadmin/client_files/shopping_cart/pay-check.gif\" border=\"0\">\n";
 $THIS_DISPLAY .= "  </td>\n";
 $THIS_DISPLAY .= "  <td align=\"left\" valign=\"top\" colspan=\"2\" style=\"padding-bottom:0px;\">\n";
 $THIS_DISPLAY .= "   <strong>Check/Money Order Options</strong>\n";
@@ -1016,29 +1040,6 @@ $THIS_DISPLAY .= "      <script type=\"text/javascript\">document.getElementById
 $THIS_DISPLAY .= "     </td>\n";
 $THIS_DISPLAY .= "    </tr>\n";
 
-$THIS_DISPLAY .= "    <tr>\n";
-$THIS_DISPLAY .= "     <td align=left valign=\"top\" width=\"75\" style='padding-top:0px;'>\n";
-$THIS_DISPLAY .= "      ".lang("Test Mode:")." <span class=\"help_link\" onclick=\"showid('pophelp-paypal_testmode');\">[?]</span>\n";
-$THIS_DISPLAY .= "     </td>\n";
-$THIS_DISPLAY .= "     <td align=left style='padding-top:0px;'>\n";
-if ( $cartpref->get("paypal_testmode") == "" ) { $cartpref->set("paypal_testmode", "off"); }
-$THIS_DISPLAY .= "      <select id=\"paypal_testmode\" name=\"paypal_testmode\" onchange=\"ifshow('paypal_testmode', 'on', 'sandbox-email');\">\n";
-$THIS_DISPLAY .= "       <option value=\"off\">OFF</option>\n";
-$THIS_DISPLAY .= "       <option value=\"on\" style=\"color: #d70000;\">ON</option>\n";
-$THIS_DISPLAY .= "      </select>\n";
-
-$THIS_DISPLAY .= "      <div id=\"sandbox-email\" style=\"display: none;\">\n";
-$THIS_DISPLAY .= "       <label><em>Sandbox Merchant Email:</em></label>\n";
-$THIS_DISPLAY .= "       <input type=\"text\" name=\"sandbox-email\" value=\"".$cartpref->get("sandbox-email")."\"/><br/>\n";
-$THIS_DISPLAY .= "       <label><em>Your IP Address:</em></label>\n";
-$THIS_DISPLAY .= "       <input type=\"text\" id=\"sandbox-ip\" name=\"sandbox-ip\" value=\"".$cartpref->get("sandbox-ip")."\"/>\n";
-$THIS_DISPLAY .= "        <span class=\"help_link\" style=\"font-size: 100%;text-decoration: none;\" onclick=\"document.getElementById('sandbox-ip').value = document.getElementById('php-ip').innerHTML;\">[&larr; detect]</span>\n";
-$THIS_DISPLAY .= "       <span id=\"php-ip\" style=\"display: none;\">".$_SERVER['REMOTE_ADDR']."</span>\n";
-$THIS_DISPLAY .= "      </div>\n";
-$THIS_DISPLAY .= "      <script type=\"text/javascript\">document.getElementById('paypal_testmode').value = '".$cartpref->get("paypal_testmode")."';ifshow('paypal_testmode', 'on', 'sandbox-email');</script>\n";
-$THIS_DISPLAY .= "     </td>\n";
-$THIS_DISPLAY .= "    </tr>\n";
-
 # paypal_cc_logos
 $THIS_DISPLAY .= "    <tr>\n";
 $THIS_DISPLAY .= "     <td align=left valign=\"top\" width=\"75\" style='padding-top:0px;'>\n";
@@ -1057,6 +1058,83 @@ $THIS_DISPLAY .= "    </tr>\n";
 
 // Spacer Row
 $THIS_DISPLAY .= " <tr><td colspan=3>&nbsp;</td></tr>\n\n";
+
+
+##-----------------------------------------------------
+//-------------------PayPal Pro------------------------
+##-----------------------------------------------------
+$THIS_DISPLAY .= " <tr>\n";
+$THIS_DISPLAY .= "  <a name=\"paypal-pro\"></a>";
+$THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\" rowspan=\"5\">\n";
+$THIS_DISPLAY .= "   <a href=\"http://www.paypal.com\" target=\"_blank\"><img src=\"logo-paypal-pro.png\" border=\"0\" width=\"100\" height=\"32\" style=\"border: 1px solid #336699;\"></a>\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= "  <td align=left valign=top colspan=2>\n";
+$THIS_DISPLAY .= "   <font color=#336699><b>PayPal Pro</b></font><br/><strong>Note: Requires SSL certificate, <a href=\"#ssl_cert\">see below</a></strong>\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= " </tr>\n";
+
+$THIS_DISPLAY .= " <tr>\n";
+$THIS_DISPLAY .= "  <td align=left valign=middle width=145 style='padding-top:0px;'>\n";
+$THIS_DISPLAY .= "   ".lang("PayPalPro API Username:")."\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= "  <td align=left valign=top style='padding-top:0px;'>\n";
+$THIS_DISPLAY .= "   <input type=text name=\"paypalpro_username\" class=text value=\"".$cartpref->get('paypalpro_username')."\" style='width: 200px;'>\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= " </tr>\n";
+
+$THIS_DISPLAY .= " <tr>\n";
+$THIS_DISPLAY .= "  <td align=left valign=middle width=145 style='padding-top:0px;'>\n";
+$THIS_DISPLAY .= "   ".lang("PayPalPro API Password:")."\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= "  <td align=left valign=top style='padding-top:0px;'>\n";
+$THIS_DISPLAY .= "   <input type=text name=\"paypalpro_password\" class=text value=\"".$cartpref->get('paypalpro_password')."\" style='width: 200px;'>\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= " </tr>\n";
+
+$THIS_DISPLAY .= " <tr>\n";
+$THIS_DISPLAY .= "  <td align=left valign=middle width=145 style='padding-top:0px;'>\n";
+$THIS_DISPLAY .= "   ".lang("PayPalPro API Signature:")."\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= "  <td align=left valign=top style='padding-top:0px;'>\n";
+$THIS_DISPLAY .= "   <input type=text name=\"paypalpro_api\" class=text value=\"".$cartpref->get('paypalpro_api')."\" style='width: 200px;'>\n";
+$THIS_DISPLAY .= "  </td>\n";
+$THIS_DISPLAY .= " </tr>\n";
+
+
+$THIS_DISPLAY .= " <tr><td align=left valign=middle colspan=2>\n";
+# 0. Test mode
+ob_start();
+?>
+	<p><a href="#" onclick="toggleid('testmode-container');">Click here to set up PayPal Pro test mode (optional).</a></p>
+	<div id="testmode-container"><a name="testmode"></a>
+		<h2 style="width:100%;" class="nomar_btm"><?php echo lang("Set up PayPal Pro Test Mode (Optional)"); ?> <a href="#" class="help-link" onclick="toggleid('pophelp-testmode');">[?]</a></h2>
+		<div>
+	   	<?php $checked = ($cartpref->get("admin-testmode-status") == 'on' ? ' checked' : ''); ?>
+	   	<input type="checkbox" id="admin-testmode-status" name="admin-testmode-status" value="on"<?php echo $checked; ?>/>
+	   	<label for="admin-testmode-status">Check to turn testmode on (for you) when you're logged in as an admin (like you are now).</label>
+		</div>
+		<fieldset class="paypal-settings">
+		<legend>PayPal Sandbox Merchant Info</legend>
+	   	<p>Note: You can create a PayPal Sandbox account at <a href="http://developer.paypal.com" target="_blank">http://developer.paypal.com</a>.</p>
+	   	<label>Merchant Email Address:</label>
+	   	<input type="text" name="pp-sandbox-email" class="field-email" value="<?php echo $cartpref->get("pp-sandbox-email"); ?>"/>
+	   	<label>Merchant Username:</label>
+	   	<input type="text" name="pp-sandbox-username" class="field-url" value="<?php echo $cartpref->get("pp-sandbox-username"); ?>"/>
+	   	<label>Merchant Password:</label>
+	   	<input type="text" name="pp-sandbox-password" class="field-password" value="<?php echo $cartpref->get("pp-sandbox-password"); ?>"/>
+	   	<label>Merchant API Signature:</label>
+	   	<input type="text" name="pp-sandbox-apisig" class="field-apisig" value="<?php echo $cartpref->get("pp-sandbox-apisig"); ?>"/>
+		</fieldset>
+	</div>
+<?php
+$THIS_DISPLAY .= ob_get_contents();
+ob_end_clean();
+
+$THIS_DISPLAY .= " </td></tr>\n\n";
+
+// Spacer Row
+$THIS_DISPLAY .= " <tr><td colspan=3>&nbsp;</td></tr>\n\n";
+
 
 ##---------------------------------------------------------------
 //---------------------Innovative Gateway------------------------
@@ -1253,15 +1331,6 @@ $THIS_DISPLAY .= " </tr>\n";
 
 $THIS_DISPLAY .= " <tr>\n";
 $THIS_DISPLAY .= "  <td align=\"left\" valign=\"middle\" style=\"padding-top:0px;\">\n";
-$THIS_DISPLAY .= "   ".lang("Merchant ID").":\n";
-$THIS_DISPLAY .= "  </td>\n";
-$THIS_DISPLAY .= "  <td align=\"left\" valign=\"top\" style=\"padding-top:0px;\">\n";
-$THIS_DISPLAY .= "   <input type=\"text\" name=\"IS_acctid\" class=\"text\" value=\"".$IS_acctid."\">\n";
-$THIS_DISPLAY .= "  </td>\n";
-$THIS_DISPLAY .= " </tr>\n";
-
-$THIS_DISPLAY .= " <tr>\n";
-$THIS_DISPLAY .= "  <td align=\"left\" valign=\"middle\" style=\"padding-top:0px;\">\n";
 $THIS_DISPLAY .= "   ".lang("Gateway ID").":\n";
 $THIS_DISPLAY .= "  </td>\n";
 $THIS_DISPLAY .= "  <td align=\"left\" valign=\"top\" style=\"padding-top:0px;\">\n";
@@ -1431,7 +1500,7 @@ if ( $PAYMENT['PAYMENT_SSL'] != '' ) {
 	$THIS_DISPLAY .= "<select id=\"ewayuk_companylogo\" name=\"ewayuk_companylogo\">\n";
 	$THIS_DISPLAY .= $img_selection;
 	$THIS_DISPLAY .= "</select>\n";
-	$THIS_DISPLAY .= "<a href=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/modules/upload_files.php\">Go to Upload Files Module</a>\n";
+	$THIS_DISPLAY .= "<a href=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/upload_files.php\">Go to Upload Files Module</a>\n";
 	$THIS_DISPLAY .= "  <script type=\"text/javascript\">document.getElementById('ewayuk_companylogo').value = '".$cartpref->get("ewayuk_companylogo")."';</script>\n";
 } else {
 	$THIS_DISPLAY .= "		https://<input type=\"text\" name=\"ewayuk_companylogo\" class=\"text\" value=\"".$cartpref->get("ewayuk_companylogo")."\" style=\"width: 250px;\">\n";
@@ -1448,7 +1517,7 @@ if ( $PAYMENT['PAYMENT_SSL'] != '' ) {
 	$THIS_DISPLAY .= "<select id=\"ewayuk_pagebanner\" name=\"ewayuk_pagebanner\">\n";
 	$THIS_DISPLAY .= $img_selection;
 	$THIS_DISPLAY .= "</select>\n";
-	$THIS_DISPLAY .= "<a href=\"http://".$_SESSION['docroot_url']."/sohoadmin/program/modules/upload_files.php\">Go to Upload Files Module</a>\n";
+	$THIS_DISPLAY .= "<a href=\"".httpvar().$_SESSION['docroot_url']."/sohoadmin/program/modules/upload_files.php\">Go to Upload Files Module</a>\n";
 	$THIS_DISPLAY .= "<script type=\"text/javascript\">document.getElementById('ewayuk_pagebanner').value = '".$cartpref->get("ewayuk_pagebanner")."';</script>\n";
 } else {
 	$THIS_DISPLAY .= "https://<input type=\"text\" name=\"ewayuk_pagebanner\" class=\"text\" value=\"".$cartpref->get("ewayuk_pagebanner")."\" style=\"width: 250px;\">\n";
@@ -1551,7 +1620,7 @@ $THIS_DISPLAY .= " <tr><td colspan=3>&nbsp;</td></tr>\n\n";
 $THIS_DISPLAY .= " <tr>\n";
 $THIS_DISPLAY .= "  <td align=\"center\" valign=\"top\" rowspan=2>\n";
 $THIS_DISPLAY .= "   <a name=\"nochexpmt\"></a>\n";
-$THIS_DISPLAY .= "   <a href=\"http://www.nochex.com/\" target=\"_blank\"><img src=\"images/nochex-logo.gif\" height=\"50%\" width=\"50%\" border=\"1\"></a>\n";
+$THIS_DISPLAY .= "   <a href=\"https://secure.nochex.com/apply/merchant.aspx?partner_id=213200481\" target=\"_blank\"><img src=\"images/nochex-logo.gif\" height=\"50%\" width=\"50%\" border=\"1\"></a>\n";
 $THIS_DISPLAY .= "  </td>\n";
 $THIS_DISPLAY .= "  <td align=left valign=top colspan=2 style='padding-bottom:0px;'>\n";
 $THIS_DISPLAY .= "   <font color=#336699><b>Nochex Payments</b></font>\n";
@@ -1856,11 +1925,15 @@ if ($PAYMENT[PAYMENT_INCLUDE] != "" ) {
 }
 
 if ($PAYMENT[INVOICE_INCLUDE] != "" ) {
-
 	echo "<SCRIPT LANGUAGE=\"javascript\">\n\n";
 	echo "      document.PAY.INVOICE_INCLUDE.value = '$PAYMENT[INVOICE_INCLUDE]';\n";
 	echo "</SCRIPT>\n\n";
+}
 
+if ( $cartpref->get("admin-testmode-status") == 'on' ) { 
+?>
+	<script>toggleid('testmode-container');</script>
+<?php 
 }
 
 ####################################################################

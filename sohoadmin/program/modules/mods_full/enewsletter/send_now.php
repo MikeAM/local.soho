@@ -36,6 +36,7 @@ error_reporting(0);
 session_start();
 
 include("../../../includes/product_gui.php");
+require_once("../../../includes/SohoEmail_class/SohoEmail.php");
 
 error_reporting(0);
 $newspref = new userdata("newsletter");
@@ -75,9 +76,9 @@ $THIS_HTML = str_replace("[FIRST_NAME]", "First name goes here", $row['HTML_CONT
 // Include HTML MIME MAIL class & register class
 // -----------------------------------------------------
 
-include("htmlMimeMail.php");
+//include("htmlMimeMail.php");
 error_reporting(0);
-$mail = new htmlMimeMail();
+//$mail = new htmlMimeMail();
 
 // ---------------------------------------------------
 // Load image files into mimemail object
@@ -228,13 +229,14 @@ if(is_utf8($THIS_HTML)){
 // SEND HTML NEWSLETTER NOW!
 // ---------------------------------------------
 // Split send into "chunks" for SENDMAIL to operate properly
-$uresult = mysql_query("select DISTINCT upper(UNSUB_EMAIL_ADDR) as uemail from UNSUBSCRIBE");
+$uresult = mysql_query("select DISTINCT upper(UNSUB_EMAIL_ADDR) as uemail from unsubscribe");
 $unotin = "'";
 $numu = mysql_num_rows($uresult);
 $ucount = 1;
 while($urow = mysql_fetch_array($uresult)) {
+   $urow[uemail]=strtoupper($urow[uemail]);
    $unotin .= $urow[uemail];
-	 $noemail[]=$urow[uemail];
+	 $noemail[]=strtoupper($urow[uemail]);
    if ( $ucount < $numu ) {
       $unotin .= "','";
    }
@@ -257,25 +259,25 @@ if($email_names == '' || $_GET['testemail'] != ''){
 	// and build the message (encoding the text is cool)
 	// ---------------------------------------------------
 	$ipath = $doc_root . "/images/";
-	$mail->setHtml($THIS_HTML, $row[TEXT_CONTENT], $ipath);		
+	//$mail->setHtml($THIS_HTML, $row[TEXT_CONTENT], $ipath);		
 	$to_address = "\"".$newspref->get("newsletter_send_to_name")."\" <".$newspref->get("newsletter_send_to_address").">";
 	
 	$from_address = "\"".$newspref->get("default_emailfrom_display")."\" <$row[FROM_ADDR]>";
 	$return_address = $row[FROM_ADDR];
 	$mailer = "HTML Mime mail class (http://$this_ip)";
 	$subject = "$row[SUBJECT_LINE]";
-	$mail->setReturnPath($return_address);
-	$mail->setFrom($from_address);
-	$mail->setSubject($subject);
-	$mail->setHeader('X-Mailer', $mailer);
-	$mail->setHeader('Date', date("r")); // Exprimental...John @ Smile NZ says Yahoo flags messages as spam that don't have date headers
+//	$mail->setReturnPath($return_address);
+//	$mail->setFrom($from_address);
+//	$mail->setSubject($subject);
+//	$mail->setHeader('X-Mailer', $mailer);
+//	$mail->setHeader('Date', date("r")); // Exprimental...John @ Smile NZ says Yahoo flags messages as spam that don't have date headers
 
 	if($_GET['testemail'] != ''){
 		$counter = 2;
 		$email_count = 1;
 		$testemailaddress = $_GET['testemail'];
 		$emailarray[] = $testemailaddress;
-		$namearray[$testemailaddress] = '';
+		$namearray[$testemailaddress] = '';		
 		
 	} else {
 		//echo $_POST['sendreal'];
@@ -290,13 +292,16 @@ if($email_names == '' || $_GET['testemail'] != ''){
 		while($emz = mysql_fetch_assoc($oq)){
 
 			$theaddress = $emz['semail'];
-
-			if ( eregi("@+.+\.[a-zA-Z]", $theaddress) && !eregi(" ", $theaddress) && !eregi("'", $theaddress) && !eregi("/", $theaddress) && !eregi("nobody", $theaddress) && !eregi("nowhere", $theaddress) && !eregi("\"", $theaddress) && !eregi("\.@", $theaddress) && !eregi("@\.", $theaddress) ) {
-				$emailarray[] = $theaddress;
-				$namearray[$theaddress] = $firstname;
-				echo "$counter: $theaddress<br>\n";
-				$counter++;
-			} // end if
+			if(!in_array(strtoupper($theaddress), $noemail)){
+				if ( eregi("@+.+\.[a-zA-Z]", $theaddress) && !eregi(" ", $theaddress) && !eregi("'", $theaddress) && !eregi("/", $theaddress) && !eregi("nobody", $theaddress) && !eregi("nowhere", $theaddress) && !eregi("\"", $theaddress) && !eregi("\.@", $theaddress) && !eregi("@\.", $theaddress) ) {
+					$emailarray[] = $theaddress;
+					$namearray[$theaddress] = $firstname;
+					echo "$counter: $theaddress<br>\n";
+					$counter++;
+				} // end if
+			} else {
+				$email_count--;
+			}
 		}
 	
 	}
@@ -313,16 +318,19 @@ if($email_names == '' || $_GET['testemail'] != ''){
 	   $bccmail = implode(",",$output);	   
 	   if($_GET['testemail'] != ''){	   	 
 	   	//echo "<br/>sending  test to ".$testemailaddress; 
-	   	 $mail->setBcc($testemailaddress);
+	   	 //$mail->setBcc($testemailaddress);
+	   	 $bccaddresses=$testemailaddress;	   	 
 	   } else {
 		echo "<br/>sending to all recipients!";
 //	   	 echo $bccmail;
-	   	 $mail->setBcc($bccmail);
+	   	 //$mail->setBcc($bccmail);
+	   	 $bccaddresses=$bccmail;
 	   }
 
 	   if($_GET['testemail'] != '' || $_POST['sendreal'] == 'yes'){
 //		    echo 'sending mail to '.$bccmail;
-		    $sresult = $mail->send(array($to_address), 'smtp');	   	  
+		    //$sresult = $mail->send(array($to_address), 'smtp');	   	  
+		    SohoEmail($testemailaddress, $from_address, $subject, $THIS_HTML, array('bccaddr'=>$bccaddresses));
 		   $start = $end;
 		   
 		   if($_GET['testemail'] == ''){
@@ -349,7 +357,7 @@ if($email_names == '' || $_GET['testemail'] != ''){
 			echo "<input type=\"hidden\" name=\"sendreal\" value=\"yes\">\n";
 			echo "<input class=\"btn_delete\" onmouseover=\"this.className='btn_deleteon';\" onmouseout=\"this.className='btn_delete';\" style=\"font-family: Arial; font-size: 8pt;\" onClick=\"window.location.href='../enewsletter.php';\" type=\"button\" value=\"cancel\">\n";
 			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-			echo "<input class=\"btn_save\" onmouseover=\"this.className='btn_saveon';\" onmouseout=\"this.className='btn_save';\" style=\"font-family: Arial; font-size: 8pt; width: 85px;\" onClick=\"sendforreal('".$usertotal."');\" type=\"button\" value=\"send campaign\">\n";
+			echo "<input class=\"btn_save\" onmouseover=\"this.className='btn_saveon';\" onmouseout=\"this.className='btn_save';\" style=\"font-family: Arial; font-size: 8pt; width: 85px;\" onClick=\"sendforreal('".$_REQUEST['usertotal']."');\" type=\"button\" value=\"send campaign\">\n";
 			echo "</form></div>\n";			
 			
 		   }	   
@@ -372,6 +380,7 @@ if($email_names == '' || $_GET['testemail'] != ''){
 	while ( $mrow = mysql_fetch_array($mresult) ) {
 
 	   $theaddress = $mrow['semail'];
+	   
 	   $firstname_arr = explode(' ', $mrow['emailname']);
 	   $firstname = ucfirst(strtolower($firstname_arr['0']));
 	   //echo "(".$firstname.")\n";
@@ -385,20 +394,24 @@ if($email_names == '' || $_GET['testemail'] != ''){
 			// ---------------------------------------------------
 			$ipath = $doc_root . "/images/";
 			$FINAL_HTML = eregi_replace('#name#', $firstname, $THIS_HTML);
-			$mail = new htmlMimeMail();
-			$mail->setHtml($FINAL_HTML, $row[TEXT_CONTENT], $ipath);
+			//$mail = new htmlMimeMail();
+			//$mail->setHtml($FINAL_HTML, $row[TEXT_CONTENT], $ipath);
+			
 			$to_address = "list@".str_replace('www.', '', $this_ip);
 			$from_address = "\"".$newspref->get("default_emailfrom_display")."\" <$row[FROM_ADDR]>";
 			$return_address = $row[FROM_ADDR];
 			$mailer = "HTML Mime mail class (http://$this_ip)";
 			$subject = "$row[SUBJECT_LINE]";
-			$mail->setReturnPath($return_address);
-			$mail->setFrom($from_address);
-			$mail->setSubject($subject);
-			$mail->setHeader('X-Mailer', $mailer);
-			$mail->setHeader('Date', date("r")); // Exprimental...John @ Smile NZ says Yahoo flags messages as spam that don't have date headers
-
-			$sresult = $mail->send(array($theaddress), 'smtp');
+//			$mail->setReturnPath($return_address);
+//			$mail->setFrom($from_address);
+//			$mail->setSubject($subject);
+//			$mail->setHeader('X-Mailer', $mailer);
+//			$mail->setHeader('Date', date("r")); // Exprimental...John @ Smile NZ says Yahoo flags messages as spam that don't have date headers
+//
+//			$sresult = $mail->send(array($theaddress), 'smtp');
+			
+			SohoEmail($theaddress, $from_address, $subject, $FINAL_HTML);
+			
 
 		   } // end if
 		}

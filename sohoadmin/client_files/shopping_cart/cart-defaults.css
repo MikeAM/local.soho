@@ -1,0 +1,20 @@
+.paypalpro-pay-container {
+	position: relative;
+	text-align: center;
+	/*height: 60px;	*/
+}
+.paypalpro-pay-btn {
+	/*position: absolute;*/
+	margin: 5px auto;
+	display: block;
+	text-indent: -9999px;
+	background: url('pay-now-button.png') no-repeat -6px -11px;
+	width: 216px;
+	height: 46px;	
+}
+.paypalpro-pay-btn:hover {
+	background: url('pay-now-button.png') no-repeat -6px -61px;
+}
+.paypalpro-pay-btn:active {
+	background-position: -6px -10px;
+}

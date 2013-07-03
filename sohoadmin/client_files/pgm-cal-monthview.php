@@ -43,25 +43,79 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 // Otherwise Replace the Category Name display with a drop down tag
 // for the Main Calendar System to interpret with selection boxes.
 // -------------------------------------------------------------------------
+//echo $REUSE_FLAG."<br/>".'1'."<br/>".$hide_drop_down."<br/>2".$CHANGE_CAT."<br/>3".$CALENDAR_SEARCH."<br/>";
+$pr=$_REQUEST['pr'];
+if($_REQUEST['CHANGE_CAT']!=''){
+	$CHANGE_CAT=$_REQUEST['CHANGE_CAT'];
+}
+if($_REQUEST['SEL_MONTH']!=''){
+	$SEL_MONTH=$_REQUEST['SEL_MONTH'];	
+}
+if($_REQUEST['SEL_YEAR']!=''){
+	$SEL_YEAR=$_REQUEST['SEL_YEAR'];	
+}
+if($_REQUEST['DISPLAY_SEARCH_CALENDAR']!=''){
+	$DISPLAY_SEARCH_CALENDAR = $_REQUEST['DISPLAY_SEARCH_CALENDAR'];
+}
+if($_REQUEST['PUBLIC_SUBMIT_EVENT']!=''){
+	$PUBLIC_SUBMIT_EVENT=$_REQUEST['PUBLIC_SUBMIT_EVENT'];	
+}
+if($_REQUEST['dType']!=''){
+	$dType=$_REQUEST['dType'];	
+}
+if($_REQUEST['DETAIL_SEARCH_KEYWORDS']!=''){
+	$DETAIL_SEARCH_KEYWORDS = $_REQUEST['DETAIL_SEARCH_KEYWORDS'];
+}
+if($_REQUEST['SORT_RESULTS_BY']!=''){
+	$SORT_RESULTS_BY = $_REQUEST['SORT_RESULTS_BY'];	
+}
+if($_REQUEST['SORT_BY_ORDER']!=''){
+	$SORT_BY_ORDER = $_REQUEST['SORT_BY_ORDER'];	
+}	
+if($_REQUEST['CALENDAR_SEARCH']!=''){
+	$CALENDAR_SEARCH = $_REQUEST['CALENDAR_SEARCH'];	
+}
+if($_REQUEST['CHANGE_CALENDAR_MONYEAR']!=''){
+	$CHANGE_CALENDAR_MONYEAR=$_REQUEST['CHANGE_CALENDAR_MONYEAR']; 
+}
 
+if($CHANGE_CALENDAR_MONYEAR==''){ $CHANGE_CALENDAR_MONYEAR = 'View'; }
+if($CHANGE_CAT==''){ $CHANGE_CAT='ALL'; }
+
+if($SEL_MONTH==''){ $SEL_MONTH = date("m"); }
+if($SEL_YEAR==''){ $SEL_YEAR = date("Y"); }
 if($hide_drop_down == 1){
-   if ($SEL_MONTH == "") { $SEL_MONTH = date("m"); }	// Set default dates if drop down not active
-   if ($SEL_YEAR == "") { $SEL_YEAR = date("Y"); }
-	$DISP_CAT_NAME = "##DROPDOWN##";
-	$DISP_CAT_NAME .= "</td><td><B><I>".$lang["Category"].": $CHANGE_CAT</I></B></font>";
-	$REUSE_FLAG = '';
+	if ($REUSE_FLAG != 1) {
+	   if ($SEL_MONTH == "") { $SEL_MONTH = date("m"); }	// Set default dates if drop down not active
+	   if ($SEL_YEAR == "") { $SEL_YEAR = date("Y"); }
+		$DISP_CAT_NAME = "##DROPDOWN##";
+		$DISP_CAT_NAME .= "</td><td><B><I>".$lang["Category"].": $CHANGE_CAT</I></B></font>";
+		$REUSE_FLAG = '';
+	} else {
+		
+		$DISP_CAT_NAME = "<div align=right><font size=1 face=Arial><B><I>".lang("Category").": ".str_replace('"', '', str_replace("'", '', $CHANGE_CAT))."</I></B></font></div>";
+		$DISP_CAT_NAME = '';
+	}
 } else {
 	if ($REUSE_FLAG != 1) {
 //		echo 'not dropdown';
 		$DISP_CAT_NAME = "<div align=right><font size=1 face=Arial><B><I>".lang("Category").": ".str_replace('"', '', str_replace("'", '', $CHANGE_CAT))."</I></B></font></div>";
-		$SEL_MONTH = date("m");
-		$SEL_YEAR = date("Y");
+		$DISP_CAT_NAME = '';
+		if($SEL_MONTH==''){
+			$SEL_MONTH = date("m");
+			$SEL_YEAR = date("Y");
+		}
 
 	} else {
 		$DISP_CAT_NAME = "##DROPDOWN##";
+		if($SEL_MONTH==''){
+			$SEL_MONTH = date("m");
+			$SEL_YEAR = date("Y");
+		}
 	}
 }
 
+//echo $DISP_CAT_NAME;
 // Because of the page editor, we are passing the category value as the
 // actual "Category_Name" for the calendar.  Normally we would use the
 // PriKey field and convert for display.  Let's Convert the "Name" to the
@@ -189,26 +243,75 @@ if ($SEL_MONTH == date("m")) { $HIGHLIGHT = "on"; $HIGHLIGHT_DAY = date("j"); }
 $top_month = date("F", mktime(0,0,0,$SEL_MONTH,1,$SEL_YEAR));
 $top_year = date("Y", mktime(0,0,0,$SEL_MONTH,1,$SEL_YEAR));
 
+if($SEL_MONTH == 12 || $SEL_MONTH == 01){
+	if($SEL_MONTH == 12){
+		$last_month = date("F", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));
+		$last_year = date("Y", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));	
+		$next_month = date("F", mktime(0,0,0,01,1,($SEL_YEAR+1)));
+		$next_year = date("Y", mktime(0,0,0,01,1,($SEL_YEAR+1)));
+	} else {
+		$last_month = date("F", mktime(0,0,0,12,1,($SEL_YEAR-1)));
+		$last_year = date("Y", mktime(0,0,0,12,1,($SEL_YEAR-1)));
+		$next_month = date("F", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+		$next_year = date("Y", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+	}
+} else {
+	$last_month = date("F", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));
+	$last_year = date("Y", mktime(0,0,0,($SEL_MONTH-1),1,$SEL_YEAR));
+	$next_month = date("F", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+	$next_year = date("Y", mktime(0,0,0,($SEL_MONTH+1),1,$SEL_YEAR));
+}
+
 ########################################################################
 ### START BUILDING CALENDAR FOR DISPLAY :: HEADER
 ########################################################################
 
+echo "<script type=\"text/javascript\">
+function changedate(month,year){ 
+	var sel = document.getElementById('SEL_MONTH');
+	for(var i, j = 0; i = sel.options[j]; j++) {
+		if(i.value == month) {
+			sel.selectedIndex = j;
+			//break;
+		}
+	}
+	var sel2 = document.getElementById('SEL_YEAR');
+	for(var i2, j2 = 0; i2 = sel2.options[j2]; j2++) {
+		if(i2.value == year) {
+			sel2.selectedIndex = j2;
+		}
+	}
+	document.calsub.submit();
+}
+</script>\n";
+
 if ($REUSE_FLAG == 1) {
 
-	echo "<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" align=\"center\">\n";
+	echo "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"99%\" align=\"center\">\n";
 
-   # Month & Year
+
+	if($hide_drop_down==1){
+		echo " <tr>\n";
+		echo "  <td align=center colspan=7 style='padding:0px;border-bottom: 0px inset black;padding-bottom:4px;'>".$DISP_CAT_NAME."</td>\n";
+		echo " </tr>\n";
+	}
+	$last_month_val = date('m',strtotime($last_month." ".$last_year));
+	$next_month_val = date('m',strtotime($next_month." ".$next_year));
+
 	echo " <tr>\n";
-	echo "  <td colspan=\"7\" align=\"center\" valign=\"top\">\n";
-	echo "   <font face=\"verdana\" size=\"4\"><b>".lang($top_month)." ".$top_year."</b></font>\n";
+	echo "  <td colspan=3 style='border-bottom: 0px inset black;text-align:left;'><a style=\"font-size:15px;text-decoration:none;bottom-border:0px;\" href=\"javascript:void(0);\" onClick=\"changedate('".$last_month_val."','".$last_year."');\">&lt;&lt;&nbsp;".$last_month."&nbsp;".$last_year."</a></td>\n";
+	echo "  <td colspan=\"2\" align=\"center\" valign=\"top\" style=\"font-weight:bold;font-size:18px;text-align:center;padding:0px;\">\n";
+	echo "   ".lang($top_month)." ".$top_year."\n";
 	echo "  </td>\n";
+	echo "  <td colspan=2 style='border-bottom: 0px inset black;text-align:right;'><a style=\"font-size:15px;text-decoration:none;bottom-border:0px;\" href=\"javascript:void(0);\" onClick=\"changedate('".$next_month_val."','".$next_year."');\">".$next_month."&nbsp;".$next_year."&nbsp;&gt;&gt;</a></td>\n";
 	echo " </tr>\n";
-
-	echo " <tr>\n";
-	echo "  <td align=center colspan=7 style='border-bottom: 0px inset black;'><br>".$DISP_CAT_NAME."</td>\n";
-	echo " </tr>\n";
-
-	echo "</TABLE><BR>\n";
+   # Month & Year
+//	echo " <tr>\n";
+//	echo "  <td colspan=\"7\" align=\"center\" valign=\"top\" style=\"font-weight:bold;font-size:18px;text-align:center;padding:0px;\">\n";
+//	echo "   ".lang($top_month)." ".$top_year."\n";
+//	echo "  </td>\n";
+//	echo " </tr>\n";
+	echo "</TABLE>\n";
 
 } else {
 
@@ -218,21 +321,67 @@ if ($REUSE_FLAG == 1) {
 	echo "   <font face=verdana size=2><b>".lang($top_month)." ".$top_year."</b></font></td>\n";
 	echo "  <td align=right colspan=3 style='border-bottom: 0px inset black;'>".$DISP_CAT_NAME."</td>\n";
 	echo " </tr>\n";
+
+
+//	$last_month_val = date('m',strtotime($last_month." ".$last_year));
+//	$next_month_val = date('m',strtotime($next_month." ".$next_year));
+//
+//	echo " <tr>\n";
+//	echo "  <td colspan=3 style='border-bottom: 0px inset black;text-align:left;'><a style=\"font-size:15px;text-decoration:none;bottom-border:0px;\" href=\"javascript:void(0);\" onClick=\"changedate('".$last_month_val."','".$last_year."');\">&lt;&lt;&nbsp;".$last_month."&nbsp;".$last_year."</a></td>\n";
+//	echo "  <td colspan=\"2\" align=\"center\" valign=\"top\" style=\"font-weight:bold;font-size:18px;text-align:center;padding:0px;\">\n";
+//	echo "   ".lang($top_month)." ".$top_year."\n";
+//	echo "  </td>\n";
+//	echo "  <td colspan=2 style='border-bottom: 0px inset black;text-align:right;'><a style=\"font-size:15px;text-decoration:none;bottom-border:0px;\" href=\"javascript:void(0);\" onClick=\"changedate('".$next_month_val."','".$next_year."');\">".$next_month."&nbsp;".$next_year."&nbsp;&gt;&gt;</a></td>\n";
+//	echo " </tr>\n";
+
 	echo "</table>\n";
 
 
 } // End Header base on Reuse Flag
 
+
+
 ########################################################################
 ### START BUILDING CALENDAR FOR DISPLAY :: ROW ONE = DAYS OF WEEK
 ########################################################################
 
+echo "<script type=\"text/javascript\" src=\"sohoadmin/client_files/jquery.min.js\"></script>
+<script type=\"text/javascript\">
+function openEvent(eid){
+	document.getElementById('event_details_div').style.display='block';
+	$('#event_details_div').load('pgm-cal-details.inc.php?id='+eid, function() {
+		return true;
+	});
+	//document.getElementById('event_details_div').innerHTML='
+}
+function openPagego(cid){
+	//document.getElementById('event_details_div').style.display='block';
+	//$('#event_details_div').load('shopping/pgm-more_information.php?&nft=blank_template&id='+cid, function() {
+	//$('#event_details_div').load('pgm-cal-details.inc.php?id='+cid, function() {
+	//	return true;
+	//});
+	//document.getElementById('event_details_div').innerHTML='
+	document.location.href=cid.replace(/ /g,'_')+'.php';
+}
+function openCart(cid,event_id){
+	//document.getElementById('event_details_div').style.display='block';
+	//$('#event_details_div').load('shopping/pgm-more_information.php?&nft=blank_template&id='+cid, function() {
+	//$('#event_details_div').load('pgm-cal-details.inc.php?id='+cid, function() {
+	//	return true;
+	//});
+	//document.getElementById('event_details_div').innerHTML='
+	document.location.href='shopping/pgm-more_information.php?&id='+cid+'&event='+event_id;
+}				
+
+</script>\n";
+echo "<div style=\"position:relative;width:100%;\">\n";
+echo "<div id=\"event_details_div\"  style=\"position:absolute;z-index:99999;display:none;border:3px solid ".$DISPLAY['BACKGROUND_COLOR'].";width:100%;height:100%;top:0;left:0;padding:0px;background-color:#EFEFEF;\"></div>\n";
 echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" align=\"center\" style=\"border-color: black;\" id=\"calendar_monthview\">\n";
 
 	# Col headings - Sunday | Monday | Tuesday
 	echo " <tr>\n";
 	for ($x=0;$x<=6;$x++) {
-		echo "  <th align=\"center\" valign=\"middle\" width=\"150\" bgcolor=\"#".$DISPLAY['BACKGROUND_COLOR']."\" class=\"text\">";
+		echo "  <th align=\"center\" valign=\"middle\" width=\"150\" bgcolor=\"".$DISPLAY['BACKGROUND_COLOR']."\" class=\"text\">";
 		echo "   <font color=\"".$DISPLAY['TEXT_COLOR']."\" face=\"Verdana\" size=\"2\">\n";
 		echo "   <b>".lang($day_of_week[$x])."</b>\n";
 		echo "   <font>";
@@ -245,21 +394,22 @@ echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" alig
 	// Display first week based on when first day of month starts
 	// -----------------------------------------------------------------
 
-	echo "\n<TR>\n";
+	echo "\n<TR >\n";
 
 	$FLAG = 0;
 	$display_day = 1;
-
+	$dead = 0;
 	for ($x=0;$x<=6;$x++) {
-
+		
+		$bb=''; 
 		# Day of month exist for this weekday?
 		if (eregi("$START_DOW", $day_of_week[$x]) || $FLAG == 1) {
          # YES - Show date and events and such
-			if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = "OLDLACE"; $fontColor = "#000"; } else { $BGCOLOR = ""; $fontColor = "inherit"; }
+			if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = $DISPLAY['BACKGROUND_COLOR']; $bb=' border:6px solid '.$DISPLAY['TEXT_COLOR'].'; '; $fontColor = "#000"; } else { $BGCOLOR = ""; $fontColor = "inherit"; }
 
-			echo "  <td align=\"left\" valign=\"top\" bgcolor=\"".$BGCOLOR."\" class=\"day_square smtext\" style=\"height: 100px; width: 100px;color: ".$fontColor.";\">\n";
+			echo "  <td align=\"left\" valign=\"top\" bgcolor=\"".$BGCOLOR."\" class=\"day_square smtext\" style=\"".$bb." height: 100px; width: 100px;color: ".$fontColor.";\">\n";
 			echo "   <font face=verdana size=2>\n";
-			echo "   <div style=\"background-color: #".$DISPLAY['BACKGROUND_COLOR']."; padding: 1px; color: #".$DISPLAY['TEXT_COLOR']."; width: 20px; border: 1px solid black;\">\n";
+			echo "   <div style=\"background-color: ".$DISPLAY['BACKGROUND_COLOR']."; padding: 1px; color: ".$DISPLAY['TEXT_COLOR']."; width: 20px; border: 1px solid black;\">\n";
 			echo "    <b>".lang("$display_day")."</b>\n";
 			echo "   </div>\n";
 			echo "   </font><br clear=all>";
@@ -294,7 +444,19 @@ echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" alig
 					}
 
 					if (strlen($DB_EVENT_DETAILS[$z]) > 3 || $DB_EVENT_DETAILPAGE[$z] != "") {
-						echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"#\" style=\"color: ".$fontColor.";\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$DB_EVENT_PRIKEY[$z]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
+						if(is_numeric($DB_EVENT_DETAILPAGE[$z])){
+							echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" style=\"color: ".$fontColor.";\" onclick=\"openCart('".$DB_EVENT_DETAILPAGE[$z]."','".$DB_EVENT_PRIKEY[$z]."');\">";						
+						} else {
+							if($DB_EVENT_DETAILPAGE[$z] != ""){
+								echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" style=\"color: ".$fontColor.";\" onclick=\"openPagego('".$DB_EVENT_DETAILPAGE[$z]."');\">";								
+							} else {
+								echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" style=\"color: ".$fontColor.";\" onclick=\"openEvent('".$DB_EVENT_PRIKEY[$z]."');\">";								
+							}
+							
+							
+						}
+						//echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"#\" style=\"color: ".$fontColor.";\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$DB_EVENT_PRIKEY[$z]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";						
+						
 						echo "$DB_EVENT_TITLE[$z]</a></span><BR><span class=\"event-time\">$mm";
 					} else {
 						echo "<span class=\"event-title\">".$DB_EVENT_TITLE[$z]."</span><BR><span class=\"event-time\">$mm";
@@ -331,7 +493,6 @@ echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" alig
 			echo "  <td align=\"left\" valign=\"top\" class=\"dead_daysquare text\" style=\"height: 75px;\">";
 			echo "   &nbsp;";
 			echo "  </td>\n";
-
 		}
 	}
 	echo "</TR>\n";
@@ -345,20 +506,21 @@ echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" alig
 	if ($NUM_ROWS > 4) { $NUM_ROWS = 5; }
 
 	for ($x=1;$x<=$NUM_ROWS;$x++) {
-
+		if($x<=$NUM_ROWS){
 		echo "<TR>\n";
 
 		# Loop through days in this month
 		for ( $y=1;$y<=7;$y++ ) {
-
+			
+			$bb='';
 			# As long as FLAG == 0 there are days left in the month?
 			if ( $FLAG != 1 ) {
 
-				if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = "OLDLACE"; $fontColor = "#000"; } else { $BGCOLOR = ""; $fontColor = "inherit"; }
+				if ($HIGHLIGHT == "on" && $display_day == $HIGHLIGHT_DAY) { $BGCOLOR = ''; $fontColor = "inherit"; $bb=' border:6px solid '.$DISPLAY['TEXT_COLOR'].'; '; } else { $BGCOLOR = ""; $fontColor = "inherit"; }
 
-				echo "  <td align=\"left\" valign=\"top\" bgcolor=\"".$BGCOLOR."\" class=\"day_square smtext\" style='height: 100px; width: 100px;color: ".$fontColor.";'>\n";
+				echo "  <td align=\"left\" valign=\"top\" bgcolor=\"".$BGCOLOR."\" class=\"day_square smtext\" style='".$bb." height: 100px; width: 100px;color: ".$fontColor.";'>\n";
 
-				echo "   <b><font face=\"verdana\" size=2><div style=\"background-color: #".$DISPLAY['BACKGROUND_COLOR']."; padding: 1px; color: #".$DISPLAY['TEXT_COLOR']."; width: 20px; border: 1px solid black;\">$display_day</div></font></b>";
+				echo "   <b><font face=\"verdana\" size=2><div style=\"background-color: ".$DISPLAY['BACKGROUND_COLOR']."; padding: 1px; color: ".$DISPLAY['TEXT_COLOR']."; width: 20px; border: 1px solid black;\">$display_day</div></font></b>";
 
 				// ========================================================================
 				// Display Events for this date
@@ -384,7 +546,25 @@ echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" alig
 						}
 
 						if (strlen($DB_EVENT_DETAILS[$z]) > 3 || $DB_EVENT_DETAILPAGE[$z] != "") {
-							echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"#\" style=\"color: ".$fontColor.";\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$DB_EVENT_PRIKEY[$z]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
+							
+						if(is_numeric($DB_EVENT_DETAILPAGE[$z])){
+							echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" style=\"color: ".$fontColor.";\" onclick=\"openCart('".$DB_EVENT_DETAILPAGE[$z]."','".$DB_EVENT_PRIKEY[$z]."');\">";						
+						} else {
+							
+							if($DB_EVENT_DETAILPAGE[$z] != ""){
+								echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" style=\"color: ".$fontColor.";\" onclick=\"openPagego('".$DB_EVENT_DETAILPAGE[$z]."');\" style=\"color: ".$fontColor.";\">";
+							} else {
+								echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"javascript:void(0);\" style=\"color: ".$fontColor.";\" onclick=\"openEvent('".$DB_EVENT_PRIKEY[$z]."');\" style=\"color: ".$fontColor.";\">";				
+							}
+
+							
+						}
+							
+							//echo "<span class=\"event-container\"><span class=\"event-title\"><a href=\"#\" style=\"color: ".$fontColor.";\" onclick=\"javscript: window.open('pgm-cal-details.inc.php?id=$DB_EVENT_PRIKEY[$z]','EVENTDETAILS', 'scrollbars=yes,location=no,resizable=yes,width=470,height=400');\">";
+							
+							
+							
+							
 							echo "$DB_EVENT_TITLE[$z]</a></span><BR><span class=\"event-time\">$mm";
 						} else {
 							echo "<span class=\"event-title\">$DB_EVENT_TITLE[$z]</span><BR><span class=\"event-time\">$mm";
@@ -421,6 +601,11 @@ echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" alig
 				echo "   &nbsp;";
 				echo "  </td>\n";
 
+				if($display_day > 25){
+					$dead = 1;
+					$NUM_ROWS=-1;
+				}
+
 			}
 
 			if ($display_day == $NUM_DAYS_IN_MONTH) { $FLAG = 1; }
@@ -430,14 +615,19 @@ echo "<table border=\"1\" cellpadding=\"2\" cellspacing=\"0\" width=\"99%\" alig
 		} // End Week ($y) Loop
 
 		echo "\n</TR>\n";
-
+		}
 	} // End Month ($x) Loop
 
 	// -----------------------------------------------------------------
 	// End Calendar Display
 	// -----------------------------------------------------------------
 
-	echo "\n\n</TABLE>\n";
+//	echo " <tr>\n";
+//	echo "  <td align=center colspan=7 style='padding:0px;border-bottom: 0px inset black;padding-bottom:4px;'>".$DISP_CAT_NAME."</td>\n";
+//	echo " </tr>\n";
 
+
+	echo "\n\n</TABLE>\n";
+	echo "</div>\n";
 
 ?>

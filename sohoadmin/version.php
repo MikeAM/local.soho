@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 
@@ -36,7 +36,8 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ## CODE BELOW THIS LINE.
 ###############################################################################
 session_start();
-
+header('Content-type: text/html; charset=UT'.'F-8');
+header("X-XSS-Protection: 0");
 //if(isset($_GET['PHP_AUTH_USER'])){ 
 //	$_SESSION['PHP_AUTH_USER'] = base64_decode($_GET['PHP_AUTH_USER']);
 //}
@@ -54,33 +55,58 @@ require_once("program/includes/product_gui.php");
 ### VALIDATE EMAIL FUNCTION (For License Agreement Only)
 ##########################################################################
 
-function email_is_valid ($email) {
-	if (eregi("^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-.]?[0-9a-z])*\\.[a-z]{2,4}$", $email, $check)) {
-		if ( getmxrr(substr(strstr($check[0], '@'), 1), $validate_email_temp) ) {
-			return TRUE;
+//function email_is_valid ($email) {
+//	if (eregi("^[0-9a-z]([-_.]?[0-9a-z])*@[0-9a-z]([-.]?[0-9a-z])*\\.[a-z]{2,4}$", $email, $check)) {
+//		if ( getmxrr(substr(strstr($check[0], '@'), 1), $validate_email_temp) ) {
+//			return TRUE;
+//		}
+//		// THIS WILL CATCH DNSs THAT ARE NOT MX.
+//		if(checkdnsrr(substr(strstr($check[0], '@'), 1),"ANY")){
+//			return TRUE;
+//		}
+//	}
+//	return FALSE;
+//}
+if(!function_exists('email_is_valid')){
+	function email_is_valid ($email) {
+		if(!function_exists('filter_var')){
+			if(preg_match("/^[A-Z0-9._%-+]+@[A-Z0-9._%-+]+\.[A-Z]{2,4}$/i",$email)){
+				return TRUE;
+			} else {
+				return FALSE;
+			}
+		} else {
+			if(filter_var($email,FILTER_VALIDATE_EMAIL) === false){
+				return FALSE;
+			} else {
+				return TRUE;	
+			}
 		}
-		// THIS WILL CATCH DNSs THAT ARE NOT MX.
-		if(checkdnsrr(substr(strstr($check[0], '@'), 1),"ANY")){
-			return TRUE;
-		}
-	}
-	return FALSE;
+	}	// END VALIDATE EMAIL FUNCTION
 }
-
 $email_err = 0;
 
 ##########################################################################
-
+echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">'."\n";
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<?php
+if(preg_match('/MSIE/i',$_SERVER['HTTP_USER_AGENT'])){
+	echo "	<meta content=\"IE=8\" http-equiv=\"X-UA-Compatible\" />\n";
+}
+echo "<title>Site: ".$this_ip."</title>\n"; 
+echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ut"."f-8\">\n";
 ?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
-<html style="height:100%;">
-<head>
-<?php echo "<title>Site: ".$this_ip."</title>\n"; ?>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="shortcut icon" href="icons/favicon.ico" />
 <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
 <link rel="stylesheet" type="text/css" href="program/product_gui.css">
+<style>
+/*frame,html,body {
+	 -webkit-text-size-adjust:none!important; -ms-text-size-adjust:none!important; -moz-text-size-adjust:none!important; text-size-adjust:none!important; 
+}*/
+</style>
 </head>
 
 <script language="JavaScript">
@@ -144,21 +170,12 @@ $_SESSION['nav_logout'] = "class=\"nav_logout\" onMouseover=\"this.className='na
 # For Main Menu button only
 $_SESSION['nav_mainmenu'] = "class=\"nav_mainmenu\" onMouseover=\"this.className='nav_mainmenuon';\" onMouseout=\"this.className='nav_mainmenu';\"";
 
-//session_register("btn_edit");
-//session_register("btn_build");
-//session_register("btn_save");
-//session_register("btn_delete");
-//
-//session_register("nav_main");
-//session_register("nav_mainmenu");
-//session_register("nav_save");
-//session_register("nav_soho");
-//session_register("nav_logout");
 
-session_register("lang");
-session_register("language");
-session_register("getSpec");
-
+$_SESSION['getSpec'] = $getSpec;
+$_SESSION['language'] = $language;
+foreach($lang as $lvar=>$lval){
+	$_SESSION['lang'][$lvar]=$lval;
+}
 
 // ----------------------------------------------------
 // Check for any relevant service packs or updates
@@ -204,28 +221,31 @@ include ("includes/update_client.php");
 //// Build GUI Frameset and load up to Main Menu
 //// ----------------------------------------------------
 //echo "<frameset rows=\"*,1,19\" cols=\"*\" border=0>\n\n";
-echo "<frameset rows=\"0,*,1,19\" cols=\"*\" border=0 id=\"master_frameset\">\n\n";
+//echo "<frameset rows=\"0,*,1,19\" cols=\"*\" border=0 id=\"master_frameset\">\n\n";
 
+
+echo "<frameset rows=\"*,19px\" border=0>\n";
+echo "	<frameset cols=\"235px,*\" border=0>\n";
+
+echo "		<frame src=\"program/includes/ultra_menu.php\" id=\"ultramenu\" name=\"ultramenu\" scrolling=\"no\" marginwidth=\"0\" marginheight=\"0\" noresize frameborder=\"0\">\n";
+
+echo "		<frameset rows=\"0,*,1\" cols=\"*\" border=0 id=\"master_frameset\">\n\n";
 # HEADER --- Upper nav bar
-echo("<frame src=\"program/header.php?=SID\" id=\"upper_bar_frame\" name=\"header\" scrolling=\"NO\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"NO\">\n");
+echo "			<frame src=\"program/header.php?=SID\" id=\"upper_bar_frame\" name=\"header\" scrolling=\"NO\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"0\">\n";
 
-
-if($_REQUEST['gotopage'] != ''){
-	echo "<frame src=\"".$_REQUEST['gotopage']."?=SID\" name=\"body\" scrolling=\"auto\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"NO\">\n";	
+if($_POST['gotopage'] != ''){
+	echo "			<frame src=\"".$_POST['gotopage']."\" name=\"body\" scrolling=\"no\" marginwidth=\"0\" marginheight=\"0\"  noresize frameborder=\"0\">\n";	
 } else {
-	echo "<frame src=\"program/loader.php?=SID\" name=\"body\" scrolling=\"auto\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"NO\">\n";
+	echo "			<frame src=\"program/loader.php?=SID\" name=\"body\" scrolling=\"no\" marginwidth=\"0\" marginheight=\"0\" noresize frameborder=\"0\">\n";
 }
-
-//# BODY --- Main content frame
-//echo("<frame src=\"program/loader.php?=SID\" name=\"body\" scrolling=\"auto\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"NO\">\n");
-
 # REFRESHER --- The sole purpose of this frame is to refresh every so often so the session doesn't expire
-echo("<frame src=\"program/refresher_frame.php\" name=\"refresher\" scrolling=\"NO\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"NO\">\n");
+echo "			<frame src=\"program/refresher_frame.php\" name=\"refresher\" scrolling=\"NO\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"0\">\n";
 
 # FOOTER
-echo("<frame id=\"footerid\" src=\"program/footer.php?=SID\" name=\"footer\" scrolling=\"NO\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"NO\">\n");
-
-
+echo "		</frameset>\n";
+echo "	</frameset>\n";
+echo "	<frame id=\"footerid\" src=\"program/footer.php?=SID\" name=\"footer\" scrolling=\"NO\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"0\">\n";
+echo "</frameset>\n";
 
 //echo("<iframe style=\"height:29px; width:100%;\" src=\"program/header.php?=SID\" name=\"header\" scrolling=\"NO\" marginwidth=\"0\" marginheight=\"0\" leftmargin=\"0\" topmargin=\"0\" noresize frameborder=\"0\">\n</iframe>\n");
 //

@@ -39,7 +39,7 @@ $globalprefObj = new userdata('global');
 # Make Sure Security Groups exist
 #======================================================
 $match = 0;
-$result = mysql_list_tables("$db_name");
+$result = soho_list_tables();
 $i = 0;
 while ($i < mysql_num_rows ($result)) {
 	$tb_names[$i] = mysql_tablename ($result, $i);

@@ -39,5 +39,13 @@ include("../sohoadmin/includes/config.php");
 include("../sohoadmin/includes/db_connect.php");
 include_once("../sohoadmin/program/includes/shared_functions.php");
 
+if(!table_exists("cart_category")){
+	create_table("cart_category");
+}
+
+$resultc = mysql_query("SHOW COLUMNS FROM cart_category LIKE 'sortorder'");
+if(mysql_num_rows($resultc)==0){
+	mysql_query("alter table cart_category add column sortorder int(20) not null default '999' after product_count");	
+}
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
-
+ 
 $THIS_DISPLAY .= "<script language=\"javascript\">\n";
 $THIS_DISPLAY .= "function emptycheck(fcount){ \n";
 $THIS_DISPLAY .= "	var thisval = \"\";\n";
@@ -19,7 +19,7 @@ $THIS_DISPLAY .= "		document.getElementById('qty1').focus();\n";
 $THIS_DISPLAY .= "	}\n";
 $THIS_DISPLAY .= "} \n";
 $THIS_DISPLAY .= "</script> \n";
-
+ 
 eval(hook("pgm-more_information.php:above_moreinfo-pricing_table"));
 eval(hook("pgm-more_information_extended.php:addninfocontent"));
 $THIS_DISPLAY .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" id=\"moreinfo-pricing\">\n";
@@ -57,12 +57,16 @@ $PRICE_OPTIONS .= "</SELECT>\n";
 if ($PROD['sub_cats'][1] != "") {  // This must be a multiple category selection
 
   # Restore price variation
-  $THIS_DISPLAY_ROW1 = "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
-  $THIS_DISPLAY_ROW2 = " <td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+//  $THIS_DISPLAY_ROW1 = "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+//  $THIS_DISPLAY_ROW2 = " <td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+  $THIS_DISPLAY_ROW1 = "<td style=\" font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+  $THIS_DISPLAY_ROW2 = " <td style=\"font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
   foreach($PROD['variant_prices'] as $varvar=>$varval){
     if ( $PROD['variant_prices'][$varvar] != "" && $PROD['variant_names'][$varvar] != "" ) {
-      $THIS_DISPLAY_ROW1 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$PROD['variant_names'][$varvar]."</td>\n";
-      $THIS_DISPLAY_ROW2 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$dSign.$varval."</td>\n";
+//      $THIS_DISPLAY_ROW1 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$PROD['variant_names'][$varvar]."</td>\n";
+//      $THIS_DISPLAY_ROW2 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$dSign.$varval."</td>\n";
+      $THIS_DISPLAY_ROW1 .= "<td style=\" font-weight:strong; padding:0px 2px 0px 2px;\">".$PROD['variant_names'][$varvar]."</td>\n";
+      $THIS_DISPLAY_ROW2 .= "<td style=\" font-weight:strong; padding:0px 2px 0px 2px;\">".$dSign.$varval."</td>\n";
     }
   }
 
@@ -106,17 +110,26 @@ if ($PROD['sub_cats'][1] != "") {  // This must be a multiple category selection
 } else { // This is a single cat product
 
   # Restore price variation
-  $THIS_DISPLAY_ROW1 = "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
-  $THIS_DISPLAY_ROW2 = " <td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+//  $THIS_DISPLAY_ROW1 = "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+//  $THIS_DISPLAY_ROW2 = " <td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+  $THIS_DISPLAY_ROW1 = "<td style=\"font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
+  $THIS_DISPLAY_ROW2 = " <td style=\"font-weight:strong; padding:0px 2px 0px 2px;\">&nbsp;</td>\n";
   foreach($PROD['variant_prices'] as $varvar=>$varval){
     if ( $PROD['variant_prices'][$varvar] != "" && $PROD['variant_names'][$varvar] != "" ) {
-      $THIS_DISPLAY_ROW1 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$PROD['variant_names'][$varvar]."</td>\n";
-      $THIS_DISPLAY_ROW2 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$dSign.$varval."</td>\n";
+//      $THIS_DISPLAY_ROW1 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$PROD['variant_names'][$varvar]."</td>\n";
+//      $THIS_DISPLAY_ROW2 .= "<td style=\"background-color:#".$OPTIONS['DISPLAY_CARTBG']."; color:".$OPTIONS['DISPLAY_CARTTXT']."; font-weight:strong; padding:0px 2px 0px 2px;\">".$dSign.$varval."</td>\n";
+      $THIS_DISPLAY_ROW1 .= "<td style=\" font-weight:strong; padding:0px 2px 0px 2px;\">".$PROD['variant_names'][$varvar]."</td>\n";
+      $THIS_DISPLAY_ROW2 .= "<td style=\"font-weight:strong; padding:0px 2px 0px 2px;\">".$dSign.$varval."</td>\n";
     }
   }
 
   $THIS_DISPLAY .= "\n\n<form name=\"addcart\" method=\"post\" action=\"pgm-add_cart.php\">\n";
   $THIS_DISPLAY .= "<input type=\"hidden\" name=\"id\" value=\"".$PROD['PRIKEY']."\">\n";
+  
+	if($_REQUEST['event']!=''){
+		$THIS_DISPLAY .= "<input type=\"hidden\" name=\"event\" value=\"".$_REQUEST['event']."\">\n";	
+	}
+  
   $THIS_DISPLAY .= "<input type=\"hidden\" name=\"special_var_form\" value=\"yes\">\n";
   $THIS_DISPLAY .= "<input type=\"hidden\" name=\"goto_checkout\" value=\"".$OPTIONS['GOTO_CHECKOUT']."\">\n";
   $THIS_DISPLAY .= "<input type=\"hidden\" name=\"subcat\" value=\"".$PROD['sub_cats'][$z]."\">\n";
@@ -163,7 +176,7 @@ if ($PROD['sub_cats'][1] != "") {  // This must be a multiple category selection
 if (eregi(".FORM", $PROD[OPTION_FORMDATA])) {
 
   $THIS_DISPLAY .= "<tr>\n";
-  $THIS_DISPLAY .= "<td colspan=\"4\" class=\"smtext\" align=\"center\"><font color=\"maroon\">\n";
+  $THIS_DISPLAY .= "<td colspan=\"4\" class=\"smtext\" align=\"center\"><font>\n";
   $THIS_DISPLAY .= "<i>".lang("Details specific to this item will be asked when you add this product to your cart.")."\n";
   $THIS_DISPLAY .= "</td>\n";
   $THIS_DISPLAY .= "</tr>\n";

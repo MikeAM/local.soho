@@ -250,7 +250,7 @@ if ($STEP_NUM == "") {
 	### TO POPULATE "CURRENT" TABLES DROP DOWN BOX
 	#######################################################
 
-	$result = mysql_list_tables("$db_name");
+	$result = soho_list_tables();
 	$i = 0;
 	$numtablesinlist = 0; // Used to determine whether to show dummy "Website data tables..." option
 
@@ -984,6 +984,10 @@ $NUM_EMAILADDR = mysql_num_rows($result);
 		########################################################################
 
 		$HTML_CONTENT = "<!--\n\n$TEXT_EMAIL\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n -->\n\n\n\n" . $HTML_CONTENT;
+
+
+//	echo "<TEXTAREA STYLE='WIDTH: 500px; HEIGHT: 300px;'>".$HTML_CONTENT."</TEXTAREA>\n";
+//		exit;
 
 		########################################################################
 		### ADD CAMPAIGN TO CAMPAIN_MANAGER TABLE NOW

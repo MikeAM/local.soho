@@ -1,5 +1,5 @@
 <?php
-//error_reporting(E_PARSE);
+error_reporting('341');
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
 ##########################################################################################################################################
@@ -37,11 +37,11 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ....##.....##....##.....######...#####.##.########.......#####.##..#######..########.##.....##....##.........
 /*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 class mysql_insert {
-   var $db_name;
-   var $db_table; // Name of applicable database table
-   var $db_field = array(); // Starts as array of fld names, gets data, does something with data (insert, update, etc.)
-   var $needles = array();  // Field names and values used to locate particular db record(s)
-   var $qry_string; // final query string
+	var $db_name;
+	var $db_table; // Name of applicable database table
+	var $db_field = array(); // Starts as array of fld names, gets data, does something with data (insert, update, etc.)
+	var $needles = array();  // Field names and values used to locate particular db record(s)
+	var $qry_string; // final query string
 
 
    /*#############################################################################################
@@ -52,58 +52,91 @@ class mysql_insert {
 
    >> Compile updated array of fields and values
    ##############################################################################################*/
-   function mysql_insert( $tablename, $newStuff ) { // (releveant db table, known values indexed by field name)
-      global $db_name;
-      $this->db_table = $tablename;
+	function mysql_insert( $tablename, $newStuff ) { // (releveant db table, known values indexed by field name)
+		global $db_name;
+		$this->db_table = $tablename;
 
-      $get_list = mysql_query("SELECT * FROM $tablename");
-      $get_num = mysql_num_fields($get_list);
-      // Make Column List
-      #[----------------------------------------------------------]
-      for ( $f=0; $f < $get_num; $f++ ) {
-      	$col = mysql_field_name($get_list, $f);
-				$known_col_array[] = $col;
-			}
-			
-			foreach($newStuff as $arr_k=>$arr_v){
-				if($arr_v != ''){
-					if(!in_array($arr_k, $known_col_array)){
-						mysql_query("alter table $this->db_table add column $arr_k BLOB");
-					}
+		$get_list = mysql_query("SELECT * FROM $tablename");
+		$get_num = mysql_num_fields($get_list);
+		// Make Column List
+		#[----------------------------------------------------------]
+		for ( $f=0; $f < $get_num; $f++ ) {
+			$col = mysql_field_name($get_list, $f);
+			$known_col_array[] = $col;
+		}
+
+		foreach($newStuff as $arr_k=>$arr_v){
+			if($arr_v != ''){
+				if(!in_array($arr_k, $known_col_array)){
+					$arr_k = str_replace("'",'',$arr_k);
+					mysql_query("alter table $this->db_table add column $arr_k BLOB");
 				}
+//				if(ini_get('magic_quotes_gpc')==1){
+//					$newStuff[$arr_k] = stripslashes($arr_v);
+//				}
+//				$newStuff[$arr_k] = str_replace("'","\'",$arr_v);
+				$newStuff[$arr_k] = mysql_real_escape_string($arr_v);
+//				$newStuff[$arr_k] = $arr_v;
+//				//$newStuff[$arr_k] = str_replace("/[\\]+/", "\\", $arr_v);
+//				echo $arr_k."<br/>";
 			}
+		}
+		
 
-      if ( !$get_list = mysql_query("SELECT * FROM $tablename") ) {
-				//echo "Error: Unable to list fields of table '$tablename' on DB '$db_name'<br><u>Because</u>:".mysql_error(); exit;
-      }
-      $get_num = mysql_num_fields($get_list);
+		if ( !$get_list = mysql_query("SELECT * FROM $tablename") ) {
+		//echo "Error: Unable to list fields of table '$tablename' on DB '$db_name'<br><u>Because</u>:".mysql_error(); exit;
+		}
+		$get_num = mysql_num_fields($get_list);
 
-      // Add known data to qry array
-      #[----------------------------------------------------------]
-      for ( $f=0; $f < $get_num; $f++ ) {
-         $col = mysql_field_name($get_list, $f);
+		// Add known data to qry array
+		#[----------------------------------------------------------]
+		for ( $f=0; $f < $get_num; $f++ ) {
+			$col = mysql_field_name($get_list, $f);
 
-         if ( isset($newStuff[$col]) && $col != "PRIKEY" ) {
-            $this->db_field[$col] = $newStuff[$col];
+			if ( isset($newStuff[$col]) && $col != "PRIKEY" ) {
+				$this->db_field[$col] = $newStuff[$col];
+			} elseif ( $col == "PRIKEY" ) {
+				$this->db_field[$col] = NULL;
+			} else {
+				$this->db_field[$col] = "";
+				//$unkown_col_array[] = $col;
+			}
+		}
 
-         } elseif ( $col == "PRIKEY" ) {
-            $this->db_field[$col] = NULL;
+		# Build db insert string
+		foreach ( $this->db_field as $fld => $val ) {
+			$this->qry_string .= "'$val', ";
+		}
 
-         } else {
-            $this->db_field[$col] = "";
-            //$unkown_col_array[] = $col;
-         }
-      }
+		# Format qry string
+		$this->qry_string = substr($this->qry_string, 0, -2); // Kill trailing ", "
 
-      # Build db insert string
-      foreach ( $this->db_field as $fld => $val ) {
-         $this->qry_string .= "'$val', ";
-      }
+	} // End array-building form_qry constructor
 
-      # Format qry string
-      $this->qry_string = substr($this->qry_string, 0, -2); // Kill trailing ", "
+	function getDbName()
+	{
+		return $this->db_name;
+	}
+	
+	function getQuery()
+	{
+		return $this->qry_string;
+	}
 
-   } // End array-building form_qry constructor
+	function getTable()
+	{
+		return $this->db_table;
+	}
+
+	function getFields()
+	{
+		return $this->db_field;
+	}
+
+	function getNeedles()
+	{
+		return $this->needles;
+	}
 
 
    /*#############################################################################################
@@ -114,32 +147,50 @@ class mysql_insert {
                                                 |__/
    >> Output as raw string and HTML table for testing
    ##############################################################################################*/
-   function test() {
-      echo "<div id=\"scrollLayer\" style=\"position:absolute; visibility:visible; left:0px; top:0; width:100%; height:100%; z-index:1; overflow: auto; border: 1px none #000000\">\n";
-      echo "<br><u>Test Qry Output:</u><br>\n";
-      echo "<textarea style=\"font-family: arial; font-size: 11px; width: 725px; height: 100px;\">".$this->qry_string."</textarea><br><br>\n";
-      echo "<table width=\"100%\" cellpadding=\"4\" cellspacing=\"0\" border=\"1\">\n";
-      echo " <tr>\n";
-      foreach ( $this->db_field as $col => $val ) {
-         echo "  <td bgcolor=\"#000000\" style=\"font-family: arial; font-size: 11px; color: #F8F9FD;\">\n";
-         echo "   <b>".$col."</b>\n";
-         echo "  </td>\n";
-      }
-      echo " </tr>\n";
-      $tFlds = explode(",", $this->qry_string);
-      echo " <tr>\n";
-      foreach ( $tFlds as $val ) {
-         $val = str_replace("'", "", $val);
-         echo "  <td bgcolor=\"#EFEFEF\" style=\"font-family: arial; font-size: 11px; color: #000000;\">\n";
-         echo "   ".$val."\n";
-         echo "  </td>\n";
-      }
-      echo " </tr>\n";
-      echo "</table>\n";
-      echo "</div>\n";
+	function test() {
+		echo "<div id=\"scrollLayer\" style=\"position:absolute; visibility:visible; left:0px; top:0; width:100%; height:100%; z-index:1; overflow: auto; border: 1px none #000000\">\n";
+		echo "<br><u>Test Qry Output:</u><br>\n";
+		echo "<textarea style=\"font-family: arial; font-size: 11px; width: 725px; height: 100px;\">".$this->qry_string."</textarea><br><br>\n";
+		echo "<table width=\"100%\" cellpadding=\"4\" cellspacing=\"0\" border=\"1\">\n";
+		echo " <tr>\n";
+		foreach ( $this->db_field as $col => $val ) {
+		echo "  <td bgcolor=\"#000000\" style=\"font-family: arial; font-size: 11px; color: #F8F9FD;\">\n";
+		echo "   <b>".$col."</b>\n";
+		echo "  </td>\n";
+		}
+		echo " </tr>\n";
+		$tFlds = explode(",", $this->qry_string);
+		echo " <tr>\n";
+		foreach ( $tFlds as $val ) {
+		$val = str_replace("'", "", $val);
+		echo "  <td bgcolor=\"#EFEFEF\" style=\"font-family: arial; font-size: 11px; color: #000000;\">\n";
+		echo "   ".$val."\n";
+		echo "  </td>\n";
+		}
+		echo " </tr>\n";
+		echo "</table>\n";
+		echo "</div>\n";
 
-   } // End test_qry method
-
+	} // End test_qry method
+    
+    /*
+	 * Sanitize database input
+	 */
+	function secureData($aData){
+		if (is_array($aData))
+		{
+			foreach ($aData as $iKey=>$sVal)
+			{
+				if (!is_array($aData[$iKey]))
+				{
+					$aData[$iKey] = mysql_real_escape_string($aData[$iKey]);
+				}
+			}
+		} else {
+			$aData = mysql_real_escape_string($aData);
+		}
+		return $aData;
+	}
 
    /*#############################################################################################
        ____                          __     ____          __
@@ -148,14 +199,79 @@ class mysql_insert {
     _/ / / / / /(__  )/  __// /   / /_   / /_/ // /_/ // /_ / /_/ /
    /___//_/ /_//____/ \___//_/    \__/  /_____/ \__,_/ \__/ \__,_/
    ##############################################################################################*/
-   function insert() {
-      if ( !$inserted = mysql_query("INSERT INTO $this->db_table VALUES($this->qry_string)") ) {
-         return false;
-         //echo "<b>Error</b>: <i>".mysql_error()."</i><br>\n";
-      } else {
-         return true;
-      }
-   }
+	function insert($test = false) {
+		$qry = "INSERT INTO ".$this->db_table." VALUES(".$this->getQuery().")";
+
+		if ($test === true)
+		{
+			echo $qry;
+			return true;
+		}
+		if ( !mysql_query($qry) )
+		{
+			// REMOVED BY Cameron since exceptions require php5!
+			//throw new Exception(mysql_error());
+			return false;
+			//echo "<b>Error</b>: <i>".mysql_error()."</i><br>\n";
+		} else {
+			return true;
+		}
+	}
+
+	/*
+	 * $db_table = Name of database table
+	 * $set = Array of key value pairs for field name and data
+	 * $where = array of key value pairs for field name and data, to be used in a where clause
+	 * $exclude = array of items to exclude
+	 */
+	#function update($set, $where, $exclude = '', $test = false)
+	function update($where, $exclude = '', $test = false)
+	{
+		if (trim($this->db_table == '' || !is_array($this->getFields()) || !is_array($where))) { return false; }
+		if ($exclude == '') { $exclude = array(); }
+
+		array_push($exclude, 'MAX_FILE_SIZE');
+
+		# Clean the data
+		$set = $this->secureData($this-getFields());
+		$where = $this->secureData($where);
+
+		$sqlQry = "UPDATE `".$this->db_table."` SET ";
+
+		foreach($set as $key => $value)
+		{
+			if (in_array($key, $exclude))
+			{
+				continue;
+			}
+			$sqlQry .= "`".$key."` = '".$value."', ";
+		}
+
+		$sqlQry = substr($sqlQry, 0, -2);
+
+		$sqlQry .= " WHERE ";
+
+		foreach($where as $iKey => $iValue)
+		{
+			$sqlQry .= "`".$iKey."` = '".$iValue."' AND ";
+		}
+
+		$sqlQry = substr($sqlQry, 0, -5);
+
+		if ($test !== false)
+		{
+			echo $sqlQry;
+			return true;
+		}
+
+		if (!mysql_query($sqlQry))
+		{
+			return false;
+		} else {
+			return true;
+		}
+
+	}
 
 } // End form_qry class
 

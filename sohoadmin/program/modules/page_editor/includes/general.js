@@ -21,7 +21,7 @@ var oldImageData;
 var textId;
 var imagePass;
 var tempImage;
-
+var selectedformname='';
 // Flip header nav to page editor buttons
 parent.header.flip_header_nav('PAGE_EDITOR_LAYER');
 
@@ -245,8 +245,13 @@ function parseInfo() {
       }else if(rezBox == "simple_editor_container"){
          //alert('howdy');
          CodePress();
-      }else if(rezBox == "selection"){
-         var previewUrl = "formlib/preview.php?dropArea="+ColRowID;
+      }else if(rezBox == "selection"){      	
+		if(selectedformname!='' && editType!='NULL'){
+			var previewUrl = "formlib/preview.php?dropArea="+ColRowID+"&lookat="+selectedformname;
+		} else {
+			var previewUrl = "formlib/preview.php?dropArea="+ColRowID;
+		}
+         
          ajaxDo(previewUrl, 'preview')
       }else if(editType && editType != 'NULL'){
          // editType string
@@ -710,17 +715,18 @@ function preview() {
          justPreview = "yes";
          ajaxDo(url, 'preview');
 		} else {
-			alert('Please select a form to preview first.');
+			//alert('Please select a form to preview first.');
 		}
 }
 
 function editForm(formProps) {
-   
+   parent.header.document.getElementById('PAGE_EDITOR_LAYER').style.visibility='hidden';
    var preFormVals = formProps.split(';');
    var oldEle = $(preFormVals[0]);
    ColRowID = oldEle.parentNode.id
    
    var datype = preFormVals[1];
+    selectedformname =  preFormVals[3];
    if(datype == "NEWSLETTER_SIGNUP_PROCESS"){
       formType = "Newsletter";
    }else{

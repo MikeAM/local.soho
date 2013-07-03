@@ -158,7 +158,7 @@ if($discsarray['disc_type'] != '$') {
 	$dolcheck = 'checked';
 }
 $THIS_DISPLAY .= "<td align=left class=\"text\"><strong>%</strong><input type=\"radio\" name=\"disc_type\" value=\"%\" ".$percheck.">&nbsp;&nbsp;\n";
-$THIS_DISPLAY .= " <strong>$</strong><input type=\"radio\" name=\"disc_type\" value=\"$\" ".$dolcheck."></td>\n";
+$THIS_DISPLAY .= " <strong>".$dsign."</strong><input type=\"radio\" name=\"disc_type\" value=\"$\" ".$dolcheck."></td>\n";
 $THIS_DISPLAY .= "<td align=left class=\"text\"><strong>Min&nbsp;Qty&nbsp;Required:</strong> ";
 $THIS_DISPLAY .= " <input name=\"required_qty\" id=\"required_qty\" maxlength=\"10\" value=\"".$discsarray['required_qty']."\" style=\"width: 50px;\" type=\"text\" onblur=\"document.getElementById('min_qty0').value=document.getElementById('required_qty').value\"></td>\n";
 $THIS_DISPLAY .= "</tr>\n";

@@ -32,12 +32,12 @@ if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] !
 ###############################################################################
 
 
-error_reporting(0);
+error_reporting('341');
 session_cache_limiter('none');
 session_start();
 track_vars;
 
-include("pgm-cart_config.php");
+include_once("pgm-cart_config.php");
 $dot_com = $this_ip;	// Assign dot_com variable to configured ip address
 
 foreach($_REQUEST as $name=>$value){
@@ -87,8 +87,19 @@ while (list($name, $value) = each($_GET)) {
    $_SESSION['cont_shopping_string'] .= "$name=$value&";
 }
 
+$cartpref = new userdata("cart");
+$category_customsort='';
+if($cartpref->get("category_customsort")=='custom'){
+	$category_customsort='custom';
+}
 
-$getcats = mysql_query("SELECT * FROM cart_category ORDER BY category");
+if($category_customsort=='custom'){
+	$getcats = mysql_query("SELECT * FROM cart_category ORDER BY sortorder ASC, category ASC");
+} else {
+	$getcats = mysql_query("SELECT * FROM cart_category ORDER BY category ASC");
+}
+
+//$getcats = mysql_query("SELECT * FROM cart_category ORDER BY category");
 while ($rowz = mysql_fetch_array ($getcats)) {
 	if (strlen($rowz['category']) > 2) {
 		$catz[$rowz['keyfield']]= array('name'=>$rowz['category'], 'level'=>$rowz['level'], 'subs'=>$rowz['subs'], 'parent'=>$rowz['parent'], 'product_count'=>$rowz['product_count']);
@@ -126,11 +137,14 @@ if ( strlen($test_lang) < 4 ) { // $lang array is either empty or about to displ
       $lang_include = "../sohoadmin/language/$language";
    }
 
-   include ("$lang_include");
+   include_once("$lang_include");
 
-   session_register("lang");
-   session_register("language");
-   session_register("getSpec");
+	$_SESSION['getSpec'] = $getSpec;
+	$_SESSION['language'] = $language;
+	foreach($lang as $lvar=>$lval){
+		$_SESSION['lang'][$lvar]=$lval;
+	}
+
 }
 
 
@@ -558,16 +572,27 @@ if ($browse == 1) {
 
 	if ($instant_browse_flag != 1) {	// If keyword search returns 0 matches, this flag is turned on
 
-		$THIS_DISPLAY .= "<CENTER><TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=0 class=text>\n";
-		$THIS_DISPLAY .= "<TR><TD style=\"padding-left:6px;\" ALIGN=LEFT VALIGN=MIDDLE>$BROWSECAT</TD>\n";
-		$THIS_DISPLAY .= "<TD ALIGN=RIGHT VALIGN=MIDDLE>\n";
+		//$THIS_DISPLAY .= "<CENTER><TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=0 class=text>\n";
+		//$THIS_DISPLAY .= "<TR><TD style=\"padding-left:6px;\" ALIGN=LEFT VALIGN=MIDDLE>$BROWSECAT</TD>\n";
+		$topnav = "<div class=\"cartnav\">\n";
+		$topnav .= $BROWSECAT;
+		
+		//$THIS_DISPLAY .= "<TD ALIGN=RIGHT VALIGN=MIDDLE>\n";
+		$topnav .= "<div class=\"cartnavright\">\n";
 
 		if ($TOTAL_FOUND != 0) {
-			$THIS_DISPLAY .= lang("Displaying")." $start-$end ".lang("of")." ";
+			$topnav .= lang("Displaying")." $start-$end ".lang("of")." ";
 		}
 
-		$THIS_DISPLAY .= "$TOTAL_FOUND ".lang("Found").".\n";
-		$THIS_DISPLAY .= "</TD></TR></TABLE>\n\n";
+		$topnav .= "$TOTAL_FOUND ".lang("Found").".\n";
+		$topnav .= "	</div>\n";
+		//$THIS_DISPLAY .= "</TD></TR></TABLE>\n\n";
+		
+		$topnav .= "</div>\n";
+		
+		
+		
+		
 
 	}
 
@@ -920,8 +945,8 @@ if ($policy == "other"){
 ### BUILD OVERALL TABLE TO PLACE SEARCH COLUMN TO THE LEFT OR RIGHT OF
 ### SEARCH RESULT DISPLAY AS DEFINED IN DISPLAY OPTIONS
 ##########################################################################
-
-$FINAL_DISPLAY = "<table width=\"100%\" border=\"0\" cellpadding=\"2\" cellspacing=\"0\" align=\"center\">\n";
+$FINAL_DISPLAY = $topnav;
+$FINAL_DISPLAY .= "<table border=\"0\" cellpadding=\"2\" cellspacing=\"0\" align=\"center\">\n";
 
 // ----------------------------------------------------------------------------------
 // If a welcome header text is present, then display it now.
@@ -949,7 +974,7 @@ $FINAL_DISPLAY .= "<tr>\n";
 
 # Where should the search column be placed?
 if ( eregi("L", $OPTIONS['DISPLAY_COLPLACEMENT'] ) ) {
-   $FINAL_DISPLAY .= "  <td width=\"150\" align=\"center\" valign=\"top\" id=\"searchcolumn\">\n";
+   $FINAL_DISPLAY .= "  <td valign=\"top\" id=\"searchcolumn\">\n";
    $FINAL_DISPLAY .= "   ".$SEARCH_COLUMN."\n";
    $FINAL_DISPLAY .= "  </td>\n";
    $FINAL_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
@@ -960,7 +985,7 @@ if ( eregi("L", $OPTIONS['DISPLAY_COLPLACEMENT'] ) ) {
    $FINAL_DISPLAY .= "  <td align=\"center\" valign=\"top\">\n";
    $FINAL_DISPLAY .= "   ".$THIS_DISPLAY."\n";
    $FINAL_DISPLAY .= "  </td>\n";
-   $FINAL_DISPLAY .= "  <td width=\"150\" align=\"center\" valign=\"top\" id=\"searchcolumn\">\n";
+   $FINAL_DISPLAY .= "  <td  valign=\"top\" id=\"searchcolumn\">\n";
    $FINAL_DISPLAY .= "   ".$SEARCH_COLUMN."\n";
    $FINAL_DISPLAY .= "  </td>\n";
 }

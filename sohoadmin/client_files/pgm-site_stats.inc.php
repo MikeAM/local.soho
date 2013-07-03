@@ -2,8 +2,7 @@
 error_reporting(E_PARSE);
 if($_GET['_SESSION'] != '' || $_POST['_SESSION'] != '' || $_COOKIE['_SESSION'] != '') { exit; }
 
-
-error_reporting(E_PARSE);
+session_start();
 
 ###############################################################################
 ## Soholaunch(R) Site Management Tool
@@ -37,7 +36,21 @@ include_once("sohoadmin/program/includes/shared_functions.php");
 $statsObj = new userdata('global');
 
 
-if($statsObj->get('disable-stats')!='disable'){	
+
+if($_SESSION['master_ip_array']==''){
+	$getmasterips=mysql_query("select ip_address from login_history group by ip_address");
+	while($master_ipsq=mysql_fetch_assoc($getmasterips)){
+		$master_ip_array[$master_ipsq['ip_address']]=$master_ipsq['ip_address'];
+	}
+	if($_SERVER['SERVER_ADDR']!=''){
+		$master_ip_array[$_SERVER['SERVER_ADDR']]=$_SERVER['SERVER_ADDR'];
+	}
+	$_SESSION['master_ip_array'] = $master_ip_array;
+}
+
+
+if($statsObj->get('disable-stats')!='disable' && $_SESSION['PHP_AUTH_USER']=='' && !in_array($_SERVER['REMOTE_ADDR'], $_SESSION['master_ip_array'])){	
+
 	# EXPLOIT PREVENTION: Skip all of this if page request is url
 	if ( !eregi("^http", $_REQUEST['pr']) ) {
 	
