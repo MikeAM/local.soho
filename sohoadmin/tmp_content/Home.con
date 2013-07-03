@@ -1,12 +1,10 @@
 <div id="content-parent">
 	<!-- Content Row 1 ----------------------------------------- -->
 	<div class="sohorow row">
-		<div class="soholeft twelve columns">
-			<div class="sohotext">
-				<h2>Welcome to your new website!</h2>
-				<p>You can delete or edit this home page content by <a href="sohoadmin/" title="Log-in to edit your website.">logging-in to your Soholaunch admin panel</a>. 
-				Once you are logged-in, click "<strong>Edit Pages</strong>" on the left-hand menu, then click the "<strong>Edit</strong>" button next to "<strong>Home</strong>" in the list of pages.</p>
-			</div>
+		<div class="sohocenter twelve columns">
+			<!-- ##MIKEINC;home.html## -->
+
+
 		</div>
 	</div>
 </div>
