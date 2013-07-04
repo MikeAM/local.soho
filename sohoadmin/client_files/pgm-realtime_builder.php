@@ -806,7 +806,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 			$template_line[$xedusvar] = eregi_replace("amp;", "", $template_line[$xedusvar]);
 
 			// 2004-08-01: Added checks for absolute paths
-			if ( eregi("src=\"", $template_line[$xedusvar]) && !eregi("src=\"https:", $template_line[$xedusvar]) && !eregi("src=\"http:", $template_line[$xedusvar]) && !eregi(".swf", $template_line[$xedusvar]) ) {
+			if ( eregi("src=\"", $template_line[$xedusvar]) && !eregi("src=\"//", $template_line[$xedusvar]) && !eregi("src=\"https:", $template_line[$xedusvar]) && !eregi("src=\"http:", $template_line[$xedusvar]) && !eregi(".swf", $template_line[$xedusvar]) ) {
 			   $template_line[$xedusvar] = eregi_replace("src=\"", "src=\"images/", $template_line[$xedusvar]);
 			}
 
@@ -824,7 +824,7 @@ if($_GET['rmtemplate'] != '' && $_SESSION['PHP_AUTH_USER'] != '' && $_SESSION['P
 			}
 
 		} else {	// Change Image Directory for template regardless; sometimes Windows servers screw up and can't copy files correctly!
-			if ( eregi("src=\"", $template_line[$xedusvar]) && !eregi("src=\"http:", $template_line[$xedusvar]) && !eregi("src=\"https:", $template_line[$xedusvar]) ) {
+			if ( eregi("src=\"", $template_line[$xedusvar]) && !eregi("src=\"http:", $template_line[$xedusvar]) && !eregi("src=\"https:", $template_line[$xedusvar]) && !eregi("src=\"//", $template_line[$xedusvar]) ) {
 			   $template_line[$xedusvar] = eregi_replace("src=\"", "src=\"$template_dir".$daTemp."/", $template_line[$xedusvar]);
 			}
 
