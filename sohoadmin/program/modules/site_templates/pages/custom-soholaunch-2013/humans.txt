@@ -1,9 +1,0 @@
-/* TEAM */
-Designer: Mike Morrison
-Contact: mike.morrison@soholaunch.com
-Location: Atlanta, GA
-                            
-/* SITE */
-Standards: HTML5, CSS3,..
-Components: Modernizr, jQuery
-Software: Soholaunch Website Builder

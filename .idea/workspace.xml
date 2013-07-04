@@ -40,6 +40,7 @@
     <file path="/buy-ultra-host-it-yourself.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372457765938" ignored="false" />
     <file path="/buy-pages.js" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372797240854" ignored="false" />
     <file path="/DummyFile.xpath" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372891656696" ignored="false" />
+    <file path="/.gitignore" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372974001657" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,13 +65,8 @@
       <file leaf-file-name="pgm-realtime_builder.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sohoadmin/client_files/pgm-realtime_builder.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="808" column="86" selection-start="34375" selection-end="34375" vertical-scroll-proportion="-3.3921568">
-              <folding>
-                <marker date="1372966223946" expanded="false" signature="53492:53507" placeholder="..." />
-                <marker date="1372966223946" expanded="false" signature="53688:53703" placeholder="..." />
-                <marker date="1372966223946" expanded="false" signature="62045:62094" placeholder="..." />
-                <marker date="1372966223946" expanded="false" signature="117781:117836" placeholder="..." />
-              </folding>
+            <state line="808" column="86" selection-start="34375" selection-end="34375" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -78,11 +74,8 @@
       <file leaf-file-name="index.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="89" column="65" selection-start="3691" selection-end="3691" vertical-scroll-proportion="-6.1568627">
-              <folding>
-                <marker date="1372967359905" expanded="true" signature="1144:1396" placeholder="..." />
-                <marker date="1372967359905" expanded="true" signature="1237:1265" placeholder="..." />
-              </folding>
+            <state line="89" column="65" selection-start="3691" selection-end="3691" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -91,21 +84,7 @@
         <entry file="file://$PROJECT_DIR$/.htaccess">
           <provider selected="true" editor-type-id="text-editor">
             <state line="550" column="47" selection-start="24549" selection-end="24549" vertical-scroll-proportion="0.0">
-              <folding>
-                <marker date="1372968369250" expanded="true" signature="1514:1785" placeholder="&lt;IfModule mod_setenvif.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="2078:2237" placeholder="&lt;IfModule mod_headers.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="4087:4555" placeholder="&lt;IfModule mod_headers.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="6042:8223" placeholder="&lt;IfModule mod_mime.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="8607:8705" placeholder="&lt;IfModule mod_mime.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="9752:9889" placeholder="&lt;IfModule mod_rewrite.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="10792:10956" placeholder="&lt;IfModule mod_rewrite.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="13337:13396" placeholder="&lt;IfModule mod_autoindex.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="13609:13758" placeholder="&lt;IfModule mod_rewrite.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="14003:14151" placeholder="&lt;FilesMatch &quot;(^#.*#|\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|sw[op])|~)$&quot;&gt;" />
-                <marker date="1372968369250" expanded="true" signature="16419:18234" placeholder="&lt;IfModule mod_deflate.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="19162:19220" placeholder="&lt;IfModule mod_headers.c&gt;" />
-                <marker date="1372968369250" expanded="true" signature="19708:21904" placeholder="&lt;IfModule mod_expires.c&gt;" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -113,16 +92,25 @@
       <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/buy.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="18" selection-start="535" selection-end="535" vertical-scroll-proportion="-7.8461537">
+            <state line="12" column="18" selection-start="535" selection-end="535" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="buy.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/media/buy.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="41" selection-start="789" selection-end="789" vertical-scroll-proportion="0.35160288">
+            <state line="38" column="69" selection-start="1782" selection-end="1782" vertical-scroll-proportion="-11.115385">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="24" selection-start="219" selection-end="219" vertical-scroll-proportion="0.06861756">
               <folding />
             </state>
           </provider>
@@ -131,7 +119,7 @@
       <file leaf-file-name="features.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/features.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="54" selection-start="542" selection-end="542" vertical-scroll-proportion="-8.5">
+            <state line="13" column="54" selection-start="542" selection-end="542" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -140,7 +128,7 @@
       <file leaf-file-name="features.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/media/features.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="14" selection-start="387" selection-end="387" vertical-scroll-proportion="-2.1764705">
+            <state line="8" column="14" selection-start="387" selection-end="387" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -156,7 +144,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/buy-ultra-host-it-yourself.html" />
         <option value="$PROJECT_DIR$/buy-all-inclusive-step2.html" />
         <option value="$PROJECT_DIR$/buy.html" />
         <option value="$PROJECT_DIR$/_template.html" />
@@ -172,6 +159,7 @@
         <option value="$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php" />
         <option value="$PROJECT_DIR$/.htaccess" />
         <option value="$PROJECT_DIR$/media/features.html" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -249,176 +237,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sohoadmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sohoadmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="program" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sohoadmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="program" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sohoadmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="program" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="site_templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sohoadmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="program" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="site_templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pages" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sohoadmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="program" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="site_templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pages" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="custom-soholaunch-2013" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="local.soho" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sohoadmin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="program" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="page_editor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -430,8 +248,8 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -514,7 +332,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32973504" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16435432" sideWeight="0.6712463" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16595517" sideWeight="0.6712463" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.09126595" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -594,11 +412,6 @@
     <find-history />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/static/_template.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="29" selection-start="1932" selection-end="1932" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/static/index.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="29" column="0" selection-start="820" selection-end="820" vertical-scroll-proportion="0.5098242" />
@@ -631,57 +444,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sohoadmin/client_files/pgm-realtime_builder.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="808" column="86" selection-start="34375" selection-end="34375" vertical-scroll-proportion="-3.3921568">
-          <folding>
-            <marker date="1372966223946" expanded="false" signature="53492:53507" placeholder="..." />
-            <marker date="1372966223946" expanded="false" signature="53688:53703" placeholder="..." />
-            <marker date="1372966223946" expanded="false" signature="62045:62094" placeholder="..." />
-            <marker date="1372966223946" expanded="false" signature="117781:117836" placeholder="..." />
-          </folding>
+        <state line="808" column="86" selection-start="34375" selection-end="34375" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/.htaccess">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="36" selection-start="790" selection-end="790" vertical-scroll-proportion="0.23967774">
-          <folding />
-        </state>
+        <state line="14" column="36" selection-start="790" selection-end="790" vertical-scroll-proportion="0.23967774" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="65" selection-start="3691" selection-end="3691" vertical-scroll-proportion="-6.1568627">
-          <folding>
-            <marker date="1372967359905" expanded="true" signature="1144:1396" placeholder="..." />
-            <marker date="1372967359905" expanded="true" signature="1237:1265" placeholder="..." />
-          </folding>
+        <state line="89" column="65" selection-start="3691" selection-end="3691" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.htaccess">
       <provider selected="true" editor-type-id="text-editor">
         <state line="550" column="47" selection-start="24549" selection-end="24549" vertical-scroll-proportion="0.0">
-          <folding>
-            <marker date="1372968369250" expanded="true" signature="1514:1785" placeholder="&lt;IfModule mod_setenvif.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="2078:2237" placeholder="&lt;IfModule mod_headers.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="4087:4555" placeholder="&lt;IfModule mod_headers.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="6042:8223" placeholder="&lt;IfModule mod_mime.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="8607:8705" placeholder="&lt;IfModule mod_mime.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="9752:9889" placeholder="&lt;IfModule mod_rewrite.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="10792:10956" placeholder="&lt;IfModule mod_rewrite.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="13337:13396" placeholder="&lt;IfModule mod_autoindex.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="13609:13758" placeholder="&lt;IfModule mod_rewrite.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="14003:14151" placeholder="&lt;FilesMatch &quot;(^#.*#|\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|sw[op])|~)$&quot;&gt;" />
-            <marker date="1372968369250" expanded="true" signature="16419:18234" placeholder="&lt;IfModule mod_deflate.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="19162:19220" placeholder="&lt;IfModule mod_headers.c&gt;" />
-            <marker date="1372968369250" expanded="true" signature="19708:21904" placeholder="&lt;IfModule mod_expires.c&gt;" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/features.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="54" selection-start="542" selection-end="542" vertical-scroll-proportion="-8.5">
+        <state line="13" column="54" selection-start="542" selection-end="542" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -695,21 +484,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/media/features.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="14" selection-start="387" selection-end="387" vertical-scroll-proportion="-2.1764705">
+        <state line="8" column="14" selection-start="387" selection-end="387" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/buy.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="18" selection-start="535" selection-end="535" vertical-scroll-proportion="-7.8461537">
+        <state line="12" column="18" selection-start="535" selection-end="535" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/media/buy.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="41" selection-start="789" selection-end="789" vertical-scroll-proportion="0.35160288">
+        <state line="38" column="69" selection-start="1782" selection-end="1782" vertical-scroll-proportion="-11.115385">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="24" selection-start="219" selection-end="219" vertical-scroll-proportion="0.06861756">
           <folding />
         </state>
       </provider>
