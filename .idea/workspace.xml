@@ -28,7 +28,7 @@
     <file path="/index.php" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372891759798" ignored="false" />
     <file path="/features.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372969923342" ignored="false" />
     <file path="/developers.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1371141530554" ignored="false" />
-    <file path="/buy.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372791996329" ignored="false" />
+    <file path="/buy.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372974523086" ignored="false" />
     <file path="/_base-and-vars.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372796999858" ignored="false" />
     <file path="/_page-buy.scss" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372450447179" ignored="false" />
     <file path="/buy-all-inclusive.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372793330220" ignored="false" />
@@ -40,7 +40,7 @@
     <file path="/buy-ultra-host-it-yourself.html" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372457765938" ignored="false" />
     <file path="/buy-pages.js" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372797240854" ignored="false" />
     <file path="/DummyFile.xpath" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372891656696" ignored="false" />
-    <file path="/.gitignore" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1372974001657" ignored="false" />
+    <file path="/.gitignore" changelist="c03a5f47-615f-4b1e-9636-0722722f1998" time="1373039035023" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,8 +74,11 @@
       <file leaf-file-name="index.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="89" column="65" selection-start="3691" selection-end="3691" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="12" column="24" selection-start="397" selection-end="397" vertical-scroll-proportion="0.0">
+              <folding>
+                <marker date="1372974133274" expanded="true" signature="1146:1398" placeholder="..." />
+                <marker date="1372974133274" expanded="true" signature="1239:1267" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -89,10 +92,19 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="5" selection-start="179" selection-end="179" vertical-scroll-proportion="0.10271903">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/buy.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="18" selection-start="535" selection-end="535" vertical-scroll-proportion="0.0">
+            <state line="17" column="22" selection-start="596" selection-end="596" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -101,16 +113,7 @@
       <file leaf-file-name="buy.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/media/buy.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="69" selection-start="1782" selection-end="1782" vertical-scroll-proportion="-11.115385">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="24" selection-start="219" selection-end="219" vertical-scroll-proportion="0.06861756">
+            <state line="38" column="69" selection-start="1782" selection-end="1782" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -144,7 +147,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/buy-all-inclusive-step2.html" />
         <option value="$PROJECT_DIR$/buy.html" />
         <option value="$PROJECT_DIR$/_template.html" />
         <option value="$PROJECT_DIR$/buy-all-inclusive.html" />
@@ -156,9 +158,10 @@
         <option value="$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/_template.html" />
         <option value="$PROJECT_DIR$/media/home.html" />
         <option value="$PROJECT_DIR$/sohoadmin/client_files/pgm-realtime_builder.php" />
-        <option value="$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php" />
         <option value="$PROJECT_DIR$/.htaccess" />
         <option value="$PROJECT_DIR$/media/features.html" />
+        <option value="$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php" />
+        <option value="$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/buy.html" />
         <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
@@ -218,7 +221,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -239,6 +241,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -248,8 +251,8 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -332,7 +335,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32973504" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16595517" sideWeight="0.6712463" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16755603" sideWeight="0.6712463" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.09126595" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -454,13 +457,6 @@
         <state line="14" column="36" selection-start="790" selection-end="790" vertical-scroll-proportion="0.23967774" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="65" selection-start="3691" selection-end="3691" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.htaccess">
       <provider selected="true" editor-type-id="text-editor">
         <state line="550" column="47" selection-start="24549" selection-end="24549" vertical-scroll-proportion="0.0">
@@ -489,23 +485,33 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/buy.html">
+    <entry file="file://$PROJECT_DIR$/media/buy.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="18" selection-start="535" selection-end="535" vertical-scroll-proportion="0.0">
+        <state line="38" column="69" selection-start="1782" selection-end="1782" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/media/buy.html">
+    <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="69" selection-start="1782" selection-end="1782" vertical-scroll-proportion="-11.115385">
+        <state line="12" column="24" selection-start="397" selection-end="397" vertical-scroll-proportion="0.0">
+          <folding>
+            <marker date="1372974133274" expanded="true" signature="1146:1398" placeholder="..." />
+            <marker date="1372974133274" expanded="true" signature="1239:1267" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sohoadmin/program/modules/site_templates/pages/custom-soholaunch-2013/buy.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="22" selection-start="596" selection-end="596" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="24" selection-start="219" selection-end="219" vertical-scroll-proportion="0.06861756">
+        <state line="6" column="5" selection-start="179" selection-end="179" vertical-scroll-proportion="0.10271903">
           <folding />
         </state>
       </provider>
